@@ -1,0 +1,56 @@
+{
+  "name": "videosdk-rtc-react-prebuilt-ui",
+  "version": "0.1.10",
+  "private": true,
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.1.10/",
+  "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@videosdk.live/react-sdk": "^0.1.9",
+    "emoji-mart": "^3.0.1",
+    "js-base64": "^3.6.1",
+    "notistack": "^1.0.10",
+    "react": "^17.0.2",
+    "react-device-detect": "^1.17.0",
+    "react-dom": "^17.0.2",
+    "react-emoji-render": "^1.2.4",
+    "react-lines-ellipsis": "^0.15.0",
+    "react-linkify": "0.2.2",
+    "react-lottie": "^1.2.3",
+    "react-motion": "^0.5.2",
+    "react-player": "^2.9.0",
+    "react-responsive": "^9.0.0-beta.4",
+    "react-scripts": "4.0.3",
+    "react-use-clipboard": "^1.0.7",
+    "react-virtualized": "^9.22.3",
+    "react-visibility-sensor": "^5.1.1",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
