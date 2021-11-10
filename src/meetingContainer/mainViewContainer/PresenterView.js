@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { ScreenShare } from "@material-ui/icons";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { Box, Button, Typography, useTheme } from "@material-ui/core";
@@ -20,6 +20,7 @@ import ReactPlayer from "react-player";
 
 const PresenterView = ({ presenterId }) => {
   const mMeeting = useMeeting();
+  const videoPlayer = useRef();
   // const screenSharePlayer = useRef();
   // const webCamPlayer = useRef();
   const {
@@ -173,33 +174,31 @@ const PresenterView = ({ presenterId }) => {
         }}
         className={"video-contain"}
       >
-        {/* <video
-          muted
-          playsInline
-          ref={screenSharePlayer}
-          style={{
-            height: "100%",
-            width: "100%",
-            objectFit: "contain",
-            filter: isLocal ? "blur(1rem)" : undefined,
-          }}
-          controls={false}
-          autoPlay
-          onError={(e) => {
-            console.log(e, "presenter video play error");
-          }}
-        /> */}
-        <ReactPlayer
-          muted
-          controls={false}
-          height={"100%"}
-          width={"100%"}
-          playing
-          url={mediaStream}
-          style={{
-            filter: isLocal ? "blur(1rem)" : undefined,
-          }}
-        />
+        <>
+          <ReactPlayer
+            ref={videoPlayer}
+            //
+            playsinline // very very imp prop
+            playIcon={<></>}
+            //
+            pip={false}
+            light={false}
+            controls={false}
+            muted={true}
+            playing={true}
+            //
+            url={mediaStream}
+            //
+            height={"100%"}
+            width={"100%"}
+            style={{
+              filter: isLocal ? "blur(1rem)" : undefined,
+            }}
+            onError={(err) => {
+              console.log(err, "presenter video error");
+            }}
+          />
+        </>
         {isLocal && (
           <Box
             p={5}

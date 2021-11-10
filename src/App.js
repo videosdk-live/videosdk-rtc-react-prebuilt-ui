@@ -1,12 +1,19 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import MeetingContainer from "./meetingContainer/MeetingContainer";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { MeetingAppProvider } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
+import { Box, CircularProgress } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 
 const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(null);
+
+  const [meetingIdValidation, setMeetingIdValidation] = useState({
+    isLoading: true,
+    meetingId: null,
+  });
 
   const getParams = () => {
     const location = window.location;
@@ -211,7 +218,54 @@ const App = () => {
       paramKeys.micEnabled === "true"
   );
 
-  return userHasInteracted ? (
+  const validateMeetingId = async ({ meetingId, token }) => {
+    const BASE_URL = "https://api.zujonow.com";
+
+    const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
+
+    const resMeetingId = await fetch(urlMeetingId, {
+      method: "POST",
+      headers: { "Content-type": "application/json", Authorization: token },
+    });
+
+    const meetingIdJson = await resMeetingId.json();
+
+    const validatedMeetingId = meetingIdJson.meetingId;
+
+    if (validatedMeetingId) {
+      setMeetingIdValidation({
+        isLoading: false,
+        meetingId: validatedMeetingId,
+      });
+    } else {
+      throw new Error("meetingId request failed");
+    }
+  };
+
+  useEffect(() => {
+    validateMeetingId({
+      meetingId: paramKeys.meetingId,
+      token: paramKeys.token,
+    });
+  }, [paramKeys]);
+
+  const theme = useTheme();
+
+  return meetingIdValidation.isLoading ? (
+    <Box
+      style={{
+        display: "flex",
+        flex: 1,
+        flexDirection: "column",
+        height: "100vh",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: theme.palette.background.default,
+      }}
+    >
+      <CircularProgress size={"4rem"} />
+    </Box>
+  ) : userHasInteracted && meetingIdValidation.meetingId ? (
     <MeetingAppProvider
       {...{
         redirectOnLeave: paramKeys.redirectOnLeave,
@@ -255,7 +309,7 @@ const App = () => {
     >
       <MeetingProvider
         config={{
-          meetingId: paramKeys.meetingId,
+          meetingId: meetingIdValidation.meetingId,
           micEnabled: joinScreenMic,
           webcamEnabled: joinScreenWebCam,
           name: name,
