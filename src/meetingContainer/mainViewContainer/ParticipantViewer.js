@@ -1,6 +1,6 @@
 import { Box, Typography, useTheme } from "@material-ui/core";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@material-ui/core";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -198,7 +198,7 @@ export const CornerDisplayName = ({
 };
 
 const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
-  // const videoPlayer = useRef();
+  const videoPlayer = useRef();
   const [mouseOver, setMouseOver] = useState(false);
 
   const mMeeting = useMeeting();
@@ -336,31 +336,29 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
         className={"video-cover"}
       >
         {webcamOn ? (
-          // <video
-          //   muted
-          //   playsInline
-          //   style={{
-          //     height: "100%",
-          //     width: "100%",
-          //     objectFit: "cover",
-          //     ...flipStyle,
-          //   }}
-          //   controls={false}
-          //   autoPlay
-          //   onError={(e) => {
-          //     console.log(e, "participant video play error");
-          //   }}
-          //   ref={videoPlayer}
-          // />
-          <ReactPlayer
-            style={flipStyle}
-            muted
-            controls={false}
-            height={"100%"}
-            width={"100%"}
-            playing
-            url={mediaStream}
-          />
+          <>
+            <ReactPlayer
+              ref={videoPlayer}
+              //
+              playsinline // very very imp prop
+              playIcon={<></>}
+              //
+              pip={false}
+              light={false}
+              controls={false}
+              muted={true}
+              playing={true}
+              //
+              url={mediaStream}
+              //
+              height={"100%"}
+              width={"100%"}
+              style={flipStyle}
+              onError={(err) => {
+                console.log(err, "participant video error");
+              }}
+            />
+          </>
         ) : (
           <div
             style={{

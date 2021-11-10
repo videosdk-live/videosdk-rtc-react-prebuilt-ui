@@ -421,7 +421,7 @@ export default function JoinMeeting({
           flex: 1,
           flexDirection: "column",
           height: "100vh",
-          // backgroundColor: "red",
+          backgroundColor: theme.palette.background.default,
         }}
       >
         <Box
