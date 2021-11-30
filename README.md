@@ -22,20 +22,20 @@
 1. Clone the repo
 
    ```sh
-   $ git clone https://github.com/MrSurana/videosdk-rtc-react-prebuilt-ui
-   $ cd videosdk-rtc-react-prebuilt-ui
+   git clone https://github.com/videosdk-live/videosdk-rtc-react-prebuilt-ui.git
+   cd videosdk-rtc-react-prebuilt-ui
    ```
 
 2. Install NPM packages
 
    ```sh
-   $ npm install
+   npm install
    ```
 
 3. Run the app
 
    ```sh
-   $ npm run start
+   npm run start
    ```
 
 Now your app will be running on http://localhost:3000, to customize the default options pass url parameters where app is running.
