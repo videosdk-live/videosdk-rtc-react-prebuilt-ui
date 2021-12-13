@@ -1,8 +1,13 @@
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
-import MicOffIcon from "@material-ui/icons/MicOff";
-import MicIcon from "@material-ui/icons/Mic";
-import VideocamOffIcon from "@material-ui/icons/VideocamOff";
-import VideocamIcon from "@material-ui/icons/Videocam";
+import {
+  Close,
+  MoreVert,
+  SearchOutlined,
+  MicOff as MicOffIcon,
+  Mic as MicIcon,
+  VideocamOff as VideocamOffIcon,
+  Videocam as VideocamIcon,
+} from "@material-ui/icons";
 import {
   Avatar,
   Box,
@@ -11,28 +16,26 @@ import {
   TextField,
   Typography,
   useTheme,
+  Fade,
+  Tooltip,
 } from "@material-ui/core";
-import { SearchOutlined } from "@material-ui/icons";
-import { useMemo, useState } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
-import RaiseHand from "../../icons/RaiseHand";
+import { Pin, RaiseHand, KickoutUserIcon } from "../../icons";
 import { List } from "react-virtualized";
-import { Pin } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
 import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
+import ConfirmBox from "../../components/ConfirmBox";
 
-export function duplicateArray(aaaarr = []) {
-  const limit = 3000;
-  let arr = [];
-  for (var i = 0; i < limit; i++) {
-    arr = [...arr, ...aaaarr];
-  }
-  return arr;
-}
-
-function ParticipantListItem({ raisedHand, participantId }) {
+function ParticipantListItem({
+  raisedHand,
+  participantId,
+  participantExpandedId,
+  setParticipantExpandedId,
+}) {
   const {
+    participant,
     micOn,
     webcamOn,
     displayName,
@@ -49,10 +52,25 @@ function ParticipantListItem({ raisedHand, participantId }) {
   const {
     participantCanToggleOtherMic,
     participantCanToggleOtherWebcam,
+    canRemoveOtherParticipant,
     canPin,
   } = useMeetingAppContext();
 
+  const [isParticipantKickoutVisible, setIsParticipantKickoutVisible] =
+    useState(false);
+
+  const [morePanelWidth, setMorePanelWidth] = useState(0);
+
   const theme = useTheme();
+
+  const expanded = participantExpandedId === participantId;
+
+  const morePanelRef = useRef();
+
+  useEffect(() => {
+    morePanelRef.current?.offsetWidth &&
+      setMorePanelWidth(morePanelRef.current.offsetWidth);
+  }, []);
 
   return (
     <Box
@@ -69,159 +87,293 @@ function ParticipantListItem({ raisedHand, participantId }) {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          position: "relative",
         }}
       >
         <Avatar variant={"rounded"}>{displayName?.charAt(0)}</Avatar>
-
-        <Box ml={1} mr={1} style={{ flex: 1, display: "flex" }}>
-          <Typography
-            style={{
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-              whiteSpace: "pre-wrap",
-            }}
-            variant="body1"
-            noWrap
-          >
-            {isLocal ? "You" : displayName}
-          </Typography>
-        </Box>
-        {raisedHand && (
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            mr={0.5}
-            p={0.5}
-          >
-            <RaiseHand />
-          </Box>
-        )}
-        {canPin && (
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            mr={0.5}
-            p={0.5}
-          >
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                pinState?.share || pinState?.cam ? unpin() : pin();
-              }}
+        <Fade in={!expanded}>
+          <Box ml={1} mr={0.5} style={{ flex: 1, display: "flex" }}>
+            <Typography
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                // padding: isMobile ? 2 : isTab ? 3 : 4,
-                // backgroundColor: "#00000066",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "pre-wrap",
               }}
+              variant="body1"
+              noWrap
             >
-              <Pin
-                fill={pinState?.share || pinState?.cam ? "white" : "#ffffff80"}
-                style={{
-                  width: 20,
-                  height: 20,
-                }}
-              />
-            </IconButton>
+              {isLocal
+                ? "You"
+                : displayName.length > 15
+                ? `${displayName.substr(0, 8)}...`
+                : displayName}
+            </Typography>
           </Box>
-        )}
-
-        <IconButton
-          disabled={!participantCanToggleOtherMic || isLocal}
-          style={{ padding: 0 }}
-          onClick={() => {
-            if (micOn) {
-              disableMic();
-            } else {
-              enableMic();
-            }
+        </Fade>
+        <Box
+          style={{
+            display: "flex",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
           }}
         >
           <Box
             style={{
               display: "flex",
+              flex: 1,
               justifyContent: "center",
               alignItems: "center",
-              borderRadius: 100,
-              // border: `${micOn ? "0" : "1"}px solid ${
-              //   micOn
-              //     ? theme.palette.common.secondaryContrastTextLight
-              //     : theme.palette.error.main
-              // }`,
-              backgroundColor: micOn ? null : theme.palette.error.main,
-            }}
-            p={0.5}
-          >
-            {micOn ? (
-              <MicIcon
-                fontSize="small"
-                style={{ color: theme.palette.common.white }}
-              />
-            ) : (
-              <MicOffIcon
-                fontSize="small"
-                style={{ color: theme.palette.common.white }}
-              />
-            )}
-          </Box>
-        </IconButton>
-        <Box ml={1}>
-          <IconButton
-            disabled={!participantCanToggleOtherWebcam || isLocal}
-            style={{ padding: 0 }}
-            onClick={() => {
-              if (webcamOn) {
-                disableWebcam();
-              } else {
-                enableWebcam();
-              }
+              position: "relative",
             }}
           >
             <Box
               style={{
                 display: "flex",
+                flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                borderRadius: 100,
-                // border: `${webcamOn ? "0" : "1"}px solid ${
-                //   webcamOn
-                //     ? theme.palette.common.secondaryContrastTextLight
-                //     : theme.palette.error.main
-                // }`,
-                backgroundColor: webcamOn ? null : theme.palette.error.main,
+                transition: "all 200ms",
+                right: expanded ? morePanelWidth : 0,
+                position: "absolute",
               }}
-              p={0.5}
             >
-              {webcamOn ? (
-                <VideocamIcon
-                  fontSize="small"
-                  style={{ color: theme.palette.common.white }}
-                />
-              ) : (
-                <VideocamOffIcon
-                  fontSize="small"
-                  style={{ color: theme.palette.common.white }}
-                />
+              {raisedHand && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  mr={0.5}
+                  p={0.5}
+                >
+                  <RaiseHand />
+                </Box>
+              )}
+
+              <Box ml={0.5} mr={0.5}>
+                <IconButton
+                  disabled={!participantCanToggleOtherMic || isLocal}
+                  style={{ padding: 0 }}
+                  onClick={() => {
+                    if (micOn) {
+                      disableMic();
+                    } else {
+                      enableMic();
+                    }
+                  }}
+                >
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 100,
+                      backgroundColor: micOn ? null : theme.palette.error.main,
+                    }}
+                    p={0.5}
+                  >
+                    {micOn ? (
+                      <MicIcon
+                        fontSize="small"
+                        style={{ color: theme.palette.common.white }}
+                      />
+                    ) : (
+                      <MicOffIcon
+                        fontSize="small"
+                        style={{ color: theme.palette.common.white }}
+                      />
+                    )}
+                  </Box>
+                </IconButton>
+              </Box>
+              <Box ml={1} mr={0}>
+                <IconButton
+                  disabled={!participantCanToggleOtherWebcam || isLocal}
+                  style={{ padding: 0 }}
+                  onClick={() => {
+                    if (webcamOn) {
+                      disableWebcam();
+                    } else {
+                      enableWebcam();
+                    }
+                  }}
+                >
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 100,
+                      backgroundColor: webcamOn
+                        ? null
+                        : theme.palette.error.main,
+                    }}
+                    p={0.5}
+                  >
+                    {webcamOn ? (
+                      <VideocamIcon
+                        fontSize="small"
+                        style={{ color: theme.palette.common.white }}
+                      />
+                    ) : (
+                      <VideocamOffIcon
+                        fontSize="small"
+                        style={{ color: theme.palette.common.white }}
+                      />
+                    )}
+                  </Box>
+                </IconButton>
+              </Box>
+            </Box>
+            <Box
+              ref={morePanelRef}
+              style={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                transition: "all 200ms",
+                right: expanded ? 0 : -morePanelWidth,
+                position: "absolute",
+                opacity: expanded ? 1 : 0,
+              }}
+            >
+              {canPin && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  ml={1}
+                  mr={0}
+                  p={0.5}
+                >
+                  <Tooltip
+                    title={pinState?.share || pinState?.cam ? "Unpin" : `Pin`}
+                  >
+                    <IconButton
+                      disabled={!expanded}
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        pinState?.share || pinState?.cam ? unpin() : pin();
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Pin
+                        fill={
+                          pinState?.share || pinState?.cam
+                            ? "white"
+                            : "#ffffff80"
+                        }
+                        style={{
+                          width: 20,
+                          height: 20,
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )}
+              {!isLocal && canRemoveOtherParticipant && (
+                <Box ml={1} mr={0}>
+                  <Tooltip title={`Remove`}>
+                    <IconButton
+                      disabled={!expanded}
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsParticipantKickoutVisible(true);
+                        // participant.remove();
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <KickoutUserIcon height={18} width={18} />
+                    </IconButton>
+                  </Tooltip>
+                  <ConfirmBox
+                    open={isParticipantKickoutVisible}
+                    title={`Remove ${
+                      displayName.length > 15
+                        ? `${displayName.substr(0, 8)}...`
+                        : displayName
+                    } `}
+                    subTitle={`Are you sure want to remove ${
+                      displayName.length > 15
+                        ? `${displayName.substr(0, 8)}...`
+                        : displayName
+                    } from the call?`}
+                    successText={"Remove"}
+                    rejectText={"Cancel"}
+                    onSuccess={() => {
+                      participant.remove();
+                    }}
+                    onReject={() => {
+                      setIsParticipantKickoutVisible(false);
+                    }}
+                  />
+                </Box>
               )}
             </Box>
-          </IconButton>
+          </Box>
+          <Box style={{ transition: "all 200ms" }} ml={expanded ? 1.5 : 1}>
+            <IconButton
+              style={{ padding: 0 }}
+              onClick={(e) => {
+                if (participantId === participantExpandedId) {
+                  setParticipantExpandedId(null);
+                } else {
+                  setParticipantExpandedId(participantId);
+                }
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 100,
+                  border: `${expanded ? "0" : "0"}px solid ${
+                    expanded
+                      ? theme.palette.error.main
+                      : theme.palette.common.secondaryContrastTextLight
+                  }`,
+                  backgroundColor: expanded ? theme.palette.error.main : null,
+                }}
+                p={0.5}
+              >
+                {expanded ? (
+                  <Close fontSize="small" />
+                ) : (
+                  <MoreVert fontSize="small" />
+                )}
+              </Box>
+            </IconButton>
+          </Box>
         </Box>
       </Box>
-      {/* <Divider /> */}
     </Box>
   );
 }
 
 export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   const [filterQuery, setFilterQuery] = useState("");
+  const [participantExpandedId, setParticipantExpandedId] = useState(null);
 
   const { participants } = useMeeting();
   const { raisedHandsParticipants } = useMeetingAppContext();
@@ -296,6 +448,8 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
           <ParticipantListItem
             participantId={participantId}
             raisedHand={raisedHand}
+            participantExpandedId={participantExpandedId}
+            setParticipantExpandedId={setParticipantExpandedId}
           />
         ) : (
           <Box

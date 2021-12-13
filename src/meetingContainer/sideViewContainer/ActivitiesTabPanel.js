@@ -8,7 +8,6 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import PollIcon from "@material-ui/icons/Poll";
-import GestureIcon from "@material-ui/icons/Gesture";
 
 const ActivitiesTabPanel = ({ panelHeight }) => {
   return (
@@ -22,13 +21,13 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
           disabled: true,
           onClick: () => {},
         },
-        {
-          Icon: GestureIcon,
-          primary: "White board",
-          secondary: "White board - Coming Soon.",
-          disabled: true,
-          onClick: () => {},
-        },
+        // {
+        //   Icon: GestureIcon,
+        //   primary: "White board",
+        //   secondary: "White board - Coming Soon.",
+        //   disabled: true,
+        //   onClick: () => {},
+        // },
       ].map(({ Icon, primary, secondary, disabled, onClick }, i) => (
         <ButtonBase
           disabled={disabled}

@@ -13,7 +13,7 @@ import { Videocam, Mic, MicOff, VideocamOff } from "@material-ui/icons";
 import { red } from "@material-ui/core/colors";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import ConfirmBox from "../components/ConfirmBox";
-import CheckboxIcon from "../icons/CheckboxIcon";
+import { CheckboxIcon } from "../icons";
 import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
@@ -122,6 +122,8 @@ export default function JoinMeeting({
   participantCanToggleSelfMic,
   micEnabled,
   webcamEnabled,
+  setSelectedMic,
+  setSelectedWebcam,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -219,7 +221,7 @@ export default function JoinMeeting({
 
     setAudioTrack(audioTrack);
   };
-  const getDefaultMediaTracks = async ({ mic, webcam }) => {
+  const getDefaultMediaTracks = async ({ mic, webcam, firstTime }) => {
     if (mic) {
       const audioConstraints = {
         audio: true,
@@ -229,9 +231,15 @@ export default function JoinMeeting({
         audioConstraints
       );
       const audioTracks = stream.getAudioTracks();
+
       const audioTrack = audioTracks.length ? audioTracks[0] : null;
 
       setAudioTrack(audioTrack);
+      if (firstTime) {
+        setSelectedMic({
+          id: audioTrack?.getSettings()?.deviceId,
+        });
+      }
     }
 
     if (webcam) {
@@ -246,8 +254,14 @@ export default function JoinMeeting({
         videoConstraints
       );
       const videoTracks = stream.getVideoTracks();
+
       const videoTrack = videoTracks.length ? videoTracks[0] : null;
       setVideoTrack(videoTrack);
+      if (firstTime) {
+        setSelectedWebcam({
+          id: videoTrack?.getSettings()?.deviceId,
+        });
+      }
     }
   };
   async function startMuteListener() {
@@ -283,6 +297,7 @@ export default function JoinMeeting({
       getDefaultMediaTracks({
         mic: hasMic && micEnabled,
         webcam: hasWebcam && webcamEnabled,
+        firstTime: true,
       });
     } catch (err) {
       console.log(err);
@@ -521,7 +536,8 @@ export default function JoinMeeting({
                               left: 0,
                             }}
                           >
-                            {participantCanToggleSelfWebcam === "false" ? (
+                            {participantCanToggleSelfWebcam === "false" &&
+                            !webcamOn ? (
                               <Typography variant={isXLOnly ? "h4" : "h6"}>
                                 You are not allowed to turn on your camera
                               </Typography>
@@ -583,6 +599,8 @@ export default function JoinMeeting({
                           setSetting={setSetting}
                           webcams={webcams}
                           mics={mics}
+                          setSelectedMic={setSelectedMic}
+                          setSelectedWebcam={setSelectedWebcam}
                           videoTrack={videoTrack}
                           audioTrack={audioTrack}
                           participantCanToggleSelfMic={

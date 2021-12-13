@@ -164,6 +164,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
 export default function SettingDialogueBox({
   open,
   onClose,
@@ -172,6 +173,8 @@ export default function SettingDialogueBox({
   mics,
   setting,
   setSetting,
+  setSelectedMic,
+  setSelectedWebcam,
   changeWebcam,
   changeMic,
   videoTrack,
@@ -330,7 +333,15 @@ export default function SettingDialogueBox({
                               >
                                 {mics?.map((item) => {
                                   return item?.kind === "audioinput" ? (
-                                    <MenuItem value={item?.deviceId}>
+                                    <MenuItem
+                                      value={item?.deviceId}
+                                      onClick={(e) => {
+                                        setSelectedMic((s) => ({
+                                          ...s,
+                                          id: item?.deviceId,
+                                        }));
+                                      }}
+                                    >
                                       {item?.label}
                                     </MenuItem>
                                   ) : null;
@@ -419,7 +430,15 @@ export default function SettingDialogueBox({
                               >
                                 {webcams?.map((item) => {
                                   return item?.kind === "videoinput" ? (
-                                    <MenuItem value={item?.deviceId}>
+                                    <MenuItem
+                                      value={item?.deviceId}
+                                      onClick={() => {
+                                        setSelectedWebcam((s) => ({
+                                          ...s,
+                                          id: item?.deviceId,
+                                        }));
+                                      }}
+                                    >
                                       {item?.label}
                                     </MenuItem>
                                   ) : null;

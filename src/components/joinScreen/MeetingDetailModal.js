@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import LinesEllipsis from "react-lines-ellipsis";
 import useCopyClipboard from "react-use-clipboard";
 import { Keyboard } from "@material-ui/icons";
-import CopyIcon from "../../icons/CopyIcon";
+import { CopyIcon } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
 
 export default function MeetingDetailModal({

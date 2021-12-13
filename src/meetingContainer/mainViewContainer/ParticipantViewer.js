@@ -205,7 +205,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const presenterId = mMeeting?.presenterId;
 
-  const { setOverlaidInfoVisible } = useMeetingAppContext();
+  const { setOverlaidInfoVisible, whiteboardStarted } = useMeetingAppContext();
 
   // const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
@@ -385,8 +385,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
                 <Lottie
                   options={defaultRippleOptions}
                   eventListeners={[{ eventName: "done" }]}
-                  height={(dpSize / (presenterId ? 2 : 1)) * 2}
-                  width={(dpSize / (presenterId ? 2 : 1)) * 2}
+                  height={
+                    (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
+                  }
+                  width={
+                    (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
+                  }
                 />
               </div>
             )}
@@ -395,8 +399,8 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               style={{
                 zIndex: 10,
                 // aspectRatio: 1,
-                height: dpSize / (presenterId ? 2 : 1),
-                width: dpSize / (presenterId ? 2 : 1),
+                height: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
+                width: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

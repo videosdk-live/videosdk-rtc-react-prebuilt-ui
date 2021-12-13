@@ -18,9 +18,18 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { MemoizedMotionParticipant } from "../mainViewContainer/MainViewContainer";
 import ParticipantViewer from "../mainViewContainer/ParticipantViewer";
 import PresenterView from "../mainViewContainer/PresenterView";
+import WhiteboardContainer, {
+  convertHWAspectRatio,
+} from "../../components/whiteboard/WhiteboardContainer";
 
-const PinnedLayoutViewContainer = ({ height, width }) => {
-  const { meetingLayout, sideBarMode } = useMeetingAppContext();
+const PinnedLayoutViewContainer = ({
+  height,
+  width,
+  whiteboardToolbarWidth,
+  whiteboardSpacing,
+}) => {
+  const { meetingLayout, sideBarMode, whiteboardStarted } =
+    useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
@@ -56,6 +65,20 @@ const PinnedLayoutViewContainer = ({ height, width }) => {
             : pinnedParticipantIds,
         spotlightMediaType: "SHARE",
       };
+    } else if (whiteboardStarted) {
+      if (meetingLayout === meetingLayouts.SPOTLIGHT) {
+        obj = {
+          spotlightParticipantId: "white-board-id",
+          sideBarPinnedParticipantIds: [],
+          spotlightMediaType: "WHITEBOARD",
+        };
+      } else {
+        obj = {
+          spotlightParticipantId: "white-board-id",
+          sideBarPinnedParticipantIds: pinnedParticipantIds,
+          spotlightMediaType: "WHITEBOARD",
+        };
+      }
     } else {
       if (meetingLayout === meetingLayouts.SPOTLIGHT) {
         obj = {
@@ -149,6 +172,7 @@ const PinnedLayoutViewContainer = ({ height, width }) => {
     isSMDesktop,
     isLGDesktop,
     isPortrait,
+    whiteboardStarted,
   ]);
 
   const theme = useTheme();
@@ -261,6 +285,26 @@ const PinnedLayoutViewContainer = ({ height, width }) => {
           {spotlightParticipantId ? (
             spotlightMediaType === "SHARE" ? (
               <PresenterView presenterId={spotlightParticipantId} />
+            ) : spotlightMediaType === "WHITEBOARD" ? (
+              <WhiteboardContainer
+                {...{
+                  ...convertHWAspectRatio({
+                    height: height - 2 * spacing,
+                    width:
+                      width -
+                      (isMobile ? 0 : presentingSideBarWidth) -
+                      2 * spacing -
+                      (whiteboardToolbarWidth + 2 * whiteboardSpacing),
+                  }),
+                  whiteboardToolbarWidth,
+                  whiteboardSpacing,
+                  originalHeight: height - 2 * spacing,
+                  originalWidth:
+                    width -
+                    (isMobile ? 0 : presentingSideBarWidth) -
+                    2 * spacing,
+                }}
+              />
             ) : (
               <MemoizedMotionParticipant
                 {...{

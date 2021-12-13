@@ -6,6 +6,7 @@ import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
+import ErrorPage from "./components/ErrorPage";
 
 const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(null);
@@ -13,6 +14,8 @@ const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,
     meetingId: null,
+    reqError: null,
+    reqStatusCode: null,
   });
 
   const getParams = () => {
@@ -29,15 +32,13 @@ const App = () => {
       chatEnabled: "chatEnabled",
       screenShareEnabled: "screenShareEnabled",
       pollEnabled: "pollEnabled",
-      whiteBoardEnabled: "whiteBoardEnabled",
+      whiteboardEnabled: "whiteboardEnabled",
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
-      participantCanToggleSelfScreenShare:
-        "participantCanToggleSelfScreenShare",
       raiseHandEnabled: "raiseHandEnabled",
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
-      recordingEnabledByDefault: "recordingEnabledByDefault",
+      autoStartRecording: "autoStartRecording",
       participantCanToggleRecording: "participantCanToggleRecording",
       brandingEnabled: "brandingEnabled",
       brandLogoURL: "brandLogoURL",
@@ -56,6 +57,10 @@ const App = () => {
       notificationSoundEnabled: "notificationSoundEnabled",
       layout: "layout",
       canPin: "canPin",
+      canEndMeeting: "canEndMeeting",
+      canRemoveOtherParticipant: "canRemoveOtherParticipant",
+      canDrawOnWhiteboard: "canDrawOnWhiteboard",
+      canToggleWhiteboard: "canToggleWhiteboard",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -101,8 +106,8 @@ const App = () => {
     if (typeof paramKeys.pollEnabled !== "string") {
       paramKeys.pollEnabled = "true";
     }
-    if (typeof paramKeys.whiteBoardEnabled !== "string") {
-      paramKeys.whiteBoardEnabled = "true";
+    if (typeof paramKeys.whiteboardEnabled !== "string") {
+      paramKeys.whiteboardEnabled = "true";
     }
     if (typeof paramKeys.participantCanToggleSelfWebcam !== "string") {
       paramKeys.participantCanToggleSelfWebcam = "true";
@@ -210,13 +215,20 @@ const App = () => {
 
   const [name, setName] = useState(paramKeys.name || "");
   const [joinScreenWebCam, setJoinScreenWebCam] = useState(
-    paramKeys.participantCanToggleSelfWebcam === "true" &&
-      paramKeys.webcamEnabled === "true"
+    paramKeys.joinScreenEnabled === "true"
+      ? paramKeys.participantCanToggleSelfWebcam === "true" &&
+          paramKeys.webcamEnabled === "true"
+      : paramKeys.webcamEnabled === "true"
   );
+
   const [joinScreenMic, setJoinScreenMic] = useState(
-    paramKeys.participantCanToggleSelfMic === "true" &&
-      paramKeys.micEnabled === "true"
+    paramKeys.joinScreenEnabled === "true"
+      ? paramKeys.participantCanToggleSelfMic === "true" &&
+          paramKeys.micEnabled === "true"
+      : paramKeys.micEnabled === "true"
   );
+  const [selectedMic, setSelectedMic] = useState({ id: null });
+  const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token }) => {
     const BASE_URL = "https://api.zujonow.com";
@@ -236,9 +248,16 @@ const App = () => {
       setMeetingIdValidation({
         isLoading: false,
         meetingId: validatedMeetingId,
+        reqError: null,
+        reqStatusCode: null,
       });
     } else {
-      throw new Error("meetingId request failed");
+      setMeetingIdValidation({
+        isLoading: false,
+        meetingId: null,
+        reqError: meetingIdJson.error,
+        reqStatusCode: meetingIdJson.statusCode,
+      });
     }
   };
 
@@ -265,6 +284,11 @@ const App = () => {
     >
       <CircularProgress size={"4rem"} />
     </Box>
+  ) : meetingIdValidation.reqError ? (
+    <ErrorPage
+      errMsg={meetingIdValidation.reqError}
+      statusCode={meetingIdValidation.reqStatusCode}
+    />
   ) : userHasInteracted && meetingIdValidation.meetingId ? (
     <MeetingAppProvider
       {...{
@@ -272,7 +296,7 @@ const App = () => {
         chatEnabled: paramKeys.chatEnabled === "true",
         screenShareEnabled: paramKeys.screenShareEnabled === "true",
         pollEnabled: paramKeys.pollEnabled === "true",
-        whiteBoardEnabled: paramKeys.whiteBoardEnabled === "true",
+        whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
         participantCanToggleSelfWebcam:
           paramKeys.participantCanToggleSelfWebcam === "true",
         participantCanToggleSelfMic:
@@ -280,8 +304,7 @@ const App = () => {
         raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
         recordingEnabled: paramKeys.recordingEnabled === "true",
         recordingWebhookUrl: paramKeys.recordingWebhookUrl,
-        recordingEnabledByDefault:
-          paramKeys.recordingEnabledByDefault === "true",
+        autoStartRecording: paramKeys.autoStartRecording === "true",
         participantCanToggleRecording:
           paramKeys.participantCanToggleRecording === "true",
         brandingEnabled: paramKeys.brandingEnabled === "true" ? true : false,
@@ -305,6 +328,19 @@ const App = () => {
           paramKeys.notificationSoundEnabled === "true" ? true : false,
         layout: paramKeys.layout,
         canPin: paramKeys.canPin === "true" ? true : false,
+        selectedMic,
+        selectedWebcam,
+        joinScreenWebCam,
+        joinScreenMic,
+        canRemoveOtherParticipant:
+          paramKeys.canRemoveOtherParticipant === "true" ? true : false,
+        canEndMeeting: paramKeys.canEndMeeting === "true" ? true : false,
+        canDrawOnWhiteboard:
+          paramKeys.canDrawOnWhiteboard === "true" ? true : false,
+        canToggleWhiteboard:
+          paramKeys.canToggleWhiteboard === "true" ? true : false,
+        whiteboardEnabled:
+          paramKeys.whiteboardEnabled === "true" ? true : false,
       }}
     >
       <MeetingProvider
@@ -313,6 +349,7 @@ const App = () => {
           micEnabled: joinScreenMic,
           webcamEnabled: joinScreenWebCam,
           name: name,
+          maxResolution: "sd",
         }}
         token={paramKeys.token}
         joinWithoutUserInteraction
@@ -329,15 +366,13 @@ const App = () => {
         setUserHasInteracted(true);
       }}
       {...{
-        micEnabled:
-          paramKeys.participantCanToggleSelfMic === "true" &&
-          paramKeys.micEnabled === "true",
-        webcamEnabled:
-          paramKeys.participantCanToggleSelfWebcam === "true" &&
-          paramKeys.webcamEnabled === "true",
+        micEnabled: paramKeys.micEnabled === "true",
+        webcamEnabled: paramKeys.webcamEnabled === "true",
       }}
       name={name}
       setName={setName}
+      setSelectedMic={setSelectedMic}
+      setSelectedWebcam={setSelectedWebcam}
       meetingUrl={paramKeys.joinScreenMeetingUrl}
       meetingTitle={paramKeys.joinScreenTitle}
       participantCanToggleSelfWebcam={paramKeys.participantCanToggleSelfWebcam}

@@ -20,6 +20,9 @@ import { Motion as TransitionMotion, spring } from "react-motion";
 import { useTheme } from "@material-ui/core";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMediaQuery } from "react-responsive";
+import WhiteboardContainer, {
+  convertHWAspectRatio,
+} from "../../components/whiteboard/WhiteboardContainer";
 
 const MemoizedParticipant = React.memo(
   ParticipantViewer,
@@ -151,7 +154,12 @@ export const MemoizedMotionParticipant = React.memo(
     prevProps.useVisibilitySensor === nextProps.useVisibilitySensor
 );
 
-const MainViewContainer = ({ height, width }) => {
+const MainViewContainer = ({
+  height,
+  width,
+  whiteboardToolbarWidth,
+  whiteboardSpacing,
+}) => {
   const mMeeting = useMeeting();
 
   const participants = mMeeting?.participants;
@@ -175,13 +183,17 @@ const MainViewContainer = ({ height, width }) => {
 
   const gutter = 4;
 
-  const { mainViewParticipants, sideBarMode, meetingLayout } =
-    useMeetingAppContext();
+  const {
+    mainViewParticipants,
+    sideBarMode,
+    meetingLayout,
+    whiteboardStarted,
+  } = useMeetingAppContext();
 
   const { singleRow } = useMemo(() => {
     let mainParticipants = [...mainViewParticipants];
 
-    if (presenterId) {
+    if (presenterId || whiteboardStarted) {
       const remainingParticipants = [...participants.keys()].filter(
         (pId) => mainParticipants.findIndex((id) => id === pId) === -1
       );
@@ -198,7 +210,7 @@ const MainViewContainer = ({ height, width }) => {
       isSMDesktop,
       isLGDesktop,
       isLandscape: !isPortrait,
-      isPresenting: !!presenterId,
+      isPresenting: !!(presenterId || whiteboardStarted),
     });
 
     const { singleRow } = getGridForMainParticipants({
@@ -225,6 +237,7 @@ const MainViewContainer = ({ height, width }) => {
     isSMDesktop,
     isLGDesktop,
     presenterId,
+    whiteboardStarted,
     localParticipantId,
     pinnedParticipants,
   ]);
@@ -241,44 +254,24 @@ const MainViewContainer = ({ height, width }) => {
     xs: 200,
   });
 
-  const mainContainerHorizontalPadding = presenterId
-    ? 0
-    : typeof sideBarMode === "string"
-    ? 0
-    : mainViewParticipants?.length <= 9
-    ? isLGDesktop
-      ? !presenterId && singleRow.length === 2
-        ? 0
-        : 140
-      : isSMDesktop
-      ? !presenterId && singleRow.length === 2
-        ? 20
-        : 90
-      : isTab && !isPortrait
-      ? 60
-      : 0
-    : 0;
-
-  // const mainContainerHorizontalPadding = presenterId
-  // ? 0
-  // : typeof sideBarMode === "string"
-  // ? 0
-  // : mainViewParticipants?.length <= 9
-  // ? isLGDesktop
-  //   ? 140
-  //   : isSMDesktop
-  //   ? 90
-  //   : isTab && screenOrientation === orientations["landscape-primary"]
-  //   ? 60
-  //   : 0
-  // : 0;
-
-  // console.log(
-  //   sideBarMode,
-  //   mainViewParticipants?.length,
-  //   mainContainerHorizontalPadding,
-  //   "mainContainerHorizontalPadding"
-  // );
+  const mainContainerHorizontalPadding =
+    presenterId || whiteboardStarted
+      ? 0
+      : typeof sideBarMode === "string"
+      ? 0
+      : mainViewParticipants?.length <= 9
+      ? isLGDesktop
+        ? !(presenterId || whiteboardStarted) && singleRow.length === 2
+          ? 0
+          : 140
+        : isSMDesktop
+        ? !(presenterId || whiteboardStarted) && singleRow.length === 2
+          ? 20
+          : 90
+        : isTab && !isPortrait
+        ? 60
+        : 0
+      : 0;
 
   const gridVerticalSpacing = useResponsiveSize({
     xl: 160,
@@ -303,41 +296,80 @@ const MainViewContainer = ({ height, width }) => {
       >
         <div
           style={{
-            width: presenterId ? width - presentingSideBarWidth : 0,
+            width:
+              presenterId || whiteboardStarted
+                ? width - presentingSideBarWidth
+                : 0,
             height,
             transition: "width 800ms",
             transitionTimingFunction: "ease-in-out",
-            paddingLeft: presenterId ? spacing : 0,
-            paddingTop: presenterId ? spacing : 0,
+            paddingLeft: presenterId || whiteboardStarted ? spacing : 0,
+            paddingTop: presenterId || whiteboardStarted ? spacing : 0,
           }}
         >
           <div
             style={{
               height: height - 2 * spacing,
-              width: presenterId
-                ? width - (isMobile ? 0 : presentingSideBarWidth) - 2 * spacing
-                : 0,
+              width:
+                presenterId || whiteboardStarted
+                  ? width -
+                    (isMobile ? 0 : presentingSideBarWidth) -
+                    2 * spacing
+                  : 0,
               backgroundColor: theme.palette.background.paper,
+              // backgroundColor: "pink",
               transition: "width 800ms",
               transitionTimingFunction: "ease-in-out",
               borderRadius: theme.spacing(1),
               overflow: "hidden",
             }}
           >
+            {whiteboardStarted && (
+              <WhiteboardContainer
+                {...{
+                  ...convertHWAspectRatio({
+                    height:
+                      height -
+                      2 * spacing -
+                      (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
+                    width: whiteboardStarted
+                      ? width -
+                        (isMobile ? 0 : presentingSideBarWidth) -
+                        2 * spacing -
+                        (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
+                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
+                      : 0,
+                  }),
+                  whiteboardToolbarWidth,
+                  whiteboardSpacing,
+                  originalHeight: height - 2 * spacing,
+                  originalWidth: whiteboardStarted
+                    ? width -
+                      (isMobile ? 0 : presentingSideBarWidth) -
+                      2 * spacing
+                    : 0,
+                }}
+              />
+            )}
             {presenterId && <PresenterView presenterId={presenterId} />}
           </div>
         </div>
-        {isMobile && presenterId ? null : (
+        {isMobile && (presenterId || whiteboardStarted) ? null : (
           <div
             style={{
               backgroundColor: theme.palette.background.default,
               overflowX: "hidden",
-              overflowY: presenterId ? "scroll" : "hidden",
-              width: presenterId ? presentingSideBarWidth : width - 2 * spacing,
+              overflowY: presenterId || whiteboardStarted ? "scroll" : "hidden",
+              width:
+                presenterId || whiteboardStarted
+                  ? presentingSideBarWidth
+                  : width - 2 * spacing,
               height:
                 height -
                 2 * spacing -
-                (singleRow.length === 2 && !presenterId && !isMobile
+                (singleRow.length === 2 &&
+                !(presenterId || whiteboardStarted) &&
+                !isMobile
                   ? 2 * gridVerticalSpacing
                   : 0),
               margin: spacing,
@@ -345,7 +377,7 @@ const MainViewContainer = ({ height, width }) => {
               transitionTimingFunction: "ease-in-out",
               paddingLeft:
                 mainContainerHorizontalPadding +
-                (!presenterId &&
+                (!(presenterId || whiteboardStarted) &&
                 singleRow.length > 12 &&
                 singleRow.length < 17 &&
                 typeof sideBarMode !== "string"
@@ -353,14 +385,16 @@ const MainViewContainer = ({ height, width }) => {
                   : 0),
               paddingRight:
                 mainContainerHorizontalPadding +
-                (!presenterId &&
+                (!(presenterId || whiteboardStarted) &&
                 singleRow.length > 12 &&
                 singleRow.length < 17 &&
                 typeof sideBarMode !== "string"
                   ? 160
                   : 0),
               paddingTop:
-                singleRow.length === 2 && !presenterId && !isMobile
+                singleRow.length === 2 &&
+                !(presenterId || whiteboardStarted) &&
+                !isMobile
                   ? gridVerticalSpacing
                   : 0,
             }}
@@ -368,11 +402,13 @@ const MainViewContainer = ({ height, width }) => {
             <div
               style={{
                 height:
-                  (presenterId
+                  (presenterId || whiteboardStarted
                     ? (singleRow.length * presentingSideBarWidth * 2) / 3
                     : height) -
                   2 * spacing -
-                  (singleRow.length === 2 && !presenterId && !isMobile
+                  (singleRow.length === 2 &&
+                  !(presenterId || whiteboardStarted) &&
+                  !isMobile
                     ? 2 * gridVerticalSpacing
                     : 0),
                 position: "relative",
@@ -386,7 +422,9 @@ const MainViewContainer = ({ height, width }) => {
                   key={`main_participant_${c.participantId}`}
                   {...c}
                   gutter={gutter}
-                  useVisibilitySensor={presenterId ? true : false}
+                  useVisibilitySensor={
+                    presenterId || whiteboardStarted ? true : false
+                  }
                 />
               ))}
             </div>
