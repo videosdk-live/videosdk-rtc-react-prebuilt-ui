@@ -95,28 +95,20 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
 const ChatMessages = ({ listHeight }) => {
   const listRef = useRef();
 
-  const scrollToBottom = (data, t) => {
+  const scrollToBottom = (data) => {
     if (!data) {
-      const scrollTo = listRef.current?.offsetHeight + 1000;
-
-      setTimeout(() => {
-        if (listRef.current) {
-          listRef.current.scrollTop = scrollTo;
-        }
-      }, t || 100);
+      if (listRef.current) {
+        listRef.current.scrollTop = listRef.current.scrollHeight;
+      }
     } else {
       const { text } = data;
 
       if (json_verify(text)) {
         const { type } = JSON.parse(text);
         if (type === "CHAT") {
-          const scrollTo = listRef.current?.offsetHeight + 1000;
-
-          setTimeout(() => {
-            if (listRef.current) {
-              listRef.current.scrollTop = scrollTo;
-            }
-          }, t || 100);
+          if (listRef.current) {
+            listRef.current.scrollTop = listRef.current.scrollHeight;
+          }
         }
       }
     }
@@ -129,7 +121,7 @@ const ChatMessages = ({ listHeight }) => {
   const messages = mMeeting?.messages;
 
   useEffect(() => {
-    scrollToBottom(null, 1000);
+    scrollToBottom();
   }, []);
 
   return messages ? (

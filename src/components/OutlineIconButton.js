@@ -1,4 +1,11 @@
-import { Badge, Box, ButtonBase, Tooltip, useTheme } from "@material-ui/core";
+import {
+  Badge,
+  Box,
+  ButtonBase,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import React, { useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
 
@@ -15,6 +22,7 @@ const OutlineIconButton = ({
   renderRightComponent,
   tooltipTitle,
   btnID,
+  buttonText,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
@@ -96,6 +104,11 @@ const OutlineIconButton = ({
               ></Icon>
             </Badge>
           </Box>
+          {buttonText ? (
+            <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
+              {buttonText}
+            </Typography>
+          ) : null}
         </ButtonBase>
         {typeof renderRightComponent === "function" && renderRightComponent()}
       </Box>

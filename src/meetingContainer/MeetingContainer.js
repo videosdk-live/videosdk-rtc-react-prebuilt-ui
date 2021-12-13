@@ -21,6 +21,7 @@ import RequestedEntries from "../components/RequestedEntries";
 import ClickAnywhereToContinue from "../components/ClickAnywhereToContinue";
 import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutViewContainer";
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
+import useWhiteBoard from "./useWhiteBoard";
 
 const getPinMsg = ({
   localParticipant,
@@ -69,6 +70,7 @@ const MeetingContainer = () => {
   const [localParticipantAllowedJoin, setLocalParticipantAllowedJoin] =
     useState(null);
   const { enqueueSnackbar } = useSnackbar();
+  useWhiteBoard();
 
   useSortActiveParticipants();
   const { participantRaisedHand } = useRaisedHandParticipants();
@@ -107,21 +109,45 @@ const MeetingContainer = () => {
     askJoin,
     notificationSoundEnabled,
     meetingLayout,
+    selectedMic,
+    selectedWebcam,
+    joinScreenWebCam,
+    joinScreenMic,
+    canDrawOnWhiteboard,
   } = useMeetingAppContext();
 
   const isTab = useIsTab();
   const isMobile = useIsMobile();
 
-  const _handleOnMeetingJoined = () => {
-    // if (liveStreamEnabled && autoStartLiveStream) {
+  const _handleOnMeetingJoined = async () => {
+    const { changeWebcam, changeMic, muteMic, disableWebcam } =
+      mMeetingRef.current;
 
     if (autoStartLiveStream && liveStreamOutputs?.length) {
       const { startLivestream } = mMeetingRef.current;
 
       startLivestream(liveStreamOutputs);
     }
-    // const meeting = mMeetingRef.current;
-    // window.top.postMessage("OnMeetingJoined", "*", [meeting]);
+
+    if (joinScreenWebCam && selectedWebcam.id) {
+      await new Promise((resolve) => {
+        disableWebcam();
+        setTimeout(() => {
+          changeWebcam(selectedWebcam.id);
+          resolve();
+        }, 500);
+      });
+    }
+
+    if (joinScreenMic && selectedMic.id) {
+      await new Promise((resolve) => {
+        muteMic();
+        setTimeout(() => {
+          changeMic(selectedMic.id);
+          resolve();
+        }, 500);
+      });
+    }
   };
 
   const _handleMeetingLeft = () => {
@@ -159,6 +185,22 @@ const MeetingContainer = () => {
         }
         enqueueSnackbar(`${isLocal ? "You" : senderName} raised hand 🖐🏼`);
         participantRaisedHand(senderId);
+      }
+
+      if (type === "END_CALL") {
+        if (notificationSoundEnabled) {
+          new Audio(
+            `https://static.zujonow.com/prebuilt/notification.mp3`
+          ).play();
+        }
+
+        enqueueSnackbar(
+          `${
+            isLocal
+              ? "You end the call"
+              : " This meeting has been ended by host"
+          }`
+        );
       }
     }
   };
@@ -313,6 +355,9 @@ const MeetingContainer = () => {
     };
   }, []);
 
+  const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
+  const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
+
   return (
     <div
       ref={containerRef}
@@ -352,6 +397,8 @@ const MeetingContainer = () => {
                           : typeof sideBarMode === "string"
                           ? sideBarContainerWidth
                           : 0),
+                      whiteboardToolbarWidth,
+                      whiteboardSpacing,
                     }}
                   />
                 ) : (
@@ -365,6 +412,8 @@ const MeetingContainer = () => {
                           : typeof sideBarMode === "string"
                           ? sideBarContainerWidth
                           : 0),
+                      whiteboardToolbarWidth,
+                      whiteboardSpacing,
                     }}
                   />
                 )}

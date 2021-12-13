@@ -11,6 +11,11 @@ import {
   Link,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
+import { useMeeting } from "@videosdk.live/react-sdk";
+import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
+import useIsTab from "../utils/useIsTab";
+import useIsMobile from "../utils/useIsMobile";
+
 import {
   Activities,
   Chat,
@@ -18,28 +23,39 @@ import {
   Participants,
   ScreenRecording,
   ScreenShare,
+  RaiseHand,
+  LeaveMeetingIcon,
+  EndCallIcon,
 } from "../icons";
-import MicOffIcon from "@material-ui/icons/MicOff";
-import MicIcon from "@material-ui/icons/Mic";
-import VideocamOffIcon from "@material-ui/icons/VideocamOff";
-import VideocamIcon from "@material-ui/icons/Videocam";
-import { useMeeting } from "@videosdk.live/react-sdk";
-import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import CloseIcon from "@material-ui/icons/Close";
-import useIsTab from "../utils/useIsTab";
-import useIsMobile from "../utils/useIsMobile";
-import RaiseHand from "../icons/RaiseHand";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+
+import {
+  MicOff as MicOffIcon,
+  Mic as MicIcon,
+  VideocamOff as VideocamOffIcon,
+  Videocam as VideocamIcon,
+  MoreHoriz as MoreHorizIcon,
+  Close as CloseIcon,
+  ArrowDropDown as ArrowDropDownIcon,
+  Gesture as Gesture,
+} from "@material-ui/icons";
+
 import {
   isMobile as RDDIsMobile,
   isTablet as RDDIsTablet,
 } from "react-device-detect";
+import ConfirmBox from "../components/ConfirmBox";
+import { useMediaQuery } from "react-responsive";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
   borderRight: { borderRight: "1ps solid #ffffff33" },
   popover: { backgroundColor: "transparent" },
+  popoverBorder: {
+    borderRadius: "12px",
+    backgroundColor: "#212032",
+    marginTop: 8,
+    width: 300,
+  },
 });
 const RaiseHandBTN = ({ onClick }) => {
   const mMeeting = useMeeting();
@@ -117,8 +133,34 @@ const ActivitiesBTN = ({ onClick }) => {
     />
   );
 };
+
+const WhiteBoardBTN = () => {
+  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
+    useMeetingAppContext();
+  const mMeeting = useMeeting({});
+
+  return (
+    <>
+      {whiteboardEnabled && (
+        <OutlineIconButton
+          disabled={!canToggleWhiteboard}
+          tooltipTitle={"Whiteboard"}
+          Icon={Gesture}
+          isFocused={whiteboardStarted}
+          onClick={() => {
+            whiteboardStarted
+              ? mMeeting.meeting.stopWhiteboard()
+              : mMeeting.meeting.startWhiteboard();
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 const ScreenShareBTN = ({ onClick }) => {
   const mMeeting = useMeeting({});
+  const { whiteboardStarted } = useMeetingAppContext();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const toggleScreenShare = mMeeting?.toggleScreenShare;
@@ -140,11 +182,9 @@ const ScreenShareBTN = ({ onClick }) => {
         toggleScreenShare();
       }}
       disabled={
-        // isTab || isMobile
-        //   ? true
-        //   :
-
         RDDIsMobile || RDDIsTablet
+          ? true
+          : whiteboardStarted
           ? true
           : presenterId
           ? localScreenShareOn
@@ -156,11 +196,12 @@ const ScreenShareBTN = ({ onClick }) => {
   );
 };
 const MicBTN = () => {
-  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
+  const { selectedMic } = useMeetingAppContext();
+
+  const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
   const mMeeting = useMeeting({});
-
   const theme = useTheme();
 
   const handleClick = (event) => {
@@ -236,7 +277,7 @@ const MicBTN = () => {
         onClose={handleClose}
       >
         <MenuList>
-          {mics.map(({ deviceId, label }) => (
+          {mics.map(({ deviceId, label }, index) => (
             <MenuItem
               key={`output_mics_${deviceId}`}
               selected={deviceId === selectedDeviceId}
@@ -246,7 +287,7 @@ const MicBTN = () => {
                 changeMic(deviceId);
               }}
             >
-              {label}
+              {label || `Mic ${index + 1}`}
             </MenuItem>
           ))}
         </MenuList>
@@ -266,12 +307,12 @@ const RecordingBTN = () => {
 
   const {
     recordingWebhookUrl,
-    recordingEnabledByDefault,
+    autoStartRecording,
     participantCanToggleRecording,
   } = useMeetingAppContext();
 
   useEffect(() => {
-    if (recordingEnabledByDefault) {
+    if (autoStartRecording) {
       setDefaultRecordingActionTaken(true);
       setTimeout(() => {
         if (!defaultRecordingActionTaken) {
@@ -282,7 +323,7 @@ const RecordingBTN = () => {
   }, [
     recordingWebhookUrl,
     defaultRecordingActionTaken,
-    recordingEnabledByDefault,
+    autoStartRecording,
     startRecording,
   ]);
 
@@ -306,8 +347,10 @@ const RecordingBTN = () => {
 const WebcamBTN = () => {
   const theme = useTheme();
   const mMeeting = useMeeting({});
+  const { selectedWebcam } = useMeetingAppContext();
 
-  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
+  const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
+
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
@@ -383,7 +426,7 @@ const WebcamBTN = () => {
         onClose={handleClose}
       >
         <MenuList>
-          {webcams.map(({ deviceId, label }) => (
+          {webcams.map(({ deviceId, label }, index) => (
             <MenuItem
               key={`output_webcams_${deviceId}`}
               selected={deviceId === selectedDeviceId}
@@ -393,7 +436,7 @@ const WebcamBTN = () => {
                 changeWebcam(deviceId);
               }}
             >
-              {label}
+              {label || `Webcam ${index + 1}`}
             </MenuItem>
           ))}
         </MenuList>
@@ -403,20 +446,171 @@ const WebcamBTN = () => {
 };
 const EndCallBTN = () => {
   const mMeeting = useMeeting({});
+  const classes = useStyles();
 
-  const { endCallContainerRef } = useMeetingAppContext();
+  const [isEndMeeting, setIsEndMeeting] = useState(false);
+  const { endCallContainerRef, canEndMeeting } = useMeetingAppContext();
+
+  const sendChatMessage = mMeeting?.sendChatMessage;
+
   const leave = mMeeting?.leave;
+  const end = mMeeting?.end;
+
+  const tollTipEl = useRef();
 
   const theme = useTheme();
 
+  const [downArrow, setDownArrow] = useState(null);
+
+  const handleClick = (event) => {
+    setDownArrow(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setDownArrow(null);
+  };
+
   return (
-    <OutlineIconButton
-      ref={endCallContainerRef}
-      tooltipTitle={"End call"}
-      bgColor={theme.palette.error.main}
-      Icon={EndCall}
-      onClick={leave}
-    />
+    <Box
+      ref={tollTipEl}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <OutlineIconButton
+        ref={endCallContainerRef}
+        // tooltipTitle={"Leave call"}
+        bgColor={theme.palette.error.main}
+        Icon={EndCall}
+        onClick={(e) => {
+          canEndMeeting ? handleClick(e) : leave();
+        }}
+      />
+      {canEndMeeting && (
+        <>
+          <Popover
+            container={tollTipEl.current}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            anchorEl={tollTipEl.current}
+            open={Boolean(downArrow)}
+            onClose={handleClose}
+            classes={{
+              paper: classes.popoverBorder,
+            }}
+          >
+            <MenuList>
+              <MenuItem
+                key={`leave`}
+                onClick={() => {
+                  leave();
+                }}
+              >
+                <Box style={{ display: "flex", flexDirection: "row" }}>
+                  <Box
+                    style={{
+                      backgroundColor: theme.palette.common.sidePanel,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 42,
+                      width: 42,
+                      borderRadius: 4,
+                    }}
+                  >
+                    <LeaveMeetingIcon height={22} width={22} />
+                  </Box>
+                  <Box
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      flexDirection: "column",
+                      marginLeft: 12,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography style={{ fontSize: 14 }}>Leave</Typography>
+                    <Typography
+                      color={"textSecondary"}
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      Only you will leave the call.
+                    </Typography>
+                  </Box>
+                </Box>
+              </MenuItem>
+              <MenuItem
+                style={{ marginTop: 4 }}
+                key={`end`}
+                onClick={() => {
+                  setIsEndMeeting(true);
+                }}
+              >
+                <Box style={{ display: "flex", flexDirection: "row" }}>
+                  <Box
+                    style={{
+                      backgroundColor: theme.palette.common.sidePanel,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 42,
+                      width: 42,
+                      borderRadius: 4,
+                    }}
+                  >
+                    <EndCallIcon />
+                  </Box>
+                  <Box
+                    style={{
+                      display: "flex",
+                      marginLeft: 12,
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography style={{ fontSize: 14, lineHeight: 1.5 }}>
+                      End
+                    </Typography>
+                    <Typography
+                      style={{
+                        fontSize: "0.9rem",
+                      }}
+                      color={"textSecondary"}
+                    >
+                      End call for all participants.
+                    </Typography>
+                  </Box>
+                </Box>
+              </MenuItem>
+            </MenuList>
+          </Popover>
+
+          <ConfirmBox
+            open={isEndMeeting}
+            title={"Are you sure to end this call for everyone?"}
+            successText={"End Call"}
+            onSuccess={() => {
+              sendChatMessage(JSON.stringify({ type: "END_CALL", data: {} }));
+              setTimeout(() => {
+                end();
+              }, 1000);
+            }}
+            rejectText="Cancel"
+            onReject={() => {
+              setIsEndMeeting(false);
+            }}
+          />
+        </>
+      )}
+    </Box>
   );
 };
 
@@ -429,7 +623,7 @@ const TopBar = ({ topBarHeight }) => {
     chatEnabled,
     screenShareEnabled,
     pollEnabled,
-    whiteBoardEnabled,
+    whiteboardEnabled,
     participantCanToggleSelfWebcam,
     participantCanToggleSelfMic,
     raiseHandEnabled,
@@ -453,6 +647,7 @@ const TopBar = ({ topBarHeight }) => {
   const isTab = useIsTab();
 
   const theme = useTheme();
+  const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
   const topBarButtonTypes = useMemo(
     () => ({
@@ -465,6 +660,7 @@ const TopBar = ({ topBarHeight }) => {
       MIC: "MIC",
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
+      WHITEBOARD: "WHITEBOARD",
     }),
     []
   );
@@ -478,7 +674,7 @@ const TopBar = ({ topBarHeight }) => {
 
     const arrSideBar = [];
 
-    if (pollEnabled || whiteBoardEnabled) {
+    if (pollEnabled || whiteboardEnabled) {
       arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
     }
     if (chatEnabled) {
@@ -513,6 +709,10 @@ const TopBar = ({ topBarHeight }) => {
       utilsArr.unshift(topBarButtonTypes.RECORDING);
     }
 
+    if (whiteboardEnabled) {
+      utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+    }
+
     if (utilsArr.length) {
       arr.unshift(utilsArr);
     }
@@ -522,7 +722,7 @@ const TopBar = ({ topBarHeight }) => {
     participantCanToggleSelfWebcam,
     screenShareEnabled,
     pollEnabled,
-    whiteBoardEnabled,
+    whiteboardEnabled,
     chatEnabled,
     raiseHandEnabled,
     topBarButtonTypes,
@@ -555,9 +755,24 @@ const TopBar = ({ topBarHeight }) => {
           <WebcamBTN />
         </Box>
       )}
-      {chatEnabled && (
+      {isPortrait ? (
+        recordingEnabled ? (
+          <Box ml={2}>
+            <RecordingBTN />
+          </Box>
+        ) : chatEnabled ? (
+          <Box ml={2}>
+            <ChatBTN />
+          </Box>
+        ) : null
+      ) : (
         <Box ml={2}>
           <ChatBTN />
+        </Box>
+      )}
+      {!isPortrait && recordingEnabled && (
+        <Box ml={2}>
+          <RecordingBTN />
         </Box>
       )}
       <Box ml={2}>
@@ -590,21 +805,26 @@ const TopBar = ({ topBarHeight }) => {
       >
         <Box>
           {raiseHandEnabled && (
-            <Box mb={2}>
+            <Box mb={1.2}>
               <RaiseHandBTN onClick={handleCloseFAB} />
             </Box>
           )}
-          <Box mb={2}>
+          <Box mb={1.2}>
             <ParticipantsBTN onClick={handleCloseFAB} />
           </Box>
-          {(pollEnabled || whiteBoardEnabled) && (
-            <Box mb={2}>
+          {(pollEnabled || whiteboardEnabled) && (
+            <Box mb={1.2}>
               <ActivitiesBTN onClick={handleCloseFAB} />
             </Box>
           )}
           {screenShareEnabled && (
-            <Box mb={2}>
+            <Box mb={1.2}>
               <ScreenShareBTN onClick={handleCloseFAB} />
+            </Box>
+          )}
+          {isPortrait && recordingEnabled && chatEnabled && (
+            <Box mb={1.2}>
+              <ChatBTN onClick={handleCloseFAB} />
             </Box>
           )}
         </Box>
@@ -739,6 +959,8 @@ const TopBar = ({ topBarHeight }) => {
                         <EndCallBTN />
                       ) : buttonType === topBarButtonTypes.RECORDING ? (
                         <RecordingBTN />
+                      ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
+                        <WhiteBoardBTN />
                       ) : null}
                     </Box>
                   );

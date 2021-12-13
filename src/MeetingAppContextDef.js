@@ -1,6 +1,13 @@
 import { makeStyles } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
-import { useContext, createContext, useState, useEffect, useRef } from "react";
+import {
+  useContext,
+  createContext,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+} from "react";
 import { validURL } from "./utils/common";
 
 export const MeetingAppContext = createContext();
@@ -32,19 +39,19 @@ export const MeetingAppProvider = ({
   chatEnabled,
   screenShareEnabled,
   pollEnabled,
-  whiteBoardEnabled,
+  whiteboardEnabled,
   participantCanToggleSelfWebcam,
   participantCanToggleSelfMic,
-  participantCanToggleSelfScreenShare,
   raiseHandEnabled,
   recordingEnabled,
   recordingWebhookUrl,
-  recordingEnabledByDefault,
+  autoStartRecording,
   participantCanToggleRecording,
   brandingEnabled,
   brandLogoURL,
   brandName,
   participantCanLeave,
+  canEndMeeting,
   poweredBy,
   liveStreamEnabled,
   autoStartLiveStream,
@@ -52,9 +59,16 @@ export const MeetingAppProvider = ({
   askJoin,
   participantCanToggleOtherMic,
   participantCanToggleOtherWebcam,
+  canRemoveOtherParticipant,
   notificationSoundEnabled,
   layout,
   canPin,
+  selectedMic,
+  selectedWebcam,
+  joinScreenWebCam,
+  joinScreenMic,
+  canToggleWhiteboard,
+  canDrawOnWhiteboard,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -66,8 +80,15 @@ export const MeetingAppProvider = ({
   const [overlaidInfoVisible, setOverlaidInfoVisible] = useState(true);
   const [raisedHandsParticipants, setRaisedHandsParticipants] = useState([]);
   const [userHasInteracted, setUserHasInteracted] = useState(true);
-  // const [meetingLayout, setMeetingLayout] = useState(meetingLayouts[layout]);
-  // const [pinnedParticipants, setPinnedParticipants] = useState(new Map());
+  const [whiteboardState, setWhiteboardState] = useState({
+    started: false,
+    state: null,
+  });
+
+  const whiteboardStarted = useMemo(
+    () => whiteboardState.started,
+    [whiteboardState]
+  );
 
   useEffect(() => {
     if (!validURL(redirectOnLeave)) {
@@ -78,6 +99,11 @@ export const MeetingAppProvider = ({
   return (
     <MeetingAppContext.Provider
       value={{
+        // default options
+        selectedMic,
+        selectedWebcam,
+        joinScreenWebCam,
+        joinScreenMic,
         // refs
         containerRef,
         endCallContainerRef,
@@ -86,19 +112,19 @@ export const MeetingAppProvider = ({
         chatEnabled,
         screenShareEnabled,
         pollEnabled,
-        whiteBoardEnabled,
+        whiteboardEnabled,
         participantCanToggleSelfWebcam,
         participantCanToggleSelfMic,
-        participantCanToggleSelfScreenShare,
         raiseHandEnabled,
         recordingEnabled,
         recordingWebhookUrl,
-        recordingEnabledByDefault,
+        autoStartRecording,
         participantCanToggleRecording,
         brandingEnabled,
         brandLogoURL,
         brandName,
         participantCanLeave,
+        canEndMeeting,
         poweredBy,
         liveStreamEnabled,
         autoStartLiveStream,
@@ -106,7 +132,10 @@ export const MeetingAppProvider = ({
         askJoin,
         participantCanToggleOtherMic,
         participantCanToggleOtherWebcam,
+        canRemoveOtherParticipant,
         notificationSoundEnabled,
+        canToggleWhiteboard,
+        canDrawOnWhiteboard,
         // states
         sideBarMode,
         activeSortedParticipants,
@@ -114,7 +143,8 @@ export const MeetingAppProvider = ({
         overlaidInfoVisible,
         raisedHandsParticipants,
         userHasInteracted,
-        // pinnedParticipants,
+        whiteboardStarted,
+        whiteboardState,
         meetingLayout: layout,
         canPin,
         // setters
@@ -124,8 +154,7 @@ export const MeetingAppProvider = ({
         setOverlaidInfoVisible,
         setRaisedHandsParticipants,
         setUserHasInteracted,
-        // setPinnedParticipants,
-        // setMeetingLayout,
+        setWhiteboardState,
       }}
     >
       <SnackbarProvider
