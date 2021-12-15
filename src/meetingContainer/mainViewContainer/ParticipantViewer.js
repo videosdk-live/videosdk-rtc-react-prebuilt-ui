@@ -9,6 +9,7 @@ import {
   getRandomColor,
   eventEmitter,
   appEvents,
+  nameTructed,
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
@@ -108,10 +109,10 @@ export const CornerDisplayName = ({
           {isPresenting
             ? isLocal
               ? `You are presenting`
-              : `${displayName} is presenting`
+              : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
             ? "You"
-            : displayName}
+            : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (

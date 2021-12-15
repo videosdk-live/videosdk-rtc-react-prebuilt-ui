@@ -14,7 +14,7 @@ import SendIcon from "@material-ui/icons/Send";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
-import { formatAMPM, json_verify } from "../../utils/common";
+import { formatAMPM, json_verify, nameTructed } from "../../utils/common";
 import { toArray } from "react-emoji-render";
 
 const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
@@ -49,14 +49,14 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
         }}
       >
         <Typography style={{ color: "#ffffff80" }}>
-          {localSender ? "You" : senderName}
+          {localSender ? "You" : nameTructed(senderName, 15)}
         </Typography>
         <Box mt={0.5}>
           <Typography
             style={{
               display: "inline-block",
               whiteSpace: "pre-wrap",
-              wordBreak: "break-all",
+              wordBreak: "break-word",
             }}
           >
             {toArray(text).map((t, i) => (

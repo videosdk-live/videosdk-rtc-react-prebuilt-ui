@@ -8,6 +8,7 @@ import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
 import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
+import { nameTructed } from "../../utils/common";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,
@@ -320,7 +321,9 @@ function WhiteboardContainer({
         const p = mMeeting.participants.get(data);
         new Audio("/notification.mp3").play();
         enqueueSnackbar(
-          `${p ? p.displayName : "You"} cleared the whiteboard 🗑️`,
+          `${
+            p ? nameTructed(p.displayName, 15) : "You"
+          } cleared the whiteboard 🗑️`,
           { autoHideDuration: 4000 }
         );
 
@@ -433,6 +436,7 @@ function WhiteboardContainer({
       fill: fabricRef.current.freeDrawingBrush.color,
       left: pointer.x,
       top: pointer.y,
+      fill: "rgba(0,0,0,0)",
       stroke: fabricRef.current.freeDrawingBrush.color,
       strokeWidth: 2,
     });

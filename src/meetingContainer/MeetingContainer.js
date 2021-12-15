@@ -11,6 +11,7 @@ import {
   appEvents,
   eventEmitter,
   json_verify,
+  nameTructed,
   trimSnackBarText,
 } from "../utils/common";
 import { useSnackbar } from "notistack";
@@ -43,18 +44,24 @@ const getPinMsg = ({
   if (pinnedSelf && localParticipantWasPinned && localParticipantPinned) {
     return `You ${pinStateText} yourself`;
   } else if (pinnedSelf && !localParticipantWasPinned) {
-    return `${partcipantDisplayName}  was ${pinStateText}`;
+    return `${nameTructed(partcipantDisplayName, 15)}  was ${pinStateText}`;
   } else if (!localParticipantWasPinned && !localParticipantPinned) {
-    return `${partcipantDisplayName} was ${pinStateText} by ${pinnedByDisplayName}`;
+    return `${nameTructed(
+      partcipantDisplayName,
+      15
+    )} was ${pinStateText} by ${nameTructed(pinnedByDisplayName, 15)}`;
   } else if (localParticipantWasPinned && !localParticipantPinned) {
-    return `You were ${pinStateText} by ${pinnedByDisplayName}`;
+    return `You were ${pinStateText} by ${nameTructed(
+      pinnedByDisplayName,
+      15
+    )}`;
   } else if (!localParticipantWasPinned && localParticipantPinned) {
-    return ` You ${pinStateText} ${partcipantDisplayName}`;
+    return ` You ${pinStateText} ${nameTructed(partcipantDisplayName, 15)}`;
   } else if (!pinnedBy) {
     if (localParticipantWasPinned) {
       return `You were ${pinStateText}`;
     } else {
-      return `${partcipantDisplayName} was ${pinStateText}`;
+      return `${nameTructed(partcipantDisplayName, 15)} was ${pinStateText}`;
     }
   }
 };
@@ -172,7 +179,9 @@ const MeetingContainer = () => {
             ).play();
           }
           enqueueSnackbar(
-            trimSnackBarText(`${senderName} says: ${messageData.message}`)
+            trimSnackBarText(
+              `${nameTructed(senderName, 15)} says: ${messageData.message}`
+            )
           );
         }
       }
@@ -183,7 +192,9 @@ const MeetingContainer = () => {
             `https://static.zujonow.com/prebuilt/notification.mp3`
           ).play();
         }
-        enqueueSnackbar(`${isLocal ? "You" : senderName} raised hand 🖐🏼`);
+        enqueueSnackbar(
+          `${isLocal ? "You" : nameTructed(senderName, 15)} raised hand 🖐🏼`
+        );
         participantRaisedHand(senderId);
       }
 
@@ -247,7 +258,9 @@ const MeetingContainer = () => {
 
       new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
       enqueueSnackbar(
-        `${isLocal ? "You" : mPresenter.displayName} started presenting`
+        `${
+          isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+        } started presenting`
       );
     }
   };
