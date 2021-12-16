@@ -27,6 +27,7 @@ import useWindowSize from "../../utils/useWindowSize";
 import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
 import ConfirmBox from "../../components/ConfirmBox";
+import { nameTructed } from "../../utils/common";
 
 function ParticipantListItem({
   raisedHand,
@@ -102,11 +103,7 @@ function ParticipantListItem({
               variant="body1"
               noWrap
             >
-              {isLocal
-                ? "You"
-                : displayName.length > 15
-                ? `${displayName.substr(0, 8)}...`
-                : displayName}
+              {isLocal ? "You" : nameTructed(displayName, 15)}
             </Typography>
           </Box>
         </Fade>
@@ -308,16 +305,11 @@ function ParticipantListItem({
                   </Tooltip>
                   <ConfirmBox
                     open={isParticipantKickoutVisible}
-                    title={`Remove ${
-                      displayName.length > 15
-                        ? `${displayName.substr(0, 8)}...`
-                        : displayName
-                    } `}
-                    subTitle={`Are you sure want to remove ${
-                      displayName.length > 15
-                        ? `${displayName.substr(0, 8)}...`
-                        : displayName
-                    } from the call?`}
+                    title={`Remove ${nameTructed(displayName, 15)} `}
+                    subTitle={`Are you sure want to remove ${nameTructed(
+                      displayName,
+                      15
+                    )} from the call?`}
                     successText={"Remove"}
                     rejectText={"Cancel"}
                     onSuccess={() => {
