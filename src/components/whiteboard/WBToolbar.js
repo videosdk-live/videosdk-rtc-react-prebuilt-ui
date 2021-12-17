@@ -25,6 +25,7 @@ import {
 } from "../../icons";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
+import { invertColor } from "../../utils/common";
 
 const useStyles = makeStyles((theme) => ({
   btnTool: {
@@ -101,6 +102,10 @@ const CustomColorPicker = ({
           style={{ borderRadius: 6 }}
           onClick={(e) => {
             setColorPicker(e.currentTarget);
+          }}
+          style={{
+            backgroundColor: `#D5E8FF`,
+            borderRadius: 6,
           }}
         >
           <Icon
