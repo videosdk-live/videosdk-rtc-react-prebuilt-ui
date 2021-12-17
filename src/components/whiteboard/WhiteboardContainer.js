@@ -8,7 +8,7 @@ import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
 import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
-import { nameTructed } from "../../utils/common";
+import { invertColor, nameTructed } from "../../utils/common";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,
@@ -56,6 +56,9 @@ function WhiteboardContainer({
   const [pages, setpages] = useState(0);
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [color, setColor] = useState(theme.palette.primary.main);
+  const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
+    whiteboardState.state.config?.bgColor || "#f5f7f9"
+  );
 
   const [tool, _setTool] = useState(null);
   const toolRef = useRef(tool);
@@ -110,6 +113,7 @@ function WhiteboardContainer({
 
       case "pan": {
         fabricRef.current.isDrawingMode = false;
+        fabricRef.current.fire("exitText", {});
         break;
       }
       default: {
@@ -134,9 +138,7 @@ function WhiteboardContainer({
       });
       canvas.freeDrawingBrush.width = 3;
     } else {
-      canvas = new fabric.Canvas(document.getElementById("canvasId"), {
-        // backgroundColor: "#F5F7F9 ",
-      });
+      canvas = new fabric.Canvas(document.getElementById("canvasId"), {});
     }
 
     // canvas.isDrawingMode = true; // default drawing tool
@@ -200,6 +202,10 @@ function WhiteboardContainer({
         const vpt = convertPanFrom800(whiteboardState.state.vpt);
         canvas.setViewportTransform(vpt);
       }
+
+      setCanvasBackgroundColor(
+        whiteboardState.state.config?.bgColor || "#F5F7F9"
+      );
 
       canvas.renderAll();
     } else {
@@ -292,6 +298,7 @@ function WhiteboardContainer({
       if (type !== "WB") return;
 
       const isLocal = senderId === mMeeting.localParticipant.id;
+
       if (isLocal) return;
 
       onChatMessage(msgData);
@@ -373,6 +380,11 @@ function WhiteboardContainer({
         break;
       }
 
+      case "BG_COLOR": {
+        setCanvasBackgroundColor(data);
+        break;
+      }
+
       case "PDF_OPEN": {
         openPdf(data);
         break;
@@ -404,6 +416,10 @@ function WhiteboardContainer({
     );
   }
 
+  useEffect(() => {
+    sendData({ event: "BG_COLOR", data: canvasBackgroundColor });
+  }, []);
+
   // on canvas resize, set canvas zoom with objects
   useEffect(() => {
     if (height !== previousHeight || width !== previousWidth) {
@@ -420,6 +436,11 @@ function WhiteboardContainer({
       top: pointer.y,
       fill: fabricRef.current.freeDrawingBrush.color,
       fontFamily: "sans-serif",
+    });
+
+    //fire this event if pan started
+    fabricRef.current.on("exitText", (e) => {
+      text.exitEditing();
     });
 
     fabricRef.current.add(text);
@@ -507,9 +528,14 @@ function WhiteboardContainer({
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
   }
 
+  function changeCanvasBackgroundColor(color) {
+    sendData({ event: "BG_COLOR", data: color });
+  }
+
   function zoomIn() {
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom + 0.2;
+    fabricRef.current.fire("exitText", {});
     fabricRef.current.setZoom(newZoom);
     const newCalculatedZoom800 = convertZoomTo800();
     sendData({ event: "ZOOM", data: newCalculatedZoom800 });
@@ -518,6 +544,7 @@ function WhiteboardContainer({
   function zoomOut() {
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom - 0.2;
+    fabricRef.current.fire("exitText", {});
     fabricRef.current.setZoom(newZoom);
     const newCalculatedZoom800 = convertZoomTo800();
     sendData({ event: "ZOOM", data: newCalculatedZoom800 });
@@ -677,7 +704,7 @@ function WhiteboardContainer({
         width: originalWidth,
         height: originalHeight,
         display: "flex",
-        backgroundColor: "#F5F7F9",
+        backgroundColor: canvasBackgroundColor || "#F5F7F9",
         transition: "height 800ms, width 800ms",
       }}
     >
@@ -694,12 +721,15 @@ function WhiteboardContainer({
             setTool,
             downloadCanvas,
             clearCanvas,
+            changeCanvasBackgroundColor,
             undo,
             zoomOut,
             zoomIn,
             tool,
             color,
             setColor,
+            canvasBackgroundColor: canvasBackgroundColor || "#F5F7F9",
+            setCanvasBackgroundColor,
             whiteboardToolbarWidth,
             whiteboardSpacing,
           }}
@@ -728,8 +758,7 @@ function WhiteboardContainer({
               width: width,
               height: height,
               position: "relative",
-              // backgroundColor: "red",
-              backgroundColor: "#F5F7F9",
+              backgroundColor: canvasBackgroundColor || "#F5F7F9",
               transition: "height 800ms, width 800ms",
             }}
             ref={canvasCotainerRef}
@@ -754,9 +783,12 @@ function WhiteboardContainer({
                       left: itemx * space,
                       height: 4,
                       width: 4,
-                      backgroundColor: "#D0D2D4",
+                      backgroundColor: invertColor(
+                        canvasBackgroundColor || "#F5F7F9"
+                      ),
                       transform: "translate(-2px, -2px)",
                       borderRadius: 2,
+                      opacity: 0.3,
                     }}
                   />
                 ))

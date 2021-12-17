@@ -35,6 +35,8 @@ import ShapeIcon from "./ShapeIcon";
 import EndCallIcon from "./EndCallIcon";
 import Participants from "./Participants";
 import SquareIcon from "./SquareIcon";
+import ColorPallet from "./ColorPallet";
+import PaintBucket from "./PaintBucket";
 
 export {
   Activities,
@@ -74,4 +76,6 @@ export {
   EndCallIcon,
   Participants,
   SquareIcon,
+  ColorPallet,
+  PaintBucket,
 };
