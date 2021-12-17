@@ -6,7 +6,8 @@ import {
   Tooltip,
   useTheme,
 } from "@material-ui/core";
-import React from "react";
+import { Palette, FormatColorFill } from "@material-ui/icons";
+import React, { useEffect, useState } from "react";
 import {
   CircleFilledIcon,
   CircleIcon,
@@ -23,12 +24,13 @@ import {
   ZoomOutIcon,
 } from "../../icons";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { SketchPicker } from "react-color";
 
 const useStyles = makeStyles((theme) => ({
   btnTool: {
     padding: theme.spacing(1),
-    marginTop: theme.spacing(1 / 2),
-    marginBottom: theme.spacing(1 / 2),
+    marginTop: theme.spacing(1 / 4),
+    marginBottom: theme.spacing(1 / 4),
   },
   iColorPicker: {
     width: "24px",
@@ -48,13 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ToolBarIcon = ({
-  Icon,
-  onClick,
-  title,
-  isSelected,
-  whiteboardToolbarWidth,
-}) => {
+const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -81,22 +77,122 @@ const ToolBarIcon = ({
   );
 };
 
+const CustomColorPicker = ({
+  title,
+  colorPicker,
+  setColorPicker,
+  color,
+  setColor,
+  setParentColor,
+  changeCanvasBackgroundColor,
+  whiteboardToolbarWidth,
+  whiteboardSpacing,
+  Icon,
+}) => {
+  const classes = useStyles();
+
+  return (
+    <>
+      <Tooltip title={title} arrow placement="right">
+        <ButtonBase
+          className={classes.btnTool}
+          color="inherit"
+          component="span"
+          style={{ borderRadius: 6 }}
+          onClick={(e) => {
+            setColorPicker(e.currentTarget);
+          }}
+        >
+          <Icon
+            height={24}
+            width={24}
+            style={{ height: 24, width: 24, color }}
+            fill={color}
+          />
+        </ButtonBase>
+      </Tooltip>
+
+      <Popover
+        className={classes.popover}
+        classes={{
+          paper: classes.paper,
+        }}
+        open={Boolean(colorPicker)}
+        anchorEl={colorPicker}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        onClose={() => {
+          setColorPicker(null);
+        }}
+        disableRestoreFocus
+      >
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "transparent",
+            paddingLeft: whiteboardToolbarWidth + whiteboardSpacing,
+            paddingRight: whiteboardSpacing,
+            paddingBottom: whiteboardSpacing,
+          }}
+        >
+          <Box
+            style={{
+              backgroundColor: "white",
+              boxShadow: "0px 5px 10px #00000029",
+            }}
+          >
+            <SketchPicker
+              color={color}
+              onChange={(ev) => {
+                setColor(ev.hex);
+              }}
+              onChangeComplete={(ev) => {
+                setParentColor(ev.hex);
+                if (changeCanvasBackgroundColor) {
+                  changeCanvasBackgroundColor(ev.hex);
+                }
+              }}
+            />
+          </Box>
+        </Box>
+      </Popover>
+    </>
+  );
+};
+
 const WBToolbar = ({
   setTool,
   downloadCanvas,
   clearCanvas,
+  changeCanvasBackgroundColor,
   undo,
   zoomOut,
   zoomIn,
   tool,
-  color,
-  setColor,
+  color: parentColor,
+  setColor: setParentColor,
+  canvasBackgroundColor: parentCanvasBackgroundColor,
+  setCanvasBackgroundColor: setParentCanvasBackgroundColor,
   whiteboardToolbarWidth,
   whiteboardSpacing,
 }) => {
   const classes = useStyles();
 
+  const [color, setColor] = useState(parentColor);
+  const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
+    parentCanvasBackgroundColor
+  );
+
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [colorPicker, setColorPicker] = useState(null);
+  const [backgroundColorPicker, setBackgroundColorPicker] = useState(null);
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -105,11 +201,17 @@ const WBToolbar = ({
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+
   const theme = useTheme();
 
   const open = Boolean(anchorEl);
 
   const { canDrawOnWhiteboard } = useMeetingAppContext();
+
+  useEffect(() => {
+    setColor(parentColor);
+    setCanvasBackgroundColor(parentCanvasBackgroundColor);
+  }, [parentColor, parentCanvasBackgroundColor]);
 
   return (
     canDrawOnWhiteboard && (
@@ -269,22 +371,21 @@ const WBToolbar = ({
             whiteboardToolbarWidth,
           }}
         />
-        <Tooltip title="Change color" arrow placement="right">
-          <ButtonBase
-            className={classes.btnTool}
-            color="inherit"
-            component="span"
-            style={{ borderRadius: 6 }}
-          >
-            <input
-              type="color"
-              value={color}
-              id="color-picker"
-              className={classes.iColorPicker}
-              onChange={(ev) => setColor(ev.target.value)}
-            />
-          </ButtonBase>
-        </Tooltip>
+
+        <CustomColorPicker
+          {...{
+            title: "Choose Color",
+            colorPicker: colorPicker,
+            setColorPicker: setColorPicker,
+            setColor: setColor,
+            color: color,
+            setParentColor: setParentColor,
+            whiteboardToolbarWidth: whiteboardToolbarWidth,
+            whiteboardSpacing: whiteboardSpacing,
+            Icon: FormatColorFill,
+          }}
+        />
+
         <ToolBarIcon
           {...{
             Icon: ZoomInIcon,
@@ -303,6 +404,20 @@ const WBToolbar = ({
             whiteboardToolbarWidth,
           }}
         />
+        <CustomColorPicker
+          {...{
+            title: "Choose background",
+            colorPicker: backgroundColorPicker,
+            setColorPicker: setBackgroundColorPicker,
+            setColor: setCanvasBackgroundColor,
+            color: canvasBackgroundColor,
+            setParentColor: setParentCanvasBackgroundColor,
+            changeCanvasBackgroundColor: changeCanvasBackgroundColor,
+            whiteboardToolbarWidth: whiteboardToolbarWidth,
+            whiteboardSpacing: whiteboardSpacing,
+            Icon: Palette,
+          }}
+        />
         <ToolBarIcon
           {...{
             Icon: UndoIcon,
@@ -316,7 +431,7 @@ const WBToolbar = ({
           {...{
             Icon: ClearWhiteboardIcon,
             onClick: () => clearCanvas(),
-            title: "Clear whitebaord",
+            title: "Clear whiteboard",
             isSelected: tool === "clear",
             whiteboardToolbarWidth,
           }}
