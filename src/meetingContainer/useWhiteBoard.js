@@ -30,15 +30,14 @@ const useWhiteBoard = () => {
     );
   };
   const _handleOnMeetingLeft = () => {
-    meetingRef.current?.meeting?.off(
-      "whiteboard-started",
-      _handleWhiteboardStarted
-    );
-
-    meetingRef.current?.meeting?.off(
-      "whiteboard-stopped",
-      _handleWhiteboardStopped
-    );
+    // meetingRef.current?.meeting?.off(
+    //   "whiteboard-started",
+    //   _handleWhiteboardStarted
+    // );
+    // meetingRef.current?.meeting?.off(
+    //   "whiteboard-stopped",
+    //   _handleWhiteboardStopped
+    // );
   };
   const mMmeeting = useMeeting({
     onMeetingJoined: _handleOnMeetingJoined,
