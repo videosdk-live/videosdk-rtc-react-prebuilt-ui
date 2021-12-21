@@ -9,6 +9,7 @@ import useIsTab from "../../utils/useIsTab";
 import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
+import useResponsiveSize from "../../utils/useResponsiveSize";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,
@@ -66,6 +67,16 @@ function WhiteboardContainer({
     toolRef.current = data;
     _setTool(data);
   };
+
+  const cardWidth = useResponsiveSize({
+    xl: 320,
+    lg: 280,
+    md: 240,
+    sm: 200,
+    xs: 180,
+  });
+
+  const cardHeight = (cardWidth * 9) / 16;
 
   //
   const fabricRef = useRef(null);
@@ -528,6 +539,26 @@ function WhiteboardContainer({
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
   }
 
+  function addImage(event) {
+    new fabric.Image.fromURL(
+      URL.createObjectURL(event.target.files[0]),
+
+      function (myImg) {
+        //create an extra var for to change some image properties
+        var img1 = myImg.set({
+          left: whiteboardSpacing,
+          top: 42,
+        });
+
+        myImg.scaleToWidth(cardWidth);
+        myImg.scaleToHeight(cardHeight);
+        fabricRef.current.add(img1);
+        fabricRef.current.setActiveObject(img1);
+        fabricRef.current.renderAll();
+      }
+    );
+  }
+
   function changeCanvasBackgroundColor(color) {
     sendData({ event: "BG_COLOR", data: color });
   }
@@ -721,6 +752,7 @@ function WhiteboardContainer({
             setTool,
             downloadCanvas,
             clearCanvas,
+            addImage,
             changeCanvasBackgroundColor,
             undo,
             zoomOut,
