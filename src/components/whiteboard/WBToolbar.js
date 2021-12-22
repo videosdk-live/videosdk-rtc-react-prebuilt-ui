@@ -25,7 +25,6 @@ import {
 } from "../../icons";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
-import { invertColor } from "../../utils/common";
 import UploadImageIcon from "../../icons/UploadImageIcon";
 
 const useStyles = makeStyles((theme) => ({
@@ -100,7 +99,6 @@ const CustomColorPicker = ({
           className={classes.btnTool}
           color="inherit"
           component="span"
-          style={{ borderRadius: 6 }}
           onClick={(e) => {
             setColorPicker(e.currentTarget);
           }}

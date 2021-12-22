@@ -465,7 +465,6 @@ function WhiteboardContainer({
     var pointer = fabricRef.current.getPointer(ev);
     var object = new fabric.Circle({
       radius: 15,
-      fill: fabricRef.current.freeDrawingBrush.color,
       left: pointer.x,
       top: pointer.y,
       fill: "rgba(0,0,0,0)",
