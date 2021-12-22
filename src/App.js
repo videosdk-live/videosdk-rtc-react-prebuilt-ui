@@ -38,6 +38,7 @@ const App = () => {
       raiseHandEnabled: "raiseHandEnabled",
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
+      recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
       participantCanToggleRecording: "participantCanToggleRecording",
       brandingEnabled: "brandingEnabled",
@@ -131,16 +132,18 @@ const App = () => {
       paramKeys.autoStartLiveStream = "true";
     }
 
-    if (paramKeys.recordingEnabled === "true") {
-      if (
-        typeof paramKeys.recordingWebhookUrl !== "string" ||
-        paramKeys.recordingWebhookUrl.length === 0
-      ) {
-        throw new Error(
-          "Recording WebhookUrl not provided when recording is enabled"
-        );
-      }
-    }
+    // if (paramKeys.recordingEnabled === "true") {
+    //   if (
+    //     typeof paramKeys.recordingWebhookUrl !== "string" ||
+    //     paramKeys.recordingWebhookUrl.length === 0 ||
+    //     typeof paramKeys.recordingAWSDirPath !== "string" ||
+    //     paramKeys.recordingAWSDirPath.length === 0
+    //   ) {
+    //     throw new Error(
+    //       "'Recording WebhookUrl' or 'Recording AWS Dir Path' not provided when recording is enabled"
+    //     );
+    //   }
+    // }
 
     if (paramKeys.brandingEnabled === "true") {
       if (!paramKeys.brandLogoURL || paramKeys.brandLogoURL?.length === 0) {
@@ -304,6 +307,7 @@ const App = () => {
         raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
         recordingEnabled: paramKeys.recordingEnabled === "true",
         recordingWebhookUrl: paramKeys.recordingWebhookUrl,
+        recordingAWSDirPath: paramKeys.recordingAWSDirPath,
         autoStartRecording: paramKeys.autoStartRecording === "true",
         participantCanToggleRecording:
           paramKeys.participantCanToggleRecording === "true",

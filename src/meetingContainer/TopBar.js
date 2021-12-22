@@ -307,6 +307,7 @@ const RecordingBTN = () => {
 
   const {
     recordingWebhookUrl,
+    recordingAWSDirPath,
     autoStartRecording,
     participantCanToggleRecording,
   } = useMeetingAppContext();
@@ -316,12 +317,13 @@ const RecordingBTN = () => {
       setDefaultRecordingActionTaken(true);
       setTimeout(() => {
         if (!defaultRecordingActionTaken) {
-          startRecording(recordingWebhookUrl);
+          startRecording(recordingWebhookUrl, recordingAWSDirPath);
         }
       }, 5000);
     }
   }, [
     recordingWebhookUrl,
+    recordingAWSDirPath,
     defaultRecordingActionTaken,
     autoStartRecording,
     startRecording,
@@ -334,7 +336,7 @@ const RecordingBTN = () => {
         if (isRecording) {
           stopRecording();
         } else {
-          startRecording(recordingWebhookUrl);
+          startRecording(recordingWebhookUrl, recordingAWSDirPath);
         }
       }}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}

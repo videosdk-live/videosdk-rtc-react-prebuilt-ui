@@ -65,6 +65,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | raiseHandEnabled                | false         | raise hand button visible or not                                                            |
 | recordingEnabled                | false         | recording button visible or not                                                             |
 | recordingWebhookUrl             | -             | calls webhook after recording completed                                                     |
+| recordingAWSDirPath             | -             | dir path of aws s3 bucket where recording will be saved                                     |
 | autoStartRecording              | false         | by default start recording on meeting joined                                                |
 | participantCanToggleRecording   | false         | can toggle recording                                                                        |
 | brandingEnabled                 | false         | branding box visible or not                                                                 |
