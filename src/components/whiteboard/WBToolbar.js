@@ -25,7 +25,7 @@ import {
 } from "../../icons";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
-import UploadImageIcon from "../../icons/UploadImageIcon";
+import { invertColor } from "../../utils/common";
 
 const useStyles = makeStyles((theme) => ({
   btnTool: {
@@ -99,6 +99,7 @@ const CustomColorPicker = ({
           className={classes.btnTool}
           color="inherit"
           component="span"
+          style={{ borderRadius: 6 }}
           onClick={(e) => {
             setColorPicker(e.currentTarget);
           }}
@@ -175,7 +176,6 @@ const WBToolbar = ({
   setTool,
   downloadCanvas,
   clearCanvas,
-  addImage,
   changeCanvasBackgroundColor,
   undo,
   zoomOut,
@@ -423,41 +423,6 @@ const WBToolbar = ({
             Icon: Palette,
           }}
         />
-        <Tooltip title="Add Image" arrow placement="right">
-          <div
-            style={{
-              position: "relative",
-              overflow: "hidden",
-              display: "inline-block",
-              cursor: "pointer",
-            }}
-          >
-            <ButtonBase
-              className={classes.btnTool}
-              color="inherit"
-              style={{
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
-              <UploadImageIcon />
-            </ButtonBase>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={addImage}
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                opacity: 0,
-                width: "32px",
-                height: "32px",
-                cursor: "pointer",
-              }}
-            />
-          </div>
-        </Tooltip>
         <ToolBarIcon
           {...{
             Icon: UndoIcon,
