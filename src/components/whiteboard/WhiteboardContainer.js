@@ -46,6 +46,14 @@ function WhiteboardContainer({
   const previousHeight = usePrevious(height);
   const previousWidth = usePrevious(width);
 
+  const [stringImageSrc, setStringImageSrc] = useState();
+
+  const stringImageSrcRef = useRef();
+
+  useEffect(() => {
+    stringImageSrcRef.current = stringImageSrc;
+  }, [stringImageSrc]);
+
   // const initialHeight = useRef(height);
   const initialWidth = useRef(width);
 
@@ -286,10 +294,14 @@ function WhiteboardContainer({
         pId: mMeeting.localParticipant.id,
       });
 
-      sendData({
-        event: "OBJ_ADD",
-        data: options.target.toJSON(["oId", "pId"]),
-      });
+      const data = options.target.toJSON(["oId", "pId"]);
+
+      if (data.type === "image") {
+        sendData({
+          event: "OBJ_ADD",
+          data: data,
+        });
+      }
     });
 
     fabricRef.current.on("object:modified", (options) => {
@@ -317,7 +329,7 @@ function WhiteboardContainer({
   }, []);
 
   // Action on chat message
-  function onChatMessage({ event, data }) {
+  async function onChatMessage({ event, data }) {
     switch (event) {
       case "PAN": {
         let newPanFrom800 = convertPanFrom800(data);
@@ -538,24 +550,39 @@ function WhiteboardContainer({
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
   }
 
-  function addImage(event) {
-    new fabric.Image.fromURL(
-      URL.createObjectURL(event.target.files[0]),
+  async function addImage(event) {
+    // convert blob url to base64
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
 
-      function (myImg) {
-        //create an extra var for to change some image properties
-        var img1 = myImg.set({
-          left: whiteboardSpacing,
-          top: 42,
-        });
+    const url = await toBase64(event.target.files[0]);
 
-        myImg.scaleToWidth(cardWidth);
-        myImg.scaleToHeight(cardHeight);
-        fabricRef.current.add(img1);
-        fabricRef.current.setActiveObject(img1);
-        fabricRef.current.renderAll();
-      }
-    );
+    new fabric.Image.fromURL(url, async function (myImg) {
+      //create an extra var for to change some image properties
+      var img1 = myImg.set({
+        left: whiteboardSpacing,
+        top: 42,
+      });
+
+      myImg.scaleToWidth(cardWidth);
+      myImg.scaleToHeight(cardHeight);
+
+      fabricRef.current.add(img1);
+      fabricRef.current.setActiveObject(img1);
+      fabricRef.current.renderAll();
+
+      const data = img1.toJSON(["oId", "pId"]);
+
+      sendData({
+        event: "OBJ_ADD",
+        data: { ...data },
+      });
+    });
   }
 
   function changeCanvasBackgroundColor(color) {

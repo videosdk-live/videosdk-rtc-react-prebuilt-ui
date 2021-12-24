@@ -445,7 +445,9 @@ const WBToolbar = ({
             <input
               type="file"
               accept="image/*"
-              onChange={addImage}
+              onChange={(e) => {
+                addImage(e);
+              }}
               style={{
                 position: "absolute",
                 left: 0,
