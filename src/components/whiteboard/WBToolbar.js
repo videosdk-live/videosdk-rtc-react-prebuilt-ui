@@ -447,13 +447,7 @@ const WBToolbar = ({
             <input
               type="file"
               accept="image/*"
-              onChange={async (e) => {
-                // const image = e.target.files[0];
-                // const buffer = await image.arrayBuffer();
-                // const imageString = Buffer.from(buffer).toString("utf8");
-
-                // addImage(imageString);
-
+              onChange={(e) => {
                 addImage(e);
               }}
               style={{

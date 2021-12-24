@@ -11,9 +11,6 @@ import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 
-var fetch = require("node-fetch");
-let fs = require("fs");
-
 export const convertHWAspectRatio = ({
   height: containerHeight,
   width: containerWidth,
@@ -151,14 +148,6 @@ function WhiteboardContainer({
     fabric.IText.prototype.keysMap[13] = "exitEditing";
 
     let canvas;
-
-    // fabric.Image.prototype.toObject = (function (toObject) {
-    //   return function () {
-    //     return fabric.util.object.extend(toObject.call(this), {
-    //       src: this.toDataURL(),
-    //     });
-    //   };
-    // })(fabric.Image.prototype.toObject);
 
     // if (isHost) {
     if (canDrawOnWhiteboard) {
@@ -376,43 +365,15 @@ function WhiteboardContainer({
           .getObjects()
           .some((o) => o.oId === data.oId);
 
-        // console.log(data.src, data.type, "before data.src");
-
-        // if (data.type === "image") {
-        //   var url = data.imageDataURL;
-
-        //   console.log("url");
-
-        //   const res = await fetch(url);
-
-        //   console.log(res);
-
-        //   const blob = await res.blob();
-
-        //   console.log(blob);
-
-        //   // console.log(
-        //   //   "Urls",
-        //   //   URL.createObjectURL(blob),
-        //   //   URL.createObjectURL(data.src),
-        //   //   data.src
-        //   // );
-
-        //   data.src = data.imageDataURL; // = `${data.imageDataURL}`; //URL.createObjectURL()
-        // }
-
         if (!exists) {
           fabric.util.enlivenObjects([data], function (objects) {
             const origRenderOnAddRemove = fabricRef.current.renderOnAddRemove;
             fabricRef.current.renderOnAddRemove = false;
 
-            // console.log(objects, "objects obj_add");
-
             fabricRef.current.add(objects[0]);
 
             fabricRef.current.renderOnAddRemove = origRenderOnAddRemove;
             fabricRef.current.renderAll();
-            // console.log("OBJ_ADDDDDDDDDDDDDD");
           });
         }
 
@@ -590,169 +551,39 @@ function WhiteboardContainer({
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
   }
 
-  const useFromURL = () => {
-    // fabric.Image.prototype.toDatalessObject = fabric.Image.prototype.toObject;
-    // fabric.Image.prototype.toObject = (function (toObject) {
-    //   return function () {
-    //     return fabric.util.object.extend(toObject.call(this), {
-    //       src: this.toDataURL(),
-    //     });
-    //   };
-    // })(fabric.Image.prototype.toObject);
-  };
-
-  function getDataUrl(img) {
-    // create image
-
-    const image = document.createElement("img");
-    image.src = img;
-
-    // console.log(image, img, "image");
-
-    // Create canvas
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    // Set width and height
-    canvas.width = image.width;
-    canvas.height = image.height;
-    // Draw the image
-    ctx.drawImage(image, 0, 0);
-
-    // console.log(ctx);
-
-    return canvas.toDataURL("image/jpeg");
-  }
-
   async function addImage(event) {
-    // const image = event.target.files[0];
+    // convert blob url to base64
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
 
-    // const c = document.getElementById("canvasId");
-    // const canvas = new fabric.Canvas(c, {
-    //   selection: false,
-    //   defaultCursor: "default",
-    // });
-    // const url = "https://i.imgur.com/KxijB.jpg";
-    // fabric.Image.fromURL(
-    //   url,
-    //   (img) => {
-    //     canvas.add(img);
-    //   },
-    //   {
-    //     crossOrigin: "annonymous",
-    //   }
-    // );
+    const url = await toBase64(event.target.files[0]);
 
-    // fabric.Image.prototype.toDatalessObject = fabric.Image.prototype.toObject;
-    // fabric.Image.prototype.toObject = (function (toObject) {
-    //   return function () {
-    //     return fabric.util.object.extend(toObject.call(this), {
-    //       src: this.toDataURL(),
-    //     });
-    //   };
-    // })(fabric.Image.prototype.toObject);
+    new fabric.Image.fromURL(url, async function (myImg) {
+      //create an extra var for to change some image properties
+      var img1 = myImg.set({
+        left: whiteboardSpacing,
+        top: 42,
+      });
 
-    // return canvas;
+      myImg.scaleToWidth(cardWidth);
+      myImg.scaleToHeight(cardHeight);
 
-    // const canvas = useFromURL();
+      fabricRef.current.add(img1);
+      fabricRef.current.setActiveObject(img1);
+      fabricRef.current.renderAll();
 
-    // console.log("canvas", canvas.toJSON());
+      const data = img1.toJSON(["oId", "pId"]);
 
-    // const url = "https://i.imgur.com/KxijB.jpg";
-    // const img = new Image();
-    // img.src = url;
-    // const fabricImage = new fabric.Image(img, {});
-    // fabricRef.current.add(fabricImage);
-
-    // fabric.Image.prototype.toObject = (function (toObject) {
-    //   return function () {
-    //     return fabric.util.object.extend(toObject.call(this), {
-    //       src: this.toDataURL(),
-    //     });
-    //   };
-    // })(fabric.Image.prototype.toObject);
-
-    // const dataurl = getDataUrl(event.target.files[0]);
-
-    // console.log(dataurl, "dataurl");
-
-    // new fabric.Image.fromElement()
-    new fabric.Image.fromURL(
-      URL.createObjectURL(event.target.files[0]),
-      //   "https://images.unsplash.com/photo-1583062482795-d2bef78e9bc1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-      async function (myImg) {
-        //create an extra var for to change some image properties
-        var img1 = myImg.set({
-          left: whiteboardSpacing,
-          top: 42,
-        });
-
-        // console.log(img1.toDataURL(), "img1.toDataURL()");
-
-        // img1.setSrc(img1.toObject());
-
-        // img1.set(); //setSrc();
-
-        const imageWIdth = cardWidth; //  img1.height;
-        // const imageWIdth = img1.width;
-        // const cardHeight = imageHeight;
-        const imageHeight = (imageWIdth * img1.height) / img1.width;
-
-        myImg.scaleToWidth(imageHeight);
-        myImg.scaleToHeight(imageWIdth);
-
-        console.log(img1, "img1");
-
-        const dataURL = img1.toDataURL();
-
-        const originalHeight = img1._element.height;
-        const originalWidth = img1._element.width;
-
-        console.log({
-          originalHeight,
-          originalWidth,
-          imageHeight,
-          imageWIdth,
-        });
-
-        img1.src = dataURL;
-        // img1.width = originalWidth;
-        // (img1.height = originalHeight),
-        //   (img1.width = originalWidth),
-        img1._element.src = dataURL;
-        img1._element.height = originalHeight / imageHeight;
-        img1._element.width = originalWidth / imageWIdth;
-        // img1._element.style = `height: ${imageHeight}; width:${imageWIdth}; transform: scale(100);`;
-        // img1._element.transform = `scale(${originalWidth / imageWIdth})`;
-
-        // img1._element.naturalHeight = imageHeight;
-        // img1._element.naturalWidth = imageWIdth;
-
-        img1._originalElement.src = dataURL;
-        img1._originalElement.height = originalHeight / imageHeight;
-        img1._originalElement.width = originalWidth / imageWIdth;
-        // img1._originalElement.style = `height: ${imageHeight}; width:${imageWIdth}; transform: scale(100);`;
-
-        // img1._originalElement.naturalHeight = imageHeight;
-        // img1._originalElement.naturalWidth = imageWIdth;
-
-        // console.log(, "img1._element");
-
-        fabricRef.current.add(img1);
-        fabricRef.current.setActiveObject(img1);
-        fabricRef.current.renderAll();
-        // img1.setSourcePath(img1.toDataURL());
-
-        const data = img1.toJSON(["oId", "pId"]);
-        // data.src = img1.toDataURL();
-        // img1.setSourcePath
-
-        sendData({
-          event: "OBJ_ADD",
-          data: { ...data },
-        });
-      }
-    );
+      sendData({
+        event: "OBJ_ADD",
+        data: { ...data },
+      });
+    });
   }
 
   function changeCanvasBackgroundColor(color) {
@@ -1021,7 +852,6 @@ function WhiteboardContainer({
                   />
                 ))
               )}
-              <img alt={"image"} src={stringImageSrc} height={100} />
             </div>
             <canvas
               id="canvasId"
