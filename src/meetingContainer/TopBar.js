@@ -36,7 +36,7 @@ import {
   MoreHoriz as MoreHorizIcon,
   Close as CloseIcon,
   ArrowDropDown as ArrowDropDownIcon,
-  Gesture as Gesture,
+  Gesture,
 } from "@material-ui/icons";
 
 import {

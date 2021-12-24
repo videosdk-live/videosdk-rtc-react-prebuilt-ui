@@ -46,14 +46,6 @@ function WhiteboardContainer({
   const previousHeight = usePrevious(height);
   const previousWidth = usePrevious(width);
 
-  const [stringImageSrc, setStringImageSrc] = useState();
-
-  const stringImageSrcRef = useRef();
-
-  useEffect(() => {
-    stringImageSrcRef.current = stringImageSrc;
-  }, [stringImageSrc]);
-
   // const initialHeight = useRef(height);
   const initialWidth = useRef(width);
 
@@ -76,15 +68,13 @@ function WhiteboardContainer({
     _setTool(data);
   };
 
-  const cardWidth = useResponsiveSize({
+  const imageWidth = useResponsiveSize({
     xl: 320,
     lg: 280,
     md: 240,
     sm: 200,
     xs: 180,
   });
-
-  const cardHeight = (cardWidth * 9) / 16;
 
   //
   const fabricRef = useRef(null);
@@ -296,12 +286,10 @@ function WhiteboardContainer({
 
       const data = options.target.toJSON(["oId", "pId"]);
 
-      if (data.type === "image") {
-        sendData({
-          event: "OBJ_ADD",
-          data: data,
-        });
-      }
+      sendData({
+        event: "OBJ_ADD",
+        data: data,
+      });
     });
 
     fabricRef.current.on("object:modified", (options) => {
@@ -546,7 +534,6 @@ function WhiteboardContainer({
 
   function clearCanvas() {
     fabricRef.current.clear();
-    // fabricRef.current.setBackgroundColor("white");
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
   }
 
@@ -569,19 +556,15 @@ function WhiteboardContainer({
         top: 42,
       });
 
-      myImg.scaleToWidth(cardWidth);
-      myImg.scaleToHeight(cardHeight);
+      const imageHeight =
+        (imageWidth * myImg._element.height) / myImg._element.width;
+
+      myImg.scaleToWidth(imageWidth);
+      myImg.scaleToHeight(imageHeight);
 
       fabricRef.current.add(img1);
       fabricRef.current.setActiveObject(img1);
       fabricRef.current.renderAll();
-
-      const data = img1.toJSON(["oId", "pId"]);
-
-      sendData({
-        event: "OBJ_ADD",
-        data: { ...data },
-      });
     });
   }
 
