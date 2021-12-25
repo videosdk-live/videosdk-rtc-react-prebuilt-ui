@@ -10,6 +10,7 @@ import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
 import useResponsiveSize from "../../utils/useResponsiveSize";
+import Compressor from "compressorjs";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,
@@ -75,6 +76,8 @@ function WhiteboardContainer({
     sm: 200,
     xs: 180,
   });
+
+  const imageHeight = (imageWidth * 9) / 16;
 
   //
   const fabricRef = useRef(null);
@@ -537,17 +540,43 @@ function WhiteboardContainer({
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
   }
 
-  async function addImage(event) {
-    // convert blob url to base64
-    const toBase64 = (file) =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
+  async function uploadImageAndGetUrl(event) {
+    return new Promise((resolve, reject) => {
+      new Compressor(event.target.files[0], {
+        quality: 0.8,
 
-    const url = await toBase64(event.target.files[0]);
+        async success(result) {
+          var formdata = new FormData();
+          formdata.append("image", result, event.target.files[0].name);
+
+          var requestOptions = {
+            method: "POST",
+            body: formdata,
+            redirect: "follow",
+          };
+
+          try {
+            const res = await fetch(
+              `https://192.168.2.187:4443/image-upload?roomId=${mMeeting.meetingId}`,
+              requestOptions
+            );
+
+            const json = await res.json();
+
+            return resolve(json.url);
+          } catch (error) {
+            console.log(error);
+            return reject(error);
+          }
+        },
+        error(err) {
+          console.log(err.message);
+        },
+      });
+    });
+  }
+  async function addImage(event) {
+    const url = await uploadImageAndGetUrl(event);
 
     new fabric.Image.fromURL(url, async function (myImg) {
       //create an extra var for to change some image properties
@@ -556,11 +585,11 @@ function WhiteboardContainer({
         top: 42,
       });
 
-      const imageHeight =
-        (imageWidth * myImg._element.height) / myImg._element.width;
+      // const imageHeight =
+      //   (imageWidth * myImg._element.height) / myImg._element.width;
 
       myImg.scaleToWidth(imageWidth);
-      myImg.scaleToHeight(imageHeight);
+      // myImg.scaleToHeight(imageHeight);
 
       fabricRef.current.add(img1);
       fabricRef.current.setActiveObject(img1);

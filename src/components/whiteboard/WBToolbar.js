@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { Palette, FormatColorFill } from "@material-ui/icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   CircleFilledIcon,
   CircleIcon,
@@ -189,6 +189,7 @@ const WBToolbar = ({
   whiteboardSpacing,
 }) => {
   const classes = useStyles();
+  const imageInputRef = useRef();
 
   const [color, setColor] = useState(parentColor);
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
@@ -426,38 +427,51 @@ const WBToolbar = ({
         <Tooltip title="Add Image" arrow placement="right">
           <div
             style={{
+              display: "flex",
+              flex: 1,
+              justifyContent: "center",
+
               position: "relative",
-              overflow: "hidden",
-              display: "inline-block",
-              cursor: "pointer",
             }}
           >
-            <ButtonBase
-              className={classes.btnTool}
-              color="inherit"
+            <div
               style={{
-                borderRadius: 6,
-                cursor: "pointer",
+                width: 39,
+                height: 39,
+                overflow: "hidden",
+                display: "inline-block",
               }}
             >
-              <UploadImageIcon />
-            </ButtonBase>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                addImage(e);
-              }}
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                opacity: 0,
-                width: "32px",
-                height: "32px",
-                cursor: "pointer",
-              }}
-            />
+              <ButtonBase
+                className={classes.btnTool}
+                color="inherit"
+                style={{
+                  borderRadius: 6,
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  imageInputRef.current.click();
+                }}
+              >
+                <input
+                  ref={imageInputRef}
+                  name="image-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    addImage(e);
+                  }}
+                  style={{
+                    position: "absolute",
+                    opacity: 0,
+                    height: 0,
+                    width: 0,
+                  }}
+                />
+                <UploadImageIcon />
+              </ButtonBase>
+            </div>
           </div>
         </Tooltip>
         <ToolBarIcon
