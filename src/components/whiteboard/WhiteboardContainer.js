@@ -544,6 +544,8 @@ function WhiteboardContainer({
     return new Promise((resolve, reject) => {
       new Compressor(event.target.files[0], {
         quality: 0.8,
+        maxHeight: 1024,
+        maxWidth: 1024,
 
         async success(result) {
           var formdata = new FormData();
