@@ -171,6 +171,67 @@ const CustomColorPicker = ({
   );
 };
 
+const CustomImagePicker = ({ addImage }) => {
+  const imageInputRef = useRef();
+
+  const classes = useStyles();
+
+  return (
+    <>
+      <Tooltip title="Add Image" arrow placement="right">
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            justifyContent: "center",
+
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              width: 39,
+              height: 39,
+              overflow: "hidden",
+              display: "inline-block",
+            }}
+          >
+            <ButtonBase
+              className={classes.btnTool}
+              color="inherit"
+              style={{
+                borderRadius: 6,
+                position: "relative",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                imageInputRef.current.click();
+              }}
+            >
+              <input
+                ref={imageInputRef}
+                name="image-input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  addImage(e);
+                }}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  height: 0,
+                  width: 0,
+                }}
+              />
+              <UploadImageIcon />
+            </ButtonBase>
+          </div>
+        </div>
+      </Tooltip>
+    </>
+  );
+};
+
 const WBToolbar = ({
   setTool,
   downloadCanvas,
@@ -189,7 +250,6 @@ const WBToolbar = ({
   whiteboardSpacing,
 }) => {
   const classes = useStyles();
-  const imageInputRef = useRef();
 
   const [color, setColor] = useState(parentColor);
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
@@ -424,56 +484,7 @@ const WBToolbar = ({
             Icon: Palette,
           }}
         />
-        <Tooltip title="Add Image" arrow placement="right">
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-              justifyContent: "center",
-
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                width: 39,
-                height: 39,
-                overflow: "hidden",
-                display: "inline-block",
-              }}
-            >
-              <ButtonBase
-                className={classes.btnTool}
-                color="inherit"
-                style={{
-                  borderRadius: 6,
-                  position: "relative",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  imageInputRef.current.click();
-                }}
-              >
-                <input
-                  ref={imageInputRef}
-                  name="image-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    addImage(e);
-                  }}
-                  style={{
-                    position: "absolute",
-                    opacity: 0,
-                    height: 0,
-                    width: 0,
-                  }}
-                />
-                <UploadImageIcon />
-              </ButtonBase>
-            </div>
-          </div>
-        </Tooltip>
+        <CustomImagePicker addImage={addImage} />
         <ToolBarIcon
           {...{
             Icon: UndoIcon,
