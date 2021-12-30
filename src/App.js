@@ -18,6 +18,8 @@ const App = () => {
     reqStatusCode: null,
   });
 
+  const [meetingLeft, setMeetingLeft] = useState(false);
+
   const getParams = () => {
     const location = window.location;
     const urlParams = new URLSearchParams(location.search);
@@ -273,7 +275,9 @@ const App = () => {
 
   const theme = useTheme();
 
-  return meetingIdValidation.isLoading ? (
+  return meetingLeft ? (
+    <div>meeting left</div>
+  ) : meetingIdValidation.isLoading ? (
     <Box
       style={{
         display: "flex",
@@ -345,6 +349,8 @@ const App = () => {
           paramKeys.canToggleWhiteboard === "true" ? true : false,
         whiteboardEnabled:
           paramKeys.whiteboardEnabled === "true" ? true : false,
+        meetingLeft,
+        setMeetingLeft,
       }}
     >
       <MeetingProvider
