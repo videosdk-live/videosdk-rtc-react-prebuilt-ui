@@ -287,11 +287,9 @@ function WhiteboardContainer({
         pId: mMeeting.localParticipant.id,
       });
 
-      const data = options.target.toJSON(["oId", "pId"]);
-
       sendData({
         event: "OBJ_ADD",
-        data: data,
+        data: options.target.toJSON(["oId", "pId"]),
       });
     });
 
@@ -559,7 +557,7 @@ function WhiteboardContainer({
 
           try {
             const res = await fetch(
-              `https://192.168.2.187:4443/image-upload?roomId=${mMeeting.meetingId}`,
+              `https://call-api.videosdk.live/file-upload?roomId=${mMeeting.meetingId}`,
               requestOptions
             );
 
