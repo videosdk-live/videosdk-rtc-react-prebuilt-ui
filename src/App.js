@@ -7,6 +7,7 @@ import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorPage from "./components/ErrorPage";
+import MeetingLeftScreen from "./components/MeetingLeftScreen";
 
 const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(null);
@@ -17,6 +18,8 @@ const App = () => {
     reqError: null,
     reqStatusCode: null,
   });
+
+  const [meetingLeft, setMeetingLeft] = useState(false);
 
   const getParams = () => {
     const location = window.location;
@@ -62,6 +65,8 @@ const App = () => {
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
+      leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
+      leftScreenActionButtonHref: "leftScreenActionButtonHref",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -273,7 +278,16 @@ const App = () => {
 
   const theme = useTheme();
 
-  return meetingIdValidation.isLoading ? (
+  console.log(paramKeys.brandLogoURL, "paramKeys.brandLogoURL");
+
+  return meetingLeft ? (
+    <MeetingLeftScreen
+      brandLogoURL={paramKeys.brandLogoURL}
+      leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
+      leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+      setMeetingLeft={setMeetingLeft}
+    />
+  ) : meetingIdValidation.isLoading ? (
     <Box
       style={{
         display: "flex",
@@ -345,6 +359,8 @@ const App = () => {
           paramKeys.canToggleWhiteboard === "true" ? true : false,
         whiteboardEnabled:
           paramKeys.whiteboardEnabled === "true" ? true : false,
+        meetingLeft,
+        setMeetingLeft,
       }}
     >
       <MeetingProvider
@@ -388,6 +404,7 @@ const App = () => {
         setUserHasInteracted(true);
       }}
       title="Click anywhere to continue"
+      brandLogoURL={paramKeys.brandLogoURL}
     />
   );
 };
