@@ -99,6 +99,7 @@ const CustomColorPicker = ({
           className={classes.btnTool}
           color="inherit"
           component="span"
+          style={{ borderRadius: 6 }}
           onClick={(e) => {
             setColorPicker(e.currentTarget);
           }}
@@ -236,7 +237,6 @@ const WBToolbar = ({
   setTool,
   downloadCanvas,
   clearCanvas,
-  addImage,
   changeCanvasBackgroundColor,
   undo,
   zoomOut,
@@ -248,6 +248,7 @@ const WBToolbar = ({
   setCanvasBackgroundColor: setParentCanvasBackgroundColor,
   whiteboardToolbarWidth,
   whiteboardSpacing,
+  addImage,
 }) => {
   const classes = useStyles();
 

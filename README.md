@@ -65,6 +65,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | raiseHandEnabled                | false         | raise hand button visible or not                                                            |
 | recordingEnabled                | false         | recording button visible or not                                                             |
 | recordingWebhookUrl             | -             | calls webhook after recording completed                                                     |
+| recordingAWSDirPath             | -             | dir path of aws s3 bucket where recording will be saved                                     |
 | autoStartRecording              | false         | by default start recording on meeting joined                                                |
 | participantCanToggleRecording   | false         | can toggle recording                                                                        |
 | brandingEnabled                 | false         | branding box visible or not                                                                 |
@@ -88,6 +89,8 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | canRemoveOtherParticipant       | false         | participant can remove other participant                                                    |
 | canDrawOnWhiteboard             | false         | participant can draw on whiteboard, if `false` then whiteboard drawing will be in view mode |
 | canToggleWhiteboard             | false         | participant can toggle whiteboard                                                           |
+| leftScreenActionButtonLabel     | -             | left screen custom action button label                                                      |
+| leftScreenActionButtonHref      | -             | left screen custom action button href                                                       |
 
 ---
 

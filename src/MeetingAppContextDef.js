@@ -45,6 +45,7 @@ export const MeetingAppProvider = ({
   raiseHandEnabled,
   recordingEnabled,
   recordingWebhookUrl,
+  recordingAWSDirPath,
   autoStartRecording,
   participantCanToggleRecording,
   brandingEnabled,
@@ -69,6 +70,8 @@ export const MeetingAppProvider = ({
   joinScreenMic,
   canToggleWhiteboard,
   canDrawOnWhiteboard,
+  meetingLeft,
+  setMeetingLeft,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -118,6 +121,7 @@ export const MeetingAppProvider = ({
         raiseHandEnabled,
         recordingEnabled,
         recordingWebhookUrl,
+        recordingAWSDirPath,
         autoStartRecording,
         participantCanToggleRecording,
         brandingEnabled,
@@ -147,6 +151,7 @@ export const MeetingAppProvider = ({
         whiteboardState,
         meetingLayout: layout,
         canPin,
+        meetingLeft,
         // setters
         setSideBarMode,
         setActiveSortedParticipants,
@@ -155,6 +160,7 @@ export const MeetingAppProvider = ({
         setRaisedHandsParticipants,
         setUserHasInteracted,
         setWhiteboardState,
+        setMeetingLeft,
       }}
     >
       <SnackbarProvider

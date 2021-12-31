@@ -466,6 +466,7 @@ function WhiteboardContainer({
     var pointer = fabricRef.current.getPointer(ev);
     var object = new fabric.Circle({
       radius: 15,
+      fill: fabricRef.current.freeDrawingBrush.color,
       left: pointer.x,
       top: pointer.y,
       fill: "rgba(0,0,0,0)",
@@ -790,7 +791,6 @@ function WhiteboardContainer({
             setTool,
             downloadCanvas,
             clearCanvas,
-            addImage,
             changeCanvasBackgroundColor,
             undo,
             zoomOut,
@@ -802,6 +802,7 @@ function WhiteboardContainer({
             setCanvasBackgroundColor,
             whiteboardToolbarWidth,
             whiteboardSpacing,
+            addImage,
           }}
         />
       </Box>

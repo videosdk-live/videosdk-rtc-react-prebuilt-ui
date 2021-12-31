@@ -121,6 +121,7 @@ const MeetingContainer = () => {
     joinScreenWebCam,
     joinScreenMic,
     canDrawOnWhiteboard,
+    setMeetingLeft,
   } = useMeetingAppContext();
 
   const isTab = useIsTab();
@@ -158,7 +159,11 @@ const MeetingContainer = () => {
   };
 
   const _handleMeetingLeft = () => {
-    window.parent.location = redirectOnLeave;
+    if (redirectOnLeave && redirectOnLeave !== "undefined") {
+      window.parent.location = redirectOnLeave;
+    } else {
+      setMeetingLeft(true);
+    }
   };
 
   const _handleChatMessage = (data) => {

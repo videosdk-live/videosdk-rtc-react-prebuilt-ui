@@ -307,6 +307,7 @@ const RecordingBTN = () => {
 
   const {
     recordingWebhookUrl,
+    recordingAWSDirPath,
     autoStartRecording,
     participantCanToggleRecording,
   } = useMeetingAppContext();
@@ -316,12 +317,13 @@ const RecordingBTN = () => {
       setDefaultRecordingActionTaken(true);
       setTimeout(() => {
         if (!defaultRecordingActionTaken) {
-          startRecording(recordingWebhookUrl);
+          startRecording(recordingWebhookUrl, recordingAWSDirPath);
         }
       }, 5000);
     }
   }, [
     recordingWebhookUrl,
+    recordingAWSDirPath,
     defaultRecordingActionTaken,
     autoStartRecording,
     startRecording,
@@ -334,7 +336,7 @@ const RecordingBTN = () => {
         if (isRecording) {
           stopRecording();
         } else {
-          startRecording(recordingWebhookUrl);
+          startRecording(recordingWebhookUrl, recordingAWSDirPath);
         }
       }}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
@@ -674,9 +676,9 @@ const TopBar = ({ topBarHeight }) => {
 
     const arrSideBar = [];
 
-    if (pollEnabled || whiteboardEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
-    }
+    // if (pollEnabled || whiteboardEnabled) {
+    //   arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+    // }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
     }
@@ -812,11 +814,11 @@ const TopBar = ({ topBarHeight }) => {
           <Box mb={1.2}>
             <ParticipantsBTN onClick={handleCloseFAB} />
           </Box>
-          {(pollEnabled || whiteboardEnabled) && (
+          {/* {(pollEnabled || whiteboardEnabled) && (
             <Box mb={1.2}>
               <ActivitiesBTN onClick={handleCloseFAB} />
             </Box>
-          )}
+          )} */}
           {screenShareEnabled && (
             <Box mb={1.2}>
               <ScreenShareBTN onClick={handleCloseFAB} />

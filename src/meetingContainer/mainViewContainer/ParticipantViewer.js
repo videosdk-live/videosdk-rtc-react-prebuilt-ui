@@ -182,6 +182,7 @@ export const CornerDisplayName = ({
               eventListeners={[{ eventName: "done" }]}
               height={analyzerSize}
               width={analyzerSize}
+              isClickToPauseDisabled
             />
           ) : micOn ? null : (
             <MicOff
@@ -392,6 +393,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
                   width={
                     (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
                   }
+                  isClickToPauseDisabled
                 />
               </div>
             )}

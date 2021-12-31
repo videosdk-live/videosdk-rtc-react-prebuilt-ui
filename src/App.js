@@ -7,6 +7,7 @@ import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorPage from "./components/ErrorPage";
+import MeetingLeftScreen from "./components/MeetingLeftScreen";
 
 const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(null);
@@ -17,6 +18,8 @@ const App = () => {
     reqError: null,
     reqStatusCode: null,
   });
+
+  const [meetingLeft, setMeetingLeft] = useState(false);
 
   const getParams = () => {
     const location = window.location;
@@ -38,6 +41,7 @@ const App = () => {
       raiseHandEnabled: "raiseHandEnabled",
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
+      recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
       participantCanToggleRecording: "participantCanToggleRecording",
       brandingEnabled: "brandingEnabled",
@@ -61,6 +65,8 @@ const App = () => {
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
+      leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
+      leftScreenActionButtonHref: "leftScreenActionButtonHref",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -131,16 +137,18 @@ const App = () => {
       paramKeys.autoStartLiveStream = "true";
     }
 
-    if (paramKeys.recordingEnabled === "true") {
-      if (
-        typeof paramKeys.recordingWebhookUrl !== "string" ||
-        paramKeys.recordingWebhookUrl.length === 0
-      ) {
-        throw new Error(
-          "Recording WebhookUrl not provided when recording is enabled"
-        );
-      }
-    }
+    // if (paramKeys.recordingEnabled === "true") {
+    //   if (
+    //     typeof paramKeys.recordingWebhookUrl !== "string" ||
+    //     paramKeys.recordingWebhookUrl.length === 0 ||
+    //     typeof paramKeys.recordingAWSDirPath !== "string" ||
+    //     paramKeys.recordingAWSDirPath.length === 0
+    //   ) {
+    //     throw new Error(
+    //       "'Recording WebhookUrl' or 'Recording AWS Dir Path' not provided when recording is enabled"
+    //     );
+    //   }
+    // }
 
     if (paramKeys.brandingEnabled === "true") {
       if (!paramKeys.brandLogoURL || paramKeys.brandLogoURL?.length === 0) {
@@ -270,7 +278,16 @@ const App = () => {
 
   const theme = useTheme();
 
-  return meetingIdValidation.isLoading ? (
+  console.log(paramKeys.brandLogoURL, "paramKeys.brandLogoURL");
+
+  return meetingLeft ? (
+    <MeetingLeftScreen
+      brandLogoURL={paramKeys.brandLogoURL}
+      leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
+      leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+      setMeetingLeft={setMeetingLeft}
+    />
+  ) : meetingIdValidation.isLoading ? (
     <Box
       style={{
         display: "flex",
@@ -304,6 +321,7 @@ const App = () => {
         raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
         recordingEnabled: paramKeys.recordingEnabled === "true",
         recordingWebhookUrl: paramKeys.recordingWebhookUrl,
+        recordingAWSDirPath: paramKeys.recordingAWSDirPath,
         autoStartRecording: paramKeys.autoStartRecording === "true",
         participantCanToggleRecording:
           paramKeys.participantCanToggleRecording === "true",
@@ -341,6 +359,8 @@ const App = () => {
           paramKeys.canToggleWhiteboard === "true" ? true : false,
         whiteboardEnabled:
           paramKeys.whiteboardEnabled === "true" ? true : false,
+        meetingLeft,
+        setMeetingLeft,
       }}
     >
       <MeetingProvider
@@ -384,6 +404,7 @@ const App = () => {
         setUserHasInteracted(true);
       }}
       title="Click anywhere to continue"
+      brandLogoURL={paramKeys.brandLogoURL}
     />
   );
 };
