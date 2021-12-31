@@ -9,6 +9,8 @@ import useIsTab from "../../utils/useIsTab";
 import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
+import useResponsiveSize from "../../utils/useResponsiveSize";
+import Compressor from "compressorjs";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,
@@ -66,6 +68,16 @@ function WhiteboardContainer({
     toolRef.current = data;
     _setTool(data);
   };
+
+  const imageWidth = useResponsiveSize({
+    xl: 320,
+    lg: 280,
+    md: 240,
+    sm: 200,
+    xs: 180,
+  });
+
+  const imageHeight = (imageWidth * 9) / 16;
 
   //
   const fabricRef = useRef(null);
@@ -306,7 +318,7 @@ function WhiteboardContainer({
   }, []);
 
   // Action on chat message
-  function onChatMessage({ event, data }) {
+  async function onChatMessage({ event, data }) {
     switch (event) {
       case "PAN": {
         let newPanFrom800 = convertPanFrom800(data);
@@ -524,8 +536,66 @@ function WhiteboardContainer({
 
   function clearCanvas() {
     fabricRef.current.clear();
-    // fabricRef.current.setBackgroundColor("white");
     sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
+  }
+
+  async function uploadImageAndGetUrl(event) {
+    return new Promise((resolve, reject) => {
+      new Compressor(event.target.files[0], {
+        quality: 0.8,
+        maxHeight: 1024,
+        maxWidth: 1024,
+
+        async success(result) {
+          var formdata = new FormData();
+          formdata.append("image", result, event.target.files[0].name);
+
+          var requestOptions = {
+            method: "POST",
+            body: formdata,
+            redirect: "follow",
+          };
+
+          try {
+            const res = await fetch(
+              `https://call-api.videosdk.live/file-upload?roomId=${mMeeting.meetingId}`,
+              requestOptions
+            );
+
+            const json = await res.json();
+
+            return resolve(json.url);
+          } catch (error) {
+            console.log(error);
+            return reject(error);
+          }
+        },
+        error(err) {
+          console.log(err.message);
+        },
+      });
+    });
+  }
+  async function addImage(event) {
+    const url = await uploadImageAndGetUrl(event);
+
+    new fabric.Image.fromURL(url, async function (myImg) {
+      //create an extra var for to change some image properties
+      var img1 = myImg.set({
+        left: whiteboardSpacing,
+        top: 42,
+      });
+
+      // const imageHeight =
+      //   (imageWidth * myImg._element.height) / myImg._element.width;
+
+      myImg.scaleToWidth(imageWidth);
+      // myImg.scaleToHeight(imageHeight);
+
+      fabricRef.current.add(img1);
+      fabricRef.current.setActiveObject(img1);
+      fabricRef.current.renderAll();
+    });
   }
 
   function changeCanvasBackgroundColor(color) {
@@ -732,6 +802,7 @@ function WhiteboardContainer({
             setCanvasBackgroundColor,
             whiteboardToolbarWidth,
             whiteboardSpacing,
+            addImage,
           }}
         />
       </Box>

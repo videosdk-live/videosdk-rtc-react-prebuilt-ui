@@ -89,6 +89,8 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | canRemoveOtherParticipant       | false         | participant can remove other participant                                                    |
 | canDrawOnWhiteboard             | false         | participant can draw on whiteboard, if `false` then whiteboard drawing will be in view mode |
 | canToggleWhiteboard             | false         | participant can toggle whiteboard                                                           |
+| leftScreenActionButtonLabel     | -             | left screen custom action button label                                                      |
+| leftScreenActionButtonHref      | -             | left screen custom action button href                                                       |
 
 ---
 
