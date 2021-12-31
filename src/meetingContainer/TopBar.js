@@ -676,9 +676,9 @@ const TopBar = ({ topBarHeight }) => {
 
     const arrSideBar = [];
 
-    if (pollEnabled || whiteboardEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
-    }
+    // if (pollEnabled || whiteboardEnabled) {
+    //   arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+    // }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
     }
@@ -814,11 +814,11 @@ const TopBar = ({ topBarHeight }) => {
           <Box mb={1.2}>
             <ParticipantsBTN onClick={handleCloseFAB} />
           </Box>
-          {(pollEnabled || whiteboardEnabled) && (
+          {/* {(pollEnabled || whiteboardEnabled) && (
             <Box mb={1.2}>
               <ActivitiesBTN onClick={handleCloseFAB} />
             </Box>
-          )}
+          )} */}
           {screenShareEnabled && (
             <Box mb={1.2}>
               <ScreenShareBTN onClick={handleCloseFAB} />
