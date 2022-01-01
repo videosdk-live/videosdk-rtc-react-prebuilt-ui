@@ -548,7 +548,7 @@ function WhiteboardContainer({
 
         async success(result) {
           var formdata = new FormData();
-          formdata.append("image", result, event.target.files[0].name);
+          formdata.append("file", result, event.target.files[0].name);
 
           var requestOptions = {
             method: "POST",
