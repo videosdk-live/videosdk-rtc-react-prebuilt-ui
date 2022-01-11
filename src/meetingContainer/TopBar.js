@@ -864,11 +864,11 @@ const TopBar = ({ topBarHeight }) => {
               src={
                 defaultBrandLogoUrl ||
                 brandLogoURL ||
-                `https://static.zujonow.com/prebuilt/videosdk_logo_circle.png`
+                `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
               }
               onError={() => {
                 setDefaultBrandLogoUrl(
-                  `https://static.zujonow.com/prebuilt/videosdk_logo_circle.png`
+                  `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
                 );
               }}
             />

@@ -240,7 +240,7 @@ const App = () => {
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token }) => {
-    const BASE_URL = "https://api.zujonow.com";
+    const BASE_URL = "https://api.videosdk.live";
 
     const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
 
