@@ -279,8 +279,6 @@ const App = () => {
 
   const theme = useTheme();
 
-  console.log(paramKeys.brandLogoURL, "paramKeys.brandLogoURL");
-
   return meetingLeft ? (
     <MeetingLeftScreen
       brandLogoURL={paramKeys.brandLogoURL}
