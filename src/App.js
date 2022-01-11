@@ -67,6 +67,7 @@ const App = () => {
       canToggleWhiteboard: "canToggleWhiteboard",
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
+      maxResolution: "maxResolution",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -369,7 +370,10 @@ const App = () => {
           micEnabled: joinScreenMic,
           webcamEnabled: joinScreenWebCam,
           name: name,
-          maxResolution: "sd",
+          maxResolution:
+            paramKeys.maxResolution === "sd" || paramKeys.maxResolution === "hd"
+              ? paramKeys.maxResolution
+              : "sd",
         }}
         token={paramKeys.token}
         joinWithoutUserInteraction
