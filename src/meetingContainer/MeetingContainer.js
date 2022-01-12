@@ -180,7 +180,7 @@ const MeetingContainer = () => {
         if (!isLocal) {
           if (notificationSoundEnabled) {
             new Audio(
-              `https://static.zujonow.com/prebuilt/notification.mp3`
+              `https://static.videosdk.live/prebuilt/notification.mp3`
             ).play();
           }
           enqueueSnackbar(
@@ -194,7 +194,7 @@ const MeetingContainer = () => {
       if (type === "RAISE_HAND") {
         if (notificationSoundEnabled) {
           new Audio(
-            `https://static.zujonow.com/prebuilt/notification.mp3`
+            `https://static.videosdk.live/prebuilt/notification.mp3`
           ).play();
         }
         enqueueSnackbar(
@@ -206,7 +206,7 @@ const MeetingContainer = () => {
       if (type === "END_CALL") {
         if (notificationSoundEnabled) {
           new Audio(
-            `https://static.zujonow.com/prebuilt/notification.mp3`
+            `https://static.videosdk.live/prebuilt/notification.mp3`
           ).play();
         }
 
@@ -224,14 +224,14 @@ const MeetingContainer = () => {
   const _handleParticipantJoined = (data) => {
     // if (showJoinNotificationRef.current) {
     //   const { displayName } = data;
-    //   new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    //   new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     //   enqueueSnackbar(`${displayName} joined the meeting`, {});
     // }
   };
 
   const _handleParticipantLeft = (data) => {
     // const { displayName } = data;
-    // new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    // new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     // enqueueSnackbar(`${displayName} left the meeting`, {});
   };
 
@@ -261,7 +261,9 @@ const MeetingContainer = () => {
         }
       }
 
-      new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+      new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      ).play();
       enqueueSnackbar(
         `${
           isLocal ? "You" : nameTructed(mPresenter.displayName, 15)

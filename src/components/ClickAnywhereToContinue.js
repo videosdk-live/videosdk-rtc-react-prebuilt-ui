@@ -70,7 +70,7 @@ const ClickAnywhereToContinue = ({ onClick, title, brandLogoURL }) => {
           style={{
             height: imageHeight,
             width: imageWidth,
-            backgroundImage: `url(https://static.zujonow.com/prebuilt/space-background.png)`,
+            backgroundImage: `url(https://static.videosdk.live/prebuilt/space-background.png)`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "contain",
             overflow: "hidden",
