@@ -72,6 +72,7 @@ export const MeetingAppProvider = ({
   canDrawOnWhiteboard,
   meetingLeft,
   setMeetingLeft,
+  debugEnabled,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -140,6 +141,7 @@ export const MeetingAppProvider = ({
         notificationSoundEnabled,
         canToggleWhiteboard,
         canDrawOnWhiteboard,
+        debugEnabled,
         // states
         sideBarMode,
         activeSortedParticipants,

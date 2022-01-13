@@ -23,6 +23,7 @@ import ClickAnywhereToContinue from "../components/ClickAnywhereToContinue";
 import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutViewContainer";
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
 import useWhiteBoard from "./useWhiteBoard";
+import ConfirmBox from "../components/ConfirmBox";
 
 const getPinMsg = ({
   localParticipant,
@@ -73,6 +74,7 @@ const MeetingContainer = () => {
   const mMeetingRef = useRef();
 
   const [containerHeight, setContainerHeight] = useState(0);
+  const [onJoinError, setOnJoinError] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
   const [localParticipantAllowedJoin, setLocalParticipantAllowedJoin] =
     useState(null);
@@ -122,7 +124,9 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
+    debugEnabled,
   } = useMeetingAppContext();
+  console.log("Is Debug Enable", debugEnabled);
 
   const isTab = useIsTab();
   const isMobile = useIsMobile();
@@ -324,6 +328,32 @@ const MeetingContainer = () => {
     }
   };
 
+  const _handleOnError = (data) => {
+    const { code, message } = data;
+
+    const joiningErrCodes = [
+      4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,
+    ];
+
+    const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== 1;
+    const isCriticalError = `${code}`.startsWith("500");
+
+    new Audio(
+      isCriticalError
+        ? `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
+        : `https://static.videosdk.live/prebuilt/notification_err.mp3`
+    ).play();
+
+    setOnJoinError({
+      code,
+      message: debugEnabled
+        ? message
+        : isJoiningError
+        ? "Unable to join meeting!"
+        : message,
+    });
+  };
+
   const mMeeting = useMeeting({
     onMeetingJoined: _handleOnMeetingJoined,
     onMeetingLeft: _handleMeetingLeft,
@@ -336,6 +366,7 @@ const MeetingContainer = () => {
     onEntryRequested: _handleOnEntryRequested,
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
+    onError: _handleOnError,
   });
 
   const _handleToggleFullScreen = () => {
@@ -387,6 +418,15 @@ const MeetingContainer = () => {
         position: "relative",
       }}
     >
+      <ConfirmBox
+        open={onJoinError}
+        successText="OKAY"
+        onSuccess={() => {
+          setOnJoinError(false);
+        }}
+        title={`Error Code: ${onJoinError.code}`}
+        subTitle={onJoinError.message}
+      />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
           <>

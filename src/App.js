@@ -68,6 +68,7 @@ const App = () => {
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
       maxResolution: "maxResolution",
+      debugEnabled: "debugEnabled",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -136,6 +137,9 @@ const App = () => {
     }
     if (typeof paramKeys.autoStartLiveStream !== "string") {
       paramKeys.autoStartLiveStream = "true";
+    }
+    if (typeof paramKeys.autoStartLiveStream !== "string") {
+      paramKeys.debugEnabled = "true";
     }
 
     // if (paramKeys.recordingEnabled === "true") {
@@ -312,6 +316,7 @@ const App = () => {
       {...{
         redirectOnLeave: paramKeys.redirectOnLeave,
         chatEnabled: paramKeys.chatEnabled === "true",
+        debugEnabled: paramKeys.debugEnabled === "true",
         screenShareEnabled: paramKeys.screenShareEnabled === "true",
         pollEnabled: paramKeys.pollEnabled === "true",
         whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
@@ -367,6 +372,7 @@ const App = () => {
       <MeetingProvider
         config={{
           meetingId: meetingIdValidation.meetingId,
+          participantId: "ahmed@zujo.io",
           micEnabled: joinScreenMic,
           webcamEnabled: joinScreenWebCam,
           name: name,
@@ -375,7 +381,7 @@ const App = () => {
               ? paramKeys.maxResolution
               : "sd",
         }}
-        token={paramKeys.token}
+        token={"kjdfvkdfkvfjvh"}
         joinWithoutUserInteraction
       >
         <MeetingContainer />
