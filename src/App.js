@@ -328,7 +328,6 @@ const App = () => {
           {...{
             redirectOnLeave: paramKeys.redirectOnLeave,
             chatEnabled: paramKeys.chatEnabled === "true",
-            debug: paramKeys.debug === "true" ? true : false,
             screenShareEnabled: paramKeys.screenShareEnabled === "true",
             pollEnabled: paramKeys.pollEnabled === "true",
             whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
@@ -385,6 +384,7 @@ const App = () => {
               paramKeys.whiteboardEnabled === "true" ? true : false,
             meetingLeft,
             setMeetingLeft,
+            debug: paramKeys.debug === "true" ? true : false,
           }}
         >
           <MeetingProvider
