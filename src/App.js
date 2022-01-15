@@ -138,8 +138,8 @@ const App = () => {
     if (typeof paramKeys.autoStartLiveStream !== "string") {
       paramKeys.autoStartLiveStream = "true";
     }
-    if (typeof paramKeys.autoStartLiveStream !== "string") {
-      paramKeys.debugEnabled = "true";
+    if (typeof paramKeys.debugEnabled !== "string") {
+      paramKeys.debugEnabled = "false";
     }
 
     // if (paramKeys.recordingEnabled === "true") {
@@ -316,7 +316,7 @@ const App = () => {
       {...{
         redirectOnLeave: paramKeys.redirectOnLeave,
         chatEnabled: paramKeys.chatEnabled === "true",
-        debugEnabled: paramKeys.debugEnabled === "true",
+        debugEnabled: paramKeys.debugEnabled === "true" ? true : false,
         screenShareEnabled: paramKeys.screenShareEnabled === "true",
         pollEnabled: paramKeys.pollEnabled === "true",
         whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
