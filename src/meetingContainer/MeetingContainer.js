@@ -74,7 +74,7 @@ const MeetingContainer = () => {
   const mMeetingRef = useRef();
 
   const [containerHeight, setContainerHeight] = useState(0);
-  const [onJoinError, setOnJoinError] = useState(false);
+  const [meetingError, setMeetingError] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
   const [localParticipantAllowedJoin, setLocalParticipantAllowedJoin] =
     useState(null);
@@ -343,7 +343,7 @@ const MeetingContainer = () => {
         : `https://static.videosdk.live/prebuilt/notification_err.mp3`
     ).play();
 
-    setOnJoinError({
+    setMeetingError({
       code,
       message: debug
         ? message
@@ -418,13 +418,13 @@ const MeetingContainer = () => {
       }}
     >
       <ConfirmBox
-        open={onJoinError}
+        open={meetingError}
         successText="OKAY"
         onSuccess={() => {
-          setOnJoinError(false);
+          setMeetingError(false);
         }}
-        title={`Error Code: ${onJoinError.code}`}
-        subTitle={onJoinError.message}
+        title={`Error Code: ${meetingError.code}`}
+        subTitle={meetingError.message}
       />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
