@@ -41,7 +41,8 @@ export const CornerDisplayName = ({
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
 
-  const { overlaidInfoVisible, canPin } = useMeetingAppContext();
+  const { overlaidInfoVisible, canPin, animationsEnabled } =
+    useMeetingAppContext();
 
   const defaultOptions = {
     loop: true,
@@ -101,7 +102,7 @@ export const CornerDisplayName = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: "all 200ms",
+          transition: animationsEnabled ? "all 200ms" : undefined,
           transitionTimingFunction: "linear",
         }}
       >
@@ -123,7 +124,7 @@ export const CornerDisplayName = ({
             right: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             bottom: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
             transform: `scale(${showPin ? 1 : 0})`,
-            transition: "all 200ms",
+            transition: animationsEnabled ? "all 200ms" : undefined,
             transitionTimingFunction: "linear",
           }}
         >
@@ -172,7 +173,7 @@ export const CornerDisplayName = ({
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 24,
-            transition: "all 200ms",
+            transition: animationsEnabled ? "all 200ms" : undefined,
             transitionTimingFunction: "linear",
           }}
         >
@@ -207,7 +208,8 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const presenterId = mMeeting?.presenterId;
 
-  const { setOverlaidInfoVisible, whiteboardStarted } = useMeetingAppContext();
+  const { setOverlaidInfoVisible, whiteboardStarted, animationsEnabled } =
+    useMeetingAppContext();
 
   // const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
@@ -409,7 +411,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
                 justifyContent: "center",
                 borderRadius: 100,
                 backgroundColor: participantAccentColor,
-                transition: "height 800ms, width 800ms",
+                transition: animationsEnabled
+                  ? "height 800ms, width 800ms"
+                  : undefined,
                 transitionTimingFunction: "ease-in-out",
               }}
             >

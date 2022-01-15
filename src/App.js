@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import MeetingContainer from "./meetingContainer/MeetingContainer";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
-import { MeetingAppProvider } from "./MeetingAppContextDef";
+import { MeetingAppProvider, meetingLayouts } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
@@ -68,6 +68,9 @@ const App = () => {
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
       maxResolution: "maxResolution",
+      animationsEnabled: "animationsEnabled",
+      topbarEnabled: "topbarEnabled",
+      notificationAlertsEnabled: "notificationAlertsEnabled",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -203,13 +206,15 @@ const App = () => {
     }
 
     switch (paramKeys?.layout?.toUpperCase()) {
-      case "GRID":
-      case "SPOTLIGHT":
-      case "SIDEBAR":
+      case meetingLayouts.GRID:
+      case meetingLayouts.SPOTLIGHT:
+      case meetingLayouts.SIDEBAR:
+      case meetingLayouts.UNPINNED_SIDEBAR:
+      case meetingLayouts.UNPINNED_SPOTLIGHT:
         paramKeys.layout = paramKeys.layout.toUpperCase();
         break;
       default:
-        paramKeys.layout = "GRID";
+        paramKeys.layout = meetingLayouts.GRID;
         break;
     }
 
@@ -360,6 +365,11 @@ const App = () => {
           paramKeys.whiteboardEnabled === "true" ? true : false,
         meetingLeft,
         setMeetingLeft,
+        animationsEnabled:
+          paramKeys.animationsEnabled === "false" ? false : true,
+        topbarEnabled: paramKeys.topbarEnabled === "false" ? false : true,
+        notificationAlertsEnabled:
+          paramKeys.notificationAlertsEnabled === "false" ? false : true,
       }}
     >
       <MeetingProvider

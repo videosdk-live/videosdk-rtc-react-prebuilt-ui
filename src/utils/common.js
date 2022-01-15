@@ -116,53 +116,6 @@ export const getGridRowsAndColumns = ({
   return myGrid;
 };
 
-export function getRandomColor(varient = "light" | "dark") {
-  var letters = varient === "light" ? "BCDEF" : "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * letters.length)];
-  }
-  return color;
-}
-
-function padZero(str, len) {
-  len = len || 2;
-  var zeros = new Array(len).join("0");
-  return (zeros + str).slice(-len);
-}
-
-export function invertColor(hex) {
-  if (hex.indexOf("#") === 0) {
-    hex = hex.slice(1);
-  }
-  // convert 3-digit hex to 6-digits.
-  if (hex.length === 3) {
-    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-  }
-  if (hex.length !== 6) {
-    throw new Error("Invalid HEX color.");
-  }
-  // invert color components
-  var r = (255 - parseInt(hex.slice(0, 2), 16)).toString(16),
-    g = (255 - parseInt(hex.slice(2, 4), 16)).toString(16),
-    b = (255 - parseInt(hex.slice(4, 6), 16)).toString(16);
-  // pad each with zeros and return
-  return "#" + padZero(r) + padZero(g) + padZero(b);
-}
-
-export function validURL(str) {
-  var pattern = new RegExp(
-    "^(https?:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?$",
-    "i"
-  ); // fragment locator
-  return pattern.test(str);
-}
-
 export const getGridForMainParticipants = ({ participants, gridInfo }) => {
   const singleRow = [];
 
@@ -192,50 +145,6 @@ export const getGridForMainParticipants = ({ participants, gridInfo }) => {
     });
   }
   return { singleRow };
-};
-
-export function calcQuality(participantsCount) {
-  if (participantsCount <= 2) {
-    return "s2t2";
-  } else if (participantsCount <= 4) {
-    return "s2t1";
-  } else if (participantsCount <= 6) {
-    return "s1t2";
-  } else if (participantsCount <= 9) {
-    return "s1t1";
-  } else if (participantsCount <= 12) {
-    return "s0t2";
-  } else if (participantsCount <= 16) {
-    return "s0t1";
-  } else {
-    return "s0t0";
-  }
-}
-
-export const json_verify = (s) => {
-  try {
-    JSON.parse(s);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
-export function formatAMPM(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? "pm" : "am";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-  var strTime = hours + ":" + minutes + " " + ampm;
-  return strTime;
-}
-
-export const trimSnackBarText = (text = "") => {
-  const maxLength = 52;
-
-  return text.length > maxLength ? `${text.substr(0, maxLength - 5)}...` : text;
 };
 
 export const localAndPinnedOnTop = ({
@@ -324,6 +233,97 @@ export const localAndPinnedOnTop = ({
 
     return participantsArr;
   }
+};
+
+export function getRandomColor(varient = "light" | "dark") {
+  var letters = varient === "light" ? "BCDEF" : "0123456789ABCDEF";
+  var color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * letters.length)];
+  }
+  return color;
+}
+
+function padZero(str, len) {
+  len = len || 2;
+  var zeros = new Array(len).join("0");
+  return (zeros + str).slice(-len);
+}
+
+export function invertColor(hex) {
+  if (hex.indexOf("#") === 0) {
+    hex = hex.slice(1);
+  }
+  // convert 3-digit hex to 6-digits.
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+  if (hex.length !== 6) {
+    throw new Error("Invalid HEX color.");
+  }
+  // invert color components
+  var r = (255 - parseInt(hex.slice(0, 2), 16)).toString(16),
+    g = (255 - parseInt(hex.slice(2, 4), 16)).toString(16),
+    b = (255 - parseInt(hex.slice(4, 6), 16)).toString(16);
+  // pad each with zeros and return
+  return "#" + padZero(r) + padZero(g) + padZero(b);
+}
+
+export function validURL(str) {
+  var pattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  ); // fragment locator
+  return pattern.test(str);
+}
+
+export function calcQuality(participantsCount) {
+  if (participantsCount <= 2) {
+    return "s2t2";
+  } else if (participantsCount <= 4) {
+    return "s2t1";
+  } else if (participantsCount <= 6) {
+    return "s1t2";
+  } else if (participantsCount <= 9) {
+    return "s1t1";
+  } else if (participantsCount <= 12) {
+    return "s0t2";
+  } else if (participantsCount <= 16) {
+    return "s0t1";
+  } else {
+    return "s0t0";
+  }
+}
+
+export const json_verify = (s) => {
+  try {
+    JSON.parse(s);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export function formatAMPM(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  var strTime = hours + ":" + minutes + " " + ampm;
+  return strTime;
+}
+
+export const trimSnackBarText = (text = "") => {
+  const maxLength = 52;
+
+  return text.length > maxLength ? `${text.substr(0, maxLength - 5)}...` : text;
 };
 
 export const nameTructed = (name, tructedLength) => {

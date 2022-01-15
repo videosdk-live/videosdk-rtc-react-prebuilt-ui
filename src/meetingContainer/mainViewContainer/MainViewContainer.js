@@ -39,44 +39,6 @@ const MemoizedParticipant = React.memo(
     useVisibilitySensor === oldUseVisibilitySensor
 );
 
-// const MotionParticipant = ({
-//   participantId,
-//   gutter,
-//   quality,
-//   relativeHeight,
-//   relativeWidth,
-//   relativeTop,
-//   relativeLeft,
-//   useVisibilitySensor,
-// }) => {
-//   return (
-//     <div
-//       style={{
-//         position: "absolute",
-//         top: `${relativeTop}%`,
-//         left: `${relativeLeft}%`,
-//         height: `${relativeHeight}%`,
-//         width: `${relativeWidth}%`,
-//         paddingTop: gutter,
-//         paddingBottom: gutter,
-//         paddingRight: gutter,
-//         paddingLeft: gutter,
-//       }}
-//     >
-//       <div
-//         style={{
-//           height: `calc(100% - ${2 * gutter}px)`,
-//           width: `calc(100% - ${2 * gutter}px)`,
-//         }}
-//       >
-//         <MemoizedParticipant
-//           {...{ participantId, quality, useVisibilitySensor }}
-//         />
-//       </div>
-//     </div>
-//   );
-// };
-
 const MotionParticipant = ({
   participantId,
   gutter,
@@ -97,7 +59,6 @@ const MotionParticipant = ({
     };
   }, []);
 
-  // const animeConfig = { stiffness:120, damping:21 };
   const animeConfig = { stiffness: 180, damping: 22 };
 
   return (
@@ -141,8 +102,61 @@ const MotionParticipant = ({
   );
 };
 
+const MotionParticipantContainer = ({
+  participantId,
+  gutter,
+  quality,
+  relativeHeight: height,
+  relativeWidth: width,
+  relativeTop: top,
+  relativeLeft: left,
+  useVisibilitySensor,
+}) => {
+  const { animationsEnabled } = useMeetingAppContext();
+
+  return animationsEnabled ? (
+    <MotionParticipant
+      {...{
+        participantId,
+        gutter,
+        quality,
+        relativeHeight: height,
+        relativeWidth: width,
+        relativeTop: top,
+        relativeLeft: left,
+        useVisibilitySensor,
+      }}
+    />
+  ) : (
+    <div
+      style={{
+        position: "absolute",
+        top: `${top}%`,
+        left: `${left}%`,
+        height: `${height}%`,
+        width: `${width}%`,
+        paddingTop: gutter,
+        paddingBottom: gutter,
+        paddingRight: gutter,
+        paddingLeft: gutter,
+      }}
+    >
+      <div
+        style={{
+          height: `calc(100% - ${2 * gutter}px)`,
+          width: `calc(100% - ${2 * gutter}px)`,
+        }}
+      >
+        <MemoizedParticipant
+          {...{ participantId, quality, useVisibilitySensor }}
+        />
+      </div>
+    </div>
+  );
+};
+
 export const MemoizedMotionParticipant = React.memo(
-  MotionParticipant,
+  MotionParticipantContainer,
   (prevProps, nextProps) =>
     prevProps.participantId === nextProps.participantId &&
     prevProps.gutter === nextProps.gutter &&
@@ -166,6 +180,15 @@ const MainViewContainer = ({
   const presenterId = mMeeting?.presenterId;
   const localParticipantId = mMeeting?.localParticipant?.id;
   const pinnedParticipants = mMeeting?.pinnedParticipants;
+  const activeSpeakerId = mMeeting?.activeSpeakerId;
+  const mainParticipantId = mMeeting?.mainParticipant?.id;
+
+  console.log(
+    activeSpeakerId,
+    mainParticipantId,
+    "activeSpeakerId, mainParticipantId"
+  );
+
   const isMobile = useIsMobile();
   const isTab = useIsTab();
   const isSMDesktop = useIsSMDesktop();
@@ -188,17 +211,120 @@ const MainViewContainer = ({
     sideBarMode,
     meetingLayout,
     whiteboardStarted,
+    activeSortedParticipants,
+    animationsEnabled,
   } = useMeetingAppContext();
 
-  const { singleRow } = useMemo(() => {
+  console.log(meetingLayout, "meetingLayout");
+
+  const lastActiveParticipantId = useMemo(
+    () => activeSortedParticipants[0]?.participantId,
+    [activeSortedParticipants]
+  );
+
+  const mainScreenViewActive = useMemo(
+    () =>
+      presenterId ||
+      whiteboardStarted ||
+      meetingLayout === meetingLayouts.UNPINNED_SIDEBAR ||
+      meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT,
+    [presenterId, whiteboardStarted, meetingLayout]
+  );
+
+  const { singleRow, mainLayoutParticipantId } = useMemo(() => {
+    let mainLayoutParticipantId;
+
+    let _pinnedParticipants = new Map(pinnedParticipants);
+
     let mainParticipants = [...mainViewParticipants];
 
-    if (presenterId || whiteboardStarted) {
+    if (mainScreenViewActive) {
       const remainingParticipants = [...participants.keys()].filter(
         (pId) => mainParticipants.findIndex((id) => id === pId) === -1
       );
 
       mainParticipants = [...mainParticipants, ...remainingParticipants];
+    }
+
+    if (meetingLayout === meetingLayouts.UNPINNED_SIDEBAR) {
+      if (!(!!presenterId || !!whiteboardStarted)) {
+        if (_pinnedParticipants.size === 0) {
+          if (activeSpeakerId) {
+            mainParticipants = mainParticipants.filter(
+              (id) => id !== activeSpeakerId
+            );
+            mainLayoutParticipantId = activeSpeakerId;
+          } else {
+            mainParticipants = mainParticipants.filter(
+              (id) => id !== lastActiveParticipantId
+            );
+            mainLayoutParticipantId = lastActiveParticipantId;
+          }
+        } else {
+          if (activeSpeakerId) {
+            const pinnedActiveSpeaker =
+              _pinnedParticipants.get(activeSpeakerId);
+
+            if (pinnedActiveSpeaker) {
+              mainParticipants = mainParticipants.filter(
+                (id) => id !== activeSpeakerId
+              );
+
+              _pinnedParticipants.delete(activeSpeakerId);
+              _pinnedParticipants = new Map(_pinnedParticipants);
+
+              mainLayoutParticipantId = activeSpeakerId;
+            } else {
+              const firstPinnedParticipantId = _pinnedParticipants
+                .keys()
+                .next().value;
+
+              mainParticipants = mainParticipants.filter(
+                (id) => id !== firstPinnedParticipantId
+              );
+
+              _pinnedParticipants.delete(firstPinnedParticipantId);
+              _pinnedParticipants = new Map(_pinnedParticipants);
+
+              mainLayoutParticipantId = firstPinnedParticipantId;
+            }
+          } else {
+            const lastActivePinnedParticipant = _pinnedParticipants.get(
+              lastActiveParticipantId
+            );
+
+            if (lastActivePinnedParticipant) {
+              mainParticipants = mainParticipants.filter(
+                (id) => id !== lastActiveParticipantId
+              );
+              _pinnedParticipants.delete(lastActiveParticipantId);
+              _pinnedParticipants = new Map(_pinnedParticipants);
+
+              mainLayoutParticipantId = lastActiveParticipantId;
+            } else {
+              const firstPinnedParticipantId = _pinnedParticipants
+                .keys()
+                .next().value;
+
+              mainParticipants = mainParticipants.filter(
+                (id) => id !== firstPinnedParticipantId
+              );
+
+              _pinnedParticipants.delete(firstPinnedParticipantId);
+              _pinnedParticipants = new Map(_pinnedParticipants);
+
+              mainLayoutParticipantId = firstPinnedParticipantId;
+            }
+          }
+        }
+      }
+    } else if (meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT) {
+      if (!!presenterId || !!whiteboardStarted) {
+        mainParticipants = [activeSpeakerId || lastActiveParticipantId];
+      } else {
+        mainParticipants = [];
+        mainLayoutParticipantId = activeSpeakerId || lastActiveParticipantId;
+      }
     }
 
     const participantsCount = mainParticipants?.length || 1;
@@ -210,23 +336,28 @@ const MainViewContainer = ({
       isSMDesktop,
       isLGDesktop,
       isLandscape: !isPortrait,
-      isPresenting: !!(presenterId || whiteboardStarted),
+      isPresenting: !!mainScreenViewActive,
     });
 
     const { singleRow } = getGridForMainParticipants({
-      participants: localAndPinnedOnTop({
-        localParticipantId,
-        participants: mainParticipants,
-        pinnedParticipantIds: [...pinnedParticipants.keys()],
-        moveLocalUnpinnedOnTop:
-          pinnedParticipants.size && meetingLayout !== meetingLayouts.GRID
-            ? false
-            : true,
-      }),
+      participants:
+        meetingLayout === meetingLayouts.UNPINNED_SIDEBAR ||
+        meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+          ? mainParticipants
+          : localAndPinnedOnTop({
+              localParticipantId,
+              participants: mainParticipants,
+              pinnedParticipantIds: [..._pinnedParticipants.keys()],
+              moveLocalUnpinnedOnTop:
+                _pinnedParticipants.size &&
+                meetingLayout !== meetingLayouts.GRID
+                  ? false
+                  : true,
+            }),
       gridInfo,
     });
 
-    return { singleRow };
+    return { singleRow, mainLayoutParticipantId };
   }, [
     meetingLayout,
     participants,
@@ -240,6 +371,9 @@ const MainViewContainer = ({
     whiteboardStarted,
     localParticipantId,
     pinnedParticipants,
+    activeSpeakerId,
+    lastActiveParticipantId,
+    mainParticipantId,
   ]);
 
   const spacing = rowSpacing - gutter;
@@ -254,24 +388,38 @@ const MainViewContainer = ({
     xs: 200,
   });
 
-  const mainContainerHorizontalPadding =
-    presenterId || whiteboardStarted
-      ? 0
-      : typeof sideBarMode === "string"
-      ? 0
-      : mainViewParticipants?.length <= 9
-      ? isLGDesktop
-        ? !(presenterId || whiteboardStarted) && singleRow.length === 2
-          ? 0
-          : 140
-        : isSMDesktop
-        ? !(presenterId || whiteboardStarted) && singleRow.length === 2
-          ? 20
-          : 90
-        : isTab && !isPortrait
-        ? 60
-        : 0
-      : 0;
+  const mainContainerHorizontalPadding = useMemo(
+    () =>
+      presenterId || whiteboardStarted
+        ? 0
+        : typeof sideBarMode === "string"
+        ? 0
+        : mainViewParticipants?.length <= 9
+        ? isLGDesktop
+          ? !mainScreenViewActive && singleRow.length === 2
+            ? 0
+            : 140
+          : isSMDesktop
+          ? !mainScreenViewActive && singleRow.length === 2
+            ? 20
+            : 90
+          : isTab && !isPortrait
+          ? 60
+          : 0
+        : 0,
+    [
+      mainScreenViewActive,
+      sideBarMode,
+      mainViewParticipants,
+      isLGDesktop,
+      isSMDesktop,
+      singleRow,
+      isTab,
+      isPortrait,
+      whiteboardStarted,
+      presenterId,
+    ]
+  );
 
   const gridVerticalSpacing = useResponsiveSize({
     xl: 160,
@@ -281,6 +429,11 @@ const MainViewContainer = ({
     xs: 60,
   });
 
+  const actualPresentingSideBarWidth = useMemo(
+    () => (singleRow.length ? presentingSideBarWidth : 0),
+    [singleRow, presentingSideBarWidth]
+  );
+
   return participants ? (
     <>
       <div
@@ -288,7 +441,7 @@ const MainViewContainer = ({
           width,
           backgroundColor: theme.palette.background.default,
           overflow: "hidden",
-          transition: "width 400ms",
+          transition: animationsEnabled ? "width 400ms" : undefined,
           transitionTimingFunction: "ease-in-out",
           display: "flex",
           position: "relative",
@@ -296,32 +449,33 @@ const MainViewContainer = ({
       >
         <div
           style={{
-            width:
-              presenterId || whiteboardStarted
-                ? width - presentingSideBarWidth
-                : 0,
+            width: mainScreenViewActive
+              ? width - actualPresentingSideBarWidth
+              : 0,
             height,
-            transition: "width 800ms",
+            transition: animationsEnabled ? "width 800ms" : undefined,
             transitionTimingFunction: "ease-in-out",
-            paddingLeft: presenterId || whiteboardStarted ? spacing : 0,
-            paddingTop: presenterId || whiteboardStarted ? spacing : 0,
+            paddingLeft: mainScreenViewActive ? spacing : 0,
+            paddingTop: mainScreenViewActive ? spacing : 0,
           }}
         >
           <div
             style={{
               height: height - 2 * spacing,
-              width:
+              width: mainScreenViewActive
+                ? width -
+                  (isMobile ? 0 : actualPresentingSideBarWidth) -
+                  2 * spacing
+                : 0,
+              backgroundColor:
                 presenterId || whiteboardStarted
-                  ? width -
-                    (isMobile ? 0 : presentingSideBarWidth) -
-                    2 * spacing
-                  : 0,
-              backgroundColor: theme.palette.background.paper,
-              // backgroundColor: "pink",
-              transition: "width 800ms",
+                  ? theme.palette.background.paper
+                  : undefined,
+              transition: animationsEnabled ? "width 800ms" : undefined,
               transitionTimingFunction: "ease-in-out",
               borderRadius: theme.spacing(1),
               overflow: "hidden",
+              position: "relative",
             }}
           >
             {whiteboardStarted && (
@@ -334,7 +488,7 @@ const MainViewContainer = ({
                       (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
                     width: whiteboardStarted
                       ? width -
-                        (isMobile ? 0 : presentingSideBarWidth) -
+                        (isMobile ? 0 : actualPresentingSideBarWidth) -
                         2 * spacing -
                         (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
                         (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
@@ -345,39 +499,68 @@ const MainViewContainer = ({
                   originalHeight: height - 2 * spacing,
                   originalWidth: whiteboardStarted
                     ? width -
-                      (isMobile ? 0 : presentingSideBarWidth) -
+                      (isMobile ? 0 : actualPresentingSideBarWidth) -
                       2 * spacing
                     : 0,
                 }}
               />
             )}
+
             {presenterId && <PresenterView presenterId={presenterId} />}
+
+            {!presenterId && !whiteboardStarted && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  bottom: 0,
+                  left:
+                    singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
+                  right:
+                    singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
+                  backgroundColor: theme.palette.background.paper,
+                  transition: animationsEnabled ? "width 800ms" : undefined,
+                  transitionTimingFunction: "ease-in-out",
+                  borderRadius: theme.spacing(1),
+                }}
+              >
+                <MemoizedMotionParticipant
+                  {...{
+                    participantId: mainLayoutParticipantId,
+                    gutter,
+                    quality: "high",
+                    relativeHeight: 100,
+                    relativeWidth: 100,
+                    relativeTop: 0,
+                    relativeLeft: 0,
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
-        {isMobile && (presenterId || whiteboardStarted) ? null : (
+        {isMobile && mainScreenViewActive ? null : singleRow.length <=
+          0 ? null : (
           <div
             style={{
               backgroundColor: theme.palette.background.default,
               overflowX: "hidden",
-              overflowY: presenterId || whiteboardStarted ? "scroll" : "hidden",
-              width:
-                presenterId || whiteboardStarted
-                  ? presentingSideBarWidth
-                  : width - 2 * spacing,
+              overflowY: mainScreenViewActive ? "scroll" : "hidden",
+              width: mainScreenViewActive
+                ? actualPresentingSideBarWidth
+                : width - 2 * spacing,
               height:
                 height -
                 2 * spacing -
-                (singleRow.length === 2 &&
-                !(presenterId || whiteboardStarted) &&
-                !isMobile
+                (singleRow.length === 2 && !mainScreenViewActive && !isMobile
                   ? 2 * gridVerticalSpacing
                   : 0),
               margin: spacing,
-              transition: "all 800ms",
+              transition: animationsEnabled ? "all 800ms" : undefined,
               transitionTimingFunction: "ease-in-out",
               paddingLeft:
                 mainContainerHorizontalPadding +
-                (!(presenterId || whiteboardStarted) &&
+                (!mainScreenViewActive &&
                 singleRow.length > 12 &&
                 singleRow.length < 17 &&
                 typeof sideBarMode !== "string"
@@ -385,16 +568,14 @@ const MainViewContainer = ({
                   : 0),
               paddingRight:
                 mainContainerHorizontalPadding +
-                (!(presenterId || whiteboardStarted) &&
+                (!mainScreenViewActive &&
                 singleRow.length > 12 &&
                 singleRow.length < 17 &&
                 typeof sideBarMode !== "string"
                   ? 160
                   : 0),
               paddingTop:
-                singleRow.length === 2 &&
-                !(presenterId || whiteboardStarted) &&
-                !isMobile
+                singleRow.length === 2 && !mainScreenViewActive && !isMobile
                   ? gridVerticalSpacing
                   : 0,
             }}
@@ -402,17 +583,15 @@ const MainViewContainer = ({
             <div
               style={{
                 height:
-                  (presenterId || whiteboardStarted
-                    ? (singleRow.length * presentingSideBarWidth * 2) / 3
+                  (mainScreenViewActive
+                    ? (singleRow.length * actualPresentingSideBarWidth * 2) / 3
                     : height) -
                   2 * spacing -
-                  (singleRow.length === 2 &&
-                  !(presenterId || whiteboardStarted) &&
-                  !isMobile
+                  (singleRow.length === 2 && !mainScreenViewActive && !isMobile
                     ? 2 * gridVerticalSpacing
                     : 0),
                 position: "relative",
-                transition: "height 800ms",
+                transition: animationsEnabled ? "height 800ms" : undefined,
                 transitionTimingFunction: "ease-in-out",
               }}
             >
@@ -422,9 +601,7 @@ const MainViewContainer = ({
                   key={`main_participant_${c.participantId}`}
                   {...c}
                   gutter={gutter}
-                  useVisibilitySensor={
-                    presenterId || whiteboardStarted ? true : false
-                  }
+                  useVisibilitySensor={mainScreenViewActive ? true : false}
                 />
               ))}
             </div>
@@ -438,5 +615,8 @@ const MainViewContainer = ({
 export default React.memo(
   MainViewContainer,
   (prevProps, nextProps) =>
-    prevProps.width === nextProps.width && prevProps.height === nextProps.height
+    prevProps.width === nextProps.width &&
+    prevProps.height === nextProps.height &&
+    prevProps.whiteboardToolbarWidth === nextProps.whiteboardToolbarWidth &&
+    prevProps.whiteboardSpacing === nextProps.whiteboardSpacing
 );

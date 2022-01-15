@@ -55,6 +55,7 @@ function ParticipantListItem({
     participantCanToggleOtherWebcam,
     canRemoveOtherParticipant,
     canPin,
+    animationsEnabled,
   } = useMeetingAppContext();
 
   const [isParticipantKickoutVisible, setIsParticipantKickoutVisible] =
@@ -134,7 +135,7 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: "all 200ms",
+                transition: animationsEnabled ? "all 200ms" : undefined,
                 right: expanded ? morePanelWidth : 0,
                 position: "absolute",
               }}
@@ -235,7 +236,7 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: "all 200ms",
+                transition: animationsEnabled ? "all 200ms" : undefined,
                 right: expanded ? 0 : -morePanelWidth,
                 position: "absolute",
                 opacity: expanded ? 1 : 0,
@@ -323,7 +324,10 @@ function ParticipantListItem({
               )}
             </Box>
           </Box>
-          <Box style={{ transition: "all 200ms" }} ml={expanded ? 1.5 : 1}>
+          <Box
+            style={{ transition: animationsEnabled ? "all 200ms" : undefined }}
+            ml={expanded ? 1.5 : 1}
+          >
             <IconButton
               style={{ padding: 0 }}
               onClick={(e) => {

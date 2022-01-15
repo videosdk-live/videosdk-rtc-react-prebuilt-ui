@@ -7,6 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useState } from "react";
+import { useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 
 const OutlineIconButton = ({
@@ -36,6 +37,8 @@ const OutlineIconButton = ({
     xs: 24 * (large ? 1.7 : 1),
   });
 
+  const { animationsEnabled } = useMeetingAppContext();
+
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
       <Box
@@ -59,7 +62,7 @@ const OutlineIconButton = ({
               ? focusBGColor
               : "#ffffff33"
           }`,
-          transition: "all 200ms",
+          transition: animationsEnabled ? "all 200ms" : undefined,
           transitionTimingFunction: "linear",
         }}
       >
@@ -90,7 +93,7 @@ const OutlineIconButton = ({
               alignItems: "center",
               borderRadius: theme.spacing(1),
               transform: `scale(${mouseOver ? (mouseDown ? 0.95 : 1.1) : 1})`,
-              transition: "all 200ms",
+              transition: animationsEnabled ? "all 200ms" : undefined,
               transitionTimingFunction: "linear",
             }}
           >

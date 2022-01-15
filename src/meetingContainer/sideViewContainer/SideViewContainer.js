@@ -123,8 +123,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const SideViewContainer = ({ topBarHeight, width, height }) => {
-  const { sideBarMode, setSideBarMode, endCallContainerRef } =
-    useMeetingAppContext();
+  const {
+    sideBarMode,
+    setSideBarMode,
+    endCallContainerRef,
+    animationsEnabled,
+  } = useMeetingAppContext();
   const isTab = useIsTab();
   const isMobile = useIsMobile();
 
@@ -153,7 +157,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
         height,
         position: "relative",
         width: isOpen ? width : 0,
-        transition: "width 400ms",
+        transition: animationsEnabled ? "width 400ms" : undefined,
         transitionTimingFunction: "ease-in-out",
       }}
     >

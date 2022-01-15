@@ -51,7 +51,14 @@ function WhiteboardContainer({
   const initialWidth = useRef(width);
 
   //
-  const { whiteboardState, canDrawOnWhiteboard } = useMeetingAppContext();
+  const {
+    whiteboardState,
+    canDrawOnWhiteboard,
+    animationsEnabled,
+    notificationAlertsEnabled,
+    notificationSoundEnabled,
+  } = useMeetingAppContext();
+
   const mMeeting = useMeeting({});
 
   //
@@ -338,13 +345,19 @@ function WhiteboardContainer({
 
         //
         const p = mMeeting.participants.get(data);
-        new Audio("/notification.mp3").play();
-        enqueueSnackbar(
-          `${
-            p ? nameTructed(p.displayName, 15) : "You"
-          } cleared the whiteboard 🗑️`,
-          { autoHideDuration: 4000 }
-        );
+
+        if (notificationSoundEnabled) {
+          new Audio("/notification.mp3").play();
+        }
+
+        if (notificationAlertsEnabled) {
+          enqueueSnackbar(
+            `${
+              p ? nameTructed(p.displayName, 15) : "You"
+            } cleared the whiteboard 🗑️`,
+            { autoHideDuration: 4000 }
+          );
+        }
 
         break;
       }
@@ -775,7 +788,7 @@ function WhiteboardContainer({
         height: originalHeight,
         display: "flex",
         backgroundColor: canvasBackgroundColor || "#F5F7F9",
-        transition: "height 800ms, width 800ms",
+        transition: animationsEnabled ? "height 800ms, width 800ms" : undefined,
       }}
     >
       <Box
@@ -821,7 +834,9 @@ function WhiteboardContainer({
             position: "relative",
             width,
             height,
-            transition: "height 800ms, width 800ms",
+            transition: animationsEnabled
+              ? "height 800ms, width 800ms"
+              : undefined,
           }}
         >
           <div
@@ -830,7 +845,9 @@ function WhiteboardContainer({
               height: height,
               position: "relative",
               backgroundColor: canvasBackgroundColor || "#F5F7F9",
-              transition: "height 800ms, width 800ms",
+              transition: animationsEnabled
+                ? "height 800ms, width 800ms"
+                : undefined,
             }}
             ref={canvasCotainerRef}
           >
@@ -841,7 +858,9 @@ function WhiteboardContainer({
                 height: dotBoxHeight,
                 top: dotBoxTop,
                 left: dotBoxLeft,
-                transition: "height 800ms, width 800ms",
+                transition: animationsEnabled
+                  ? "height 800ms, width 800ms"
+                  : undefined,
               }}
             >
               {arrX.map((_, itemx) =>
@@ -873,13 +892,20 @@ function WhiteboardContainer({
                 width: width,
                 height: height,
                 borderRadius: theme.spacing(1),
-                transition: "height 800ms, width 800ms",
+                transition: animationsEnabled
+                  ? "height 800ms, width 800ms"
+                  : undefined,
                 zIndex: 100,
               }}
             />
           </div>
           <canvas
-            style={{ display: "none", transition: "height 800ms, width 800ms" }}
+            style={{
+              display: "none",
+              transition: animationsEnabled
+                ? "height 800ms, width 800ms"
+                : undefined,
+            }}
             id="pdf-canvas"
           />
 

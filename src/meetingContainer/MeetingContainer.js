@@ -82,8 +82,6 @@ const MeetingContainer = () => {
   useSortActiveParticipants();
   const { participantRaisedHand } = useRaisedHandParticipants();
 
-  const topBarHeight = 60;
-
   const sideBarContainerWidth = useResponsiveSize({
     xl: 400,
     lg: 360,
@@ -122,7 +120,11 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
+    topbarEnabled,
+    notificationAlertsEnabled,
   } = useMeetingAppContext();
+
+  const topBarHeight = topbarEnabled ? 60 : 0;
 
   const isTab = useIsTab();
   const isMobile = useIsMobile();
@@ -175,6 +177,7 @@ const MeetingContainer = () => {
 
     if (json_verify(text)) {
       const { type } = JSON.parse(text);
+
       if (type === "CHAT") {
         const { data: messageData } = JSON.parse(text);
         if (!isLocal) {
@@ -183,11 +186,13 @@ const MeetingContainer = () => {
               `https://static.zujonow.com/prebuilt/notification.mp3`
             ).play();
           }
-          enqueueSnackbar(
-            trimSnackBarText(
-              `${nameTructed(senderName, 15)} says: ${messageData.message}`
-            )
-          );
+          if (notificationAlertsEnabled) {
+            enqueueSnackbar(
+              trimSnackBarText(
+                `${nameTructed(senderName, 15)} says: ${messageData.message}`
+              )
+            );
+          }
         }
       }
 
@@ -197,9 +202,11 @@ const MeetingContainer = () => {
             `https://static.zujonow.com/prebuilt/notification.mp3`
           ).play();
         }
-        enqueueSnackbar(
-          `${isLocal ? "You" : nameTructed(senderName, 15)} raised hand 🖐🏼`
-        );
+        if (notificationAlertsEnabled) {
+          enqueueSnackbar(
+            `${isLocal ? "You" : nameTructed(senderName, 15)} raised hand 🖐🏼`
+          );
+        }
         participantRaisedHand(senderId);
       }
 
@@ -210,13 +217,15 @@ const MeetingContainer = () => {
           ).play();
         }
 
-        enqueueSnackbar(
-          `${
-            isLocal
-              ? "You end the call"
-              : " This meeting has been ended by host"
-          }`
-        );
+        if (notificationAlertsEnabled) {
+          enqueueSnackbar(
+            `${
+              isLocal
+                ? "You end the call"
+                : " This meeting has been ended by host"
+            }`
+          );
+        }
       }
     }
   };
@@ -224,15 +233,23 @@ const MeetingContainer = () => {
   const _handleParticipantJoined = (data) => {
     // if (showJoinNotificationRef.current) {
     //   const { displayName } = data;
+    // if (notificationSoundEnabled) {
     //   new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    // }
+    // if (notificationAlertsEnabled) {
     //   enqueueSnackbar(`${displayName} joined the meeting`, {});
+    // }
     // }
   };
 
   const _handleParticipantLeft = (data) => {
     // const { displayName } = data;
+    // if (notificationSoundEnabled) {
     // new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    // }
+    // if (notificationAlertsEnabled) {
     // enqueueSnackbar(`${displayName} left the meeting`, {});
+    // }
   };
 
   const _handlePresenterChanged = (presenterId) => {
@@ -260,24 +277,30 @@ const MeetingContainer = () => {
           }
         }
       }
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.zujonow.com/prebuilt/notification.mp3`
+        ).play();
+      }
 
-      new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
-      enqueueSnackbar(
-        `${
-          isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
-        } started presenting`
-      );
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar(
+          `${
+            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          } started presenting`
+        );
+      }
     }
   };
 
   const _handleOnRecordingStarted = () => {
-    if (participantCanToggleRecording) {
+    if (participantCanToggleRecording && notificationAlertsEnabled) {
       enqueueSnackbar("Meeting recording is started.");
     }
   };
 
   const _handleOnRecordingStopped = () => {
-    if (participantCanToggleRecording) {
+    if (participantCanToggleRecording && notificationAlertsEnabled) {
       enqueueSnackbar("Meeting recording stopped.");
     }
   };
@@ -308,7 +331,7 @@ const MeetingContainer = () => {
     const partcipantDisplayName =
       mMeetingRef.current.participants.get(participantId)?.displayName || "";
 
-    if (showJoinNotificationRef.current) {
+    if (showJoinNotificationRef.current && notificationAlertsEnabled) {
       enqueueSnackbar(
         getPinMsg({
           localParticipant,
@@ -396,7 +419,7 @@ const MeetingContainer = () => {
                 flexDirection: isTab || isMobile ? "column-reverse" : "column",
               }}
             >
-              <TopBar {...{ topBarHeight }} />
+              {topbarEnabled && <TopBar {...{ topBarHeight }} />}
               <div
                 style={{
                   display: "flex",
@@ -404,7 +427,8 @@ const MeetingContainer = () => {
                 }}
               >
                 {mMeeting?.pinnedParticipants.size > 0 &&
-                meetingLayout !== meetingLayouts.GRID ? (
+                (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                  meetingLayout === meetingLayouts.SIDEBAR) ? (
                   <PinnedLayoutViewContainer
                     {...{
                       height: containerHeight - topBarHeight,

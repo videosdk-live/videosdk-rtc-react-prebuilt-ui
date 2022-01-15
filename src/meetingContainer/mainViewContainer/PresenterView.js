@@ -41,8 +41,12 @@ const PresenterView = ({ presenterId }) => {
   const pinnedParticipants = mMeeting?.pinnedParticipants;
 
   const isMobile = useIsMobile();
-  const { setOverlaidInfoVisible, mainViewParticipants, meetingLayout } =
-    useMeetingAppContext();
+  const {
+    setOverlaidInfoVisible,
+    mainViewParticipants,
+    meetingLayout,
+    animationsEnabled,
+  } = useMeetingAppContext();
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
   const theme = useTheme();
@@ -257,7 +261,7 @@ const PresenterView = ({ presenterId }) => {
                   // transform: `scale(${
                   //   mouseOver ? (mouseDown ? 0.95 : 1.05) : 1
                   // })`,
-                  transition: "all 200ms",
+                  transition: animationsEnabled ? "all 200ms" : undefined,
                   transitionTimingFunction: "linear",
                 }}
               >
