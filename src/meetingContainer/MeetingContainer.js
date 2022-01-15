@@ -23,6 +23,7 @@ import ClickAnywhereToContinue from "../components/ClickAnywhereToContinue";
 import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutViewContainer";
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
 import useWhiteBoard from "./useWhiteBoard";
+import ConfirmBox from "../components/ConfirmBox";
 
 const getPinMsg = ({
   localParticipant,
@@ -73,6 +74,7 @@ const MeetingContainer = () => {
   const mMeetingRef = useRef();
 
   const [containerHeight, setContainerHeight] = useState(0);
+  const [meetingError, setMeetingError] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
   const [localParticipantAllowedJoin, setLocalParticipantAllowedJoin] =
     useState(null);
@@ -122,6 +124,7 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
+    debug,
   } = useMeetingAppContext();
 
   const isTab = useIsTab();
@@ -180,7 +183,7 @@ const MeetingContainer = () => {
         if (!isLocal) {
           if (notificationSoundEnabled) {
             new Audio(
-              `https://static.zujonow.com/prebuilt/notification.mp3`
+              `https://static.videosdk.live/prebuilt/notification.mp3`
             ).play();
           }
           enqueueSnackbar(
@@ -194,7 +197,7 @@ const MeetingContainer = () => {
       if (type === "RAISE_HAND") {
         if (notificationSoundEnabled) {
           new Audio(
-            `https://static.zujonow.com/prebuilt/notification.mp3`
+            `https://static.videosdk.live/prebuilt/notification.mp3`
           ).play();
         }
         enqueueSnackbar(
@@ -206,7 +209,7 @@ const MeetingContainer = () => {
       if (type === "END_CALL") {
         if (notificationSoundEnabled) {
           new Audio(
-            `https://static.zujonow.com/prebuilt/notification.mp3`
+            `https://static.videosdk.live/prebuilt/notification.mp3`
           ).play();
         }
 
@@ -224,14 +227,14 @@ const MeetingContainer = () => {
   const _handleParticipantJoined = (data) => {
     // if (showJoinNotificationRef.current) {
     //   const { displayName } = data;
-    //   new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    //   new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     //   enqueueSnackbar(`${displayName} joined the meeting`, {});
     // }
   };
 
   const _handleParticipantLeft = (data) => {
     // const { displayName } = data;
-    // new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    // new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     // enqueueSnackbar(`${displayName} left the meeting`, {});
   };
 
@@ -261,7 +264,9 @@ const MeetingContainer = () => {
         }
       }
 
-      new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+      new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      ).play();
       enqueueSnackbar(
         `${
           isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
@@ -322,6 +327,32 @@ const MeetingContainer = () => {
     }
   };
 
+  const _handleOnError = (data) => {
+    const { code, message } = data;
+
+    const joiningErrCodes = [
+      4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,
+    ];
+
+    const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== 1;
+    const isCriticalError = `${code}`.startsWith("500");
+
+    new Audio(
+      isCriticalError
+        ? `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
+        : `https://static.videosdk.live/prebuilt/notification_err.mp3`
+    ).play();
+
+    setMeetingError({
+      code,
+      message: debug
+        ? message
+        : isJoiningError
+        ? "Unable to join meeting!"
+        : message,
+    });
+  };
+
   const mMeeting = useMeeting({
     onMeetingJoined: _handleOnMeetingJoined,
     onMeetingLeft: _handleMeetingLeft,
@@ -334,6 +365,7 @@ const MeetingContainer = () => {
     onEntryRequested: _handleOnEntryRequested,
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
+    onError: _handleOnError,
   });
 
   const _handleToggleFullScreen = () => {
@@ -385,6 +417,15 @@ const MeetingContainer = () => {
         position: "relative",
       }}
     >
+      <ConfirmBox
+        open={meetingError}
+        successText="OKAY"
+        onSuccess={() => {
+          setMeetingError(false);
+        }}
+        title={`Error Code: ${meetingError.code}`}
+        subTitle={meetingError.message}
+      />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
           <>
