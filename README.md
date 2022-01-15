@@ -91,7 +91,6 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | canToggleWhiteboard             | false         | participant can toggle whiteboard                                                           |
 | leftScreenActionButtonLabel     | -             | left screen custom action button label                                                      |
 | leftScreenActionButtonHref      | -             | left screen custom action button href                                                       |
-| maxResolution                   | "sd"          | max webcam resolution of that participant                                                   |
 
 ---
 
