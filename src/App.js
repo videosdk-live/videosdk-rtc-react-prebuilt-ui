@@ -138,9 +138,6 @@ const App = () => {
     if (typeof paramKeys.autoStartLiveStream !== "string") {
       paramKeys.autoStartLiveStream = "true";
     }
-    if (typeof paramKeys.debugEnabled !== "string") {
-      paramKeys.debugEnabled = "false";
-    }
 
     // if (paramKeys.recordingEnabled === "true") {
     //   if (
