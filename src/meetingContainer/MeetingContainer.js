@@ -124,7 +124,7 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
-    debugEnabled,
+    debug,
   } = useMeetingAppContext();
 
   const isTab = useIsTab();
@@ -345,7 +345,7 @@ const MeetingContainer = () => {
 
     setOnJoinError({
       code,
-      message: debugEnabled
+      message: debug
         ? message
         : isJoiningError
         ? "Unable to join meeting!"
