@@ -126,7 +126,6 @@ const MeetingContainer = () => {
     setMeetingLeft,
     debugEnabled,
   } = useMeetingAppContext();
-  console.log("Is Debug Enable", debugEnabled);
 
   const isTab = useIsTab();
   const isMobile = useIsMobile();

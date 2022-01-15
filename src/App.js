@@ -372,7 +372,6 @@ const App = () => {
       <MeetingProvider
         config={{
           meetingId: meetingIdValidation.meetingId,
-          participantId: "ahmed@zujo.io",
           micEnabled: joinScreenMic,
           webcamEnabled: joinScreenWebCam,
           name: name,
@@ -381,7 +380,7 @@ const App = () => {
               ? paramKeys.maxResolution
               : "sd",
         }}
-        token={"kjdfvkdfkvfjvh"}
+        token={paramKeys.token}
         joinWithoutUserInteraction
       >
         <MeetingContainer />
