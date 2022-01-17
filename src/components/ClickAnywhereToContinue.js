@@ -109,6 +109,7 @@ const ClickAnywhereToContinue = ({ onClick, title, brandLogoURL }) => {
                 color={"primary"}
                 style={{ fontWeight: "bold" }}
                 onClick={onClick}
+                id="join-meeting-button"
               >
                 JOIN THE MEETING
               </Button>
