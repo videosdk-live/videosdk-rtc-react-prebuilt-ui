@@ -9,6 +9,8 @@ import {
   useMemo,
 } from "react";
 import { validURL } from "./utils/common";
+import useIsMobile from "./utils/useIsMobile";
+import useIsTab from "./utils/useIsTab";
 
 export const MeetingAppContext = createContext();
 
@@ -100,6 +102,9 @@ export const MeetingAppProvider = ({
     }
   }, [redirectOnLeave]);
 
+  const isMobile = useIsMobile();
+  const isTab = useIsTab();
+
   return (
     <MeetingAppContext.Provider
       value={{
@@ -169,6 +174,10 @@ export const MeetingAppProvider = ({
         className={classes.container}
         autoHideDuration={5000}
         maxSnack={3}
+        anchorOrigin={{
+          vertical: isTab || isMobile ? "top" : "bottom",
+          horizontal: "left",
+        }}
       >
         {children}
       </SnackbarProvider>

@@ -26,8 +26,6 @@ const OutlineIconButton = ({
   buttonText,
   lottieOption,
 }) => {
-  console.log(lottieOption, "lottieOption");
-
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
@@ -100,13 +98,21 @@ const OutlineIconButton = ({
           >
             <Badge color={"secondary"} badgeContent={badge}>
               {lottieOption ? (
-                <Lottie
-                  options={lottieOption}
-                  eventListeners={[{ eventName: "done" }]}
-                  height={iconSize}
-                  width={iconSize}
-                  isClickToPauseDisabled
-                />
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Lottie
+                    options={lottieOption}
+                    eventListeners={[{ eventName: "done" }]}
+                    height={iconSize}
+                    // width={iconSize}
+                    isClickToPauseDisabled
+                  />
+                </Box>
               ) : (
                 <Icon
                   style={{
@@ -114,7 +120,7 @@ const OutlineIconButton = ({
                     height: iconSize,
                     width: iconSize,
                   }}
-                ></Icon>
+                />
               )}
             </Badge>
           </Box>
