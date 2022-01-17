@@ -71,6 +71,7 @@ const App = () => {
       animationsEnabled: "animationsEnabled",
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
+      participantId: "participantId",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -382,6 +383,7 @@ const App = () => {
             paramKeys.maxResolution === "sd" || paramKeys.maxResolution === "hd"
               ? paramKeys.maxResolution
               : "sd",
+          participantId: paramKeys.participantId,
         }}
         token={paramKeys.token}
         joinWithoutUserInteraction
