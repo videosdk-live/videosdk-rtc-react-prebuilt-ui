@@ -15,6 +15,7 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
+import recordingBlink from "../animations/recording-blink.json";
 
 import {
   Activities,
@@ -329,6 +330,15 @@ const RecordingBTN = () => {
     startRecording,
   ]);
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: recordingBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   return (
     <OutlineIconButton
       Icon={ScreenRecording}
@@ -342,6 +352,7 @@ const RecordingBTN = () => {
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
     />
   );
 };

@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
+import Lottie from "react-lottie";
 
 const OutlineIconButton = ({
   badge,
@@ -23,7 +24,10 @@ const OutlineIconButton = ({
   tooltipTitle,
   btnID,
   buttonText,
+  lottieOption,
 }) => {
+  console.log(lottieOption, "lottieOption");
+
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
@@ -95,13 +99,23 @@ const OutlineIconButton = ({
             }}
           >
             <Badge color={"secondary"} badgeContent={badge}>
-              <Icon
-                style={{
-                  color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
-                  height: iconSize,
-                  width: iconSize,
-                }}
-              ></Icon>
+              {lottieOption ? (
+                <Lottie
+                  options={lottieOption}
+                  eventListeners={[{ eventName: "done" }]}
+                  height={iconSize}
+                  width={iconSize}
+                  isClickToPauseDisabled
+                />
+              ) : (
+                <Icon
+                  style={{
+                    color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
+                    height: iconSize,
+                    width: iconSize,
+                  }}
+                ></Icon>
+              )}
             </Badge>
           </Box>
           {buttonText ? (
