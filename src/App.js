@@ -87,6 +87,7 @@ const App = () => {
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
       debug: "debug",
+      layoutPriority: "layoutPriority",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -208,8 +209,6 @@ const App = () => {
       case meetingLayouts.GRID:
       case meetingLayouts.SPOTLIGHT:
       case meetingLayouts.SIDEBAR:
-      case meetingLayouts.UNPINNED_SIDEBAR:
-      case meetingLayouts.UNPINNED_SPOTLIGHT:
         paramKeys.layout = paramKeys.layout.toUpperCase();
         break;
       default:
@@ -219,6 +218,18 @@ const App = () => {
 
     if (typeof paramKeys.canPin !== "string") {
       paramKeys.canPin = "false";
+    }
+
+    if (paramKeys.layoutPriority === "PIN") {
+      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+      }
+    } else if (paramKeys.layoutPriority === "SPEAKER") {
+      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+        paramKeys.layout = meetingLayouts.UNPINNED_SPOTLIGHT;
+      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+        paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
+      }
     }
 
     return paramKeys;
