@@ -79,44 +79,58 @@ const ClickAnywhereToContinue = ({ onClick, title, brandLogoURL }) => {
             alignItems: "center",
             flexDirection: "column",
           }}
-        >
-          {brandLogoErr || !brandLogoURL ? (
-            <Lottie
-              options={defaultOptions}
-              eventListeners={[{ eventName: "done" }]}
-              height={jsonSize}
-              width={jsonSize}
-              isClickToPauseDisabled
-            />
+        ></div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        {brandLogoErr || !brandLogoURL ? (
+          <Lottie
+            options={defaultOptions}
+            eventListeners={[{ eventName: "done" }]}
+            height={jsonSize}
+            width={jsonSize}
+            isClickToPauseDisabled
+          />
+        ) : (
+          <img
+            style={{
+              height: jsonSize,
+              width: jsonSize,
+            }}
+            src={brandLogoURL}
+            onError={(err) => {
+              console.log(err, "erer");
+              setBrandLogoErr(true);
+            }}
+          />
+        )}
+        <Box mt={5}>
+          {typeof onClick === "function" ? (
+            <Button
+              size={"large"}
+              variant="contained"
+              color={"primary"}
+              style={{ fontWeight: "bold" }}
+              onClick={onClick}
+            >
+              JOIN THE MEETING
+            </Button>
           ) : (
-            <img
-              style={{
-                height: jsonSize,
-                width: jsonSize,
-              }}
-              src={brandLogoURL}
-              onError={(err) => {
-                console.log(err, "erer");
-                setBrandLogoErr(true);
-              }}
-            />
+            <Typography variant="h4">{title}</Typography>
           )}
-          <Box mt={5}>
-            {typeof onClick === "function" ? (
-              <Button
-                size={"large"}
-                variant="contained"
-                color={"primary"}
-                style={{ fontWeight: "bold" }}
-                onClick={onClick}
-              >
-                JOIN THE MEETING
-              </Button>
-            ) : (
-              <Typography variant="h4">{title}</Typography>
-            )}
-          </Box>
-        </div>
+        </Box>
       </div>
     </div>
   );
