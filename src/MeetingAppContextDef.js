@@ -9,6 +9,8 @@ import {
   useMemo,
 } from "react";
 import { validURL } from "./utils/common";
+import useIsMobile from "./utils/useIsMobile";
+import useIsTab from "./utils/useIsTab";
 
 export const MeetingAppContext = createContext();
 
@@ -77,6 +79,7 @@ export const MeetingAppProvider = ({
   animationsEnabled,
   topbarEnabled,
   notificationAlertsEnabled,
+  debug,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -103,6 +106,9 @@ export const MeetingAppProvider = ({
       throw new Error("Ridirect url not valid");
     }
   }, [redirectOnLeave]);
+
+  const isMobile = useIsMobile();
+  const isTab = useIsTab();
 
   return (
     <MeetingAppContext.Provider
@@ -150,7 +156,7 @@ export const MeetingAppProvider = ({
         animationsEnabled,
         topbarEnabled,
         notificationAlertsEnabled,
-
+        debug,
         // states
         sideBarMode,
         activeSortedParticipants,
@@ -179,6 +185,10 @@ export const MeetingAppProvider = ({
         className={classes.container}
         autoHideDuration={5000}
         maxSnack={3}
+        anchorOrigin={{
+          vertical: isTab || isMobile ? "top" : "bottom",
+          horizontal: "left",
+        }}
       >
         {children}
       </SnackbarProvider>
