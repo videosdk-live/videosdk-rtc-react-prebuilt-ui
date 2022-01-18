@@ -246,10 +246,11 @@ const MicBTN = () => {
           return (
             <Tooltip
               placement="bottom"
-              title={localMicOn ? "Change microphone" : null}
+              // title={localMicOn ? "Change microphone" : null}
+              title={"Change microphone"}
             >
               <IconButton
-                disabled={!localMicOn}
+                // disabled={!localMicOn}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
                   handleClick(e);
@@ -408,10 +409,11 @@ const WebcamBTN = () => {
           return (
             <Tooltip
               placement="bottom"
-              title={localWebcamOn ? "Change webcam" : null}
+              // title={localWebcamOn ? "Change webcam" : null}
+              title={"Change webcam"}
             >
               <IconButton
-                disabled={!localWebcamOn}
+                // disabled={!localWebcamOn}
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -462,7 +464,8 @@ const EndCallBTN = () => {
   const classes = useStyles();
 
   const [isEndMeeting, setIsEndMeeting] = useState(false);
-  const { endCallContainerRef, canEndMeeting } = useMeetingAppContext();
+  const { endCallContainerRef, canEndMeeting, participantCanLeave } =
+    useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
 
@@ -494,11 +497,21 @@ const EndCallBTN = () => {
     >
       <OutlineIconButton
         ref={endCallContainerRef}
-        // tooltipTitle={"Leave call"}
+        tooltipTitle={
+          !participantCanLeave
+            ? "End Call"
+            : canEndMeeting
+            ? "Open popup"
+            : "Leave Call"
+        }
         bgColor={theme.palette.error.main}
         Icon={EndCall}
         onClick={(e) => {
-          canEndMeeting ? handleClick(e) : leave();
+          !participantCanLeave
+            ? setIsEndMeeting(true)
+            : canEndMeeting
+            ? handleClick(e)
+            : leave();
         }}
       />
       {canEndMeeting && (
@@ -646,6 +659,7 @@ const TopBar = ({ topBarHeight }) => {
     brandName,
     participantCanLeave,
     poweredBy,
+    canEndMeeting,
   } = useMeetingAppContext();
 
   const handleClickFAB = (event) => {
@@ -681,7 +695,7 @@ const TopBar = ({ topBarHeight }) => {
   const topBarIcons = useMemo(() => {
     const arr = [];
 
-    if (participantCanLeave) {
+    if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
     }
 
@@ -753,7 +767,7 @@ const TopBar = ({ topBarHeight }) => {
         borderTop: "1px solid #ffffff33",
       }}
     >
-      {participantCanLeave && (
+      {(participantCanLeave || canEndMeeting) && (
         <Box>
           <EndCallBTN />
         </Box>
