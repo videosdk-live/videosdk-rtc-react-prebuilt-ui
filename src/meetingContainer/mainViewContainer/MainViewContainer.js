@@ -207,6 +207,7 @@ const MainViewContainer = ({
     whiteboardStarted,
     activeSortedParticipants,
     animationsEnabled,
+    maxParticipantGridSize,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -237,6 +238,11 @@ const MainViewContainer = ({
 
       mainParticipants = [...mainParticipants, ...remainingParticipants];
     }
+
+    console.log(
+      meetingLayout === meetingLayouts.UNPINNED_SIDEBAR,
+      "meetingLayout === meetingLayouts.UNPINNED_SIDEBAR"
+    );
 
     if (meetingLayout === meetingLayouts.UNPINNED_SIDEBAR) {
       if (!(!!presenterId || !!whiteboardStarted)) {
@@ -319,7 +325,10 @@ const MainViewContainer = ({
       }
     }
 
-    const participantsCount = mainParticipants?.length || 1;
+    let participantsCount = mainParticipants?.length || 1;
+
+    if (participantsCount > maxParticipantGridSize) {
+    }
 
     const gridInfo = getGridRowsAndColumns({
       participantsCount,
@@ -366,6 +375,7 @@ const MainViewContainer = ({
     activeSpeakerId,
     lastActiveParticipantId,
     mainParticipantId,
+    maxParticipantGridSize,
   ]);
 
   const spacing = rowSpacing - gutter;
@@ -382,7 +392,10 @@ const MainViewContainer = ({
 
   const mainContainerHorizontalPadding = useMemo(
     () =>
-      presenterId || whiteboardStarted
+      presenterId ||
+      whiteboardStarted ||
+      (mainLayoutParticipantId &&
+        meetingLayout === meetingLayouts.UNPINNED_SIDEBAR)
         ? 0
         : typeof sideBarMode === "string"
         ? 0
@@ -410,6 +423,7 @@ const MainViewContainer = ({
       isPortrait,
       whiteboardStarted,
       presenterId,
+      mainLayoutParticipantId,
     ]
   );
 

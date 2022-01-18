@@ -80,6 +80,7 @@ export const MeetingAppProvider = ({
   topbarEnabled,
   notificationAlertsEnabled,
   debug,
+  maxParticipantGridSize,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -157,6 +158,8 @@ export const MeetingAppProvider = ({
         topbarEnabled,
         notificationAlertsEnabled,
         debug,
+        maxParticipantGridSize,
+
         // states
         sideBarMode,
         activeSortedParticipants,

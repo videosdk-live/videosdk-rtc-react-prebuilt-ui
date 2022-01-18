@@ -89,6 +89,7 @@ const App = () => {
       debug: "debug",
       layoutPriority: "layoutPriority",
       participantId: "participantId",
+      maxParticipantGridSize: "maxParticipantGridSize",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -232,6 +233,10 @@ const App = () => {
         paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
       }
     }
+
+    paramKeys.maxParticipantGridSize = parseInt(
+      paramKeys.maxParticipantGridSize
+    );
 
     return paramKeys;
   };
@@ -407,6 +412,7 @@ const App = () => {
             notificationAlertsEnabled:
               paramKeys.notificationAlertsEnabled === "false" ? false : true,
             debug: paramKeys.debug === "true" ? true : false,
+            maxParticipantGridSize: paramKeys.maxParticipantGridSize,
           }}
         >
           <MeetingProvider
