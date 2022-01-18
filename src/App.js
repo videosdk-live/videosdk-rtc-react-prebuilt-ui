@@ -284,11 +284,13 @@ const App = () => {
   };
 
   useEffect(() => {
-    validateMeetingId({
-      meetingId: paramKeys.meetingId,
-      token: paramKeys.token,
-      debug: paramKeys.debug === "true",
-    });
+    if (paramKeys.meetingId && paramKeys.token) {
+      validateMeetingId({
+        meetingId: paramKeys.meetingId,
+        token: paramKeys.token,
+        debug: paramKeys.debug === "true",
+      });
+    }
   }, [paramKeys]);
 
   const theme = useTheme();
