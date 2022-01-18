@@ -15,6 +15,7 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
+import recordingBlink from "../animations/recording-blink.json";
 
 import {
   Activities,
@@ -245,10 +246,11 @@ const MicBTN = () => {
           return (
             <Tooltip
               placement="bottom"
-              title={localMicOn ? "Change microphone" : null}
+              // title={localMicOn ? "Change microphone" : null}
+              title={"Change microphone"}
             >
               <IconButton
-                disabled={!localMicOn}
+                // disabled={!localMicOn}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
                   handleClick(e);
@@ -329,6 +331,15 @@ const RecordingBTN = () => {
     startRecording,
   ]);
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: recordingBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   return (
     <OutlineIconButton
       Icon={ScreenRecording}
@@ -342,6 +353,7 @@ const RecordingBTN = () => {
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
     />
   );
 };
@@ -397,10 +409,11 @@ const WebcamBTN = () => {
           return (
             <Tooltip
               placement="bottom"
-              title={localWebcamOn ? "Change webcam" : null}
+              // title={localWebcamOn ? "Change webcam" : null}
+              title={"Change webcam"}
             >
               <IconButton
-                disabled={!localWebcamOn}
+                // disabled={!localWebcamOn}
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -451,7 +464,8 @@ const EndCallBTN = () => {
   const classes = useStyles();
 
   const [isEndMeeting, setIsEndMeeting] = useState(false);
-  const { endCallContainerRef, canEndMeeting } = useMeetingAppContext();
+  const { endCallContainerRef, canEndMeeting, participantCanLeave } =
+    useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
 
@@ -483,11 +497,21 @@ const EndCallBTN = () => {
     >
       <OutlineIconButton
         ref={endCallContainerRef}
-        // tooltipTitle={"Leave call"}
+        tooltipTitle={
+          !participantCanLeave
+            ? "End Call"
+            : canEndMeeting
+            ? "Open popup"
+            : "Leave Call"
+        }
         bgColor={theme.palette.error.main}
         Icon={EndCall}
         onClick={(e) => {
-          canEndMeeting ? handleClick(e) : leave();
+          !participantCanLeave
+            ? setIsEndMeeting(true)
+            : canEndMeeting
+            ? handleClick(e)
+            : leave();
         }}
       />
       {canEndMeeting && (
@@ -635,6 +659,7 @@ const TopBar = ({ topBarHeight }) => {
     brandName,
     participantCanLeave,
     poweredBy,
+    canEndMeeting,
   } = useMeetingAppContext();
 
   const handleClickFAB = (event) => {
@@ -670,7 +695,7 @@ const TopBar = ({ topBarHeight }) => {
   const topBarIcons = useMemo(() => {
     const arr = [];
 
-    if (participantCanLeave) {
+    if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
     }
 
@@ -742,7 +767,7 @@ const TopBar = ({ topBarHeight }) => {
         borderTop: "1px solid #ffffff33",
       }}
     >
-      {participantCanLeave && (
+      {(participantCanLeave || canEndMeeting) && (
         <Box>
           <EndCallBTN />
         </Box>
@@ -864,11 +889,11 @@ const TopBar = ({ topBarHeight }) => {
               src={
                 defaultBrandLogoUrl ||
                 brandLogoURL ||
-                `https://static.zujonow.com/prebuilt/videosdk_logo_circle.png`
+                `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
               }
               onError={() => {
                 setDefaultBrandLogoUrl(
-                  `https://static.zujonow.com/prebuilt/videosdk_logo_circle.png`
+                  `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
                 );
               }}
             />

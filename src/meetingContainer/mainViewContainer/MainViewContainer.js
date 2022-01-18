@@ -183,12 +183,6 @@ const MainViewContainer = ({
   const activeSpeakerId = mMeeting?.activeSpeakerId;
   const mainParticipantId = mMeeting?.mainParticipant?.id;
 
-  console.log(
-    activeSpeakerId,
-    mainParticipantId,
-    "activeSpeakerId, mainParticipantId"
-  );
-
   const isMobile = useIsMobile();
   const isTab = useIsTab();
   const isSMDesktop = useIsSMDesktop();
@@ -214,8 +208,6 @@ const MainViewContainer = ({
     activeSortedParticipants,
     animationsEnabled,
   } = useMeetingAppContext();
-
-  console.log(meetingLayout, "meetingLayout");
 
   const lastActiveParticipantId = useMemo(
     () => activeSortedParticipants[0]?.participantId,
