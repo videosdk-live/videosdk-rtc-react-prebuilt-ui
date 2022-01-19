@@ -1,6 +1,6 @@
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { meetingLayouts, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsMobile from "../utils/useIsMobile";
 import useIsTab from "../utils/useIsTab";
 import {
@@ -30,6 +30,7 @@ const useSortActiveParticipants = () => {
     mainViewParticipants,
     setActiveSortedParticipants,
     setMainViewParticipants,
+    meetingLayout,
   } = useMeetingAppContext();
 
   const sortActiveParticipants = (activeParticipants) => {
@@ -223,6 +224,10 @@ const useSortActiveParticipants = () => {
   const maxParticipantInMainView = useMemo(() => {
     return presenterId
       ? isLGDesktop
+        ? meetingLayout === meetingLayouts.UNPINNED_SIDEBAR
+          ? 5
+          : 4
+        : meetingLayout === meetingLayouts.UNPINNED_SIDEBAR
         ? 4
         : 3
       : isLGDesktop
@@ -234,7 +239,7 @@ const useSortActiveParticipants = () => {
       : isMobile
       ? maxParticipantGridCount_mobile
       : 0;
-  }, [isLGDesktop, isSMDesktop, isTab, isMobile, presenterId]);
+  }, [isLGDesktop, isSMDesktop, isTab, isMobile, presenterId, meetingLayout]);
 
   useEffect(() => {
     setPresenterId(mPresenterId);

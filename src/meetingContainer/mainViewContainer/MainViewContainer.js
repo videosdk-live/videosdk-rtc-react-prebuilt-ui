@@ -239,11 +239,6 @@ const MainViewContainer = ({
       mainParticipants = [...mainParticipants, ...remainingParticipants];
     }
 
-    console.log(
-      meetingLayout === meetingLayouts.UNPINNED_SIDEBAR,
-      "meetingLayout === meetingLayouts.UNPINNED_SIDEBAR"
-    );
-
     if (meetingLayout === meetingLayouts.UNPINNED_SIDEBAR) {
       if (!(!!presenterId || !!whiteboardStarted)) {
         if (_pinnedParticipants.size === 0) {
@@ -325,9 +320,21 @@ const MainViewContainer = ({
       }
     }
 
-    let participantsCount = mainParticipants?.length || 1;
+    let participantsCount = mainParticipants?.length;
 
     if (participantsCount > maxParticipantGridSize) {
+      mainParticipants = mainParticipants.slice(0, maxParticipantGridSize);
+      const remainingMainParticipants = mainParticipants.splice(
+        maxParticipantGridSize
+      );
+
+      remainingMainParticipants.forEach((p) => {
+        _pinnedParticipants.delete(p);
+      });
+
+      _pinnedParticipants = new Map(_pinnedParticipants);
+
+      participantsCount = mainParticipants?.length;
     }
 
     const gridInfo = getGridRowsAndColumns({
@@ -394,8 +401,7 @@ const MainViewContainer = ({
     () =>
       presenterId ||
       whiteboardStarted ||
-      (mainLayoutParticipantId &&
-        meetingLayout === meetingLayouts.UNPINNED_SIDEBAR)
+      (mainLayoutParticipantId && singleRow.length !== 0)
         ? 0
         : typeof sideBarMode === "string"
         ? 0
@@ -514,7 +520,7 @@ const MainViewContainer = ({
 
             {presenterId && <PresenterView presenterId={presenterId} />}
 
-            {!presenterId && !whiteboardStarted && (
+            {!presenterId && !whiteboardStarted && mainLayoutParticipantId && (
               <div
                 style={{
                   position: "absolute",
@@ -524,10 +530,10 @@ const MainViewContainer = ({
                     singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
                   right:
                     singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
-                  backgroundColor: theme.palette.background.paper,
-                  transition: animationsEnabled ? "width 800ms" : undefined,
-                  transitionTimingFunction: "ease-in-out",
-                  borderRadius: theme.spacing(1),
+                  // backgroundColor: theme.palette.background.paper,
+                  // transition: animationsEnabled ? "width 800ms" : undefined,
+                  // transitionTimingFunction: "ease-in-out",
+                  // borderRadius: theme.spacing(1),
                 }}
               >
                 <MemoizedMotionParticipant
