@@ -198,8 +198,10 @@ export const localAndPinnedOnTop = ({
         (pId) => pId === localParticipantId
       );
 
-      combined.splice(localParticipantIndex, 1);
-      combined.unshift(localParticipantId);
+      if (localParticipantIndex !== -1) {
+        combined.splice(localParticipantIndex, 1);
+        combined.unshift(localParticipantId);
+      }
     }
 
     return combined;
@@ -228,8 +230,10 @@ export const localAndPinnedOnTop = ({
       (pId) => pId === localParticipantId
     );
 
-    participantsArr.splice(localParticipantIndex, 1);
-    participantsArr.unshift(localParticipantId);
+    if (localParticipantIndex !== -1) {
+      participantsArr.splice(localParticipantIndex, 1);
+      participantsArr.unshift(localParticipantId);
+    }
 
     return participantsArr;
   }

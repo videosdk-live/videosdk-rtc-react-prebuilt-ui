@@ -28,8 +28,13 @@ const PinnedLayoutViewContainer = ({
   whiteboardToolbarWidth,
   whiteboardSpacing,
 }) => {
-  const { meetingLayout, sideBarMode, whiteboardStarted, animationsEnabled } =
-    useMeetingAppContext();
+  const {
+    meetingLayout,
+    sideBarMode,
+    whiteboardStarted,
+    animationsEnabled,
+    hideLocalParticipant,
+  } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
@@ -173,6 +178,7 @@ const PinnedLayoutViewContainer = ({
     isLGDesktop,
     isPortrait,
     whiteboardStarted,
+    hideLocalParticipant,
   ]);
 
   const theme = useTheme();

@@ -89,7 +89,11 @@ const App = () => {
       debug: "debug",
       layoutPriority: "layoutPriority",
       participantId: "participantId",
-      maxParticipantGridSize: "maxParticipantGridSize",
+      layoutGridSize: "layoutGridSize",
+      recordingLayoutType: "recordingLayoutType",
+      recordingLayoutPriority: "recordingLayoutPriority",
+      recordingLayoutGridSize: "recordingLayoutGridSize",
+      hideLocalParticipant: "hideLocalParticipant",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -234,9 +238,7 @@ const App = () => {
       }
     }
 
-    paramKeys.maxParticipantGridSize = parseInt(
-      paramKeys.maxParticipantGridSize
-    );
+    paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
 
     return paramKeys;
   };
@@ -261,7 +263,7 @@ const App = () => {
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token, debug }) => {
-    const BASE_URL = "https://api.videosdk.live";
+    const BASE_URL = "https://dev-api.videosdk.live";
 
     const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
 
@@ -412,7 +414,12 @@ const App = () => {
             notificationAlertsEnabled:
               paramKeys.notificationAlertsEnabled === "false" ? false : true,
             debug: paramKeys.debug === "true" ? true : false,
-            maxParticipantGridSize: paramKeys.maxParticipantGridSize,
+            layoutGridSize: paramKeys.layoutGridSize,
+            recordingLayoutType: paramKeys.recordingLayoutType,
+            recordingLayoutPriority: paramKeys.recordingLayoutPriority,
+            recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
+            hideLocalParticipant:
+              paramKeys.hideLocalParticipant === "true" ? true : false,
           }}
         >
           <MeetingProvider

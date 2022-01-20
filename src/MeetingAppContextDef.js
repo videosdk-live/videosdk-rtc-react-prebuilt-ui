@@ -80,7 +80,11 @@ export const MeetingAppProvider = ({
   topbarEnabled,
   notificationAlertsEnabled,
   debug,
-  maxParticipantGridSize,
+  layoutGridSize,
+  recordingLayoutType,
+  recordingLayoutPriority,
+  recordingLayoutGridSize,
+  hideLocalParticipant,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -158,7 +162,11 @@ export const MeetingAppProvider = ({
         topbarEnabled,
         notificationAlertsEnabled,
         debug,
-        maxParticipantGridSize,
+        layoutGridSize,
+        recordingLayoutType,
+        recordingLayoutPriority,
+        recordingLayoutGridSize,
+        hideLocalParticipant,
 
         // states
         sideBarMode,

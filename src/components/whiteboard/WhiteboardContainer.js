@@ -571,7 +571,7 @@ function WhiteboardContainer({
 
           try {
             const res = await fetch(
-              `https://call-api.videosdk.live/file-upload?roomId=${mMeeting.meetingId}`,
+              `https://dev-call-api.videosdk.live/file-upload?roomId=${mMeeting.meetingId}`,
               requestOptions
             );
 
