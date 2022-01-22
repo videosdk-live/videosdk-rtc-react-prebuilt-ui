@@ -443,6 +443,7 @@ function WhiteboardContainer({
 
   useEffect(() => {
     sendData({ event: "BG_COLOR", data: canvasBackgroundColor });
+    setTool("pencil");
   }, []);
 
   // on canvas resize, set canvas zoom with objects
