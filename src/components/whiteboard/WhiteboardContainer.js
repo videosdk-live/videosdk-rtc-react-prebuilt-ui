@@ -483,7 +483,6 @@ function WhiteboardContainer({
       fill: fabricRef.current.freeDrawingBrush.color,
       left: pointer.x,
       top: pointer.y,
-      fill: "rgba(0,0,0,0)",
       stroke: fabricRef.current.freeDrawingBrush.color,
       strokeWidth: 2,
     });

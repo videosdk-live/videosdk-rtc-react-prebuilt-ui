@@ -6,9 +6,9 @@ import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
-import ErrorPage from "./components/ErrorPage";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
+// import ErrorPage from "./components/ErrorPage";
 
 const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(null);
@@ -434,8 +434,6 @@ const App = () => {
               paramKeys.canDrawOnWhiteboard === "true" ? true : false,
             canToggleWhiteboard:
               paramKeys.canToggleWhiteboard === "true" ? true : false,
-            whiteboardEnabled:
-              paramKeys.whiteboardEnabled === "true" ? true : false,
             meetingLeft,
             setMeetingLeft,
             animationsEnabled:
@@ -515,11 +513,11 @@ const App = () => {
           setMeetingError(({ message }) => {
             throw new Error(message);
 
-            return {
-              message: null,
-              code: null,
-              isVisible: false,
-            };
+            // return {
+            //   message: null,
+            //   code: null,
+            //   isVisible: false,
+            // };
           });
         }}
         title={`Error Code: ${meetingError.code}`}
