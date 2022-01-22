@@ -94,6 +94,9 @@ const App = () => {
       recordingLayoutPriority: "recordingLayoutPriority",
       recordingLayoutGridSize: "recordingLayoutGridSize",
       hideLocalParticipant: "hideLocalParticipant",
+      alwaysShowOverlay: "alwaysShowOverlay",
+      sideStackSize: "sideStackSize",
+      reduceEdgeSpacing: "reduceEdgeSpacing",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -240,6 +243,39 @@ const App = () => {
 
     paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
 
+    paramKeys.recordingLayoutGridSize = parseInt(
+      paramKeys.recordingLayoutGridSize
+    );
+
+    paramKeys.sideStackSize = parseInt(paramKeys.sideStackSize);
+
+    if (
+      typeof paramKeys.layoutGridSize === "number" &&
+      paramKeys.layoutGridSize <= 0
+    ) {
+      configErr = `"layoutGridSize" is not a valid number`;
+      playNotificationErr();
+      setMeetingError({ message: configErr, code: 4001, isVisible: true });
+    }
+
+    if (
+      typeof paramKeys.recordingLayoutGridSize === "number" &&
+      paramKeys.recordingLayoutGridSize <= 0
+    ) {
+      configErr = `"recordingLayoutGridSize" is not a valid number`;
+      playNotificationErr();
+      setMeetingError({ message: configErr, code: 4001, isVisible: true });
+    }
+
+    if (
+      typeof paramKeys.sideStackSize === "number" &&
+      paramKeys.sideStackSize <= 0
+    ) {
+      configErr = `"sideStackSize" is not a valid number`;
+      playNotificationErr();
+      setMeetingError({ message: configErr, code: 4001, isVisible: true });
+    }
+
     return paramKeys;
   };
 
@@ -282,12 +318,6 @@ const App = () => {
         meetingId: validatedMeetingId,
         reqError: null,
         reqStatusCode: null,
-      });
-
-      setMeetingError({
-        message: null,
-        code: null,
-        isVisible: false,
       });
     } else {
       setMeetingIdValidation({
@@ -420,6 +450,11 @@ const App = () => {
             recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
             hideLocalParticipant:
               paramKeys.hideLocalParticipant === "true" ? true : false,
+            alwaysShowOverlay:
+              paramKeys.alwaysShowOverlay === "true" ? true : false,
+            sideStackSize: paramKeys.sideStackSize,
+            reduceEdgeSpacing:
+              paramKeys.reduceEdgeSpacing === "true" ? true : false,
           }}
         >
           <MeetingProvider
@@ -477,10 +512,14 @@ const App = () => {
         open={meetingError.isVisible}
         successText="OKAY"
         onSuccess={() => {
-          setMeetingError({
-            message: null,
-            code: null,
-            isVisible: false,
+          setMeetingError(({ message }) => {
+            throw new Error(message);
+
+            return {
+              message: null,
+              code: null,
+              isVisible: false,
+            };
           });
         }}
         title={`Error Code: ${meetingError.code}`}

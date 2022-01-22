@@ -34,6 +34,7 @@ const PinnedLayoutViewContainer = ({
     whiteboardStarted,
     animationsEnabled,
     hideLocalParticipant,
+    reduceEdgeSpacing,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -192,7 +193,7 @@ const PinnedLayoutViewContainer = ({
   });
 
   const gutter = 4;
-  const spacing = rowSpacing - gutter;
+  const spacing = (reduceEdgeSpacing ? 4 : rowSpacing) - gutter;
 
   const presentingSideBarWidth = useResponsiveSize({
     xl: 320,
@@ -290,7 +291,10 @@ const PinnedLayoutViewContainer = ({
         >
           {spotlightParticipantId ? (
             spotlightMediaType === "SHARE" ? (
-              <PresenterView presenterId={spotlightParticipantId} />
+              <PresenterView
+                key={`spotlightParticipantId_${spotlightParticipantId}`}
+                presenterId={spotlightParticipantId}
+              />
             ) : spotlightMediaType === "WHITEBOARD" ? (
               <WhiteboardContainer
                 {...{
@@ -327,6 +331,7 @@ const PinnedLayoutViewContainer = ({
                   relativeTop: 0,
                   relativeLeft: 0,
                 }}
+                key={`spotlightParticipantId_${spotlightParticipantId}`}
               />
             )
           ) : null}

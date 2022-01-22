@@ -1,6 +1,6 @@
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { meetingLayouts, useMeetingAppContext } from "../MeetingAppContextDef";
+import { useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsMobile from "../utils/useIsMobile";
 import useIsTab from "../utils/useIsTab";
 import {
@@ -19,6 +19,7 @@ const useSortActiveParticipants = () => {
   const activeSortedParticipantsRef = useRef();
   const maxParticipantInMainViewRef = useRef();
   const mainViewParticipantsRef = useRef();
+  const localParticipantIdRef = useRef();
 
   const isLGDesktop = useIsLGDesktop();
   const isSMDesktop = useIsSMDesktop();
@@ -31,6 +32,9 @@ const useSortActiveParticipants = () => {
     setActiveSortedParticipants,
     setMainViewParticipants,
     meetingLayout,
+    whiteboardStarted,
+    layoutGridSize,
+    hideLocalParticipant,
   } = useMeetingAppContext();
 
   const sortActiveParticipants = (activeParticipants) => {
@@ -47,18 +51,23 @@ const useSortActiveParticipants = () => {
   };
 
   const _handleOnSpeakerChanged = (activeSpeakerId) => {
-    if (activeSpeakerId) {
+    if (
+      activeSpeakerId &&
+      (hideLocalParticipant
+        ? activeSpeakerId !== localParticipantIdRef.current
+        : true)
+    ) {
       const mainViewParticipants = mainViewParticipantsRef.current;
       const activeParticipants = activeSortedParticipantsRef.current;
       const lastActiveOn = new Date().getTime();
 
-      const foundIndex = activeParticipants.findIndex(({ participantId }) => {
-        return activeSpeakerId === participantId;
-      });
+      const foundIndex = activeParticipants.findIndex(
+        ({ participantId }) => activeSpeakerId === participantId
+      );
 
-      const foundIndexMain = mainViewParticipants.findIndex((participantId) => {
-        return activeSpeakerId === participantId;
-      });
+      const foundIndexMain = mainViewParticipants.findIndex(
+        (participantId) => activeSpeakerId === participantId
+      );
 
       const newParticipantObj = {
         participantId: activeSpeakerId,
@@ -201,11 +210,21 @@ const useSortActiveParticipants = () => {
       activeParticipants.push({ participantId, lastActiveOn });
     });
 
-    const activeSortedParticipants = sortActiveParticipants(activeParticipants);
+    let activeSortedParticipants = sortActiveParticipants(activeParticipants);
 
-    const slicedParticipantIds = activeSortedParticipants
+    let slicedParticipantIds = activeSortedParticipants
       .slice(0, maxParticipantInMainView)
       .map(({ participantId }) => participantId);
+
+    if (hideLocalParticipant) {
+      activeSortedParticipants = activeSortedParticipants.filter(
+        ({ participantId }) => participantId !== localParticipantIdRef.current
+      );
+
+      slicedParticipantIds = slicedParticipantIds.filter(
+        (participantId) => participantId !== localParticipantIdRef.current
+      );
+    }
 
     setActiveSortedParticipants(activeSortedParticipants);
     setMainViewParticipants(slicedParticipantIds);
@@ -220,26 +239,39 @@ const useSortActiveParticipants = () => {
 
   const participants = mMeeting?.participants;
   const mPresenterId = mMeeting?.presenterId;
+  const localParticipantId = mMeeting?.localParticipant?.id;
 
   const maxParticipantInMainView = useMemo(() => {
-    return presenterId
-      ? isLGDesktop
-        ? meetingLayout === meetingLayouts.UNPINNED_SIDEBAR
-          ? 5
-          : 4
-        : meetingLayout === meetingLayouts.UNPINNED_SIDEBAR
-        ? 4
-        : 3
-      : isLGDesktop
-      ? maxParticipantGridCount_large_desktop
-      : isSMDesktop
-      ? maxParticipantGridCount_desktop
-      : isTab
-      ? maxParticipantGridCount_tab
-      : isMobile
-      ? maxParticipantGridCount_mobile
-      : 0;
-  }, [isLGDesktop, isSMDesktop, isTab, isMobile, presenterId, meetingLayout]);
+    let n =
+      presenterId || whiteboardStarted
+        ? isLGDesktop
+          ? 4
+          : 3
+        : isLGDesktop
+        ? maxParticipantGridCount_large_desktop
+        : isSMDesktop
+        ? maxParticipantGridCount_desktop
+        : isTab
+        ? maxParticipantGridCount_tab
+        : isMobile
+        ? maxParticipantGridCount_mobile
+        : 0;
+
+    if (typeof layoutGridSize === "number" && n > layoutGridSize) {
+      n = layoutGridSize;
+    }
+
+    return n;
+  }, [
+    isLGDesktop,
+    isSMDesktop,
+    isTab,
+    isMobile,
+    presenterId,
+    meetingLayout,
+    whiteboardStarted,
+    layoutGridSize,
+  ]);
 
   useEffect(() => {
     setPresenterId(mPresenterId);
@@ -261,6 +293,10 @@ const useSortActiveParticipants = () => {
   useEffect(() => {
     participantsRef.current = participants;
   }, [participants]);
+
+  useEffect(() => {
+    localParticipantIdRef.current = localParticipantId;
+  }, [localParticipantId]);
 };
 
 export default useSortActiveParticipants;

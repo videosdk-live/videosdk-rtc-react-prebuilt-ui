@@ -209,9 +209,9 @@ const MainViewContainer = ({
     animationsEnabled,
     layoutGridSize,
     hideLocalParticipant,
+    sideStackSize,
+    reduceEdgeSpacing,
   } = useMeetingAppContext();
-
-  console.log(meetingLayout, "meetingLayout");
 
   const lastActiveParticipantId = useMemo(
     () => activeSortedParticipants[0]?.participantId,
@@ -234,7 +234,7 @@ const MainViewContainer = ({
 
     let mainParticipants = [...mainViewParticipants];
 
-    if (mainScreenViewActive) {
+    if (presenterId || whiteboardStarted) {
       const remainingParticipants = [...participants.keys()].filter(
         (pId) => mainParticipants.findIndex((id) => id === pId) === -1
       );
@@ -322,6 +322,35 @@ const MainViewContainer = ({
             }
           }
         }
+      } else {
+        if (_pinnedParticipants.size === 0) {
+          if (activeSpeakerId) {
+            let activeIndex = mainParticipants.findIndex(
+              (id) => id === activeSpeakerId
+            );
+
+            if (activeIndex !== -1) {
+              const firstMainParticipantId = mainParticipants[0];
+              mainParticipants[0] = activeSpeakerId;
+              mainParticipants[activeIndex] = firstMainParticipantId;
+
+              _pinnedParticipants.delete(firstMainParticipantId);
+              _pinnedParticipants = new Map(_pinnedParticipants);
+            } else {
+              const mainGridRemovedParticipantId = mainParticipants.pop();
+
+              mainParticipants[0] = activeSpeakerId;
+
+              _pinnedParticipants.delete(mainGridRemovedParticipantId);
+              _pinnedParticipants = new Map(_pinnedParticipants);
+            }
+          } else {
+          }
+        } else {
+          if (activeSpeakerId) {
+          } else {
+          }
+        }
       }
     } else if (meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT) {
       if (!!presenterId || !!whiteboardStarted) {
@@ -347,6 +376,19 @@ const MainViewContainer = ({
       participantsCount = mainParticipants?.length;
     }
 
+    if (mainScreenViewActive && participantsCount > sideStackSize) {
+      mainParticipants = mainParticipants.slice(0, sideStackSize);
+      const remainingMainParticipants = mainParticipants.splice(sideStackSize);
+
+      remainingMainParticipants.forEach((p) => {
+        _pinnedParticipants.delete(p);
+      });
+
+      _pinnedParticipants = new Map(_pinnedParticipants);
+
+      participantsCount = mainParticipants?.length;
+    }
+
     const gridInfo = getGridRowsAndColumns({
       participantsCount,
       isMobile,
@@ -357,34 +399,22 @@ const MainViewContainer = ({
       isPresenting: !!mainScreenViewActive,
     });
 
-    console.log(
-      mainParticipants,
-      hideLocalParticipant,
-      localParticipantId,
-      "mainParticipants, hideLocalParticipant, localParticipantId"
-    );
-
     const { singleRow } = getGridForMainParticipants({
-      participants:
-        meetingLayout === meetingLayouts.UNPINNED_SIDEBAR ||
-        meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
-          ? mainParticipants
-          : localAndPinnedOnTop({
-              localParticipantId: hideLocalParticipant
-                ? null
-                : localParticipantId,
-              participants: mainParticipants,
-              pinnedParticipantIds: [..._pinnedParticipants.keys()],
-              moveLocalUnpinnedOnTop:
-                _pinnedParticipants.size &&
-                meetingLayout !== meetingLayouts.GRID
-                  ? false
-                  : true,
-            }),
+      participants: localAndPinnedOnTop({
+        localParticipantId: hideLocalParticipant ? null : localParticipantId,
+        participants: mainParticipants,
+        pinnedParticipantIds:
+          meetingLayout === meetingLayouts.UNPINNED_SIDEBAR ||
+          meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+            ? []
+            : [..._pinnedParticipants.keys()],
+        moveLocalUnpinnedOnTop:
+          _pinnedParticipants.size && meetingLayout !== meetingLayouts.GRID
+            ? false
+            : true,
+      }),
       gridInfo,
     });
-
-    console.log(singleRow, "singleRow");
 
     return { singleRow, mainLayoutParticipantId };
   }, [
@@ -405,9 +435,10 @@ const MainViewContainer = ({
     mainParticipantId,
     layoutGridSize,
     hideLocalParticipant,
+    sideStackSize,
   ]);
 
-  const spacing = rowSpacing - gutter;
+  const spacing = reduceEdgeSpacing ? 4 : rowSpacing - gutter;
 
   const theme = useTheme();
 
@@ -568,6 +599,7 @@ const MainViewContainer = ({
                     relativeTop: 0,
                     relativeLeft: 0,
                   }}
+                  key={`mainLayoutParticipantId_${mainLayoutParticipantId}`}
                 />
               </div>
             )}

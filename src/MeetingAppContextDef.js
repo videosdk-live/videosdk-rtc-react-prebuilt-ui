@@ -85,6 +85,9 @@ export const MeetingAppProvider = ({
   recordingLayoutPriority,
   recordingLayoutGridSize,
   hideLocalParticipant,
+  alwaysShowOverlay,
+  sideStackSize,
+  reduceEdgeSpacing,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -167,6 +170,9 @@ export const MeetingAppProvider = ({
         recordingLayoutPriority,
         recordingLayoutGridSize,
         hideLocalParticipant,
+        alwaysShowOverlay,
+        sideStackSize,
+        reduceEdgeSpacing,
 
         // states
         sideBarMode,

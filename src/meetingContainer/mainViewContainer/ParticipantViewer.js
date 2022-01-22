@@ -32,7 +32,6 @@ export const CornerDisplayName = ({
   pinState,
   pin,
   unpin,
-  participantId,
   mouseOver,
 }) => {
   const theme = useTheme();
@@ -41,7 +40,7 @@ export const CornerDisplayName = ({
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
 
-  const { overlaidInfoVisible, canPin, animationsEnabled } =
+  const { overlaidInfoVisible, canPin, animationsEnabled, alwaysShowOverlay } =
     useMeetingAppContext();
 
   const defaultOptions = {
@@ -63,23 +62,13 @@ export const CornerDisplayName = ({
 
   const show = useMemo(
     () =>
-      mouseOver
-        ? true
-        : isActiveSpeaker
-        ? true
-        : overlaidInfoVisible
-        ? true
-        : false,
-    [isActiveSpeaker, overlaidInfoVisible, mouseOver]
+      alwaysShowOverlay || mouseOver || isActiveSpeaker || overlaidInfoVisible,
+    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible]
   );
 
   const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
 
-  const showPin = useMemo(
-    () =>
-      isMobile || isTab ? show : isPinned ? true : mouseOver ? true : false,
-    [mouseOver, isMobile, isTab, isPinned]
-  );
+  const showPin = useMemo(() => isPinned || mouseOver, [isPinned, mouseOver]);
 
   return (
     <>
@@ -162,7 +151,6 @@ export const CornerDisplayName = ({
             top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
             right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             transform: `scale(${show ? 1 : 0})`,
-
             padding: isMobile ? 2 : isTab ? 3 : 4,
             backgroundColor: isActiveSpeaker
               ? "#00000066"
@@ -208,10 +196,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const presenterId = mMeeting?.presenterId;
 
-  const { setOverlaidInfoVisible, whiteboardStarted, animationsEnabled } =
-    useMeetingAppContext();
-
-  // const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
+  const {
+    setOverlaidInfoVisible,
+    whiteboardStarted,
+    animationsEnabled,
+    alwaysShowOverlay,
+  } = useMeetingAppContext();
 
   const {
     displayName,
@@ -234,27 +224,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [webcamStream, webcamOn]);
 
-  // useEffect(() => {
-  //   if (videoPlayer.current) {
-  //     if (webcamOn) {
-  //       const mediaStream = new MediaStream();
-  //       mediaStream.addTrack(webcamStream.track);
-
-  //       videoPlayer.current.srcObject = mediaStream;
-  //       videoPlayer.current.play().catch((err) => {
-  //         if (
-  //           err.message ===
-  //           "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-  //         ) {
-  //           console.error("wecam" + err.message);
-  //         }
-  //       });
-  //     } else {
-  //       videoPlayer.current.srcObject = null;
-  //     }
-  //   }
-  // }, [webcamStream, webcamOn, isPortrait]);
-
   const participantAccentColor = useMemo(() => getRandomColor("light"), []);
 
   const theme = useTheme();
@@ -263,13 +232,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     if (!quality) return;
     setQuality(quality);
   }, [quality, setQuality]);
-
-  // useEffect(() => {
-  //   typeof webcamStream?.resume === "function" && webcamStream?.resume();
-  //   return () => {
-  //     typeof webcamStream?.pause === "function" && webcamStream?.pause();
-  //   };
-  // }, [webcamStream]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
