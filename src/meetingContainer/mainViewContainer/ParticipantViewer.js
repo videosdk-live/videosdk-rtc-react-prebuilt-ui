@@ -68,7 +68,10 @@ export const CornerDisplayName = ({
 
   const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
 
-  const showPin = useMemo(() => isPinned || mouseOver, [isPinned, mouseOver]);
+  const showPin = useMemo(
+    () => (alwaysShowOverlay ? isPinned : isPinned || mouseOver),
+    [alwaysShowOverlay, isPinned, mouseOver]
+  );
 
   return (
     <>

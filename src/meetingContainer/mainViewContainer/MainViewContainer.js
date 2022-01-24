@@ -354,7 +354,8 @@ const MainViewContainer = ({
       }
     } else if (meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT) {
       if (!!presenterId || !!whiteboardStarted) {
-        mainParticipants = [activeSpeakerId || lastActiveParticipantId];
+        // mainParticipants = [activeSpeakerId || lastActiveParticipantId];
+        mainParticipants = [];
       } else {
         mainParticipants = [];
         mainLayoutParticipantId = activeSpeakerId || lastActiveParticipantId;

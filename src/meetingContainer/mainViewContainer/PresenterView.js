@@ -174,6 +174,7 @@ const PresenterView = ({ presenterId }) => {
       <div
         style={{
           height: mobilePortrait ? "50%" : "100%",
+          width: "100%",
           position: "relative",
         }}
         className={"video-contain"}
