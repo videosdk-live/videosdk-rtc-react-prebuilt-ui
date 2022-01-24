@@ -88,6 +88,7 @@ export const MeetingAppProvider = ({
   alwaysShowOverlay,
   sideStackSize,
   reduceEdgeSpacing,
+  isRecorder,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -173,6 +174,7 @@ export const MeetingAppProvider = ({
         alwaysShowOverlay,
         sideStackSize,
         reduceEdgeSpacing,
+        isRecorder,
 
         // states
         sideBarMode,

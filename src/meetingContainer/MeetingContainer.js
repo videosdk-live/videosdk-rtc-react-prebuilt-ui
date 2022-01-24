@@ -125,6 +125,7 @@ const MeetingContainer = () => {
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
+    isRecorder,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;

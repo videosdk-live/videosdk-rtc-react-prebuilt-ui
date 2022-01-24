@@ -323,9 +323,11 @@ const RecordingBTN = () => {
       setTimeout(() => {
         if (!defaultRecordingActionTaken) {
           startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            type: recordingLayoutType,
-            priority: recordingLayoutPriority,
-            gridSize: recordingLayoutGridSize,
+            layout: {
+              type: recordingLayoutType,
+              priority: recordingLayoutPriority,
+              gridSize: recordingLayoutGridSize,
+            },
           });
         }
       }, 5000);
@@ -355,9 +357,11 @@ const RecordingBTN = () => {
           stopRecording();
         } else {
           startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            type: recordingLayoutType,
-            priority: recordingLayoutPriority,
-            gridSize: recordingLayoutGridSize,
+            layout: {
+              type: recordingLayoutType,
+              priority: recordingLayoutPriority,
+              gridSize: recordingLayoutGridSize,
+            },
           });
         }
       }}

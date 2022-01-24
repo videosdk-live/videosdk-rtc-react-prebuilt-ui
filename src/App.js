@@ -97,6 +97,7 @@ const App = () => {
       alwaysShowOverlay: "alwaysShowOverlay",
       sideStackSize: "sideStackSize",
       reduceEdgeSpacing: "reduceEdgeSpacing",
+      isRecorder: "isRecorder",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -241,6 +242,19 @@ const App = () => {
       }
     }
 
+    if (paramKeys.isRecorder === "true") {
+      paramKeys.micEnabled = "false";
+      paramKeys.webcamEnabled = "false";
+      paramKeys.hideLocalParticipant = "true";
+      paramKeys.alwaysShowOverlay = "true";
+      paramKeys.sideStackSize = "5";
+      paramKeys.reduceEdgeSpacing = "true";
+      paramKeys.topbarEnabled = "false";
+      paramKeys.notificationSoundEnabled = "false";
+      paramKeys.notificationAlertsEnabled = "false";
+      paramKeys.animationsEnabled = "false";
+    }
+
     paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
 
     paramKeys.recordingLayoutGridSize = parseInt(
@@ -299,7 +313,7 @@ const App = () => {
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token, debug }) => {
-    const BASE_URL = "https://dev-api.videosdk.live";
+    const BASE_URL = "https://api.videosdk.live";
 
     const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
 
@@ -396,13 +410,10 @@ const App = () => {
             autoStartRecording: paramKeys.autoStartRecording === "true",
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
-            brandingEnabled:
-              paramKeys.brandingEnabled === "true" ? true : false,
-            poweredBy: paramKeys.poweredBy === "true" ? true : false,
-            liveStreamEnabled:
-              paramKeys.liveStreamEnabled === "true" ? true : false,
-            autoStartLiveStream:
-              paramKeys.autoStartLiveStream === "true" ? true : false,
+            brandingEnabled: paramKeys.brandingEnabled === "true",
+            poweredBy: paramKeys.poweredBy === "true",
+            liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
+            autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
             liveStreamOutputs: paramKeys.liveStreamOutputs,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0
@@ -410,49 +421,41 @@ const App = () => {
                 : null,
             brandName:
               paramKeys.brandName?.length > 0 ? paramKeys.brandName : null,
-            participantCanLeave:
-              paramKeys.participantCanLeave === "false" ? false : true,
-            askJoin: paramKeys.askJoin === "true" ? true : false,
+            participantCanLeave: paramKeys.participantCanLeave !== "false",
+            askJoin: paramKeys.askJoin === "true",
             participantCanToggleOtherMic:
-              paramKeys.participantCanToggleOtherMic === "true" ? true : false,
+              paramKeys.participantCanToggleOtherMic === "true",
             participantCanToggleOtherWebcam:
-              paramKeys.participantCanToggleOtherWebcam === "true"
-                ? true
-                : false,
+              paramKeys.participantCanToggleOtherWebcam === "true",
             notificationSoundEnabled:
-              paramKeys.notificationSoundEnabled === "true" ? true : false,
+              paramKeys.notificationSoundEnabled === "true",
             layout: paramKeys.layout,
-            canPin: paramKeys.canPin === "true" ? true : false,
+            canPin: paramKeys.canPin === "true",
             selectedMic,
             selectedWebcam,
             joinScreenWebCam,
             joinScreenMic,
             canRemoveOtherParticipant:
-              paramKeys.canRemoveOtherParticipant === "true" ? true : false,
-            canEndMeeting: paramKeys.canEndMeeting === "true" ? true : false,
-            canDrawOnWhiteboard:
-              paramKeys.canDrawOnWhiteboard === "true" ? true : false,
-            canToggleWhiteboard:
-              paramKeys.canToggleWhiteboard === "true" ? true : false,
+              paramKeys.canRemoveOtherParticipant === "true",
+            canEndMeeting: paramKeys.canEndMeeting === "true",
+            canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
+            canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
             meetingLeft,
             setMeetingLeft,
-            animationsEnabled:
-              paramKeys.animationsEnabled === "false" ? false : true,
-            topbarEnabled: paramKeys.topbarEnabled === "false" ? false : true,
+            animationsEnabled: paramKeys.animationsEnabled !== "false",
+            topbarEnabled: paramKeys.topbarEnabled !== "false",
             notificationAlertsEnabled:
-              paramKeys.notificationAlertsEnabled === "false" ? false : true,
-            debug: paramKeys.debug === "true" ? true : false,
+              paramKeys.notificationAlertsEnabled !== "false",
+            debug: paramKeys.debug === "true",
             layoutGridSize: paramKeys.layoutGridSize,
             recordingLayoutType: paramKeys.recordingLayoutType,
             recordingLayoutPriority: paramKeys.recordingLayoutPriority,
             recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
-            hideLocalParticipant:
-              paramKeys.hideLocalParticipant === "true" ? true : false,
-            alwaysShowOverlay:
-              paramKeys.alwaysShowOverlay === "true" ? true : false,
+            hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
+            alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
             sideStackSize: paramKeys.sideStackSize,
-            reduceEdgeSpacing:
-              paramKeys.reduceEdgeSpacing === "true" ? true : false,
+            reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
+            isRecorder: paramKeys.isRecorder === "true",
           }}
         >
           <MeetingProvider
