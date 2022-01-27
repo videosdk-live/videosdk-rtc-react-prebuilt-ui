@@ -204,6 +204,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     whiteboardStarted,
     animationsEnabled,
     alwaysShowOverlay,
+    isRecorder,
   } = useMeetingAppContext();
 
   const {
@@ -232,9 +233,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    if (!quality) return;
+    if (!quality || isRecorder) return;
+
     setQuality(quality);
-  }, [quality, setQuality]);
+  }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -264,6 +266,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       typeof webcamStream?.resume === "function" && webcamStream?.resume();
     }
   }, [presenterId, webcamOn, webcamStream]);
+
+  useEffect(() => {
+    setQuality("high");
+  }, [isRecorder]);
 
   return (
     <VisibilitySensor

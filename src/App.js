@@ -465,8 +465,10 @@ const App = () => {
               webcamEnabled: joinScreenWebCam,
               name: name,
               maxResolution:
-                paramKeys.maxResolution === "sd" ||
-                paramKeys.maxResolution === "hd"
+                paramKeys.isRecorder === "true"
+                  ? "hd"
+                  : paramKeys.maxResolution === "sd" ||
+                    paramKeys.maxResolution === "hd"
                   ? paramKeys.maxResolution
                   : "sd",
               participantId: paramKeys.participantId,
