@@ -794,11 +794,11 @@ const TopBar = ({ topBarHeight }) => {
             <ChatBTN />
           </Box>
         ) : null
-      ) : (
+      ) : chatEnabled ? (
         <Box ml={2}>
           <ChatBTN />
         </Box>
-      )}
+      ) : null}
       {!isPortrait && recordingEnabled && (
         <Box ml={2}>
           <RecordingBTN />

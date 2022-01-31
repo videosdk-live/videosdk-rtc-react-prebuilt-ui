@@ -36,6 +36,7 @@ const MeetingLeftScreen = ({
   setMeetingLeft,
   leftScreenActionButtonLabel,
   leftScreenActionButtonHref,
+  leftScreenRejoinButtonEnabled,
 }) => {
   const defaultOptions = {
     loop: false,
@@ -103,24 +104,38 @@ const MeetingLeftScreen = ({
             alignItems: "center",
           }}
         >
-          <Button
-            onClick={() => {
-              setMeetingLeft(false);
-            }}
-            size={isSMDesktop || isLGDesktop ? "large" : "medium"}
-            variant="contained"
-            color={"primary"}
-            style={{ textTransform: "capitalize", fontWeight: "bold" }}
-          >
-            Rejoin Meeting
-          </Button>
+          {leftScreenRejoinButtonEnabled && (
+            <Button
+              onClick={() => {
+                setMeetingLeft(false);
+              }}
+              size={isSMDesktop || isLGDesktop ? "large" : "medium"}
+              variant="contained"
+              color={"primary"}
+              style={{ textTransform: "capitalize", fontWeight: "bold" }}
+            >
+              Rejoin Meeting
+            </Button>
+          )}
           {leftScreenActionButtonLabel &&
           leftScreenActionButtonLabel !== "undefined" &&
           leftScreenActionButtonHref &&
           leftScreenActionButtonHref !== "undefined" ? (
             <Box
-              mt={isSMDesktop || isLGDesktop ? 0 : 2}
-              ml={isSMDesktop || isLGDesktop ? 3 : 0}
+              mt={
+                leftScreenRejoinButtonEnabled
+                  ? isSMDesktop || isLGDesktop
+                    ? 0
+                    : 2
+                  : 0
+              }
+              ml={
+                leftScreenRejoinButtonEnabled
+                  ? isSMDesktop || isLGDesktop
+                    ? 3
+                    : 0
+                  : 0
+              }
             >
               <Link target={"_top"} href={leftScreenActionButtonHref}>
                 <Button

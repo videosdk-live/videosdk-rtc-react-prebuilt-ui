@@ -84,6 +84,7 @@ const App = () => {
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
       maxResolution: "maxResolution",
       debug: "debug",
+      leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -127,9 +128,9 @@ const App = () => {
     if (typeof paramKeys.webcamEnabled !== "string") {
       paramKeys.webcamEnabled = "true";
     }
-    if (typeof paramKeys.redirectOnLeave !== "string") {
-      paramKeys.redirectOnLeave = "true";
-    }
+    // if (typeof paramKeys.redirectOnLeave !== "string") {
+    //   paramKeys.redirectOnLeave = "true";
+    // }
     if (typeof paramKeys.chatEnabled !== "string") {
       paramKeys.chatEnabled = "true";
     }
@@ -302,6 +303,9 @@ const App = () => {
           brandLogoURL={paramKeys.brandLogoURL}
           leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
           leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+          leftScreenRejoinButtonEnabled={
+            paramKeys.leftScreenRejoinButtonEnabled !== "false"
+          }
           setMeetingLeft={setMeetingLeft}
         />
       ) : meetingIdValidation.isLoading ? (
