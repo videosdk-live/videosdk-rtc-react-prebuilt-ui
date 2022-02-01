@@ -254,6 +254,7 @@ const App = () => {
       paramKeys.notificationSoundEnabled = "false";
       paramKeys.notificationAlertsEnabled = "false";
       paramKeys.animationsEnabled = "false";
+      paramKeys.redirectOnLeave = undefined;
     }
 
     paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
@@ -367,15 +368,17 @@ const App = () => {
   return (
     <>
       {meetingLeft ? (
-        <MeetingLeftScreen
-          brandLogoURL={paramKeys.brandLogoURL}
-          leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
-          leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
-          leftScreenRejoinButtonEnabled={
-            paramKeys.leftScreenRejoinButtonEnabled !== "false"
-          }
-          setMeetingLeft={setMeetingLeft}
-        />
+        paramKeys.isRecorder === "true" ? null : (
+          <MeetingLeftScreen
+            brandLogoURL={paramKeys.brandLogoURL}
+            leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
+            leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+            leftScreenRejoinButtonEnabled={
+              paramKeys.leftScreenRejoinButtonEnabled !== "false"
+            }
+            setMeetingLeft={setMeetingLeft}
+          />
+        )
       ) : meetingIdValidation.isLoading ? (
         <Box
           style={{
