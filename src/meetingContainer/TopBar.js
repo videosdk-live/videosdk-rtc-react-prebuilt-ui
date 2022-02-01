@@ -135,7 +135,7 @@ const ActivitiesBTN = ({ onClick }) => {
   );
 };
 
-const WhiteBoardBTN = () => {
+const WhiteBoardBTN = ({ onClick }) => {
   const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
     useMeetingAppContext();
   const mMeeting = useMeeting({});
@@ -149,6 +149,8 @@ const WhiteBoardBTN = () => {
           Icon={Gesture}
           isFocused={whiteboardStarted}
           onClick={() => {
+            typeof onClick === "function" && onClick();
+
             whiteboardStarted
               ? mMeeting.meeting.stopWhiteboard()
               : mMeeting.meeting.startWhiteboard();
@@ -807,11 +809,11 @@ const TopBar = ({ topBarHeight }) => {
             <ChatBTN />
           </Box>
         ) : null
-      ) : (
+      ) : chatEnabled ? (
         <Box ml={2}>
           <ChatBTN />
         </Box>
-      )}
+      ) : null}
       {!isPortrait && recordingEnabled && (
         <Box ml={2}>
           <RecordingBTN />
@@ -859,6 +861,11 @@ const TopBar = ({ topBarHeight }) => {
               <ActivitiesBTN onClick={handleCloseFAB} />
             </Box>
           )} */}
+          {whiteboardEnabled && (
+            <Box mb={1.2}>
+              <WhiteBoardBTN onClick={handleCloseFAB} />
+            </Box>
+          )}
           {screenShareEnabled && (
             <Box mb={1.2}>
               <ScreenShareBTN onClick={handleCloseFAB} />
