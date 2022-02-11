@@ -61,6 +61,8 @@ const MotionParticipant = ({
 
   const animeConfig = { stiffness: 180, damping: 22 };
 
+  const { animationsEnabled } = useMeetingAppContext();
+
   return (
     <TransitionMotion
       style={{
@@ -68,7 +70,7 @@ const MotionParticipant = ({
         left: spring(relativeLeft, animeConfig),
         height: spring(relativeHeight, animeConfig),
         width: spring(relativeWidth, animeConfig),
-        scale: spring(mounted ? 1 : 0, animeConfig),
+        scale: spring(mounted ? 1 : animationsEnabled ? 0 : 0.5, animeConfig),
       }}
     >
       {({ top, left, height, width, scale }) => (
@@ -507,7 +509,7 @@ const MainViewContainer = ({
           width,
           backgroundColor: theme.palette.background.default,
           overflow: "hidden",
-          transition: animationsEnabled ? "width 400ms" : undefined,
+          transition: animationsEnabled ? "width 400ms" : "width 200ms",
           transitionTimingFunction: "ease-in-out",
           display: "flex",
           position: "relative",
@@ -519,7 +521,7 @@ const MainViewContainer = ({
               ? width - actualPresentingSideBarWidth
               : 0,
             height,
-            transition: animationsEnabled ? "width 800ms" : undefined,
+            transition: animationsEnabled ? "width 800ms" : "width 400ms",
             transitionTimingFunction: "ease-in-out",
             paddingLeft: mainScreenViewActive ? spacing : 0,
             paddingTop: mainScreenViewActive ? spacing : 0,
@@ -537,7 +539,7 @@ const MainViewContainer = ({
                 presenterId || whiteboardStarted
                   ? theme.palette.background.paper
                   : undefined,
-              transition: animationsEnabled ? "width 800ms" : undefined,
+              transition: animationsEnabled ? "width 800ms" : "width 400ms",
               transitionTimingFunction: "ease-in-out",
               borderRadius: theme.spacing(1),
               overflow: "hidden",
@@ -584,10 +586,6 @@ const MainViewContainer = ({
                     singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
                   right:
                     singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
-                  // backgroundColor: theme.palette.background.paper,
-                  // transition: animationsEnabled ? "width 800ms" : undefined,
-                  // transitionTimingFunction: "ease-in-out",
-                  // borderRadius: theme.spacing(1),
                 }}
               >
                 <MemoizedMotionParticipant
@@ -623,7 +621,7 @@ const MainViewContainer = ({
                   ? 2 * gridVerticalSpacing
                   : 0),
               margin: spacing,
-              transition: animationsEnabled ? "all 800ms" : undefined,
+              transition: animationsEnabled ? "all 800ms" : "all 400ms",
               transitionTimingFunction: "ease-in-out",
               paddingLeft:
                 mainContainerHorizontalPadding +
@@ -658,7 +656,7 @@ const MainViewContainer = ({
                     ? 2 * gridVerticalSpacing
                     : 0),
                 position: "relative",
-                transition: animationsEnabled ? "height 800ms" : undefined,
+                transition: animationsEnabled ? "height 800ms" : "height 400ms",
                 transitionTimingFunction: "ease-in-out",
               }}
             >

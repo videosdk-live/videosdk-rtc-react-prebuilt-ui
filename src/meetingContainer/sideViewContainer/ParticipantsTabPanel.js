@@ -135,7 +135,7 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: animationsEnabled ? "all 200ms" : undefined,
+                transition: animationsEnabled ? "all 200ms" : "all 100ms",
                 right: expanded ? morePanelWidth : 0,
                 position: "absolute",
               }}
@@ -236,7 +236,7 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: animationsEnabled ? "all 200ms" : undefined,
+                transition: animationsEnabled ? "all 200ms" : "all 100ms",
                 right: expanded ? 0 : -morePanelWidth,
                 position: "absolute",
                 opacity: expanded ? 1 : 0,
@@ -325,7 +325,9 @@ function ParticipantListItem({
             </Box>
           </Box>
           <Box
-            style={{ transition: animationsEnabled ? "all 200ms" : undefined }}
+            style={{
+              transition: animationsEnabled ? "all 200ms" : "all 100ms",
+            }}
             ml={expanded ? 1.5 : 1}
           >
             <IconButton

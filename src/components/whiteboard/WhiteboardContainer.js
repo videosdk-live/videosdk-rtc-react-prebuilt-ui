@@ -788,7 +788,9 @@ function WhiteboardContainer({
         height: originalHeight,
         display: "flex",
         backgroundColor: canvasBackgroundColor || "#F5F7F9",
-        transition: animationsEnabled ? "height 800ms, width 800ms" : undefined,
+        transition: animationsEnabled
+          ? "height 800ms, width 800ms"
+          : "height 400ms, width 400ms",
       }}
     >
       <Box

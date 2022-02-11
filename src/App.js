@@ -246,7 +246,7 @@ const App = () => {
     if (paramKeys.isRecorder === "true") {
       paramKeys.micEnabled = "false";
       paramKeys.webcamEnabled = "false";
-      paramKeys.hideLocalParticipant = "true";
+      paramKeys.hideLocalParticipant = "false";
       paramKeys.alwaysShowOverlay = "true";
       paramKeys.sideStackSize = "5";
       paramKeys.reduceEdgeSpacing = "true";

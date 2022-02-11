@@ -2,7 +2,7 @@
   "name": "videosdk-rtc-react-prebuilt-ui",
   "version": "0.1.25",
   "private": true,
-  "homepage": "https://dev-embed.videosdk.live/rtc-js-prebuilt/0.1.25/",
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/pre-0.1.25/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",

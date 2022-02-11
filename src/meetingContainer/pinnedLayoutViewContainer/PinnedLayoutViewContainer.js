@@ -237,7 +237,7 @@ const PinnedLayoutViewContainer = ({
         width,
         backgroundColor: theme.palette.background.default,
         overflow: "hidden",
-        transition: animationsEnabled ? "width 400ms" : undefined,
+        transition: animationsEnabled ? "width 400ms" : "width 200ms",
         transitionTimingFunction: "ease-in-out",
         display: "flex",
         flexDirection:
@@ -255,7 +255,7 @@ const PinnedLayoutViewContainer = ({
               : width
             : 0,
           height: mobilePortrait && !presenterId ? height / 2 : height,
-          transition: animationsEnabled ? "width 800ms" : undefined,
+          transition: animationsEnabled ? "width 800ms" : "width 400ms",
           transitionTimingFunction: "ease-in-out",
           paddingLeft: spacing,
           paddingTop: spacing,
@@ -278,7 +278,7 @@ const PinnedLayoutViewContainer = ({
                 (singleRow.length === 0
                   ? 2 * mainContainerHorizontalPadding
                   : 0),
-            transition: animationsEnabled ? "width 800ms" : undefined,
+            transition: animationsEnabled ? "width 800ms" : "width 400ms",
             transitionTimingFunction: "ease-in-out",
             borderRadius: theme.spacing(1),
             overflow: "hidden",
@@ -400,7 +400,7 @@ const PinnedLayoutViewContainer = ({
                 ? 2 * gridVerticalSpacing
                 : 0),
             margin: spacing,
-            transition: animationsEnabled ? "all 800ms" : undefined,
+            transition: animationsEnabled ? "all 800ms" : "all 400ms",
             transitionTimingFunction: "ease-in-out",
             paddingLeft: mainContainerHorizontalPadding,
             paddingRight: mainContainerHorizontalPadding,
@@ -420,7 +420,7 @@ const PinnedLayoutViewContainer = ({
                   ? 2 * gridVerticalSpacing
                   : 0),
               position: "relative",
-              transition: animationsEnabled ? "height 800ms" : undefined,
+              transition: animationsEnabled ? "height 800ms" : "height 400ms",
               transitionTimingFunction: "ease-in-out",
             }}
           >

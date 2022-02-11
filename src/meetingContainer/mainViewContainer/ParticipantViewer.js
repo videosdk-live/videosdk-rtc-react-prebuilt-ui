@@ -94,7 +94,7 @@ export const CornerDisplayName = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: animationsEnabled ? "all 200ms" : undefined,
+          transition: animationsEnabled ? "all 200ms" : "all 100ms",
           transitionTimingFunction: "linear",
         }}
       >
@@ -116,7 +116,7 @@ export const CornerDisplayName = ({
             right: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             bottom: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
             transform: `scale(${showPin ? 1 : 0})`,
-            transition: animationsEnabled ? "all 200ms" : undefined,
+            transition: animationsEnabled ? "all 200ms" : "all 100ms",
             transitionTimingFunction: "linear",
           }}
         >
@@ -164,7 +164,7 @@ export const CornerDisplayName = ({
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 24,
-            transition: animationsEnabled ? "all 200ms" : undefined,
+            transition: animationsEnabled ? "all 200ms" : "all 100ms",
             transitionTimingFunction: "linear",
           }}
         >

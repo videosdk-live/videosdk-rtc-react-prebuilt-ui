@@ -262,7 +262,7 @@ const PresenterView = ({ presenterId }) => {
                   // transform: `scale(${
                   //   mouseOver ? (mouseDown ? 0.95 : 1.05) : 1
                   // })`,
-                  transition: animationsEnabled ? "all 200ms" : undefined,
+                  transition: animationsEnabled ? "all 200ms" : "all 100ms",
                   transitionTimingFunction: "linear",
                 }}
               >
