@@ -32,7 +32,6 @@ export const CornerDisplayName = ({
   pinState,
   pin,
   unpin,
-  participantId,
   mouseOver,
 }) => {
   const theme = useTheme();
@@ -41,7 +40,8 @@ export const CornerDisplayName = ({
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
 
-  const { overlaidInfoVisible, canPin } = useMeetingAppContext();
+  const { overlaidInfoVisible, canPin, animationsEnabled, alwaysShowOverlay } =
+    useMeetingAppContext();
 
   const defaultOptions = {
     loop: true,
@@ -62,22 +62,15 @@ export const CornerDisplayName = ({
 
   const show = useMemo(
     () =>
-      mouseOver
-        ? true
-        : isActiveSpeaker
-        ? true
-        : overlaidInfoVisible
-        ? true
-        : false,
-    [isActiveSpeaker, overlaidInfoVisible, mouseOver]
+      alwaysShowOverlay || mouseOver || isActiveSpeaker || overlaidInfoVisible,
+    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible]
   );
 
   const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
 
   const showPin = useMemo(
-    () =>
-      isMobile || isTab ? show : isPinned ? true : mouseOver ? true : false,
-    [mouseOver, isMobile, isTab, isPinned]
+    () => (alwaysShowOverlay ? isPinned : isPinned || mouseOver),
+    [alwaysShowOverlay, isPinned, mouseOver]
   );
 
   return (
@@ -101,7 +94,7 @@ export const CornerDisplayName = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: "all 200ms",
+          transition: animationsEnabled ? "all 200ms" : "all 100ms",
           transitionTimingFunction: "linear",
         }}
       >
@@ -123,7 +116,7 @@ export const CornerDisplayName = ({
             right: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             bottom: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
             transform: `scale(${showPin ? 1 : 0})`,
-            transition: "all 200ms",
+            transition: animationsEnabled ? "all 200ms" : "all 100ms",
             transitionTimingFunction: "linear",
           }}
         >
@@ -161,7 +154,6 @@ export const CornerDisplayName = ({
             top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
             right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             transform: `scale(${show ? 1 : 0})`,
-
             padding: isMobile ? 2 : isTab ? 3 : 4,
             backgroundColor: isActiveSpeaker
               ? "#00000066"
@@ -172,7 +164,7 @@ export const CornerDisplayName = ({
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 24,
-            transition: "all 200ms",
+            transition: animationsEnabled ? "all 200ms" : "all 100ms",
             transitionTimingFunction: "linear",
           }}
         >
@@ -207,9 +199,13 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const presenterId = mMeeting?.presenterId;
 
-  const { setOverlaidInfoVisible, whiteboardStarted } = useMeetingAppContext();
-
-  // const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
+  const {
+    setOverlaidInfoVisible,
+    whiteboardStarted,
+    animationsEnabled,
+    alwaysShowOverlay,
+    isRecorder,
+  } = useMeetingAppContext();
 
   const {
     displayName,
@@ -232,42 +228,15 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [webcamStream, webcamOn]);
 
-  // useEffect(() => {
-  //   if (videoPlayer.current) {
-  //     if (webcamOn) {
-  //       const mediaStream = new MediaStream();
-  //       mediaStream.addTrack(webcamStream.track);
-
-  //       videoPlayer.current.srcObject = mediaStream;
-  //       videoPlayer.current.play().catch((err) => {
-  //         if (
-  //           err.message ===
-  //           "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-  //         ) {
-  //           console.error("wecam" + err.message);
-  //         }
-  //       });
-  //     } else {
-  //       videoPlayer.current.srcObject = null;
-  //     }
-  //   }
-  // }, [webcamStream, webcamOn, isPortrait]);
-
   const participantAccentColor = useMemo(() => getRandomColor("light"), []);
 
   const theme = useTheme();
 
   useEffect(() => {
-    if (!quality) return;
-    setQuality(quality);
-  }, [quality, setQuality]);
+    if (!quality || isRecorder) return;
 
-  // useEffect(() => {
-  //   typeof webcamStream?.resume === "function" && webcamStream?.resume();
-  //   return () => {
-  //     typeof webcamStream?.pause === "function" && webcamStream?.pause();
-  //   };
-  // }, [webcamStream]);
+    setQuality(quality);
+  }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -297,6 +266,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       typeof webcamStream?.resume === "function" && webcamStream?.resume();
     }
   }, [presenterId, webcamOn, webcamStream]);
+
+  useEffect(() => {
+    setQuality("high");
+  }, [isRecorder]);
 
   return (
     <VisibilitySensor
@@ -409,7 +382,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
                 justifyContent: "center",
                 borderRadius: 100,
                 backgroundColor: participantAccentColor,
-                transition: "height 800ms, width 800ms",
+                transition: animationsEnabled
+                  ? "height 800ms, width 800ms"
+                  : undefined,
                 transitionTimingFunction: "ease-in-out",
               }}
             >

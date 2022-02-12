@@ -33,6 +33,8 @@ export const meetingLayouts = {
   SPOTLIGHT: "SPOTLIGHT",
   SIDEBAR: "SIDEBAR",
   GRID: "GRID",
+  UNPINNED_SIDEBAR: "UNPINNED_SIDEBAR",
+  UNPINNED_SPOTLIGHT: "UNPINNED_SPOTLIGHT",
 };
 
 export const MeetingAppProvider = ({
@@ -74,7 +76,19 @@ export const MeetingAppProvider = ({
   canDrawOnWhiteboard,
   meetingLeft,
   setMeetingLeft,
+  animationsEnabled,
+  topbarEnabled,
+  notificationAlertsEnabled,
   debug,
+  layoutGridSize,
+  recordingLayoutType,
+  recordingLayoutPriority,
+  recordingLayoutGridSize,
+  hideLocalParticipant,
+  alwaysShowOverlay,
+  sideStackSize,
+  reduceEdgeSpacing,
+  isRecorder,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -113,9 +127,11 @@ export const MeetingAppProvider = ({
         selectedWebcam,
         joinScreenWebCam,
         joinScreenMic,
+
         // refs
         containerRef,
         endCallContainerRef,
+
         // params
         redirectOnLeave,
         chatEnabled,
@@ -146,7 +162,20 @@ export const MeetingAppProvider = ({
         notificationSoundEnabled,
         canToggleWhiteboard,
         canDrawOnWhiteboard,
+        animationsEnabled,
+        topbarEnabled,
+        notificationAlertsEnabled,
         debug,
+        layoutGridSize,
+        recordingLayoutType,
+        recordingLayoutPriority,
+        recordingLayoutGridSize,
+        hideLocalParticipant,
+        alwaysShowOverlay,
+        sideStackSize,
+        reduceEdgeSpacing,
+        isRecorder,
+
         // states
         sideBarMode,
         activeSortedParticipants,
@@ -159,6 +188,7 @@ export const MeetingAppProvider = ({
         meetingLayout: layout,
         canPin,
         meetingLeft,
+
         // setters
         setSideBarMode,
         setActiveSortedParticipants,

@@ -28,8 +28,14 @@ const PinnedLayoutViewContainer = ({
   whiteboardToolbarWidth,
   whiteboardSpacing,
 }) => {
-  const { meetingLayout, sideBarMode, whiteboardStarted } =
-    useMeetingAppContext();
+  const {
+    meetingLayout,
+    sideBarMode,
+    whiteboardStarted,
+    animationsEnabled,
+    hideLocalParticipant,
+    reduceEdgeSpacing,
+  } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
@@ -173,6 +179,7 @@ const PinnedLayoutViewContainer = ({
     isLGDesktop,
     isPortrait,
     whiteboardStarted,
+    hideLocalParticipant,
   ]);
 
   const theme = useTheme();
@@ -186,7 +193,7 @@ const PinnedLayoutViewContainer = ({
   });
 
   const gutter = 4;
-  const spacing = rowSpacing - gutter;
+  const spacing = (reduceEdgeSpacing ? 4 : rowSpacing) - gutter;
 
   const presentingSideBarWidth = useResponsiveSize({
     xl: 320,
@@ -230,7 +237,7 @@ const PinnedLayoutViewContainer = ({
         width,
         backgroundColor: theme.palette.background.default,
         overflow: "hidden",
-        transition: "width 400ms",
+        transition: animationsEnabled ? "width 400ms" : "width 200ms",
         transitionTimingFunction: "ease-in-out",
         display: "flex",
         flexDirection:
@@ -248,7 +255,7 @@ const PinnedLayoutViewContainer = ({
               : width
             : 0,
           height: mobilePortrait && !presenterId ? height / 2 : height,
-          transition: "width 800ms",
+          transition: animationsEnabled ? "width 800ms" : "width 400ms",
           transitionTimingFunction: "ease-in-out",
           paddingLeft: spacing,
           paddingTop: spacing,
@@ -271,7 +278,7 @@ const PinnedLayoutViewContainer = ({
                 (singleRow.length === 0
                   ? 2 * mainContainerHorizontalPadding
                   : 0),
-            transition: "width 800ms",
+            transition: animationsEnabled ? "width 800ms" : "width 400ms",
             transitionTimingFunction: "ease-in-out",
             borderRadius: theme.spacing(1),
             overflow: "hidden",
@@ -284,17 +291,25 @@ const PinnedLayoutViewContainer = ({
         >
           {spotlightParticipantId ? (
             spotlightMediaType === "SHARE" ? (
-              <PresenterView presenterId={spotlightParticipantId} />
+              <PresenterView
+                key={`spotlightParticipantId_${spotlightParticipantId}`}
+                presenterId={spotlightParticipantId}
+              />
             ) : spotlightMediaType === "WHITEBOARD" ? (
               <WhiteboardContainer
                 {...{
                   ...convertHWAspectRatio({
-                    height: height - 2 * spacing,
-                    width:
-                      width -
-                      (isMobile ? 0 : presentingSideBarWidth) -
+                    height:
+                      height -
                       2 * spacing -
-                      (whiteboardToolbarWidth + 2 * whiteboardSpacing),
+                      (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
+                    width: whiteboardStarted
+                      ? width -
+                        (isMobile ? 0 : presentingSideBarWidth) -
+                        2 * spacing -
+                        (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
+                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
+                      : 0,
                   }),
                   whiteboardToolbarWidth,
                   whiteboardSpacing,
@@ -316,6 +331,7 @@ const PinnedLayoutViewContainer = ({
                   relativeTop: 0,
                   relativeLeft: 0,
                 }}
+                key={`spotlightParticipantId_${spotlightParticipantId}`}
               />
             )
           ) : null}
@@ -384,7 +400,7 @@ const PinnedLayoutViewContainer = ({
                 ? 2 * gridVerticalSpacing
                 : 0),
             margin: spacing,
-            transition: "all 800ms",
+            transition: animationsEnabled ? "all 800ms" : "all 400ms",
             transitionTimingFunction: "ease-in-out",
             paddingLeft: mainContainerHorizontalPadding,
             paddingRight: mainContainerHorizontalPadding,
@@ -404,7 +420,7 @@ const PinnedLayoutViewContainer = ({
                   ? 2 * gridVerticalSpacing
                   : 0),
               position: "relative",
-              transition: "height 800ms",
+              transition: animationsEnabled ? "height 800ms" : "height 400ms",
               transitionTimingFunction: "ease-in-out",
             }}
           >

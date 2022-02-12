@@ -7,6 +7,7 @@ import {
   Button,
 } from "@material-ui/core";
 import React from "react";
+import { useMeetingAppContext } from "../MeetingAppContextDef";
 
 const ConfirmBox = ({
   successText,
@@ -17,6 +18,12 @@ const ConfirmBox = ({
   title,
   subTitle,
 }) => {
+  const v = useMeetingAppContext();
+
+  if (v && v?.isRecorder) {
+    return <></>;
+  }
+
   return (
     <Dialog
       fullWidth

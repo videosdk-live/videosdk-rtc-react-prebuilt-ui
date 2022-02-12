@@ -41,8 +41,12 @@ const PresenterView = ({ presenterId }) => {
   const pinnedParticipants = mMeeting?.pinnedParticipants;
 
   const isMobile = useIsMobile();
-  const { setOverlaidInfoVisible, mainViewParticipants, meetingLayout } =
-    useMeetingAppContext();
+  const {
+    setOverlaidInfoVisible,
+    mainViewParticipants,
+    meetingLayout,
+    animationsEnabled,
+  } = useMeetingAppContext();
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
   const theme = useTheme();
@@ -170,6 +174,7 @@ const PresenterView = ({ presenterId }) => {
       <div
         style={{
           height: mobilePortrait ? "50%" : "100%",
+          width: "100%",
           position: "relative",
         }}
         className={"video-contain"}
@@ -257,7 +262,7 @@ const PresenterView = ({ presenterId }) => {
                   // transform: `scale(${
                   //   mouseOver ? (mouseDown ? 0.95 : 1.05) : 1
                   // })`,
-                  transition: "all 200ms",
+                  transition: animationsEnabled ? "all 200ms" : "all 100ms",
                   transitionTimingFunction: "linear",
                 }}
               >

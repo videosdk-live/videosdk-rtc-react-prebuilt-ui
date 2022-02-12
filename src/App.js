@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import MeetingContainer from "./meetingContainer/MeetingContainer";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
-import { MeetingAppProvider } from "./MeetingAppContextDef";
+import { MeetingAppProvider, meetingLayouts } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
-import ErrorPage from "./components/ErrorPage";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
+// import ErrorPage from "./components/ErrorPage";
 
 const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(null);
@@ -83,7 +83,21 @@ const App = () => {
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
       maxResolution: "maxResolution",
+      animationsEnabled: "animationsEnabled",
+      topbarEnabled: "topbarEnabled",
+      notificationAlertsEnabled: "notificationAlertsEnabled",
       debug: "debug",
+      layoutPriority: "layoutPriority",
+      participantId: "participantId",
+      layoutGridSize: "layoutGridSize",
+      recordingLayoutType: "recordingLayoutType",
+      recordingLayoutPriority: "recordingLayoutPriority",
+      recordingLayoutGridSize: "recordingLayoutGridSize",
+      hideLocalParticipant: "hideLocalParticipant",
+      alwaysShowOverlay: "alwaysShowOverlay",
+      sideStackSize: "sideStackSize",
+      reduceEdgeSpacing: "reduceEdgeSpacing",
+      isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
     };
 
@@ -203,18 +217,79 @@ const App = () => {
     }
 
     switch (paramKeys?.layout?.toUpperCase()) {
-      case "GRID":
-      case "SPOTLIGHT":
-      case "SIDEBAR":
+      case meetingLayouts.GRID:
+      case meetingLayouts.SPOTLIGHT:
+      case meetingLayouts.SIDEBAR:
         paramKeys.layout = paramKeys.layout.toUpperCase();
         break;
       default:
-        paramKeys.layout = "GRID";
+        paramKeys.layout = meetingLayouts.GRID;
         break;
     }
 
     if (typeof paramKeys.canPin !== "string") {
       paramKeys.canPin = "false";
+    }
+
+    if (paramKeys.layoutPriority === "PIN") {
+      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+      }
+    } else if (paramKeys.layoutPriority === "SPEAKER") {
+      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+        paramKeys.layout = meetingLayouts.UNPINNED_SPOTLIGHT;
+      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+        paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
+      }
+    }
+
+    if (paramKeys.isRecorder === "true") {
+      paramKeys.micEnabled = "false";
+      paramKeys.webcamEnabled = "false";
+      paramKeys.hideLocalParticipant = "true";
+      paramKeys.alwaysShowOverlay = "true";
+      paramKeys.sideStackSize = "5";
+      paramKeys.reduceEdgeSpacing = "true";
+      paramKeys.topbarEnabled = "false";
+      paramKeys.notificationSoundEnabled = "false";
+      paramKeys.notificationAlertsEnabled = "false";
+      paramKeys.animationsEnabled = "false";
+      paramKeys.redirectOnLeave = undefined;
+    }
+
+    paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
+
+    paramKeys.recordingLayoutGridSize = parseInt(
+      paramKeys.recordingLayoutGridSize
+    );
+
+    paramKeys.sideStackSize = parseInt(paramKeys.sideStackSize);
+
+    if (
+      typeof paramKeys.layoutGridSize === "number" &&
+      paramKeys.layoutGridSize <= 0
+    ) {
+      configErr = `"layoutGridSize" is not a valid number`;
+      playNotificationErr();
+      setMeetingError({ message: configErr, code: 4001, isVisible: true });
+    }
+
+    if (
+      typeof paramKeys.recordingLayoutGridSize === "number" &&
+      paramKeys.recordingLayoutGridSize <= 0
+    ) {
+      configErr = `"recordingLayoutGridSize" is not a valid number`;
+      playNotificationErr();
+      setMeetingError({ message: configErr, code: 4001, isVisible: true });
+    }
+
+    if (
+      typeof paramKeys.sideStackSize === "number" &&
+      paramKeys.sideStackSize <= 0
+    ) {
+      configErr = `"sideStackSize" is not a valid number`;
+      playNotificationErr();
+      setMeetingError({ message: configErr, code: 4001, isVisible: true });
     }
 
     return paramKeys;
@@ -260,12 +335,6 @@ const App = () => {
         reqError: null,
         reqStatusCode: null,
       });
-
-      setMeetingError({
-        message: null,
-        code: null,
-        isVisible: false,
-      });
     } else {
       setMeetingIdValidation({
         isLoading: false,
@@ -299,15 +368,17 @@ const App = () => {
   return (
     <>
       {meetingLeft ? (
-        <MeetingLeftScreen
-          brandLogoURL={paramKeys.brandLogoURL}
-          leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
-          leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
-          leftScreenRejoinButtonEnabled={
-            paramKeys.leftScreenRejoinButtonEnabled !== "false"
-          }
-          setMeetingLeft={setMeetingLeft}
-        />
+        paramKeys.isRecorder === "true" ? null : (
+          <MeetingLeftScreen
+            brandLogoURL={paramKeys.brandLogoURL}
+            leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
+            leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+            leftScreenRejoinButtonEnabled={
+              paramKeys.leftScreenRejoinButtonEnabled !== "false"
+            }
+            setMeetingLeft={setMeetingLeft}
+          />
+        )
       ) : meetingIdValidation.isLoading ? (
         <Box
           style={{
@@ -348,13 +419,10 @@ const App = () => {
             autoStartRecording: paramKeys.autoStartRecording === "true",
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
-            brandingEnabled:
-              paramKeys.brandingEnabled === "true" ? true : false,
-            poweredBy: paramKeys.poweredBy === "true" ? true : false,
-            liveStreamEnabled:
-              paramKeys.liveStreamEnabled === "true" ? true : false,
-            autoStartLiveStream:
-              paramKeys.autoStartLiveStream === "true" ? true : false,
+            brandingEnabled: paramKeys.brandingEnabled === "true",
+            poweredBy: paramKeys.poweredBy === "true",
+            liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
+            autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
             liveStreamOutputs: paramKeys.liveStreamOutputs,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0
@@ -362,35 +430,41 @@ const App = () => {
                 : null,
             brandName:
               paramKeys.brandName?.length > 0 ? paramKeys.brandName : null,
-            participantCanLeave:
-              paramKeys.participantCanLeave === "false" ? false : true,
-            askJoin: paramKeys.askJoin === "true" ? true : false,
+            participantCanLeave: paramKeys.participantCanLeave !== "false",
+            askJoin: paramKeys.askJoin === "true",
             participantCanToggleOtherMic:
-              paramKeys.participantCanToggleOtherMic === "true" ? true : false,
+              paramKeys.participantCanToggleOtherMic === "true",
             participantCanToggleOtherWebcam:
-              paramKeys.participantCanToggleOtherWebcam === "true"
-                ? true
-                : false,
+              paramKeys.participantCanToggleOtherWebcam === "true",
             notificationSoundEnabled:
-              paramKeys.notificationSoundEnabled === "true" ? true : false,
+              paramKeys.notificationSoundEnabled === "true",
             layout: paramKeys.layout,
-            canPin: paramKeys.canPin === "true" ? true : false,
+            canPin: paramKeys.canPin === "true",
             selectedMic,
             selectedWebcam,
             joinScreenWebCam,
             joinScreenMic,
             canRemoveOtherParticipant:
-              paramKeys.canRemoveOtherParticipant === "true" ? true : false,
-            canEndMeeting: paramKeys.canEndMeeting === "true" ? true : false,
-            canDrawOnWhiteboard:
-              paramKeys.canDrawOnWhiteboard === "true" ? true : false,
-            canToggleWhiteboard:
-              paramKeys.canToggleWhiteboard === "true" ? true : false,
-            whiteboardEnabled:
-              paramKeys.whiteboardEnabled === "true" ? true : false,
+              paramKeys.canRemoveOtherParticipant === "true",
+            canEndMeeting: paramKeys.canEndMeeting === "true",
+            canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
+            canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
             meetingLeft,
             setMeetingLeft,
-            debug: paramKeys.debug === "true" ? true : false,
+            animationsEnabled: paramKeys.animationsEnabled !== "false",
+            topbarEnabled: paramKeys.topbarEnabled !== "false",
+            notificationAlertsEnabled:
+              paramKeys.notificationAlertsEnabled !== "false",
+            debug: paramKeys.debug === "true",
+            layoutGridSize: paramKeys.layoutGridSize,
+            recordingLayoutType: paramKeys.recordingLayoutType,
+            recordingLayoutPriority: paramKeys.recordingLayoutPriority,
+            recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
+            hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
+            alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
+            sideStackSize: paramKeys.sideStackSize,
+            reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
+            isRecorder: paramKeys.isRecorder === "true",
           }}
         >
           <MeetingProvider
@@ -400,10 +474,13 @@ const App = () => {
               webcamEnabled: joinScreenWebCam,
               name: name,
               maxResolution:
-                paramKeys.maxResolution === "sd" ||
-                paramKeys.maxResolution === "hd"
+                paramKeys.isRecorder === "true"
+                  ? "hd"
+                  : paramKeys.maxResolution === "sd" ||
+                    paramKeys.maxResolution === "hd"
                   ? paramKeys.maxResolution
                   : "sd",
+              participantId: paramKeys.participantId,
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction
@@ -447,10 +524,14 @@ const App = () => {
         open={meetingError.isVisible}
         successText="OKAY"
         onSuccess={() => {
-          setMeetingError({
-            message: null,
-            code: null,
-            isVisible: false,
+          setMeetingError(({ message }) => {
+            throw new Error(message);
+
+            // return {
+            //   message: null,
+            //   code: null,
+            //   isVisible: false,
+            // };
           });
         }}
         title={`Error Code: ${meetingError.code}`}
