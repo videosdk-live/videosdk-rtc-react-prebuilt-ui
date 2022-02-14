@@ -109,10 +109,13 @@ const OutlineIconButton = ({
                   }}
                 >
                   <Lottie
+                    style={{ height: iconSize }}
                     options={lottieOption}
                     eventListeners={[{ eventName: "done" }]}
                     height={iconSize}
-                    // width={iconSize}
+                    width={
+                      (iconSize * lottieOption?.width) / lottieOption?.height
+                    }
                     isClickToPauseDisabled
                   />
                 </Box>
