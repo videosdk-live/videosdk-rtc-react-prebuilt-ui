@@ -198,6 +198,7 @@ const ScreenShareBTN = ({ onClick }) => {
     />
   );
 };
+
 const MicBTN = () => {
   const { selectedMic } = useMeetingAppContext();
 
@@ -349,6 +350,8 @@ const RecordingBTN = () => {
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
+    height: 64,
+    width: 160,
   };
 
   return (

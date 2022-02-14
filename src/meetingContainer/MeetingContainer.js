@@ -356,7 +356,7 @@ const MeetingContainer = () => {
       4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010,
     ];
 
-    const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== 1;
+    const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== -1;
     const isCriticalError = `${code}`.startsWith("500");
 
     new Audio(
