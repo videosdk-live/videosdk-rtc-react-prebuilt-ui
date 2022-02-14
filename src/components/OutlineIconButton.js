@@ -39,9 +39,6 @@ const OutlineIconButton = ({
     xs: 24 * (large ? 1.7 : 1),
   });
 
-  const lottieHeight = iconSize;
-  const lottieWidth = (lottieHeight * 160) / 64;
-
   const { animationsEnabled } = useMeetingAppContext();
 
   return (
@@ -116,7 +113,9 @@ const OutlineIconButton = ({
                     options={lottieOption}
                     eventListeners={[{ eventName: "done" }]}
                     height={iconSize}
-                    width={lottieWidth}
+                    width={
+                      (iconSize * lottieOption?.width) / lottieOption?.height
+                    }
                     isClickToPauseDisabled
                   />
                 </Box>
