@@ -99,6 +99,7 @@ const App = () => {
       reduceEdgeSpacing: "reduceEdgeSpacing",
       isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
+      interactionOptional: "interactionOptional",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -290,6 +291,10 @@ const App = () => {
       configErr = `"sideStackSize" is not a valid number`;
       playNotificationErr();
       setMeetingError({ message: configErr, code: 4001, isVisible: true });
+    }
+    
+    if (paramKeys["interactionOptional"] === "true") {
+      setUserHasInteracted(true);
     }
 
     return paramKeys;

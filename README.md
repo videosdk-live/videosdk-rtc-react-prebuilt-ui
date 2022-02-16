@@ -92,6 +92,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | leftScreenActionButtonLabel     | -             | left screen custom action button label                                                      |
 | leftScreenActionButtonHref      | -             | left screen custom action button href                                                       |
 | debug                           | false         | enable precise error message                                                                |
+| interactionOptional             | false         | do not require interaction before starting the meeting                                      |
 
 ---
 
