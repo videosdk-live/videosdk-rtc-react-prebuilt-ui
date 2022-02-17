@@ -112,6 +112,9 @@ const MeetingContainer = () => {
     containerRef,
     participantCanToggleRecording,
     autoStartLiveStream,
+    liveStreamLayoutType,
+    liveStreamLayoutPriority,
+    liveStreamLayoutGridSize,
     liveStreamOutputs,
     askJoin,
     notificationSoundEnabled,
@@ -140,7 +143,13 @@ const MeetingContainer = () => {
     if (autoStartLiveStream && liveStreamOutputs?.length) {
       const { startLivestream } = mMeetingRef.current;
 
-      startLivestream(liveStreamOutputs);
+      startLivestream(liveStreamOutputs, {
+        layout: {
+          type: liveStreamLayoutType,
+          priority: liveStreamLayoutPriority,
+          gridSize: liveStreamLayoutGridSize,
+        },
+      });
     }
 
     if (joinScreenWebCam && selectedWebcam.id) {

@@ -65,6 +65,9 @@ const App = () => {
       participantCanLeave: "participantCanLeave",
       poweredBy: "poweredBy",
       liveStreamEnabled: "liveStreamEnabled",
+      liveStreamLayoutType: "liveStreamLayoutType",
+      liveStreamLayoutPriority: "liveStreamLayoutPriority",
+      liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
       autoStartLiveStream: "autoStartLiveStream",
       liveStreamOutputs: "liveStreamOutputs",
       askJoin: "askJoin",
@@ -428,6 +431,9 @@ const App = () => {
             poweredBy: paramKeys.poweredBy === "true",
             liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
             autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
+            liveStreamLayoutType: paramKeys.liveStreamLayoutType,
+            liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
+            liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
             liveStreamOutputs: paramKeys.liveStreamOutputs,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0

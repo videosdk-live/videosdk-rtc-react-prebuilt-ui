@@ -48,7 +48,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 
 ## URL Parameters
 
-| Parameter Name                  | Default Value | description                                                                                 |
+| Parameter Name                  | Default Value | Description                                                                                 |
 | ------------------------------- | ------------- | ------------------------------------------------------------------------------------------- |
 | token _`required`_              | -             | meeting token                                                                               |
 | micEnabled                      | false         | mic enabled by default                                                                      |
@@ -74,6 +74,9 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | poweredBy                       | false         | `powered by videosdk.live` text visible or not                                              |
 | participantCanLeave             | true          | meeting end button visible or not                                                           |
 | liveStreamEnabled               | false         | live stream enabled or not                                                                  |
+| liveStreamLayoutType            | -             | `GRID` or `SPOTLIGHT` or `SIDEBAR`                                                          |
+| liveStreamLayoutPriority        | -             | `SPEAKER` or `PIN`                                                                          |
+| liveStreamLayoutGridSize        | -             | Maximum number of participants to be displayed on livestreaming layout                      |
 | autoStartLiveStream             | false         | auto start live stream on meeting join                                                      |
 | liveStreamOutputs               | -             | rtml outputs for live streaming the meeting                                                 |
 | askJoin                         | false         | ask host to join before joining the meeting                                                 |
@@ -91,8 +94,24 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | canToggleWhiteboard             | false         | participant can toggle whiteboard                                                           |
 | leftScreenActionButtonLabel     | -             | left screen custom action button label                                                      |
 | leftScreenActionButtonHref      | -             | left screen custom action button href                                                       |
+| leftScreenRejoinButtonEnabled   | -             | -                                                                                           |
 | debug                           | false         | enable precise error message                                                                |
 | interactionOptional             | false         | do not require interaction before starting the meeting                                      |
+| maxResolution                   | `sd`          | -                                                                                           |
+| animationsEnabled               | true          | -                                                                                           |
+| topbarEnabled                   | true          | -                                                                                           |
+| notificationAlertsEnabled       | true          | -                                                                                           |
+| layoutPriority                  | `SPEAKER`     | `SPEAKER` or `PIN`                                                                          |
+| participantId                   | -             | if of the participant who will jooin the meeting, if not provided it will generate one      |
+| layoutGridSize                  | -             | Maximum number of participants to be displayed on meeting layout                            |
+| recordingLayoutType             | -             | `GRID` or `SPOTLIGHT` or `SIDEBAR`                                                          |
+| recordingLayoutPriority         | -             | `SPEAKER` or `PIN`                                                                          |
+| recordingLayoutGridSize         | -             | Maximum number of participants to be displayed on recording layout                          |
+| hideLocalParticipant            | false         | will hide localParticipant from layout                                                      |
+| alwaysShowOverlay               | false         | -                                                                                           |
+| sideStackSize                   | -             | -                                                                                           |
+| reduceEdgeSpacing               | false         | -                                                                                           |
+| isRecorder                      | false         | -                                                                                           |
 
 ---
 

@@ -2068,17 +2068,17 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@videosdk.live/js-sdk@0.0.24":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@videosdk.live/js-sdk/-/js-sdk-0.0.24.tgz#859606613cc66046b63fe3c9ecf7db0ea8cc3c95"
-  integrity sha512-XRju32A8Ol5mvwwBeiQ22/Rc4jldKtmJC+AfpPCop3Kxgm/tXGe9dWALD/xtwHgolqrJJ5kE1oQMf9JxkmRTPQ==
+"@videosdk.live/js-sdk@^0.0.25":
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/@videosdk.live/js-sdk/-/js-sdk-0.0.25.tgz#e29875ac6ec1f8194dc47c19baaeba2f358b603e"
+  integrity sha512-GD8whjyb7qwaVH2PrQYw9P6bza6yN7W5HjPLq7ZqetcDwmSzqVKmtiTPd9NfuQ3HPbVuAGtQENM5pFVXMPh3qA==
 
-"@videosdk.live/react-sdk@^0.1.21":
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/@videosdk.live/react-sdk/-/react-sdk-0.1.21.tgz#88ce4c2b1a683d83691f7632b613ffcafd3f7c89"
-  integrity sha512-uXHMQH8gac+Rnb1NpnUCAk5XluB6olMhYOuO6uT5zl5amXszZGaVWHcwinnt0wQcrSTR+lPySWG6q3dRxhUpbA==
+"@videosdk.live/react-sdk@^0.1.22":
+  version "0.1.22"
+  resolved "https://registry.yarnpkg.com/@videosdk.live/react-sdk/-/react-sdk-0.1.22.tgz#256d5ad9745023d7fcde32c3b40223fa30fcb202"
+  integrity sha512-jI+8lZJwyvU+XWhen7L0aRbT3zyIWgZ8aZrhW6sRlsA0q+7OSE8daFlY6Ti2VdMI+CMQgN7F5c85tb1a4cnDiQ==
   dependencies:
-    "@videosdk.live/js-sdk" "0.0.24"
+    "@videosdk.live/js-sdk" "^0.0.25"
     events "^3.3.0"
 
 "@webassemblyjs/ast@1.9.0":
