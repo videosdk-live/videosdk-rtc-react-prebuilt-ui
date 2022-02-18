@@ -11,8 +11,6 @@ import ConfirmBox from "./components/ConfirmBox";
 // import ErrorPage from "./components/ErrorPage";
 
 const App = () => {
-  const [userHasInteracted, setUserHasInteracted] = useState(null);
-
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,
     meetingId: null,
@@ -102,7 +100,7 @@ const App = () => {
       reduceEdgeSpacing: "reduceEdgeSpacing",
       isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
-      interactionOptional: "interactionOptional",
+      joinWithoutUserInteraction: "joinWithoutUserInteraction",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -295,15 +293,13 @@ const App = () => {
       playNotificationErr();
       setMeetingError({ message: configErr, code: 4001, isVisible: true });
     }
-    
-    if (paramKeys["interactionOptional"] === "true") {
-      setUserHasInteracted(true);
-    }
 
     return paramKeys;
   };
 
   const paramKeys = useMemo(getParams, []);
+
+  const [userHasInteracted, setUserHasInteracted] = useState(paramKeys.joinWithoutUserInteraction === "true");
 
   const [name, setName] = useState(paramKeys.name || "");
   const [joinScreenWebCam, setJoinScreenWebCam] = useState(
