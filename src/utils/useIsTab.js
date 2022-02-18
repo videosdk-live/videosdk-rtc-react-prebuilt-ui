@@ -1,13 +1,3 @@
-// import { useMediaQuery, useTheme } from "@material-ui/core";
-
-// const useIsTab = () => {
-//   const theme = useTheme();
-//   const isMD = useMediaQuery(theme.breakpoints.only("md"));
-//   return isMD;
-// };
-
-// export default useIsTab;
-
 import { useMediaQuery } from "react-responsive";
 
 const useIsTab = () => {

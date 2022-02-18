@@ -1,14 +1,3 @@
-// import { useMediaQuery, useTheme } from "@material-ui/core";
-
-// const useIsSMDesktop = () => {
-//   const theme = useTheme();
-
-//   const isLG = useMediaQuery(theme.breakpoints.only("lg"));
-//   return isLG;
-// };
-
-// export default useIsSMDesktop;
-
 import { useMediaQuery } from "react-responsive";
 
 const useIsSMDesktop = () => {

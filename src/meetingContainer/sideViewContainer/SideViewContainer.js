@@ -157,7 +157,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
         height,
         position: "relative",
         width: isOpen ? width : 0,
-        transition: animationsEnabled ? "width 400ms" : "width 200ms",
+        transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
         transitionTimingFunction: "ease-in-out",
       }}
     >

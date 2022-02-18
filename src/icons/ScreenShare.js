@@ -25,7 +25,7 @@ const ScreenShare = (props) => {
         <g
           id="screen_share_on"
           transform="translate(-2.547 -2.547)"
-          clip-path="url(#clip-path)"
+          clipPath="url(#clip-path)"
         >
           <path
             id="share_1_"

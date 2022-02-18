@@ -105,6 +105,7 @@ const ClickAnywhereToContinue = ({ onClick, title, brandLogoURL }) => {
           />
         ) : (
           <img
+            alt={"brand logo"}
             style={{
               height: jsonSize,
               width: jsonSize,

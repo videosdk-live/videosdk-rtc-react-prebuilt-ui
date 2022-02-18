@@ -599,11 +599,7 @@ function WhiteboardContainer({
         top: 42,
       });
 
-      // const imageHeight =
-      //   (imageWidth * myImg._element.height) / myImg._element.width;
-
       myImg.scaleToWidth(imageWidth);
-      // myImg.scaleToHeight(imageHeight);
 
       fabricRef.current.add(img1);
       fabricRef.current.setActiveObject(img1);

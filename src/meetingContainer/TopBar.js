@@ -247,13 +247,8 @@ const MicBTN = () => {
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
-            <Tooltip
-              placement="bottom"
-              // title={localMicOn ? "Change microphone" : null}
-              title={"Change microphone"}
-            >
+            <Tooltip placement="bottom" title={"Change microphone"}>
               <IconButton
-                // disabled={!localMicOn}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
                   handleClick(e);
@@ -427,13 +422,8 @@ const WebcamBTN = () => {
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
-            <Tooltip
-              placement="bottom"
-              // title={localWebcamOn ? "Change webcam" : null}
-              title={"Change webcam"}
-            >
+            <Tooltip placement="bottom" title={"Change webcam"}>
               <IconButton
-                // disabled={!localWebcamOn}
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -680,6 +670,7 @@ const TopBar = ({ topBarHeight }) => {
     participantCanLeave,
     poweredBy,
     canEndMeeting,
+    animationsEnabled,
   } = useMeetingAppContext();
 
   const handleClickFAB = (event) => {
@@ -721,9 +712,6 @@ const TopBar = ({ topBarHeight }) => {
 
     const arrSideBar = [];
 
-    // if (pollEnabled || whiteboardEnabled) {
-    //   arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
-    // }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
     }
@@ -775,6 +763,14 @@ const TopBar = ({ topBarHeight }) => {
     topBarButtonTypes,
     recordingEnabled,
   ]);
+
+  const [topBarVisible, setTopBarVisible] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setTopBarVisible(true);
+    }, 100);
+  }, []);
 
   return isTab || isMobile ? (
     <Box
@@ -892,6 +888,9 @@ const TopBar = ({ topBarHeight }) => {
         backgroundColor: theme.palette.background.default,
         borderBottom: "1px solid #ffffff33",
         position: "relative",
+        top: topBarVisible ? 0 : -topBarHeight,
+        transition: `all ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
+        transitionTimingFunction: "ease-in-out",
       }}
     >
       <Box

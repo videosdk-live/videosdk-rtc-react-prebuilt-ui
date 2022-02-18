@@ -60,8 +60,6 @@ const AudioAnalyser = ({ audioTrack }) => {
   useEffect(() => {
     audioTrackRef.current = audioTrack;
 
-    // startMuteListener();
-
     if (audioTrack) {
       analyseAudio(audioTrack);
     } else {
@@ -474,13 +472,10 @@ export default function SettingDialogueBox({
                                 right: 0,
                                 bottom: 0,
                                 backgroundColor: theme.palette.primary.light,
-                                // justifyContent: "center",
-                                // alignItems: "center",
                                 display: "flex",
                                 flexDirection: "column",
                                 borderRadius: theme.spacing(1),
                                 overflow: "hidden",
-                                // padding: 32,
                               }}
                             >
                               <video

@@ -163,12 +163,6 @@ export const localAndPinnedOnTop = ({
 
     const localParticipantPinned = localParticipantPinnedIndex !== -1;
 
-    // const localParticipantInGridIndex = participants.findIndex(
-    //   (id) => id === localParticipantId
-    // );
-
-    // const localParticipantInGrid = localParticipantInGridIndex !== -1;
-
     const unPinnedGridParticipants = participants.filter(
       (id) => pinnedParticipantIds.findIndex((_id) => _id === id) === -1
     );
@@ -181,15 +175,6 @@ export const localAndPinnedOnTop = ({
       pinnedParticipantIds.splice(localParticipantPinnedIndex, 1);
       pinnedParticipantIds.unshift(localParticipantId);
     }
-    // else if (localParticipantInGrid && !skipUnPinnedLocal) {
-    //   if (remaining.findIndex((id) => id === localParticipantId) !== -1) {
-    //     remaining.splice(localParticipantInGridIndex, 1);
-    //     remaining.unshift(localParticipantId);
-    //   } else {
-    //     remaining.splice(remaining.length - 1, 1);
-    //     remaining.unshift(localParticipantId);
-    //   }
-    // }
 
     const combined = [...pinnedParticipantIds, ...remaining];
 
@@ -205,25 +190,7 @@ export const localAndPinnedOnTop = ({
     }
 
     return combined;
-
-    // return [...pinnedParticipantIds, ...remaining];
-  }
-  //  else if (!skipUnPinnedLocal) {
-  //   const localIndex = participants.findIndex(
-  //     (participantId) => participantId === localParticipantId
-  //   );
-
-  //   if (localIndex === 0 || localIndex === -1) {
-  //     return participants;
-  //   } else {
-  //     const arr = [...participants];
-  //     arr.splice(localIndex, 1);
-  //     arr.unshift(localParticipantId);
-
-  //     return arr;
-  //   }
-  // }
-  else {
+  } else {
     const participantsArr = [...participants];
 
     const localParticipantIndex = participantsArr.findIndex(
