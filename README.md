@@ -96,6 +96,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | leftScreenActionButtonHref      | -             | left screen custom action button href                                                       |
 | leftScreenRejoinButtonEnabled   | -             | -                                                                                           |
 | debug                           | false         | enable precise error message                                                                |
+| joinWithoutUserInteraction      | false         | do not require interaction before starting the meeting                                      |
 | maxResolution                   | `sd`          | -                                                                                           |
 | animationsEnabled               | true          | -                                                                                           |
 | topbarEnabled                   | true          | -                                                                                           |

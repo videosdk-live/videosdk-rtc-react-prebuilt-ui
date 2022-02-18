@@ -77,6 +77,7 @@ const App = () => {
       reduceEdgeSpacing: "reduceEdgeSpacing",
       isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
+      joinWithoutUserInteraction: "joinWithoutUserInteraction",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -275,7 +276,7 @@ const App = () => {
 
   const paramKeys = useMemo(getParams, []);
 
-  const [userHasInteracted, setUserHasInteracted] = useState(null);
+  const [userHasInteracted, setUserHasInteracted] = useState(paramKeys.joinWithoutUserInteraction === "true");
 
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,
