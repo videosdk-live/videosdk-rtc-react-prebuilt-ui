@@ -356,7 +356,6 @@ const MainViewContainer = ({
       }
     } else if (meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT) {
       if (!!presenterId || !!whiteboardStarted) {
-        // mainParticipants = [activeSpeakerId || lastActiveParticipantId];
         mainParticipants = [];
       } else {
         mainParticipants = [];
@@ -455,9 +454,18 @@ const MainViewContainer = ({
 
   const mainContainerHorizontalPadding = useMemo(
     () =>
-      presenterId ||
-      whiteboardStarted ||
-      (mainLayoutParticipantId && singleRow.length !== 0)
+      (presenterId || whiteboardStarted) &&
+      meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+        ? isLGDesktop
+          ? 140
+          : isSMDesktop
+          ? 90
+          : isTab && !isPortrait
+          ? 60
+          : 0
+        : presenterId ||
+          whiteboardStarted ||
+          (mainLayoutParticipantId && singleRow.length !== 0)
         ? 0
         : typeof sideBarMode === "string"
         ? 0
@@ -486,6 +494,7 @@ const MainViewContainer = ({
       whiteboardStarted,
       presenterId,
       mainLayoutParticipantId,
+      meetingLayout,
     ]
   );
 
@@ -509,7 +518,7 @@ const MainViewContainer = ({
           width,
           backgroundColor: theme.palette.background.default,
           overflow: "hidden",
-          transition: animationsEnabled ? "width 400ms" : "width 200ms",
+          transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "ease-in-out",
           display: "flex",
           position: "relative",
@@ -521,9 +530,16 @@ const MainViewContainer = ({
               ? width - actualPresentingSideBarWidth
               : 0,
             height,
-            transition: animationsEnabled ? "width 800ms" : "width 400ms",
+            transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
             transitionTimingFunction: "ease-in-out",
-            paddingLeft: mainScreenViewActive ? spacing : 0,
+            paddingLeft:
+              (presenterId || whiteboardStarted) &&
+              typeof sideBarMode !== "string" &&
+              meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+                ? mainContainerHorizontalPadding
+                : mainScreenViewActive
+                ? spacing
+                : 0,
             paddingTop: mainScreenViewActive ? spacing : 0,
           }}
         >
@@ -533,13 +549,18 @@ const MainViewContainer = ({
               width: mainScreenViewActive
                 ? width -
                   (isMobile ? 0 : actualPresentingSideBarWidth) -
+                  ((presenterId || whiteboardStarted) &&
+                  typeof sideBarMode !== "string" &&
+                  meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+                    ? 2 * mainContainerHorizontalPadding
+                    : 0) -
                   2 * spacing
                 : 0,
               backgroundColor:
                 presenterId || whiteboardStarted
                   ? theme.palette.background.paper
                   : undefined,
-              transition: animationsEnabled ? "width 800ms" : "width 400ms",
+              transition: `width ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
               transitionTimingFunction: "ease-in-out",
               borderRadius: theme.spacing(1),
               overflow: "hidden",
@@ -557,6 +578,11 @@ const MainViewContainer = ({
                     width: whiteboardStarted
                       ? width -
                         (isMobile ? 0 : actualPresentingSideBarWidth) -
+                        ((presenterId || whiteboardStarted) &&
+                        typeof sideBarMode !== "string" &&
+                        meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+                          ? 2 * mainContainerHorizontalPadding
+                          : 0) -
                         2 * spacing -
                         (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
                         (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
@@ -568,6 +594,11 @@ const MainViewContainer = ({
                   originalWidth: whiteboardStarted
                     ? width -
                       (isMobile ? 0 : actualPresentingSideBarWidth) -
+                      ((presenterId || whiteboardStarted) &&
+                      typeof sideBarMode !== "string" &&
+                      meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+                        ? 2 * mainContainerHorizontalPadding
+                        : 0) -
                       2 * spacing
                     : 0,
                 }}
@@ -621,7 +652,7 @@ const MainViewContainer = ({
                   ? 2 * gridVerticalSpacing
                   : 0),
               margin: spacing,
-              transition: animationsEnabled ? "all 800ms" : "all 400ms",
+              transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
               transitionTimingFunction: "ease-in-out",
               paddingLeft:
                 mainContainerHorizontalPadding +
@@ -656,7 +687,7 @@ const MainViewContainer = ({
                     ? 2 * gridVerticalSpacing
                     : 0),
                 position: "relative",
-                transition: animationsEnabled ? "height 800ms" : "height 400ms",
+                transition: `height ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
                 transitionTimingFunction: "ease-in-out",
               }}
             >

@@ -135,7 +135,7 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: animationsEnabled ? "all 200ms" : "all 100ms",
+                transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                 right: expanded ? morePanelWidth : 0,
                 position: "absolute",
               }}
@@ -236,7 +236,7 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: animationsEnabled ? "all 200ms" : "all 100ms",
+                transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                 right: expanded ? 0 : -morePanelWidth,
                 position: "absolute",
                 opacity: expanded ? 1 : 0,
@@ -293,7 +293,6 @@ function ParticipantListItem({
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsParticipantKickoutVisible(true);
-                        // participant.remove();
                       }}
                       style={{
                         display: "flex",
@@ -326,7 +325,7 @@ function ParticipantListItem({
           </Box>
           <Box
             style={{
-              transition: animationsEnabled ? "all 200ms" : "all 100ms",
+              transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
             }}
             ml={expanded ? 1.5 : 1}
           >

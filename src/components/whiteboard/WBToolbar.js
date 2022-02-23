@@ -63,16 +63,10 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         style={{
           backgroundColor: isSelected ? "#D5E8FF" : "",
           borderRadius: 6,
-          // height: whiteboardToolbarWidth - 16,
-          // width: whiteboardToolbarWidth - 16,
         }}
         onClick={onClick}
       >
-        <Icon
-          // height={whiteboardToolbarWidth - 16}
-          // width={whiteboardToolbarWidth - 16}
-          fill={isSelected ? theme.palette.primary.main : "black"}
-        />
+        <Icon fill={isSelected ? theme.palette.primary.main : "black"} />
       </ButtonBase>
     </Tooltip>
   );

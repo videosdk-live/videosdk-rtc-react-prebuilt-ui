@@ -8,7 +8,6 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
-// import ErrorPage from "./components/ErrorPage";
 
 const App = () => {
   const getParams = () => {
@@ -121,9 +120,6 @@ const App = () => {
     if (typeof paramKeys.webcamEnabled !== "string") {
       paramKeys.webcamEnabled = "true";
     }
-    // if (typeof paramKeys.redirectOnLeave !== "string") {
-    //   paramKeys.redirectOnLeave = "true";
-    // }
     if (typeof paramKeys.chatEnabled !== "string") {
       paramKeys.chatEnabled = "true";
     }
@@ -158,7 +154,6 @@ const App = () => {
       paramKeys.autoStartLiveStream = "true";
     }
 
-    // if (paramKeys.liveStreamEnabled && paramKeys.autoStartLiveStream) {
     if (paramKeys.autoStartLiveStream === "true") {
       try {
         paramKeys.liveStreamOutputs = JSON.parse(paramKeys.liveStreamOutputs);
@@ -276,7 +271,9 @@ const App = () => {
 
   const paramKeys = useMemo(getParams, []);
 
-  const [userHasInteracted, setUserHasInteracted] = useState(paramKeys.joinWithoutUserInteraction === "true");
+  const [userHasInteracted, setUserHasInteracted] = useState(
+    paramKeys.joinWithoutUserInteraction === "true"
+  );
 
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,

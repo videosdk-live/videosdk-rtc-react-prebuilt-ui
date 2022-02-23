@@ -16,7 +16,7 @@ const VideoOff = (props) => {
             <rect width="31" height="30" />
           </clipPath>
         </defs>
-        <g id="video_off" clip-path="url(#clip-video_off)">
+        <g id="video_off" clipPath="url(#clip-video_off)">
           <g
             id="Group_2115"
             data-name="Group 2115"

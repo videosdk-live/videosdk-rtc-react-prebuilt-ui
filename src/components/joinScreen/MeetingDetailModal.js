@@ -68,14 +68,11 @@ export default function MeetingDetailModal({
 
   return (
     <Box
-      // mt={3}
       style={{
-        // maxHeight: boxHeight,
         width: "100%",
         display: "flex",
         flex: 1,
         flexDirection: "column",
-        // backgroundColor: "pink",
       }}
     >
       {(meetingUrl && meetingTitle) || meetingUrl ? (
@@ -146,15 +143,11 @@ export default function MeetingDetailModal({
                 </Box>
                 <Box
                   style={{
-                    // backgroundColor: theme.palette.primary.main,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
                   }}
-                  //   onClick={(e) => {
-                  //     setCopied(e);
-                  //   }}
                 >
                   <Tooltip title={copied ? "Copied" : "Copy"} aria-label="add">
                     <IconButton
@@ -203,7 +196,6 @@ export default function MeetingDetailModal({
         <TextField
           id={"inputJoin"}
           placeholder="Enter your name"
-          // helperText="Your name will help everyone identify you in the meeting"
           variant="outlined"
           fullWidth
           value={name}
@@ -231,10 +223,8 @@ export default function MeetingDetailModal({
             endAdornment: (
               <InputAdornment position="end">
                 <Button
-                  //   disabled={name.length <= 3}
                   color="primary"
                   variant="contained"
-                  //   onClick={startMeeting}
                   onClick={(e) => {
                     const isValid = handleValidation();
                     if (isValid) {

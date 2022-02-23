@@ -39,9 +39,6 @@ const getPinMsg = ({
   const localParticipantWasPinned = localParticipant === participantId;
   const localParticipantPinned = localParticipant === pinnedBy;
 
-  // if (!pinnedByDisplayName) {
-  //   return `${partcipantDisplayName} was ${pinStateText}`;
-  // } else
   if (pinnedSelf && localParticipantWasPinned && localParticipantPinned) {
     return `You ${pinStateText} yourself`;
   } else if (pinnedSelf && !localParticipantWasPinned) {
@@ -128,7 +125,6 @@ const MeetingContainer = () => {
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
-    isRecorder,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;

@@ -21,8 +21,6 @@ import ReactPlayer from "react-player";
 const PresenterView = ({ presenterId }) => {
   const mMeeting = useMeeting();
   const videoPlayer = useRef();
-  // const screenSharePlayer = useRef();
-  // const webCamPlayer = useRef();
   const {
     webcamOn,
     micOn,
@@ -33,10 +31,8 @@ const PresenterView = ({ presenterId }) => {
     pin,
     unpin,
     pinState,
-    // webcamStream,
   } = useParticipant(presenterId);
   const toggleScreenShare = mMeeting?.toggleScreenShare;
-  // const participants = mMeeting?.participants;
   const localParticipantId = mMeeting?.localParticipant?.id;
   const pinnedParticipants = mMeeting?.pinnedParticipants;
 
@@ -61,48 +57,6 @@ const PresenterView = ({ presenterId }) => {
     }
   }, [screenShareStream, screenShareOn]);
 
-  // useEffect(() => {
-  //   if (webCamPlayer.current) {
-  //     if (webcamOn) {
-  //       const mediaStream = new MediaStream();
-  //       mediaStream.addTrack(webcamStream.track);
-
-  //       webCamPlayer.current.srcObject = mediaStream;
-  //       webCamPlayer.current.play().catch((err) => {
-  //         if (
-  //           err.message ===
-  //           "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-  //         ) {
-  //           console.error("screen share web cam " + err.message);
-  //         }
-  //       });
-  //     } else {
-  //       webCamPlayer.current.srcObject = null;
-  //     }
-  //   }
-  // }, [isLocal, webcamOn, webcamStream, isPortrait]);
-
-  // useEffect(() => {
-  //   if (screenSharePlayer.current) {
-  //     if (screenShareOn) {
-  //       const mediaStream = new MediaStream();
-  //       mediaStream.addTrack(screenShareStream.track);
-
-  //       screenSharePlayer.current.srcObject = mediaStream;
-  //       screenSharePlayer.current.play().catch((err) => {
-  //         if (
-  //           err.message ===
-  //           "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-  //         ) {
-  //           console.error("screen share err" + err.message);
-  //         }
-  //       });
-  //     } else {
-  //       screenSharePlayer.current.srcObject = null;
-  //     }
-  //   }
-  // }, [screenShareStream, screenShareOn]);
-
   const mobilePortrait = isMobile && isPortrait;
 
   const { singleRow } = useMemo(() => {
@@ -119,7 +73,6 @@ const PresenterView = ({ presenterId }) => {
     });
 
     const splicesActiveParticipants = participants.splice(0, 4);
-    // const splicesActiveParticipants = [...participants.keys()].splice(0, 4);
 
     const gridInfo = getGridRowsAndColumns({
       participantsCount: splicesActiveParticipants.length,
@@ -130,7 +83,6 @@ const PresenterView = ({ presenterId }) => {
       gridInfo,
     });
   }, [
-    // participants,
     presenterId,
     mainViewParticipants,
     localParticipantId,
@@ -240,18 +192,6 @@ const PresenterView = ({ presenterId }) => {
             </Box>
             <Box mt={4}>
               <Button
-                // onMouseEnter={() => {
-                //   setMouseOver(true);
-                // }}
-                // onMouseLeave={() => {
-                //   setMouseOver(false);
-                // }}
-                // onMouseDown={() => {
-                //   setMouseDown(true);
-                // }}
-                // onMouseUp={() => {
-                //   setMouseDown(false);
-                // }}
                 variant="contained"
                 color="primary"
                 onClick={(e) => {
@@ -259,10 +199,7 @@ const PresenterView = ({ presenterId }) => {
                   toggleScreenShare();
                 }}
                 style={{
-                  // transform: `scale(${
-                  //   mouseOver ? (mouseDown ? 0.95 : 1.05) : 1
-                  // })`,
-                  transition: animationsEnabled ? "all 200ms" : "all 100ms",
+                  transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                   transitionTimingFunction: "linear",
                 }}
               >
