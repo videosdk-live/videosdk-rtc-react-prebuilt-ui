@@ -140,11 +140,13 @@ const WhiteBoardBTN = ({ onClick }) => {
     useMeetingAppContext();
   const mMeeting = useMeeting({});
 
+  const presenterId = mMeeting?.presenterId;
+
   return (
     <>
       {whiteboardEnabled && (
         <OutlineIconButton
-          disabled={!canToggleWhiteboard}
+          disabled={presenterId || !canToggleWhiteboard}
           tooltipTitle={"Whiteboard"}
           Icon={Gesture}
           isFocused={whiteboardStarted}

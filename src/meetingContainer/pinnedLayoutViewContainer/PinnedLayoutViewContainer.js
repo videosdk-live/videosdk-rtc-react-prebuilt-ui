@@ -195,7 +195,7 @@ const PinnedLayoutViewContainer = ({
   const gutter = 4;
   const spacing = (reduceEdgeSpacing ? 4 : rowSpacing) - gutter;
 
-  const presentingSideBarWidth = useResponsiveSize({
+  const _presentingSideBarWidth = useResponsiveSize({
     xl: 320,
     lg: 280,
     md: 260,
@@ -203,7 +203,14 @@ const PinnedLayoutViewContainer = ({
     xs: 200,
   });
 
-  const mainContainerHorizontalPadding =
+  const presentingSideBarWidth = useMemo(() => {
+    return (whiteboardStarted || presenterId) &&
+      meetingLayout === meetingLayouts.SPOTLIGHT
+      ? 0
+      : _presentingSideBarWidth;
+  }, [_presentingSideBarWidth, whiteboardStarted, presenterId, meetingLayout]);
+
+  const _mainContainerHorizontalPadding =
     spotlightParticipantId && singleRow.length !== 0
       ? 0
       : typeof sideBarMode === "string"
@@ -221,6 +228,18 @@ const PinnedLayoutViewContainer = ({
         ? 60
         : 0
       : 0;
+
+  const mainContainerHorizontalPadding = useMemo(() => {
+    return (whiteboardStarted || presenterId) &&
+      meetingLayout === meetingLayouts.SPOTLIGHT
+      ? 0
+      : _mainContainerHorizontalPadding;
+  }, [
+    _mainContainerHorizontalPadding,
+    whiteboardStarted,
+    presenterId,
+    meetingLayout,
+  ]);
 
   const gridVerticalSpacing = useResponsiveSize({
     xl: 160,
