@@ -20,6 +20,7 @@ export const sideBarModes = {
   PARTICIPANTS: "PARTICIPANTS",
   CHAT: "CHAT",
   ACTIVITIES: "ACTIVITIES",
+  STREAMS: "STREAMS",
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -90,6 +91,7 @@ export const MeetingAppProvider = ({
   hideLocalParticipant,
   alwaysShowOverlay,
   sideStackSize,
+  canChangeLiveStreamConfig,
   reduceEdgeSpacing,
   isRecorder,
 }) => {
@@ -130,7 +132,7 @@ export const MeetingAppProvider = ({
         selectedWebcam,
         joinScreenWebCam,
         joinScreenMic,
-
+        canChangeLiveStreamConfig,
         // refs
         containerRef,
         endCallContainerRef,
