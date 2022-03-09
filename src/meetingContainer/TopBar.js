@@ -896,6 +896,11 @@ const TopBar = ({ topBarHeight }) => {
               <ScreenShareBTN onClick={handleCloseFAB} />
             </Box>
           )}
+          {canChangeLiveStreamConfig && (
+            <Box mb={1.3}>
+              <StreamsBTN />
+            </Box>
+          )}
           {isPortrait && recordingEnabled && chatEnabled && (
             <Box mb={1.2}>
               <ChatBTN onClick={handleCloseFAB} />
