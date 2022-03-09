@@ -16,6 +16,7 @@ import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
+import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 
 import {
   Activities,
@@ -97,6 +98,23 @@ const ParticipantsBTN = ({ onClick }) => {
         );
       }}
       badge={participantsCount}
+    />
+  );
+};
+
+const StreamsBTN = () => {
+  console.log("from SteamsBTN");
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  return (
+    <OutlineIconButton
+      tooltipTitle={"Streams"}
+      Icon={SettingsOutlinedIcon}
+      isFocused={sideBarMode === sideBarModes.STREAMS}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.STREAMS ? null : sideBarModes.STREAMS
+        );
+      }}
     />
   );
 };
@@ -660,6 +678,7 @@ const TopBar = ({ topBarHeight }) => {
   const {
     chatEnabled,
     screenShareEnabled,
+    canChangeLiveStreamConfig,
     pollEnabled,
     whiteboardEnabled,
     participantCanToggleSelfWebcam,
@@ -674,6 +693,7 @@ const TopBar = ({ topBarHeight }) => {
     canEndMeeting,
     animationsEnabled,
   } = useMeetingAppContext();
+  console.log("canChangeLiveStreamConfig", canChangeLiveStreamConfig);
 
   const handleClickFAB = (event) => {
     setAnchorEl(event.currentTarget);
@@ -701,6 +721,7 @@ const TopBar = ({ topBarHeight }) => {
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
       WHITEBOARD: "WHITEBOARD",
+      STREAMS: "STREAMS",
     }),
     []
   );
@@ -718,6 +739,9 @@ const TopBar = ({ topBarHeight }) => {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
     }
     arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
+    if (canChangeLiveStreamConfig) {
+      arrSideBar.unshift(topBarButtonTypes.STREAMS);
+    }
 
     arr.unshift(arrSideBar);
 
@@ -872,6 +896,11 @@ const TopBar = ({ topBarHeight }) => {
               <ScreenShareBTN onClick={handleCloseFAB} />
             </Box>
           )}
+          {canChangeLiveStreamConfig && (
+            <Box mb={1.2}>
+              <StreamsBTN />
+            </Box>
+          )}
           {isPortrait && recordingEnabled && chatEnabled && (
             <Box mb={1.2}>
               <ChatBTN onClick={handleCloseFAB} />
@@ -1014,6 +1043,8 @@ const TopBar = ({ topBarHeight }) => {
                         <RecordingBTN />
                       ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
                         <WhiteBoardBTN />
+                      ) : buttonType === topBarButtonTypes.STREAMS ? (
+                        <StreamsBTN />
                       ) : null}
                     </Box>
                   );
