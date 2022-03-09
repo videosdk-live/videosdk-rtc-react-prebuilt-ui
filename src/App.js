@@ -8,6 +8,7 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
+import { version as prebuiltSDKVersion } from "../package.json";
 
 const App = () => {
   const getParams = () => {
@@ -488,6 +489,10 @@ const App = () => {
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction
+            deviceInfo={{
+              sdkType: "prebuilt",
+              sdkVersion: prebuiltSDKVersion,
+            }}
           >
             <MeetingContainer />
           </MeetingProvider>
