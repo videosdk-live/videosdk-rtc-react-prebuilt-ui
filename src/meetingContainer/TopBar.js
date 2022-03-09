@@ -897,7 +897,7 @@ const TopBar = ({ topBarHeight }) => {
             </Box>
           )}
           {canChangeLiveStreamConfig && (
-            <Box mb={1.3}>
+            <Box mb={1.2}>
               <StreamsBTN />
             </Box>
           )}
