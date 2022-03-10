@@ -726,6 +726,7 @@ const TopBar = ({ topBarHeight }) => {
     []
   );
 
+  console.log(topBarButtonTypes);
   const topBarIcons = useMemo(() => {
     const arr = [];
 
