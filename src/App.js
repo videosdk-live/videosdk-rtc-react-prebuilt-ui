@@ -354,7 +354,7 @@ const App = () => {
       });
     }
   };
-
+  console.log("from app.js");
   useEffect(() => {
     if (paramKeys.meetingId && paramKeys.token) {
       validateMeetingId({
