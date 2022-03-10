@@ -118,6 +118,24 @@ const StreamsBTN = () => {
     />
   );
 };
+
+const AddLiveStreamBTN = () => {
+  console.log("from AddLiveStreamBTN");
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  return (
+    <OutlineIconButton
+      tooltipTitle={"Add Live Stream"}
+      // buttonText="Add Live Stream"
+      Icon={SettingsOutlinedIcon}
+      isFocused={sideBarMode === sideBarModes.STREAMS}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.STREAMS ? null : sideBarModes.STREAMS
+        );
+      }}
+    />
+  );
+};
 const ChatBTN = () => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
@@ -722,6 +740,7 @@ const TopBar = ({ topBarHeight }) => {
       RECORDING: "RECORDING",
       WHITEBOARD: "WHITEBOARD",
       STREAMS: "STREAMS",
+      ADDLIVESTREAM: "ADD_LIVE_STREAM",
     }),
     []
   );
@@ -736,13 +755,13 @@ const TopBar = ({ topBarHeight }) => {
 
     const arrSideBar = [];
 
+    if (canChangeLiveStreamConfig) {
+      arrSideBar.unshift(topBarButtonTypes.STREAMS);
+    }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
     }
     arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
-    if (canChangeLiveStreamConfig) {
-      arrSideBar.unshift(topBarButtonTypes.STREAMS);
-    }
 
     arr.unshift(arrSideBar);
 
@@ -773,6 +792,10 @@ const TopBar = ({ topBarHeight }) => {
 
     if (whiteboardEnabled) {
       utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+    }
+
+    if (canChangeLiveStreamConfig) {
+      utilsArr.unshift(topBarButtonTypes.ADDLIVESTREAM);
     }
 
     if (utilsArr.length) {
@@ -882,6 +905,11 @@ const TopBar = ({ topBarHeight }) => {
           <Box mb={1.2}>
             <ParticipantsBTN onClick={handleCloseFAB} />
           </Box>
+          {canChangeLiveStreamConfig && (
+            <Box mb={1.2}>
+              <AddLiveStreamBTN onClick={handleCloseFAB} />
+            </Box>
+          )}
           {/* {(pollEnabled || whiteboardEnabled) && (
             <Box mb={1.2}>
               <ActivitiesBTN onClick={handleCloseFAB} />
@@ -1046,6 +1074,8 @@ const TopBar = ({ topBarHeight }) => {
                         <WhiteBoardBTN />
                       ) : buttonType === topBarButtonTypes.STREAMS ? (
                         <StreamsBTN />
+                      ) : buttonType === topBarButtonTypes.ADDLIVESTREAM ? (
+                        <AddLiveStreamBTN />
                       ) : null}
                     </Box>
                   );

@@ -100,6 +100,8 @@ const SideBarTabView = ({ width, height }) => {
                     ? `${capitalize(
                         String(sideBarMode || "").toLowerCase()
                       )} (${new Map(participants)?.size})`
+                    : sideBarMode === "STREAMS"
+                    ? "Add Live Streams"
                     : capitalize(String(sideBarMode || "").toLowerCase())}
                 </Typography>
                 <IconButton onClick={handleClose}>
