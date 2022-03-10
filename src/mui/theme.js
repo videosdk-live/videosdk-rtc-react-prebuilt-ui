@@ -5,7 +5,7 @@ export default function generateMuiTheme(type, primary, secondary) {
   return responsiveFontSizes(
     createTheme({
       typography: {
-        fontFamily: ["Inter", "Arial", "sans-serif"].join(","),
+        fontFamily: ["Roboto", "Inter", "sans-serif"].join(","),
       },
 
       palette: {

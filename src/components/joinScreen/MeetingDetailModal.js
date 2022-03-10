@@ -86,7 +86,7 @@ export default function MeetingDetailModal({
             {meetingTitle ? (
               <div
                 style={{
-                  fontFamily: "Inter,Arial,sans-serif",
+                  fontFamily: "Roboto,Inter,sans-serif",
                   color: theme.palette.primary.contrastText,
                 }}
               >
@@ -175,7 +175,7 @@ export default function MeetingDetailModal({
       ) : meetingTitle ? (
         <div
           style={{
-            fontFamily: "Inter,Arial,sans-serif",
+            fontFamily: "Roboto,Inter,sans-serif",
             color: theme.palette.primary.contrastText,
           }}
         >
