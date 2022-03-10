@@ -78,6 +78,7 @@ const App = () => {
       isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
+      rawUserAgent: "rawUserAgent",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -492,6 +493,7 @@ const App = () => {
             deviceInfo={{
               sdkType: "prebuilt",
               sdkVersion: prebuiltSDKVersion,
+              rawUserAgent: paramKeys.rawUserAgent,
             }}
           >
             <MeetingContainer />

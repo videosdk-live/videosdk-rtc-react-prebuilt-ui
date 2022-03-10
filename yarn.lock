@@ -2068,17 +2068,17 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@videosdk.live/js-sdk@^0.0.26":
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/@videosdk.live/js-sdk/-/js-sdk-0.0.26.tgz#3dbd3b9f06288a1b4966c1e52760636329398008"
-  integrity sha512-uOe86Z8rxwQ6WyFlJUn9NIWQf8vy1Dfw3ECfN4utGW5dKfcpXbhtOomrAoN/97dpWwQII4pbpnPmrxVQs/LuDw==
+"@videosdk.live/js-sdk@^0.0.27":
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/@videosdk.live/js-sdk/-/js-sdk-0.0.27.tgz#7eff9fce88169c22df0e13d8824c492f45756a56"
+  integrity sha512-EECRAnbQzFAU6jersB5GtFF5mJH+tPwzuZ2RoYbFgBkmglVO4Q9Rg1RIFcgqF9aK/lPPid5ZlKjOmPOeIVO9xg==
 
-"@videosdk.live/react-sdk@^0.1.23":
-  version "0.1.23"
-  resolved "https://registry.yarnpkg.com/@videosdk.live/react-sdk/-/react-sdk-0.1.23.tgz#104b0cb0993f1e6ead708f76a6b428b30d9919bd"
-  integrity sha512-dOIg3y0h4+rlcZQI2bwwxE/o4zz+cEBuyThtGmbLkT2Fp2t4cKAS7W5KwTgY5xL7zVwmp3BsEoO/4NyLtbOeyw==
+"@videosdk.live/react-sdk@^0.1.24":
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/@videosdk.live/react-sdk/-/react-sdk-0.1.24.tgz#0dea1d59298dde24eb362d4e142326a0f8ebdbbc"
+  integrity sha512-Nb4JZyhiO9TBqy16/JEcsgVAW7abcym/Kfeab7KPRmyAfSuc2b62hkfwbGGWpofVbANuJePnlYdUFyKVg//GlQ==
   dependencies:
-    "@videosdk.live/js-sdk" "^0.0.26"
+    "@videosdk.live/js-sdk" "^0.0.27"
     events "^3.3.0"
 
 "@webassemblyjs/ast@1.9.0":
@@ -4523,9 +4523,9 @@ ejs@^2.6.1:
   integrity sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==
 
 electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.76:
-  version "1.4.78"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.78.tgz#7a1cf853efafde2c4cf6e86facf3e5792d3541a5"
-  integrity sha512-o61+D/Lx7j/E0LIin/efOqeHpXhwi1TaQco9vUcRmr91m25SfZY6L5hWJDv/r+6kNjboFKgBw1LbfM0lbhuK6Q==
+  version "1.4.80"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.80.tgz#299a1ea3e32810934b4e3c2e4d4cb53136fdab3f"
+  integrity sha512-COsbJCGVYCc/aAY4cd94x1Js3q0r406YKGbdL8LXHg0O9dEjuFEFU/vZneRxBxKo/f1lLHi0YyAR7sbFM+i8Bg==
 
 elliptic@^6.5.3:
   version "6.5.4"
