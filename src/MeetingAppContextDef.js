@@ -21,6 +21,7 @@ export const sideBarModes = {
   CHAT: "CHAT",
   ACTIVITIES: "ACTIVITIES",
   STREAMS: "STREAMS",
+  CONFIGURATION: "CONFIGURATION",
 };
 
 const useStyles = makeStyles((theme) => ({

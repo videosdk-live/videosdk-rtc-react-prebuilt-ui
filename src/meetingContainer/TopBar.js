@@ -102,17 +102,16 @@ const ParticipantsBTN = ({ onClick }) => {
   );
 };
 
-const StreamsBTN = () => {
-  console.log("from SteamsBTN");
+const ConfigBTN = () => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
   return (
     <OutlineIconButton
-      tooltipTitle={"Streams"}
+      tooltipTitle={"Configuration"}
       Icon={SettingsOutlinedIcon}
-      isFocused={sideBarMode === sideBarModes.STREAMS}
+      isFocused={sideBarMode === sideBarModes.CONFIGURATION}
       onClick={() => {
         setSideBarMode((s) =>
-          s === sideBarModes.STREAMS ? null : sideBarModes.STREAMS
+          s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION
         );
       }}
     />
@@ -741,11 +740,11 @@ const TopBar = ({ topBarHeight }) => {
       WHITEBOARD: "WHITEBOARD",
       STREAMS: "STREAMS",
       ADDLIVESTREAM: "ADD_LIVE_STREAM",
+      CONFIGURATION: "CONFIGURATION",
     }),
     []
   );
 
-  console.log(topBarButtonTypes);
   const topBarIcons = useMemo(() => {
     const arr = [];
 
@@ -756,7 +755,7 @@ const TopBar = ({ topBarHeight }) => {
     const arrSideBar = [];
 
     if (canChangeLiveStreamConfig) {
-      arrSideBar.unshift(topBarButtonTypes.STREAMS);
+      arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
     }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
@@ -927,7 +926,7 @@ const TopBar = ({ topBarHeight }) => {
           )}
           {canChangeLiveStreamConfig && (
             <Box mb={1.2}>
-              <StreamsBTN />
+              <ConfigBTN onClick={handleCloseFAB} />
             </Box>
           )}
           {isPortrait && recordingEnabled && chatEnabled && (
@@ -1076,6 +1075,8 @@ const TopBar = ({ topBarHeight }) => {
                         <StreamsBTN />
                       ) : buttonType === topBarButtonTypes.ADDLIVESTREAM ? (
                         <AddLiveStreamBTN />
+                      ) : buttonType === topBarButtonTypes.CONFIGURATION ? (
+                        <ConfigBTN />
                       ) : null}
                     </Box>
                   );

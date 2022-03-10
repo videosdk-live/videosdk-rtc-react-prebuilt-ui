@@ -19,6 +19,7 @@ import ActivitiesTabPanel from "./ActivitiesTabPanel";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
+import ConfigTabPanel from "./ConfigTabPanel";
 
 const SideBarTabView = ({ width, height }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
@@ -33,6 +34,8 @@ const SideBarTabView = ({ width, height }) => {
       ? 2
       : sideBarMode === sideBarModes.STREAMS
       ? 3
+      : sideBarMode === sideBarModes.CONFIGURATION
+      ? 4
       : null;
 
   const panelPadding = 8;
@@ -117,6 +120,8 @@ const SideBarTabView = ({ width, height }) => {
               <ActivitiesTabPanel {...{ panelHeight }} />
             ) : value === 3 ? (
               <LiveStreamConfigTabPanel {...{ panelHeight }} />
+            ) : value === 4 ? (
+              <ConfigTabPanel {...{ panelHeight }} />
             ) : null}
           </>
         </div>
