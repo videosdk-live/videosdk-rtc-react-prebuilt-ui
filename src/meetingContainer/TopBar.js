@@ -126,10 +126,12 @@ const AddLiveStreamBTN = () => {
       tooltipTitle={"Add Live Stream"}
       // buttonText="Add Live Stream"
       Icon={SettingsOutlinedIcon}
-      isFocused={sideBarMode === sideBarModes.STREAMS}
+      isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
         setSideBarMode((s) =>
-          s === sideBarModes.STREAMS ? null : sideBarModes.STREAMS
+          s === sideBarModes.ADD_LIVE_STREAM
+            ? null
+            : sideBarModes.ADD_LIVE_STREAM
         );
       }}
     />
@@ -738,8 +740,7 @@ const TopBar = ({ topBarHeight }) => {
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
       WHITEBOARD: "WHITEBOARD",
-      STREAMS: "STREAMS",
-      ADDLIVESTREAM: "ADD_LIVE_STREAM",
+      ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
       CONFIGURATION: "CONFIGURATION",
     }),
     []
@@ -794,7 +795,7 @@ const TopBar = ({ topBarHeight }) => {
     }
 
     if (canChangeLiveStreamConfig) {
-      utilsArr.unshift(topBarButtonTypes.ADDLIVESTREAM);
+      utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
     }
 
     if (utilsArr.length) {
@@ -1071,9 +1072,7 @@ const TopBar = ({ topBarHeight }) => {
                         <RecordingBTN />
                       ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
                         <WhiteBoardBTN />
-                      ) : buttonType === topBarButtonTypes.STREAMS ? (
-                        <StreamsBTN />
-                      ) : buttonType === topBarButtonTypes.ADDLIVESTREAM ? (
+                      ) : buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
                         <AddLiveStreamBTN />
                       ) : buttonType === topBarButtonTypes.CONFIGURATION ? (
                         <ConfigBTN />

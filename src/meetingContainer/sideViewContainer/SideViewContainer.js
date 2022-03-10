@@ -32,7 +32,7 @@ const SideBarTabView = ({ width, height }) => {
       ? 1
       : sideBarMode === sideBarModes.ACTIVITIES
       ? 2
-      : sideBarMode === sideBarModes.STREAMS
+      : sideBarMode === sideBarModes.ADD_LIVE_STREAM
       ? 3
       : sideBarMode === sideBarModes.CONFIGURATION
       ? 4
@@ -103,7 +103,7 @@ const SideBarTabView = ({ width, height }) => {
                     ? `${capitalize(
                         String(sideBarMode || "").toLowerCase()
                       )} (${new Map(participants)?.size})`
-                    : sideBarMode === "STREAMS"
+                    : sideBarMode === "ADD_LIVE_STREAM"
                     ? "Add Live Streams"
                     : capitalize(String(sideBarMode || "").toLowerCase())}
                 </Typography>
