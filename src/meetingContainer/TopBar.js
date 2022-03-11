@@ -47,6 +47,7 @@ import {
 } from "react-device-detect";
 import ConfirmBox from "../components/ConfirmBox";
 import { useMediaQuery } from "react-responsive";
+import OutlineIconTextButton from "../components/OutlineIconTextButton";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -122,9 +123,9 @@ const AddLiveStreamBTN = () => {
   console.log("from AddLiveStreamBTN");
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
   return (
-    <OutlineIconButton
+    <OutlineIconTextButton
       tooltipTitle={"Add Live Stream"}
-      // buttonText="Add Live Stream"
+      buttonText="Add Live Stream"
       Icon={SettingsOutlinedIcon}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
