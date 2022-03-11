@@ -79,6 +79,7 @@ const App = () => {
       isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
+      meetingLayoutTopic: "meetingLayoutTopic",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -267,6 +268,8 @@ const App = () => {
       playNotificationErr();
       setMeetingError({ message: configErr, code: 4001, isVisible: true });
     }
+
+    // validate meetingLayoutTopic here
 
     return paramKeys;
   };

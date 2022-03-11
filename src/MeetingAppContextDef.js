@@ -111,6 +111,7 @@ export const MeetingAppProvider = ({
     started: false,
     state: null,
   });
+  const [meetingLayout, setMeetingLayout] = useState(layout);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -196,7 +197,7 @@ export const MeetingAppProvider = ({
         userHasInteracted,
         whiteboardStarted,
         whiteboardState,
-        meetingLayout: layout,
+        meetingLayout,
         canPin,
         meetingLeft,
 
@@ -209,6 +210,7 @@ export const MeetingAppProvider = ({
         setUserHasInteracted,
         setWhiteboardState,
         setMeetingLeft,
+        setMeetingLayout,
       }}
     >
       <SnackbarProvider

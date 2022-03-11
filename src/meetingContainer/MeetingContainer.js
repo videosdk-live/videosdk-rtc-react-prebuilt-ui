@@ -125,6 +125,7 @@ const MeetingContainer = () => {
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
+    meetingLayoutTopic,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -434,6 +435,16 @@ const MeetingContainer = () => {
 
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
+
+  // usePubsub(meetingLayoutTopic,)
+  // usePubSub('meeting_layout', {
+  //   onMessageReceived: (data) => {
+  // setMeetingLayout(new layoye)
+  //   },
+  //   onOldMessagesReceived: (messages) => {
+  // setMeetingLayout(new layout)
+  //   }
+  // });
 
   return (
     <div

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -8,28 +8,47 @@ import {
 } from "@material-ui/core";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 
-import { meetingLayouts } from "../../MeetingAppContextDef";
+import {
+  meetingLayouts,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import SpotlightIcon from "../../icons/SpotlightIcon";
 import SideBarIcon from "../../icons/SideBarIcon";
 import GridIcon from "../../icons/GridIcon";
 import SpeakerIcon from "../../icons/SpeakerIcon";
 import PinParticipantIcon from "../../icons/PinParticipantIcon";
+import { usePubSub } from "@videosdk.live/react-sdk";
 
 function ConfigTabPanel({ panelHeight }) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [layout, setLayout] = useState("GRID");
-  const [gridSize, setgridSize] = useState(1);
+  const { meetingLayout } = useMeetingAppContext();
+
+  const { type, priority, gridSize } = meetingLayout;
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  // const [gridSize, setgridSize] = useState(1);
+
+  const { publish: livestreamPublish } = usePubSub("LIVESTREAM_LAYOUT");
+  const { publish: recordingPublish } = usePubSub("RECORDING_LAYOUT");
+  const { publish: hlsPublish } = usePubSub("HLS_LAYOUT");
+  const { publish: meetingPublish } = usePubSub("MEETING_LAYOUT");
 
   const marks = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20,
     21, 22, 23, 24, 25,
   ];
-
-  useLayoutEffect(() => {
-    if (window.innerWidth < 375) {
-      setIsMobile(true);
-    }
-  }, []);
 
   //lightToolTip
   const LightTooltip = withStyles((theme) => ({
@@ -65,12 +84,8 @@ function ConfigTabPanel({ panelHeight }) {
     );
   }
 
-  useEffect(() => {
-    console.log(layout);
-  }, [layout]);
-
   //layout and priority card
-  let Card = ({ isActive, title, Icon, click }) => {
+  let Card = ({ isActive, title, Icon, onClick }) => {
     return isActive ? (
       <Box
         id="card"
@@ -125,13 +140,25 @@ function ConfigTabPanel({ panelHeight }) {
     );
   };
 
+  const _handleChangeLayout = ({ _type, _priority, _gridSize }) => {
+    const type = _type || typeRef.current;
+    const priority = _priority || priorityRef.current;
+    const gridSize = _gridSize || gridSizeRef.current;
+
+    // livestreamPublish()
+    // recordingPublish()
+    // hlsPublish()
+    // meetingPublish()
+  };
+
   //slider change handler
   const handleChange = (event, newValue) => {
     console.log(`newValue : ${newValue}`);
-    setgridSize(newValue);
+    // setgridSize(newValue);
+    // _handleChangeLayout({_gridSize : newValue})
   };
 
-  let Div = ({ heading }) => {
+  let Div = ({ heading, onLayoutSelected, onPrioritySelected }) => {
     return (
       <Box
         style={{
@@ -159,14 +186,39 @@ function ConfigTabPanel({ panelHeight }) {
         >
           {heading == "Layout" ? (
             <>
-              <Card isActive={true} title="Spotlight" Icon={SpotlightIcon} />
-              <Card isActive={false} title="Sidebar" Icon={SideBarIcon} />
-              <Card isActive={false} title="Grid" Icon={GridIcon} />
+              <Card
+                onClick={() => {
+                  onLayoutSelected();
+                }}
+                isActive={true}
+                title="Spotlight"
+                Icon={SpotlightIcon}
+              />
+              <Card
+                onClick={() => {}}
+                isActive={false}
+                title="Sidebar"
+                Icon={SideBarIcon}
+              />
+              <Card
+                onClick={() => {}}
+                isActive={false}
+                title="Grid"
+                Icon={GridIcon}
+              />
             </>
           ) : (
             <>
-              <Card isActive={true} title="Speaker" Icon={SpeakerIcon} />
               <Card
+                onClick={() => {
+                  onPrioritySelected();
+                }}
+                isActive={true}
+                title="Speaker"
+                Icon={SpeakerIcon}
+              />
+              <Card
+                onClick={() => {}}
                 isActive={false}
                 title="Pin Participant"
                 Icon={PinParticipantIcon}
@@ -190,8 +242,8 @@ function ConfigTabPanel({ panelHeight }) {
         flexDirection: "column",
       }}
     >
-      <Div heading="Layout" />
-      <Div heading="Priority" />
+      <Div onLayoutSelected={() => {}} heading="Layout" />
+      <Div onPrioritySelected={() => {}} heading="Priority" />
       <Box
         style={{
           display: "flex",
