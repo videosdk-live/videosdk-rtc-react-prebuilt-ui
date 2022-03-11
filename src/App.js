@@ -30,6 +30,7 @@ const App = () => {
       raiseHandEnabled: "raiseHandEnabled",
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
+      canChangeLayout: "canChangeLayout",
       canChangeLiveStreamConfig: "canChangeLiveStreamConfig",
       recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
@@ -415,6 +416,7 @@ const App = () => {
             participantCanToggleSelfMic:
               paramKeys.participantCanToggleSelfMic === "true",
             raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
+            canChangeLayout: paramKeys.canChangeLayout === "true",
             canChangeLiveStreamConfig:
               paramKeys.canChangeLiveStreamConfig === "true",
             recordingEnabled: paramKeys.recordingEnabled === "true",

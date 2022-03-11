@@ -697,6 +697,7 @@ const TopBar = ({ topBarHeight }) => {
   const {
     chatEnabled,
     screenShareEnabled,
+    canChangeLayout,
     canChangeLiveStreamConfig,
     pollEnabled,
     whiteboardEnabled,
@@ -712,7 +713,7 @@ const TopBar = ({ topBarHeight }) => {
     canEndMeeting,
     animationsEnabled,
   } = useMeetingAppContext();
-  console.log("canChangeLiveStreamConfig", canChangeLiveStreamConfig);
+  console.log("canChangeLayout", canChangeLayout);
 
   const handleClickFAB = (event) => {
     setAnchorEl(event.currentTarget);
@@ -755,7 +756,7 @@ const TopBar = ({ topBarHeight }) => {
 
     const arrSideBar = [];
 
-    if (canChangeLiveStreamConfig) {
+    if (canChangeLayout) {
       arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
     }
     if (chatEnabled) {
@@ -766,6 +767,7 @@ const TopBar = ({ topBarHeight }) => {
     arr.unshift(arrSideBar);
 
     const arrMedia = [];
+
     if (screenShareEnabled) {
       arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
     }
@@ -925,7 +927,7 @@ const TopBar = ({ topBarHeight }) => {
               <ScreenShareBTN onClick={handleCloseFAB} />
             </Box>
           )}
-          {canChangeLiveStreamConfig && (
+          {canChangeLayout && (
             <Box mb={1.2}>
               <ConfigBTN onClick={handleCloseFAB} />
             </Box>
