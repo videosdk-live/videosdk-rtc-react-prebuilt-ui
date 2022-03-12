@@ -54,7 +54,6 @@ const App = () => {
       joinScreenMeetingUrl: "joinScreenMeetingUrl",
       joinScreenTitle: "joinScreenTitle",
       notificationSoundEnabled: "notificationSoundEnabled",
-      layout: "layout",
       canPin: "canPin",
       canEndMeeting: "canEndMeeting",
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
@@ -67,9 +66,12 @@ const App = () => {
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
       debug: "debug",
-      layoutPriority: "layoutPriority",
       participantId: "participantId",
+
+      layout: "layout",
       layoutGridSize: "layoutGridSize",
+      layoutPriority: "layoutPriority",
+
       recordingLayoutType: "recordingLayoutType",
       recordingLayoutPriority: "recordingLayoutPriority",
       recordingLayoutGridSize: "recordingLayoutGridSize",
@@ -215,12 +217,24 @@ const App = () => {
     if (paramKeys.layoutPriority === "PIN") {
       if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
       } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+      } else if (paramKeys.layout === meetingLayouts.GRID) {
+        paramKeys.layoutPriority = "SPEAKER";
       }
     } else if (paramKeys.layoutPriority === "SPEAKER") {
       if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
         paramKeys.layout = meetingLayouts.UNPINNED_SPOTLIGHT;
       } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
         paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
+      } else if (paramKeys.layout === meetingLayouts.GRID) {
+        paramKeys.layoutPriority = "SPEAKER";
+      }
+    } else if (paramKeys.layoutPriority === "") {
+      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+        paramKeys.layout = meetingLayouts.SPOTLIGHT;
+        paramKeys.layoutPriority = "SPEAKER";
+      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+        paramKeys.layout = meetingLayouts.SIDEBAR;
+        paramKeys.layoutPriority = "SPEAKER";
       }
     }
 
@@ -456,6 +470,7 @@ const App = () => {
             notificationSoundEnabled:
               paramKeys.notificationSoundEnabled === "true",
             layout: paramKeys.layout,
+            layoutPriority: paramKeys.layoutPriority,
             canPin: paramKeys.canPin === "true",
             selectedMic,
             selectedWebcam,

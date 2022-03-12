@@ -71,7 +71,6 @@ export const MeetingAppProvider = ({
   participantCanToggleOtherWebcam,
   canRemoveOtherParticipant,
   notificationSoundEnabled,
-  layout,
   canPin,
   selectedMic,
   selectedWebcam,
@@ -85,6 +84,8 @@ export const MeetingAppProvider = ({
   topbarEnabled,
   notificationAlertsEnabled,
   debug,
+  layout,
+  layoutPriority,
   layoutGridSize,
   recordingLayoutType,
   recordingLayoutPriority,
@@ -113,6 +114,8 @@ export const MeetingAppProvider = ({
     state: null,
   });
   const [meetingLayout, setMeetingLayout] = useState(layout);
+  // const [meetinglayoutGridSize, setLayoutGridSize] = useState(layoutGridSize);
+  // const [layoutPriority, setLayoutPriority] = useState(layout);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -179,6 +182,8 @@ export const MeetingAppProvider = ({
         topbarEnabled,
         notificationAlertsEnabled,
         debug,
+        layout,
+        layoutPriority,
         layoutGridSize,
         recordingLayoutType,
         recordingLayoutPriority,
