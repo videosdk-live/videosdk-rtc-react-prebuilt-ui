@@ -23,24 +23,27 @@ import useIsMobile from "../../utils/useIsMobile";
 function ConfigTabPanel({ panelHeight }) {
   const isMobile = useIsMobile(375);
 
-  const { meetingLayout, setMeetingLayout, layoutGridSize, layoutPriority } =
-    useMeetingAppContext();
-  // const { type, priority, gridSize } = meetingLayout;
+  const { meetingLayout } = useMeetingAppContext();
 
-  const meetingLayoutRef = useRef(meetingLayout);
-  const layoutPriorityRef = useRef(layoutPriority);
-  const layoutGridSizeRef = useRef(layoutGridSize);
-  console.log("layoutPriority", layoutPriority);
+  const { type, priority, gridSize } = meetingLayout;
+
+  console.log(type, priority, gridSize, "type, priority, gridSize");
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
 
   useEffect(() => {
-    meetingLayoutRef.current = meetingLayout;
-  }, [meetingLayout]);
+    typeRef.current = type;
+  }, [type]);
+
   useEffect(() => {
-    layoutPriorityRef.current = layoutPriority;
-  }, [layoutPriority]);
+    priorityRef.current = priority;
+  }, [priority]);
+
   useEffect(() => {
-    layoutGridSizeRef.current = layoutGridSize;
-  }, [layoutGridSize]);
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
 
   const { publish: livestreamPublish } = usePubSub("LIVESTREAM_LAYOUT");
   const { publish: recordingPublish } = usePubSub("RECORDING_LAYOUT");
@@ -153,9 +156,10 @@ function ConfigTabPanel({ panelHeight }) {
     );
   };
 
-  const _handleChangeLayout = ({ _meetingLayout, _meetingGridSize }) => {
-    const type = _meetingLayout || meetingLayoutRef.current;
-    const gridSize = _meetingGridSize || layoutGridSizeRef.current;
+  const _handleChangeLayout = ({ _type, _gridSize, _priority }) => {
+    const type = _type || typeRef.current;
+    const gridSize = _gridSize || gridSizeRef.current;
+    const priority = _priority || priorityRef.current;
 
     // livestreamPublish()
     // recordingPublish()
@@ -276,7 +280,7 @@ function ConfigTabPanel({ panelHeight }) {
             getAriaValueText={valuetext}
             min={1}
             max={25}
-            value={layoutGridSize}
+            value={gridSize}
             onChange={gridSizeHandler}
             ValueLabelComponent={ValueLabelComponent}
             valueLabelDisplay="on"

@@ -8,9 +8,19 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
+import {
+  maxParticipantGridCount_large_desktop,
+  maxParticipantGridCount_desktop,
+  maxParticipantGridCount_tab,
+  maxParticipantGridCount_mobile,
+} from "./utils/common";
+import useIsSMDesktop from "./utils/useIsSMDesktop";
+import useIsLGDesktop from "./utils/useIsLGDesktop";
+import useIsTab from "./utils/useIsTab";
+import useIsMobile from "./utils/useIsMobile";
 
 const App = () => {
-  const getParams = () => {
+  const getParams = ({ maxGridSize }) => {
     const location = window.location;
     const urlParams = new URLSearchParams(location.search);
 
@@ -224,7 +234,10 @@ const App = () => {
       } else if (paramKeys.layout === meetingLayouts.GRID) {
         paramKeys.layoutPriority = "SPEAKER";
       }
-    } else if (paramKeys.layoutPriority === "") {
+    } else if (
+      paramKeys.layoutPriority === "" ||
+      paramKeys.layoutPriority === null
+    ) {
       if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
         paramKeys.layout = meetingLayouts.SPOTLIGHT;
         paramKeys.layoutPriority = "SPEAKER";
@@ -257,12 +270,14 @@ const App = () => {
     paramKeys.sideStackSize = parseInt(paramKeys.sideStackSize);
 
     if (
-      typeof paramKeys.layoutGridSize === "number" &&
-      paramKeys.layoutGridSize <= 0
+      (typeof paramKeys.layoutGridSize === "number" &&
+        paramKeys.layoutGridSize <= 0) ||
+      isNaN(paramKeys.layoutGridSize)
     ) {
-      configErr = `"layoutGridSize" is not a valid number`;
-      playNotificationErr();
-      setMeetingError({ message: configErr, code: 4001, isVisible: true });
+      paramKeys.layoutGridSize = maxGridSize;
+      // configErr = `"layoutGridSize" is not a valid number`;
+      // playNotificationErr();
+      // setMeetingError({ message: configErr, code: 4001, isVisible: true });
     }
 
     if (
@@ -288,7 +303,22 @@ const App = () => {
     return paramKeys;
   };
 
-  const paramKeys = useMemo(getParams, []);
+  const isLGDesktop = useIsLGDesktop();
+  const isSMDesktop = useIsSMDesktop();
+  const isTab = useIsTab();
+  const isMobile = useIsMobile();
+
+  const maxGridSize = useMemo(() => {
+    return isLGDesktop
+      ? maxParticipantGridCount_large_desktop
+      : isSMDesktop
+      ? maxParticipantGridCount_desktop
+      : isTab
+      ? maxParticipantGridCount_tab
+      : maxParticipantGridCount_mobile;
+  }, [isLGDesktop, isSMDesktop, isTab, isMobile]);
+
+  const paramKeys = useMemo(() => getParams({ maxGridSize }), [maxGridSize]);
 
   const [userHasInteracted, setUserHasInteracted] = useState(
     paramKeys.joinWithoutUserInteraction === "true"
