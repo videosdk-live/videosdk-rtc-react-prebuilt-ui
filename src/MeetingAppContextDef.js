@@ -94,7 +94,8 @@ export const MeetingAppProvider = ({
   alwaysShowOverlay,
   sideStackSize,
   canChangeLayout,
-  canChangeLiveStreamConfig,
+
+  participantCanToggleLivestream,
   reduceEdgeSpacing,
   isRecorder,
 }) => {
@@ -143,7 +144,7 @@ export const MeetingAppProvider = ({
         joinScreenWebCam,
         joinScreenMic,
         canChangeLayout,
-        canChangeLiveStreamConfig,
+        participantCanToggleLivestream,
         // refs
         containerRef,
         endCallContainerRef,
