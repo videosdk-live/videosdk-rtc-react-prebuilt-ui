@@ -120,7 +120,6 @@ const ConfigBTN = () => {
 };
 
 const AddLiveStreamBTN = () => {
-  console.log("from AddLiveStreamBTN");
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
   return (
     <OutlineIconTextButton
@@ -699,7 +698,8 @@ const TopBar = ({ topBarHeight }) => {
     chatEnabled,
     screenShareEnabled,
     canChangeLayout,
-    canChangeLiveStreamConfig,
+    participantCanToggleLivestream,
+    liveStreamEnabled,
     pollEnabled,
     whiteboardEnabled,
     participantCanToggleSelfWebcam,
@@ -714,7 +714,6 @@ const TopBar = ({ topBarHeight }) => {
     canEndMeeting,
     animationsEnabled,
   } = useMeetingAppContext();
-  console.log("canChangeLayout", canChangeLayout);
 
   const handleClickFAB = (event) => {
     setAnchorEl(event.currentTarget);
@@ -797,7 +796,7 @@ const TopBar = ({ topBarHeight }) => {
       utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
     }
 
-    if (canChangeLiveStreamConfig) {
+    if (participantCanToggleLivestream) {
       utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
     }
 
@@ -908,7 +907,7 @@ const TopBar = ({ topBarHeight }) => {
           <Box mb={1.2}>
             <ParticipantsBTN onClick={handleCloseFAB} />
           </Box>
-          {canChangeLiveStreamConfig && (
+          {participantCanToggleLivestream && (
             <Box mb={1.2}>
               <AddLiveStreamBTN onClick={handleCloseFAB} />
             </Box>

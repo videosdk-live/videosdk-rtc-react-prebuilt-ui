@@ -1,16 +1,11 @@
 import {
-  Avatar,
   Box,
-  IconButton,
-  InputAdornment,
   TextField,
   Typography,
   useTheme,
-  Fade,
-  Tooltip,
   Button,
-  Input,
   makeStyles,
+  Input,
 } from "@material-ui/core";
 import React, { useState } from "react";
 import useWindowSize from "../../utils/useWindowSize";
@@ -18,12 +13,34 @@ import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
 
 const useStyles = makeStyles(() => ({
-  noBorder: {
-    border: "none",
+  textField: {
+    borderRadius: "4px",
     backgroundColor: "#3D3C4E",
-    color: "#fff",
+    color: "white",
+  },
+  input: {
+    color: "white",
+  },
+  root: {
+    "& .MuiFilledInput-input": {
+      padding: "12px 12px 12px",
+    },
   },
 }));
+
+const styles = (theme) => ({
+  textField: {
+    width: "90%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    paddingBottom: 0,
+    marginTop: 0,
+    fontWeight: 500,
+  },
+  input: {
+    color: "white",
+  },
+});
 
 export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const { width } = useWindowSize();
@@ -31,17 +48,15 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const isMobile = useIsMobile();
   const theme = useTheme();
 
-  const [onEditClick, setOnEditClick] = useState(false);
-  const [onCancelClick, setOnCancelClick] = useState(false);
   const [onSaveClick, setOnSaveClick] = useState(false);
-  const [streamKey, setStreamKey] = useState("");
-  const [streamUrl, setStreamUrl] = useState("");
-  const [liveStreamDetails, setLiveStreamDetails] = [
-    {
-      streamKey: streamKey,
-      streamUrl: streamUrl,
-    },
-  ];
+  // const [streamKey, setStreamKey] = useState("");
+  // const [streamUrl, setStreamUrl] = useState("");
+  // const [liveStreamDetails, setLiveStreamDetails] = [
+  //   {
+  //     streamKey: streamKey,
+  //     streamUrl: streamUrl,
+  //   },
+  // ];
 
   const [liveStreamPlatform, setLiveStreamPlatform] = useState([
     { id: 1, title: "Facebook", streamKey: "", streamUrl: "", isEdit: false },
@@ -86,24 +101,41 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
     setLiveStreamPlatform(newPlatforms);
   };
 
-  // const updateLiveStreamingDetails = (itemId, key, url) => {
-  //   const newPlatforms = liveStreamPlatform.map((option) => {
-  //     if (option.optionId === itemId) {
-  //       return { ...option, option: text };
-  //     } else {
-  //       return option;
-  //     }
-  //   });
-  //   setLiveStreamPlatform(newPlatforms);
-  // };
+  const updateLiveStreamingUrl = (itemId, url) => {
+    const newPlatforms = liveStreamPlatform.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, streamUrl: url };
+      } else {
+        return item;
+      }
+    });
+    setLiveStreamPlatform(newPlatforms);
+  };
+
+  const updateLiveStreamingKey = (itemId, key) => {
+    const newPlatforms = liveStreamPlatform.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, streamKey: key };
+      } else {
+        return item;
+      }
+    });
+    setLiveStreamPlatform(newPlatforms);
+  };
+
+  const updateLiveStreamingDetailsEmpty = (itemId) => {
+    const newPlatforms = liveStreamPlatform.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, streamKey: "", streamUrl: "", isEdit: false };
+      } else {
+        return item;
+      }
+    });
+
+    setLiveStreamPlatform(newPlatforms);
+  };
 
   const classes = useStyles();
-
-  const LiveStreamPlatformArray = [
-    { title: "Facebook" },
-    { title: "Youtube" },
-    { title: "Custom" },
-  ];
 
   return (
     <Box
@@ -153,10 +185,8 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                     <Button
                       variant="text"
                       onClick={() => {
-                        // setOnEditClick(false);
-                        setOptionAsEditFalse(item.id);
-                        setStreamUrl("");
-                        setStreamKey("");
+                        updateLiveStreamingDetailsEmpty(item.id);
+                        // setOptionAsEditFalse(item.id);
                       }}
                     >
                       CANCEL
@@ -165,7 +195,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                       variant="text"
                       onClick={() => {
                         setOnSaveClick(true);
-                        setOnEditClick(false);
+                        setOptionAsEditFalse(item.id);
                       }}
                     >
                       SAVE
@@ -173,13 +203,11 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                   </>
                 ) : (
                   <>
-                    {onSaveClick && streamKey != "" && (
+                    {onSaveClick && item.streamKey != "" && (
                       <Button
                         variant="text"
                         onClick={() => {
-                          // setOnEditClick(true);
-                          setStreamKey("");
-                          setStreamUrl("");
+                          updateLiveStreamingDetailsEmpty(item.id);
                         }}
                       >
                         REMOVE
@@ -188,7 +216,6 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                     <Button
                       variant="text"
                       onClick={() => {
-                        // setOnEditClick(true);
                         setOptionAsEdit(item.id);
                       }}
                     >
@@ -202,22 +229,37 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
               <TextField
                 placeholder="Stream Key"
                 fullWidth
-                variant="outlined"
+                variant="filled"
+                type="password"
+                className={classes.root}
                 disabled={!item.isEdit}
-                value={streamKey}
+                value={item.streamKey}
+                InputProps={{
+                  disableUnderline: true,
+                  classes: {
+                    root: classes.textField,
+                  },
+                }}
                 onChange={(e) => {
-                  setStreamKey(e.target.value);
+                  updateLiveStreamingKey(item.id, e.target.value);
                 }}
               />
               <TextField
                 placeholder="Stream Url"
                 fullWidth
-                variant="outlined"
+                variant="filled"
                 style={{ marginTop: "8px" }}
+                className={classes.root}
                 disabled={!item.isEdit}
-                value={streamUrl}
+                value={item.streamUrl}
+                InputProps={{
+                  disableUnderline: true,
+                  classes: {
+                    root: classes.textField,
+                  },
+                }}
                 onChange={(e) => {
-                  setStreamUrl(e.target.value);
+                  updateLiveStreamingUrl(item.id, e.target.value);
                 }}
               />
             </Box>

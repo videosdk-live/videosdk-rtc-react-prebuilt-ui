@@ -31,7 +31,7 @@ const App = () => {
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
       canChangeLayout: "canChangeLayout",
-      canChangeLiveStreamConfig: "canChangeLiveStreamConfig",
+
       recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
       participantCanToggleRecording: "participantCanToggleRecording",
@@ -49,6 +49,7 @@ const App = () => {
       askJoin: "askJoin",
       participantCanToggleOtherMic: "participantCanToggleOtherMic",
       participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
+      participantCanToggleLivestream: "participantCanToggleLivestream",
       joinScreenEnabled: "joinScreenEnabled",
       joinScreenMeetingUrl: "joinScreenMeetingUrl",
       joinScreenTitle: "joinScreenTitle",
@@ -155,6 +156,9 @@ const App = () => {
     }
     if (typeof paramKeys.autoStartLiveStream !== "string") {
       paramKeys.autoStartLiveStream = "true";
+    }
+    if (typeof paramKeys.participantCanToggleLivestream !== "string") {
+      paramKeys.participantCanToggleLivestream = "true";
     }
 
     if (paramKeys.autoStartLiveStream === "true") {
@@ -358,7 +362,7 @@ const App = () => {
       });
     }
   };
-  console.log("from app.js");
+
   useEffect(() => {
     if (paramKeys.meetingId && paramKeys.token) {
       validateMeetingId({
@@ -420,8 +424,7 @@ const App = () => {
               paramKeys.participantCanToggleSelfMic === "true",
             raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
             canChangeLayout: paramKeys.canChangeLayout === "true",
-            canChangeLiveStreamConfig:
-              paramKeys.canChangeLiveStreamConfig === "true",
+
             recordingEnabled: paramKeys.recordingEnabled === "true",
             recordingWebhookUrl: paramKeys.recordingWebhookUrl,
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
@@ -448,6 +451,8 @@ const App = () => {
               paramKeys.participantCanToggleOtherMic === "true",
             participantCanToggleOtherWebcam:
               paramKeys.participantCanToggleOtherWebcam === "true",
+            participantCanToggleLivestream:
+              paramKeys.participantCanToggleLivestream === "true",
             notificationSoundEnabled:
               paramKeys.notificationSoundEnabled === "true",
             layout: paramKeys.layout,
