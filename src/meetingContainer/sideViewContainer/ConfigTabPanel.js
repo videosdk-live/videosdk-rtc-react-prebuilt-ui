@@ -18,27 +18,29 @@ import GridIcon from "../../icons/GridIcon";
 import SpeakerIcon from "../../icons/SpeakerIcon";
 import PinParticipantIcon from "../../icons/PinParticipantIcon";
 import { usePubSub } from "@videosdk.live/react-sdk";
+import useIsMobile from "../../utils/useIsMobile";
 
 function ConfigTabPanel({ panelHeight }) {
-  const { meetingLayout } = useMeetingAppContext();
+  const isMobile = useIsMobile(375);
 
-  const { type, priority, gridSize } = meetingLayout;
+  const { meetingLayout, setMeetingLayout, layoutGridSize, layoutPriority } =
+    useMeetingAppContext();
+  // const { type, priority, gridSize } = meetingLayout;
 
-  const typeRef = useRef(type);
-  const priorityRef = useRef(priority);
-  const gridSizeRef = useRef(gridSize);
+  const meetingLayoutRef = useRef(meetingLayout);
+  const layoutPriorityRef = useRef(layoutPriority);
+  const layoutGridSizeRef = useRef(layoutGridSize);
+  console.log("layoutPriority", layoutPriority);
 
   useEffect(() => {
-    typeRef.current = type;
-  }, [type]);
+    meetingLayoutRef.current = meetingLayout;
+  }, [meetingLayout]);
   useEffect(() => {
-    priorityRef.current = priority;
-  }, [priority]);
+    layoutPriorityRef.current = layoutPriority;
+  }, [layoutPriority]);
   useEffect(() => {
-    gridSizeRef.current = gridSize;
-  }, [gridSize]);
-
-  // const [gridSize, setgridSize] = useState(1);
+    layoutGridSizeRef.current = layoutGridSize;
+  }, [layoutGridSize]);
 
   const { publish: livestreamPublish } = usePubSub("LIVESTREAM_LAYOUT");
   const { publish: recordingPublish } = usePubSub("RECORDING_LAYOUT");
@@ -48,6 +50,20 @@ function ConfigTabPanel({ panelHeight }) {
   const marks = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20,
     21, 22, 23, 24, 25,
+  ];
+  const layoutArr = [
+    {
+      type: "Spotlight",
+      Icon: SpotlightIcon,
+    },
+    {
+      type: "Sidebar",
+      Icon: SideBarIcon,
+    },
+    {
+      type: "Grid",
+      Icon: GridIcon,
+    },
   ];
 
   //lightToolTip
@@ -88,18 +104,15 @@ function ConfigTabPanel({ panelHeight }) {
   let Card = ({ isActive, title, Icon, onClick }) => {
     return isActive ? (
       <Box
-        id="card"
-        action={focusVisible}
+        mr={isMobile ? "7px" : "12px"}
         style={{
           justifyItems: "center",
           alignItems: "center",
           textAlign: "center",
           maxWidth: "fit-content",
-          marginRight: "12px",
-          // marginRight: {isMobile?"8px":"12px"},
         }}
       >
-        <ButtonBase action={focusVisible} id="card">
+        <ButtonBase onClick={onClick} action={focusVisible} id="card">
           <Icon fillColor="white" strokeColor="#fff" />
         </ButtonBase>
         <Typography
@@ -115,15 +128,15 @@ function ConfigTabPanel({ panelHeight }) {
       </Box>
     ) : (
       <Box
+        mr={isMobile ? "7px" : "12px"}
         style={{
           justifyItems: "center",
           alignItems: "center",
           textAlign: "center",
           maxWidth: "fit-content",
-          marginRight: "12px",
         }}
       >
-        <ButtonBase action={focusVisible} id="card">
+        <ButtonBase onClick={onClick} action={focusVisible} id="card">
           <Icon fillColor="#95959E" strokeColor="#474657" />
         </ButtonBase>
         <Typography
@@ -140,10 +153,9 @@ function ConfigTabPanel({ panelHeight }) {
     );
   };
 
-  const _handleChangeLayout = ({ _type, _priority, _gridSize }) => {
-    const type = _type || typeRef.current;
-    const priority = _priority || priorityRef.current;
-    const gridSize = _gridSize || gridSizeRef.current;
+  const _handleChangeLayout = ({ _meetingLayout, _meetingGridSize }) => {
+    const type = _meetingLayout || meetingLayoutRef.current;
+    const gridSize = _meetingGridSize || layoutGridSizeRef.current;
 
     // livestreamPublish()
     // recordingPublish()
@@ -151,11 +163,11 @@ function ConfigTabPanel({ panelHeight }) {
     // meetingPublish()
   };
 
+  let prioritySelectHandler = () => {};
+
   //slider change handler
-  const handleChange = (event, newValue) => {
+  const gridSizeHandler = (event, newValue) => {
     console.log(`newValue : ${newValue}`);
-    // setgridSize(newValue);
-    // _handleChangeLayout({_gridSize : newValue})
   };
 
   let Div = ({ heading, onLayoutSelected, onPrioritySelected }) => {
@@ -186,26 +198,23 @@ function ConfigTabPanel({ panelHeight }) {
         >
           {heading == "Layout" ? (
             <>
-              <Card
-                onClick={() => {
-                  onLayoutSelected();
-                }}
-                isActive={true}
-                title="Spotlight"
-                Icon={SpotlightIcon}
-              />
-              <Card
-                onClick={() => {}}
-                isActive={false}
-                title="Sidebar"
-                Icon={SideBarIcon}
-              />
-              <Card
-                onClick={() => {}}
-                isActive={false}
-                title="Grid"
-                Icon={GridIcon}
-              />
+              {layoutArr.map((layoutObj) => {
+                return layoutObj.type.toUpperCase() == meetingLayout ? (
+                  <Card
+                    onClick={onLayoutSelected}
+                    isActive={true}
+                    title={layoutObj.type}
+                    Icon={layoutObj.Icon}
+                  />
+                ) : (
+                  <Card
+                    onClick={onLayoutSelected}
+                    isActive={false}
+                    title={layoutObj.type}
+                    Icon={layoutObj.Icon}
+                  />
+                );
+              })}
             </>
           ) : (
             <>
@@ -242,42 +251,44 @@ function ConfigTabPanel({ panelHeight }) {
         flexDirection: "column",
       }}
     >
-      <Div onLayoutSelected={() => {}} heading="Layout" />
-      <Div onPrioritySelected={() => {}} heading="Priority" />
-      <Box
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          marginRight: "12px",
-        }}
-      >
-        <Typography
+      <Div onLayoutSelected={_handleChangeLayout} heading="Layout" />
+      <Div onPrioritySelected={prioritySelectHandler} heading="Priority" />
+      {meetingLayout == "GRID" ? (
+        <Box
           style={{
-            fontWeight: 600,
-            lineHeight: "16px",
-            fontSize: "16px",
-            marginTop: "24px",
+            display: "flex",
+            flexDirection: "column",
+            marginRight: "12px",
           }}
-          variant="body1"
         >
-          Max number of participants
-        </Typography>
-        <Slider
-          getAriaValueText={valuetext}
-          min={1}
-          max={25}
-          value={gridSize}
-          onChange={handleChange}
-          ValueLabelComponent={ValueLabelComponent}
-          valueLabelDisplay="on"
-          step={1}
-          style={{
-            marginTop: "48px",
-            color: "#ffffff",
-          }}
-          marks={marks}
-        />
-      </Box>
+          <Typography
+            style={{
+              fontWeight: 600,
+              lineHeight: "16px",
+              fontSize: "16px",
+              marginTop: "24px",
+            }}
+            variant="body1"
+          >
+            Max number of participants
+          </Typography>
+          <Slider
+            getAriaValueText={valuetext}
+            min={1}
+            max={25}
+            value={layoutGridSize}
+            onChange={gridSizeHandler}
+            ValueLabelComponent={ValueLabelComponent}
+            valueLabelDisplay="on"
+            step={1}
+            style={{
+              marginTop: "48px",
+              color: "#ffffff",
+            }}
+            marks={marks}
+          />
+        </Box>
+      ) : null}
     </Box>
   );
 }
