@@ -94,7 +94,7 @@ const OutlineIconTextButton = ({
           // onMouseUp={() => {
           //   setMouseDown(false);
           // }}
-          // disabled={disabled}
+          disabled={disabled}
           // onClick={onClick}
         >
           <Box

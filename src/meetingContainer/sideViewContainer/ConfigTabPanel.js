@@ -25,17 +25,15 @@ function ConfigTabPanel({ panelHeight }) {
 
   const { meetingLayout } = useMeetingAppContext();
 
-  const { type, priority, gridSize } = meetingLayout;
+  let { type, priority, gridSize } = meetingLayout;
 
-  console.log(type, priority, gridSize, "type, priority, gridSize");
-
-  const typeRef = useRef();
+  const typeRef = useRef(type);
   const priorityRef = useRef(priority);
   const gridSizeRef = useRef(gridSize);
 
-  // useEffect(() => {
-  //   typeRef.current = type;
-  // }, [type]);
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
 
   useEffect(() => {
     priorityRef.current = priority;
@@ -92,10 +90,12 @@ function ConfigTabPanel({ panelHeight }) {
     },
   }))(Tooltip);
 
+  //BaseButton focus
   function focusVisible() {
     document.getElementById("card").style.cursor = "pointer";
   }
 
+  //sliders events
   function valuetext(value) {
     return `${value}`;
   }
@@ -114,6 +114,29 @@ function ConfigTabPanel({ panelHeight }) {
     );
   }
 
+  //handlers
+  const _handleChangeLayout = (event) => {
+    type = event.currentTarget.value.toUpperCase() || typeRef.current;
+    publishToPubSub();
+  };
+
+  const _handleChangePriority = (event) => {
+    priority = event.currentTarget.value.toUpperCase() || priorityRef.current;
+    publishToPubSub();
+  };
+  const _handleGridSize = (event, newValue) => {
+    gridSize = newValue || gridSizeRef.current;
+    publishToPubSub();
+  };
+
+  function publishToPubSub() {
+    let layout = { type, gridSize, priority };
+    livestreamPublish(layout);
+    hlsPublish(layout);
+    meetingPublish(layout);
+    recordingPublish(layout);
+  }
+
   //layout and priority card
   let Card = ({ isActive, ref, title, Icon, onClick }) => {
     return isActive ? (
@@ -128,7 +151,7 @@ function ConfigTabPanel({ panelHeight }) {
       >
         <ButtonBase
           value={title}
-          onClick={_handleChangeLayout}
+          onClick={onClick}
           action={focusVisible}
           id="card"
           ref={ref}
@@ -158,7 +181,7 @@ function ConfigTabPanel({ panelHeight }) {
       >
         <ButtonBase
           value={title}
-          onClick={_handleChangeLayout}
+          onClick={onClick}
           action={focusVisible}
           id="card"
           ref={ref}
@@ -179,26 +202,7 @@ function ConfigTabPanel({ panelHeight }) {
     );
   };
 
-  const _handleChangeLayout = ({ target }) => {
-    // const type = _type || typeRef.current;
-    // const gridSize = _gridSize || gridSizeRef.current;
-    // const priority = _priority || priorityRef.current;
-
-    console.log("handle change type  : ", typeRef.current);
-    // livestreamPublish()
-    // recordingPublish()
-    // hlsPublish()
-    // meetingPublish()
-  };
-
-  let prioritySelectHandler = () => {};
-
-  //slider change handler
-  const gridSizeHandler = (event, newValue) => {
-    console.log(`newValue : ${newValue}`);
-  };
-
-  let Div = ({ heading, onLayoutChange }) => {
+  let Div = ({ heading, onLayoutChange, onPriorityChange }) => {
     return (
       <Box
         style={{
@@ -251,14 +255,14 @@ function ConfigTabPanel({ panelHeight }) {
               {priorityArr.map((priorityObj) => {
                 return priorityObj.type.toUpperCase() == priority ? (
                   <Card
-                    onClick={onLayoutChange}
+                    onClick={onPriorityChange}
                     isActive={true}
                     title={priorityObj.type}
                     Icon={priorityObj.Icon}
                   />
                 ) : (
                   <Card
-                    onClick={onLayoutChange}
+                    onClick={onPriorityChange}
                     isActive={false}
                     title={priorityObj.type}
                     Icon={priorityObj.Icon}
@@ -285,8 +289,8 @@ function ConfigTabPanel({ panelHeight }) {
       }}
     >
       <Div onLayoutChange={_handleChangeLayout} heading="Layout" />
-      <Div onLayoutChange={_handleChangeLayout} heading="Priority" />
-      {meetingLayout == "GRID" ? (
+      <Div onPriorityChange={_handleChangePriority} heading="Priority" />
+      {type == "GRID" ? (
         <Box
           style={{
             display: "flex",
@@ -310,7 +314,7 @@ function ConfigTabPanel({ panelHeight }) {
             min={1}
             max={25}
             value={gridSize}
-            onChange={gridSizeHandler}
+            onChange={_handleGridSize}
             ValueLabelComponent={ValueLabelComponent}
             valueLabelDisplay="on"
             step={1}
