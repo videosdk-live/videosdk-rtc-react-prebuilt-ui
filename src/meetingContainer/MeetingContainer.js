@@ -7,6 +7,7 @@ import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
+import { usePubSub } from "@videosdk.live/react-sdk";
 import {
   appEvents,
   eventEmitter,
@@ -122,6 +123,7 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
+    setMeetingLayout,
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
@@ -437,14 +439,16 @@ const MeetingContainer = () => {
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
   // usePubsub(meetingLayoutTopic,)
-  // usePubSub('meeting_layout', {
-  //   onMessageReceived: (data) => {
-  // setMeetingLayout(new layoye)
-  //   },
-  //   onOldMessagesReceived: (messages) => {
-  // setMeetingLayout(new layout)
-  //   }
-  // });
+  usePubSub("MEETING_LAYOUT", {
+    onMessageReceived: (data) => {
+      setMeetingLayout(data.message);
+      // console.log("data : ", data.message);
+    },
+    onOldMessagesReceived: (messages) => {
+      // setMeetingLayout(new layout());
+      console.log("messages : ", messages);
+    },
+  });
 
   return (
     <div
