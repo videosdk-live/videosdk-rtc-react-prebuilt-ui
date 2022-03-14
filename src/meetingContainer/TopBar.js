@@ -901,22 +901,27 @@ const TopBar = ({ topBarHeight }) => {
     []
   );
 
-  const topBarIcons = useMemo(() => {
+  const { topBarIcons, mobileIcons } = useMemo(() => {
     const arr = [];
+    const mobileIconArr = [];
 
     if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
+      mobileIconArr.unshift(topBarButtonTypes.END_CALL);
     }
 
     const arrSideBar = [];
 
     if (canChangeLayout) {
       arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
+      mobileIconArr.unshift(topBarButtonTypes.CONFIGURATION);
     }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
+      mobileIconArr.unshift(topBarButtonTypes.CHAT);
     }
     arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
+    mobileIconArr.unshift(topBarButtonTypes.PARTICIPANTS);
 
     arr.unshift(arrSideBar);
 
@@ -924,12 +929,15 @@ const TopBar = ({ topBarHeight }) => {
 
     if (screenShareEnabled) {
       arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
+      mobileIconArr.unshift(topBarButtonTypes.SCREEN_SHARE);
     }
     if (participantCanToggleSelfWebcam) {
       arrMedia.unshift(topBarButtonTypes.WEBCAM);
+      mobileIconArr.unshift(topBarButtonTypes.WEBCAM);
     }
     if (participantCanToggleSelfMic) {
       arrMedia.unshift(topBarButtonTypes.MIC);
+      mobileIconArr.unshift(topBarButtonTypes.MIC);
     }
 
     if (arrMedia.length) {
@@ -940,28 +948,33 @@ const TopBar = ({ topBarHeight }) => {
 
     if (raiseHandEnabled) {
       utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
+      mobileIconArr.unshift(topBarButtonTypes.RAISE_HAND);
     }
 
     if (recordingEnabled) {
       utilsArr.unshift(topBarButtonTypes.RECORDING);
+      mobileIconArr.unshift(topBarButtonTypes.RECORDING);
     }
 
     if (whiteboardEnabled) {
       utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+      mobileIconArr.unshift(topBarButtonTypes.WHITEBOARD);
     }
 
     if (liveStreamEnabled) {
       utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+      mobileIconArr.unshift(topBarButtonTypes.GO_LIVE);
     }
 
     if (participantCanToggleLivestream) {
       utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
+      mobileIconArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
     }
 
     if (utilsArr.length) {
       arr.unshift(utilsArr);
     }
-    return arr;
+    return { topBarIcons: arr, mobileIcons: mobileIconArr };
   }, [
     participantCanToggleSelfMic,
     participantCanToggleSelfWebcam,
@@ -975,6 +988,17 @@ const TopBar = ({ topBarHeight }) => {
   ]);
 
   const [topBarVisible, setTopBarVisible] = useState(false);
+
+  const firstFourElements = mobileIcons.slice(0, 4);
+
+  const excludeFirstFourElements = mobileIcons.slice(4);
+
+  // console.log(
+  //   "mobileIcons",
+  //   mobileIcons,
+  //   firstFourElements,
+  //   excludeFirstFourElements
+  // );
 
   const PermissionArray = [
     {
@@ -1064,7 +1088,40 @@ const TopBar = ({ topBarHeight }) => {
         borderTop: "1px solid #ffffff33",
       }}
     >
-      {(participantCanLeave || canEndMeeting) && (
+      {firstFourElements.map((buttonType, i) => {
+        return (
+          <Box key={`topbar_controls_j_${i}`} ml={i === 0 ? 0 : 1.5}>
+            {buttonType === topBarButtonTypes.RAISE_HAND ? (
+              <RaiseHandBTN />
+            ) : buttonType === topBarButtonTypes.MIC ? (
+              <MicBTN />
+            ) : buttonType === topBarButtonTypes.WEBCAM ? (
+              <WebcamBTN />
+            ) : buttonType === topBarButtonTypes.SCREEN_SHARE ? (
+              <ScreenShareBTN />
+            ) : buttonType === topBarButtonTypes.PARTICIPANTS ? (
+              <ParticipantsBTN />
+            ) : buttonType === topBarButtonTypes.CHAT ? (
+              <ChatBTN />
+            ) : buttonType === topBarButtonTypes.ACTIVITIES ? (
+              <ActivitiesBTN />
+            ) : buttonType === topBarButtonTypes.END_CALL ? (
+              <EndCallBTN />
+            ) : buttonType === topBarButtonTypes.RECORDING ? (
+              <RecordingBTN />
+            ) : buttonType === topBarButtonTypes.GO_LIVE ? (
+              <GoLiveBTN />
+            ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
+              <WhiteBoardBTN />
+            ) : buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
+              <AddLiveStreamBTN />
+            ) : buttonType === topBarButtonTypes.CONFIGURATION ? (
+              <ConfigBTN />
+            ) : null}
+          </Box>
+        );
+      })}
+      {/* {(participantCanLeave || canEndMeeting) && (
         <Box>
           <EndCallBTN />
         </Box>
@@ -1098,7 +1155,7 @@ const TopBar = ({ topBarHeight }) => {
         <Box ml={2}>
           <RecordingBTN />
         </Box>
-      )}
+      )} */}
       <Box ml={2}>
         <OutlineIconButton
           Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
@@ -1114,7 +1171,7 @@ const TopBar = ({ topBarHeight }) => {
         onOpen={handleClickFAB}
       >
         <Grid container>
-          {PermissionArray.map((item) => {
+          {excludeFirstFourElements.map((buttonType, i) => {
             return (
               <Grid
                 item
@@ -1126,8 +1183,85 @@ const TopBar = ({ topBarHeight }) => {
                   justifyContent: "center",
                 }}
               >
-                {item.permission == "" && item.render}
-                {item.permission && item.render}
+                {buttonType === topBarButtonTypes.RAISE_HAND ? (
+                  <RaiseHandBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.MIC ? (
+                  <MicBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.WEBCAM ? (
+                  <WebcamBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.SCREEN_SHARE ? (
+                  <ScreenShareBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.PARTICIPANTS ? (
+                  <ParticipantsBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.CHAT ? (
+                  <ChatBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.ACTIVITIES ? (
+                  <ActivitiesBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.END_CALL ? (
+                  <EndCallBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.RECORDING ? (
+                  <RecordingBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.GO_LIVE ? (
+                  <GoLiveBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
+                  <WhiteBoardBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
+                  <AddLiveStreamBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : buttonType === topBarButtonTypes.CONFIGURATION ? (
+                  <ConfigBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : null}
               </Grid>
             );
           })}
