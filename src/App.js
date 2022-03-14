@@ -78,6 +78,7 @@ const App = () => {
       isRecorder: "isRecorder",
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
+      autoPinSelf: "autoPinSelf",
       rawUserAgent: "rawUserAgent",
     };
 
@@ -471,6 +472,7 @@ const App = () => {
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
+            autoPinSelf: paramKeys.autoPinSelf === "true",
           }}
         >
           <MeetingProvider

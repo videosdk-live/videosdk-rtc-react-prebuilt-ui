@@ -112,6 +112,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | sideStackSize                   | -             | -                                                                                           |
 | reduceEdgeSpacing               | false         | -                                                                                           |
 | isRecorder                      | false         | -                                                                                           |
+| autoPinSelf                     | false         | Automatically pin local participant                                                         |
 
 ---
 

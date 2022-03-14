@@ -125,6 +125,7 @@ const MeetingContainer = () => {
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
+    autoPinSelf,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -166,6 +167,10 @@ const MeetingContainer = () => {
           resolve();
         }, 500);
       });
+    }
+
+    if (autoPinSelf) {
+      mMeetingRef.current.localParticipant.pin();
     }
   };
 

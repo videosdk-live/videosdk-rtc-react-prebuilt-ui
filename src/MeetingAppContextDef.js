@@ -92,6 +92,7 @@ export const MeetingAppProvider = ({
   sideStackSize,
   reduceEdgeSpacing,
   isRecorder,
+  autoPinSelf,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -181,6 +182,7 @@ export const MeetingAppProvider = ({
         sideStackSize,
         reduceEdgeSpacing,
         isRecorder,
+        autoPinSelf,
 
         // states
         sideBarMode,
