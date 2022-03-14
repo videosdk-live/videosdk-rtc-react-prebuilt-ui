@@ -10,6 +10,7 @@ import {
   Typography,
   Link,
   SwipeableDrawer,
+  Grid,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
 import { useMeeting } from "@videosdk.live/react-sdk";
@@ -975,6 +976,76 @@ const TopBar = ({ topBarHeight }) => {
 
   const [topBarVisible, setTopBarVisible] = useState(false);
 
+  const PermissionArray = [
+    {
+      permission: raiseHandEnabled,
+      render: (
+        <RaiseHandBTN
+          onClick={handleCloseFAB}
+          isMobile={isMobile}
+          isTab={isTab}
+        />
+      ),
+    },
+    {
+      permission: "",
+      render: (
+        <ParticipantsBTN
+          onClick={handleCloseFAB}
+          isMobile={isMobile}
+          isTab={isTab}
+        />
+      ),
+    },
+    {
+      permission: participantCanToggleLivestream && liveStreamEnabled,
+      render: (
+        <AddLiveStreamBTN
+          onClick={handleCloseFAB}
+          isMobile={isMobile}
+          isTab={isTab}
+        />
+      ),
+    },
+    {
+      permission: liveStreamEnabled,
+      render: <GoLiveBTN isMobile={isMobile} isTab={isTab} />,
+    },
+    {
+      permission: whiteboardEnabled,
+      render: (
+        <WhiteBoardBTN
+          onClick={handleCloseFAB}
+          isMobile={isMobile}
+          isTab={isTab}
+        />
+      ),
+    },
+    {
+      permission: screenShareEnabled,
+      render: (
+        <ScreenShareBTN
+          onClick={handleCloseFAB}
+          isMobile={isMobile}
+          isTab={isTab}
+        />
+      ),
+    },
+    {
+      permission: canChangeLayout,
+      render: (
+        <ConfigBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+      ),
+    },
+
+    {
+      permission: isPortrait && recordingEnabled && chatEnabled,
+      render: (
+        <ChatBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+      ),
+    },
+  ];
+
   useEffect(() => {
     setTimeout(() => {
       setTopBarVisible(true);
@@ -1041,107 +1112,26 @@ const TopBar = ({ topBarHeight }) => {
         open={Boolean(open)}
         onClose={handleCloseFAB}
         onOpen={handleClickFAB}
-
-        // style={{ paddingBottom: topBarHeight }}
-        // onClose={toggleDrawer(anchor, false)}
-        // onOpen={toggleDrawer(anchor, true)}
       >
-        {/* <Popover
-        container={anchorEl?.current}
-        PaperProps={{
-          style: {
-            backgroundColor: theme.palette.background.default,
-            boxShadow: "none",
-          },
-        }}
-        className={classes.popover}
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleCloseFAB}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-      > */}
-        <Box style={{ display: "flex" }} p={3}>
-          {raiseHandEnabled && (
-            <Box ml={1.2}>
-              <RaiseHandBTN
-                onClick={handleCloseFAB}
-                isMobile={isMobile}
-                isTab={isTab}
-              />
-            </Box>
-          )}
-          <Box ml={1.2}>
-            <ParticipantsBTN
-              onClick={handleCloseFAB}
-              isMobile={isMobile}
-              isTab={isTab}
-            />
-          </Box>
-          {participantCanToggleLivestream && liveStreamEnabled && (
-            <Box ml={1.2}>
-              <AddLiveStreamBTN
-                onClick={handleCloseFAB}
-                isMobile={isMobile}
-                isTab={isTab}
-              />
-            </Box>
-          )}
-          {liveStreamEnabled && (
-            <Box ml={1.2}>
-              <GoLiveBTN isMobile={isMobile} isTab={isTab} />
-            </Box>
-          )}
-          {/* {(pollEnabled || whiteboardEnabled) && (
-            <Box ml={1.2}>
-              <ActivitiesBTN onClick={handleCloseFAB} />
-            </Box>
-          )} */}
-          {whiteboardEnabled && (
-            <Box ml={1.2}>
-              <WhiteBoardBTN
-                onClick={handleCloseFAB}
-                isMobile={isMobile}
-                isTab={isTab}
-              />
-            </Box>
-          )}
-          {screenShareEnabled && (
-            <Box ml={1.2}>
-              <ScreenShareBTN
-                onClick={handleCloseFAB}
-                isMobile={isMobile}
-                isTab={isTab}
-              />
-            </Box>
-          )}
-          {canChangeLayout && (
-            <Box ml={1.2}>
-              <ConfigBTN
-                onClick={handleCloseFAB}
-                isMobile={isMobile}
-                isTab={isTab}
-              />
-            </Box>
-          )}
-          {isPortrait && recordingEnabled && chatEnabled && (
-            <Box ml={1.2}>
-              <ChatBTN
-                onClick={handleCloseFAB}
-                isMobile={isMobile}
-                isTab={isTab}
-              />
-            </Box>
-          )}
-        </Box>
-
-        {/* </Popover> */}
+        <Grid container>
+          {PermissionArray.map((item) => {
+            return (
+              <Grid
+                item
+                xs={4}
+                sm={3}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {item.permission == "" && item.render}
+                {item.permission && item.render}
+              </Grid>
+            );
+          })}
+        </Grid>
       </SwipeableDrawer>
     </Box>
   ) : (
