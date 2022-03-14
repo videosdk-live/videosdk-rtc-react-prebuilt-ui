@@ -40,6 +40,20 @@ const OutlineIconTextButton = ({
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
       <Box
+        onMouseEnter={() => {
+          setMouseOver(true);
+        }}
+        onMouseLeave={() => {
+          setMouseOver(false);
+        }}
+        onMouseDown={() => {
+          setMouseDown(true);
+        }}
+        onMouseUp={() => {
+          setMouseDown(false);
+        }}
+        disabled={disabled}
+        onClick={onClick}
         style={{
           padding: "8px",
           display: "flex",
@@ -63,36 +77,51 @@ const OutlineIconTextButton = ({
           }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
+          cursor: "pointer",
         }}
       >
         <ButtonBase
           id={btnID}
-          onMouseEnter={() => {
-            setMouseOver(true);
-          }}
-          onMouseLeave={() => {
-            setMouseOver(false);
-          }}
-          onMouseDown={() => {
-            setMouseDown(true);
-          }}
-          onMouseUp={() => {
-            setMouseDown(false);
-          }}
-          disabled={disabled}
-          onClick={onClick}
+          // onMouseEnter={() => {
+          //   setMouseOver(true);
+          // }}
+          // onMouseLeave={() => {
+          //   setMouseOver(false);
+          // }}
+          // onMouseDown={() => {
+          //   setMouseDown(true);
+          // }}
+          // onMouseUp={() => {
+          //   setMouseDown(false);
+          // }}
+          // disabled={disabled}
+          // onClick={onClick}
         >
-          {buttonText ? (
-            <Typography
-              variant="subtitle2"
-              style={{
-                fontWeight: "bold",
-                color: isFocused ? "#1C1F2E" : "#fff",
-              }}
-            >
-              {buttonText}
-            </Typography>
-          ) : null}
+          <Box
+            style={{
+              opacity: disabled ? 0.7 : 1,
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: theme.spacing(1),
+              transform: `scale(${mouseOver ? (mouseDown ? 0.95 : 1.1) : 1})`,
+              transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
+              transitionTimingFunction: "linear",
+            }}
+          >
+            {buttonText ? (
+              <Typography
+                variant="subtitle2"
+                style={{
+                  fontWeight: "bold",
+                  color: isFocused ? "#1C1F2E" : "#fff",
+                }}
+              >
+                {buttonText}
+              </Typography>
+            ) : null}
+          </Box>
         </ButtonBase>
         {typeof renderRightComponent === "function" && renderRightComponent()}
       </Box>

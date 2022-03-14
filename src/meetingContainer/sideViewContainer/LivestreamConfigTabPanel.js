@@ -49,19 +49,11 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const theme = useTheme();
 
   const [onSaveClick, setOnSaveClick] = useState(false);
-  // const [streamKey, setStreamKey] = useState("");
-  // const [streamUrl, setStreamUrl] = useState("");
-  // const [liveStreamDetails, setLiveStreamDetails] = [
-  //   {
-  //     streamKey: streamKey,
-  //     streamUrl: streamUrl,
-  //   },
-  // ];
 
   const [liveStreamPlatform, setLiveStreamPlatform] = useState([
-    { id: 1, title: "Facebook", streamKey: "", streamUrl: "", isEdit: false },
-    { id: 2, title: "Youtube", streamKey: "", streamUrl: "", isEdit: false },
-    { id: 3, title: "Custom", streamKey: "", streamUrl: "", isEdit: false },
+    // { id: 1, title: "Facebook", streamKey: "", streamUrl: "", isEdit: false },
+    // { id: 2, title: "Youtube", streamKey: "", streamUrl: "", isEdit: false },
+    { id: 1, title: "Custom", streamKey: "", streamUrl: "", isEdit: false },
   ]);
 
   const _createNewPlatform = (e) => {
@@ -135,6 +127,45 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
     setLiveStreamPlatform(newPlatforms);
   };
 
+  function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+      hostname = url.split("/")[2];
+    } else {
+      hostname = url.split("/")[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(":")[0];
+    //find & remove "?"
+    hostname = hostname.split("?")[0];
+
+    return hostname;
+  }
+
+  function extractRootDomain(url) {
+    var domain = extractHostname(url),
+      splitArr = domain.split("."),
+      arrLen = splitArr.length;
+
+    //extracting the root domain here
+    //if there is a subdomain
+    if (arrLen > 2) {
+      domain = splitArr[arrLen - 2] + "." + splitArr[arrLen - 1];
+      //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+      if (
+        splitArr[arrLen - 2].length == 2 &&
+        splitArr[arrLen - 1].length == 2
+      ) {
+        //this is using a ccTLD
+        domain = splitArr[arrLen - 3] + "." + domain;
+      }
+    }
+    return domain;
+  }
+
   const classes = useStyles();
 
   return (
@@ -146,6 +177,11 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
       }}
     >
       {liveStreamPlatform.map((item, index) => {
+        const rootDomain = extractRootDomain(item.streamUrl);
+        const mainDomain = rootDomain?.split(".")[0];
+        const domainName =
+          mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+
         return (
           <Box
             style={{
@@ -168,7 +204,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
             >
               <Box style={{ display: "flex", flex: 1 }}>
                 <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-                  {item.title}
+                  {item.streamUrl ? domainName : item.title}
                 </Typography>
               </Box>
 
