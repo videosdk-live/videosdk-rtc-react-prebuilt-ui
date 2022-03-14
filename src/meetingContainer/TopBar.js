@@ -123,8 +123,8 @@ const AddLiveStreamBTN = () => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
   return (
     <OutlineIconTextButton
-      tooltipTitle={"Add Live Stream"}
-      buttonText="Add Live Stream"
+      tooltipTitle={"Add Live Streams"}
+      buttonText="Add Live Streams"
       Icon={SettingsOutlinedIcon}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
@@ -137,6 +137,7 @@ const AddLiveStreamBTN = () => {
     />
   );
 };
+
 const ChatBTN = () => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
