@@ -9,6 +9,7 @@ import {
   MenuList,
   Typography,
   Link,
+  SwipeableDrawer,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
 import { useMeeting } from "@videosdk.live/react-sdk";
@@ -17,6 +18,7 @@ import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
+import LiveIcon from "../icons/LiveIcon";
 
 import {
   Activities,
@@ -48,6 +50,8 @@ import {
 import ConfirmBox from "../components/ConfirmBox";
 import { useMediaQuery } from "react-responsive";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
+import MobileIconButton from "../components/MobileIconButton";
+import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -60,7 +64,7 @@ const useStyles = makeStyles({
     width: 300,
   },
 });
-const RaiseHandBTN = ({ onClick }) => {
+const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -70,7 +74,16 @@ const RaiseHandBTN = ({ onClick }) => {
     sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
   };
 
-  return (
+  return isMobile || isTab ? (
+    <Tooltip>
+      <MobileIconButton
+        tooltipTitle={"Raise hand"}
+        Icon={RaiseHand}
+        onClick={onRaiseHand}
+        buttonText={"Raise Hand"}
+      />
+    </Tooltip>
+  ) : (
     <Tooltip>
       <OutlineIconButton
         tooltipTitle={"Raise hand"}
@@ -80,14 +93,28 @@ const RaiseHandBTN = ({ onClick }) => {
     </Tooltip>
   );
 };
-const ParticipantsBTN = ({ onClick }) => {
+const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const participants = mMeeting?.participants;
   const participantsCount = participants ? new Map(participants).size : 0;
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Participants"}
+      isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
+      buttonText={"Participants"}
+      Icon={Participants}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+        setSideBarMode((s) =>
+          s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
+        );
+      }}
+      badge={participantsCount}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
@@ -103,9 +130,21 @@ const ParticipantsBTN = ({ onClick }) => {
   );
 };
 
-const ConfigBTN = () => {
+const ConfigBTN = ({ isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Configuration"}
+      buttonText={"Configuration"}
+      Icon={SettingsOutlinedIcon}
+      isFocused={sideBarMode === sideBarModes.CONFIGURATION}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION
+        );
+      }}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Configuration"}
       Icon={SettingsOutlinedIcon}
@@ -119,9 +158,24 @@ const ConfigBTN = () => {
   );
 };
 
-const AddLiveStreamBTN = () => {
+const AddLiveStreamBTN = ({ isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
-  return (
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Add Live Streams"}
+      Icon={AddLiveStreamIcon}
+      buttonText="Add Live Streams"
+      isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.ADD_LIVE_STREAM
+            ? null
+            : sideBarModes.ADD_LIVE_STREAM
+        );
+      }}
+    />
+  ) : (
     <OutlineIconTextButton
       tooltipTitle={"Add Live Streams"}
       buttonText="Add Live Streams"
@@ -137,9 +191,18 @@ const AddLiveStreamBTN = () => {
   );
 };
 
-const GoLiveBTN = () => {
+const GoLiveBTN = ({ isMobile, isTab }) => {
   const { participantCanToggleLivestream } = useMeetingAppContext();
-  return (
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={LiveIcon}
+      tooltipTitle={"Go Live"}
+      buttonText="GO LIVE"
+      bgColor={"#D32F2F"}
+      disabled={!participantCanToggleLivestream}
+    />
+  ) : (
     <OutlineIconTextButton
       tooltipTitle={"Go Live"}
       buttonText="GO LIVE"
@@ -148,10 +211,22 @@ const GoLiveBTN = () => {
     />
   );
 };
-const ChatBTN = () => {
+const ChatBTN = ({ isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Chat"}
+      buttonText={"Chat"}
+      Icon={Chat}
+      isFocused={sideBarMode === sideBarModes.CHAT}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
+        );
+      }}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Chat"}
       Icon={Chat}
@@ -164,10 +239,22 @@ const ChatBTN = () => {
     />
   );
 };
-const ActivitiesBTN = ({ onClick }) => {
+const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={Activities}
+      isFocused={sideBarMode === sideBarModes.ACTIVITIES}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+
+        setSideBarMode((s) =>
+          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
+        );
+      }}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Activities"}
       Icon={Activities}
@@ -183,7 +270,7 @@ const ActivitiesBTN = ({ onClick }) => {
   );
 };
 
-const WhiteBoardBTN = ({ onClick }) => {
+const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
   const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
     useMeetingAppContext();
   const mMeeting = useMeeting({});
@@ -192,26 +279,42 @@ const WhiteBoardBTN = ({ onClick }) => {
 
   return (
     <>
-      {whiteboardEnabled && (
-        <OutlineIconButton
-          disabled={presenterId || !canToggleWhiteboard}
-          tooltipTitle={"Whiteboard"}
-          Icon={Gesture}
-          isFocused={whiteboardStarted}
-          onClick={() => {
-            typeof onClick === "function" && onClick();
+      {whiteboardEnabled &&
+        (isMobile || isTab ? (
+          <MobileIconButton
+            disabled={presenterId || !canToggleWhiteboard}
+            tooltipTitle={"Whiteboard"}
+            buttonText={"Whiteboard"}
+            Icon={Gesture}
+            isFocused={whiteboardStarted}
+            onClick={() => {
+              typeof onClick === "function" && onClick();
 
-            whiteboardStarted
-              ? mMeeting.meeting.stopWhiteboard()
-              : mMeeting.meeting.startWhiteboard();
-          }}
-        />
-      )}
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
+            }}
+          />
+        ) : (
+          <OutlineIconButton
+            disabled={presenterId || !canToggleWhiteboard}
+            tooltipTitle={"Whiteboard"}
+            Icon={Gesture}
+            isFocused={whiteboardStarted}
+            onClick={() => {
+              typeof onClick === "function" && onClick();
+
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
+            }}
+          />
+        ))}
     </>
   );
 };
 
-const ScreenShareBTN = ({ onClick }) => {
+const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
   const { whiteboardStarted } = useMeetingAppContext();
 
@@ -219,7 +322,41 @@ const ScreenShareBTN = ({ onClick }) => {
   const toggleScreenShare = mMeeting?.toggleScreenShare;
   const presenterId = mMeeting?.presenterId;
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      buttonText={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      isFocused={localScreenShareOn}
+      Icon={ScreenShare}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+        toggleScreenShare();
+      }}
+      disabled={
+        RDDIsMobile || RDDIsTablet
+          ? true
+          : whiteboardStarted
+          ? true
+          : presenterId
+          ? localScreenShareOn
+            ? false
+            : true
+          : false
+      }
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={
         presenterId
@@ -703,6 +840,8 @@ const EndCallBTN = () => {
 const TopBar = ({ topBarHeight }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+
   const [defaultBrandLogoUrl, setDefaultBrandLogoUrl] = useState(null);
 
   const {
@@ -727,11 +866,13 @@ const TopBar = ({ topBarHeight }) => {
   } = useMeetingAppContext();
 
   const handleClickFAB = (event) => {
-    setAnchorEl(event.currentTarget);
+    // setAnchorEl(event.currentTarget);
+    setOpen(true);
   };
 
   const handleCloseFAB = () => {
-    setAnchorEl(null);
+    // setAnchorEl(null);
+    setOpen(false);
   };
 
   const isMobile = useIsMobile();
@@ -848,6 +989,7 @@ const TopBar = ({ topBarHeight }) => {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: theme.palette.background.default,
+
         borderTop: "1px solid #ffffff33",
       }}
     >
@@ -893,11 +1035,22 @@ const TopBar = ({ topBarHeight }) => {
           onClick={handleClickFAB}
         />
       </Box>
-      <Popover
+
+      <SwipeableDrawer
+        anchor={"bottom"}
+        open={Boolean(open)}
+        onClose={handleCloseFAB}
+        onOpen={handleClickFAB}
+
+        // style={{ paddingBottom: topBarHeight }}
+        // onClose={toggleDrawer(anchor, false)}
+        // onOpen={toggleDrawer(anchor, true)}
+      >
+        {/* <Popover
         container={anchorEl?.current}
         PaperProps={{
           style: {
-            backgroundColor: "transparent",
+            backgroundColor: theme.palette.background.default,
             boxShadow: "none",
           },
         }}
@@ -913,53 +1066,83 @@ const TopBar = ({ topBarHeight }) => {
           vertical: "bottom",
           horizontal: "center",
         }}
-      >
-        <Box>
+      > */}
+        <Box style={{ display: "flex" }} p={3}>
           {raiseHandEnabled && (
-            <Box mb={1.2}>
-              <RaiseHandBTN onClick={handleCloseFAB} />
+            <Box ml={1.2}>
+              <RaiseHandBTN
+                onClick={handleCloseFAB}
+                isMobile={isMobile}
+                isTab={isTab}
+              />
             </Box>
           )}
-          <Box mb={1.2}>
-            <ParticipantsBTN onClick={handleCloseFAB} />
+          <Box ml={1.2}>
+            <ParticipantsBTN
+              onClick={handleCloseFAB}
+              isMobile={isMobile}
+              isTab={isTab}
+            />
           </Box>
           {participantCanToggleLivestream && liveStreamEnabled && (
-            <Box mb={1.2}>
-              <AddLiveStreamBTN onClick={handleCloseFAB} />
+            <Box ml={1.2}>
+              <AddLiveStreamBTN
+                onClick={handleCloseFAB}
+                isMobile={isMobile}
+                isTab={isTab}
+              />
             </Box>
           )}
           {liveStreamEnabled && (
-            <Box mb={1.2}>
-              <GoLiveBTN />
+            <Box ml={1.2}>
+              <GoLiveBTN isMobile={isMobile} isTab={isTab} />
             </Box>
           )}
           {/* {(pollEnabled || whiteboardEnabled) && (
-            <Box mb={1.2}>
+            <Box ml={1.2}>
               <ActivitiesBTN onClick={handleCloseFAB} />
             </Box>
           )} */}
           {whiteboardEnabled && (
-            <Box mb={1.2}>
-              <WhiteBoardBTN onClick={handleCloseFAB} />
+            <Box ml={1.2}>
+              <WhiteBoardBTN
+                onClick={handleCloseFAB}
+                isMobile={isMobile}
+                isTab={isTab}
+              />
             </Box>
           )}
           {screenShareEnabled && (
-            <Box mb={1.2}>
-              <ScreenShareBTN onClick={handleCloseFAB} />
+            <Box ml={1.2}>
+              <ScreenShareBTN
+                onClick={handleCloseFAB}
+                isMobile={isMobile}
+                isTab={isTab}
+              />
             </Box>
           )}
           {canChangeLayout && (
-            <Box mb={1.2}>
-              <ConfigBTN onClick={handleCloseFAB} />
+            <Box ml={1.2}>
+              <ConfigBTN
+                onClick={handleCloseFAB}
+                isMobile={isMobile}
+                isTab={isTab}
+              />
             </Box>
           )}
           {isPortrait && recordingEnabled && chatEnabled && (
-            <Box mb={1.2}>
-              <ChatBTN onClick={handleCloseFAB} />
+            <Box ml={1.2}>
+              <ChatBTN
+                onClick={handleCloseFAB}
+                isMobile={isMobile}
+                isTab={isTab}
+              />
             </Box>
           )}
         </Box>
-      </Popover>
+
+        {/* </Popover> */}
+      </SwipeableDrawer>
     </Box>
   ) : (
     <Box
