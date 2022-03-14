@@ -125,7 +125,6 @@ const AddLiveStreamBTN = () => {
     <OutlineIconTextButton
       tooltipTitle={"Add Live Streams"}
       buttonText="Add Live Streams"
-      Icon={SettingsOutlinedIcon}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
         setSideBarMode((s) =>
@@ -138,6 +137,17 @@ const AddLiveStreamBTN = () => {
   );
 };
 
+const GoLiveBTN = () => {
+  const { participantCanToggleLivestream } = useMeetingAppContext();
+  return (
+    <OutlineIconTextButton
+      tooltipTitle={"Go Live"}
+      buttonText="GO LIVE"
+      bgColor={"#D32F2F"}
+      disabled={!participantCanToggleLivestream}
+    />
+  );
+};
 const ChatBTN = () => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
@@ -744,6 +754,7 @@ const TopBar = ({ topBarHeight }) => {
       WHITEBOARD: "WHITEBOARD",
       ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
       CONFIGURATION: "CONFIGURATION",
+      GO_LIVE: "GO_LIVE",
     }),
     []
   );
@@ -795,6 +806,10 @@ const TopBar = ({ topBarHeight }) => {
 
     if (whiteboardEnabled) {
       utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+    }
+
+    if (liveStreamEnabled) {
+      utilsArr.unshift(topBarButtonTypes.GO_LIVE);
     }
 
     if (participantCanToggleLivestream) {
@@ -908,9 +923,14 @@ const TopBar = ({ topBarHeight }) => {
           <Box mb={1.2}>
             <ParticipantsBTN onClick={handleCloseFAB} />
           </Box>
-          {participantCanToggleLivestream && (
+          {participantCanToggleLivestream && liveStreamEnabled && (
             <Box mb={1.2}>
               <AddLiveStreamBTN onClick={handleCloseFAB} />
+            </Box>
+          )}
+          {liveStreamEnabled && (
+            <Box mb={1.2}>
+              <GoLiveBTN />
             </Box>
           )}
           {/* {(pollEnabled || whiteboardEnabled) && (
@@ -1073,6 +1093,8 @@ const TopBar = ({ topBarHeight }) => {
                         <EndCallBTN />
                       ) : buttonType === topBarButtonTypes.RECORDING ? (
                         <RecordingBTN />
+                      ) : buttonType === topBarButtonTypes.GO_LIVE ? (
+                        <GoLiveBTN />
                       ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
                         <WhiteBoardBTN />
                       ) : buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (

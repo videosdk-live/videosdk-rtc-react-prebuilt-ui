@@ -29,13 +29,13 @@ function ConfigTabPanel({ panelHeight }) {
 
   console.log(type, priority, gridSize, "type, priority, gridSize");
 
-  const typeRef = useRef(type);
+  const typeRef = useRef();
   const priorityRef = useRef(priority);
   const gridSizeRef = useRef(gridSize);
 
-  useEffect(() => {
-    typeRef.current = type;
-  }, [type]);
+  // useEffect(() => {
+  //   typeRef.current = type;
+  // }, [type]);
 
   useEffect(() => {
     priorityRef.current = priority;
@@ -66,6 +66,17 @@ function ConfigTabPanel({ panelHeight }) {
     {
       type: "Grid",
       Icon: GridIcon,
+    },
+  ];
+
+  const priorityArr = [
+    {
+      type: "Pin",
+      Icon: PinParticipantIcon,
+    },
+    {
+      type: "Speaker",
+      Icon: SpeakerIcon,
     },
   ];
 
@@ -104,7 +115,7 @@ function ConfigTabPanel({ panelHeight }) {
   }
 
   //layout and priority card
-  let Card = ({ isActive, title, Icon, onClick }) => {
+  let Card = ({ isActive, ref, title, Icon, onClick }) => {
     return isActive ? (
       <Box
         mr={isMobile ? "7px" : "12px"}
@@ -115,7 +126,13 @@ function ConfigTabPanel({ panelHeight }) {
           maxWidth: "fit-content",
         }}
       >
-        <ButtonBase onClick={onClick} action={focusVisible} id="card">
+        <ButtonBase
+          value={title}
+          onClick={_handleChangeLayout}
+          action={focusVisible}
+          id="card"
+          ref={ref}
+        >
           <Icon fillColor="white" strokeColor="#fff" />
         </ButtonBase>
         <Typography
@@ -139,7 +156,13 @@ function ConfigTabPanel({ panelHeight }) {
           maxWidth: "fit-content",
         }}
       >
-        <ButtonBase onClick={onClick} action={focusVisible} id="card">
+        <ButtonBase
+          value={title}
+          onClick={_handleChangeLayout}
+          action={focusVisible}
+          id="card"
+          ref={ref}
+        >
           <Icon fillColor="#95959E" strokeColor="#474657" />
         </ButtonBase>
         <Typography
@@ -156,11 +179,12 @@ function ConfigTabPanel({ panelHeight }) {
     );
   };
 
-  const _handleChangeLayout = ({ _type, _gridSize, _priority }) => {
-    const type = _type || typeRef.current;
-    const gridSize = _gridSize || gridSizeRef.current;
-    const priority = _priority || priorityRef.current;
+  const _handleChangeLayout = ({ target }) => {
+    // const type = _type || typeRef.current;
+    // const gridSize = _gridSize || gridSizeRef.current;
+    // const priority = _priority || priorityRef.current;
 
+    console.log("handle change type  : ", typeRef.current);
     // livestreamPublish()
     // recordingPublish()
     // hlsPublish()
@@ -174,7 +198,7 @@ function ConfigTabPanel({ panelHeight }) {
     console.log(`newValue : ${newValue}`);
   };
 
-  let Div = ({ heading, onLayoutSelected, onPrioritySelected }) => {
+  let Div = ({ heading, onLayoutChange }) => {
     return (
       <Box
         style={{
@@ -203,39 +227,44 @@ function ConfigTabPanel({ panelHeight }) {
           {heading == "Layout" ? (
             <>
               {layoutArr.map((layoutObj) => {
-                return layoutObj.type.toUpperCase() == meetingLayout ? (
+                return layoutObj.type.toUpperCase() == type ? (
                   <Card
-                    onClick={onLayoutSelected}
+                    onClick={onLayoutChange}
                     isActive={true}
                     title={layoutObj.type}
                     Icon={layoutObj.Icon}
+                    ref={typeRef}
                   />
                 ) : (
                   <Card
-                    onClick={onLayoutSelected}
+                    onClick={onLayoutChange}
                     isActive={false}
                     title={layoutObj.type}
                     Icon={layoutObj.Icon}
+                    ref={priorityRef}
                   />
                 );
               })}
             </>
           ) : (
             <>
-              <Card
-                onClick={() => {
-                  onPrioritySelected();
-                }}
-                isActive={true}
-                title="Speaker"
-                Icon={SpeakerIcon}
-              />
-              <Card
-                onClick={() => {}}
-                isActive={false}
-                title="Pin Participant"
-                Icon={PinParticipantIcon}
-              />
+              {priorityArr.map((priorityObj) => {
+                return priorityObj.type.toUpperCase() == priority ? (
+                  <Card
+                    onClick={onLayoutChange}
+                    isActive={true}
+                    title={priorityObj.type}
+                    Icon={priorityObj.Icon}
+                  />
+                ) : (
+                  <Card
+                    onClick={onLayoutChange}
+                    isActive={false}
+                    title={priorityObj.type}
+                    Icon={priorityObj.Icon}
+                  />
+                );
+              })}
             </>
           )}
         </Box>
@@ -255,8 +284,8 @@ function ConfigTabPanel({ panelHeight }) {
         flexDirection: "column",
       }}
     >
-      <Div onLayoutSelected={_handleChangeLayout} heading="Layout" />
-      <Div onPrioritySelected={prioritySelectHandler} heading="Priority" />
+      <Div onLayoutChange={_handleChangeLayout} heading="Layout" />
+      <Div onLayoutChange={_handleChangeLayout} heading="Priority" />
       {meetingLayout == "GRID" ? (
         <Box
           style={{
