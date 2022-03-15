@@ -120,16 +120,6 @@ function ConfigTabPanel({ panelHeight }) {
     publishToPubSub();
   };
 
-  // const debounce = (func, delay) => {
-  //   let debounceTimer;
-  //   return function () {
-  //     const context = this;
-  //     const args = arguments;
-  //     clearTimeout(debounceTimer);
-  //     debounceTimer = setTimeout(() => func.apply(context, args), delay);
-  //   };
-  // };
-
   const _handleChangePriority = (event) => {
     priority = event.currentTarget.value.toUpperCase() || priorityRef.current;
     publishToPubSub();
@@ -144,11 +134,6 @@ function ConfigTabPanel({ panelHeight }) {
     gridSize = newValue || gridSizeRef.current;
     publishToPubSub();
   }, 2000);
-
-  // const updateGridSize = debounce((newValue) => {
-  //   gridSize = newValue || gridSizeRef.current;
-  //   publishToPubSub();
-  // }, 300);
 
   function publishToPubSub() {
     let layout = { type, gridSize, priority };

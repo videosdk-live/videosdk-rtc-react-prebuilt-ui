@@ -118,6 +118,11 @@ export const MeetingAppProvider = ({
     gridSize: layoutGridSize,
     priority: layoutPriority,
   });
+  // const [appMeetingLayout, setAppMeetingLayout] = useState({
+  //   layoutType: type,
+  //   layoutGridSize: gridSize,
+  //   layoutPriority: priority,
+  // });
   // const [meetinglayoutGridSize, setLayoutGridSize] = useState(layoutGridSize);
   // const [layoutPriority, setLayoutPriority] = useState(layout);
 
