@@ -193,21 +193,102 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
 };
 
 const GoLiveBTN = ({ isMobile, isTab }) => {
-  const { participantCanToggleLivestream } = useMeetingAppContext();
+  const mMeeting = useMeeting({});
+  const [defaultLiveStreamActionTaken, setDefaultLiveStreamActionTaken] =
+    useState(false);
+  const {
+    participantCanToggleLivestream,
+    autoStartLiveStream,
+    liveStreamLayoutType,
+    liveStreamLayoutPriority,
+    liveStreamLayoutGridSize,
+    liveStreamOutputs,
+  } = useMeetingAppContext();
+
+  const isLiveStreaming = mMeeting?.isLiveStreaming;
+  const startLivestream = mMeeting?.startLivestream;
+  const stopLivestream = mMeeting?.stopLivestream;
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: recordingBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 160,
+  };
+
+  useEffect(() => {
+    if (autoStartLiveStream) {
+      setDefaultLiveStreamActionTaken(true);
+      setTimeout(() => {
+        if (!defaultLiveStreamActionTaken) {
+          startLivestream(liveStreamOutputs, {
+            layout: {
+              type: liveStreamLayoutType,
+              priority: liveStreamLayoutPriority,
+              gridSize: liveStreamLayoutGridSize,
+            },
+          });
+        }
+      }, 5000);
+    }
+  }, [
+    liveStreamOutputs,
+    defaultLiveStreamActionTaken,
+    autoStartLiveStream,
+    startLivestream,
+  ]);
 
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={LiveIcon}
-      tooltipTitle={"Go Live"}
-      buttonText="GO LIVE"
+      // tooltipTitle={"Go Live"}
+      // buttonText="GO LIVE"
       bgColor={"#D32F2F"}
+      // onClick={() => {
+      //   if (isLiveStreaming) {
+      //     stopLivestream();
+      //   } else {
+      //     startLivestream(liveStreamOutputs, {
+      //       layout: {
+      //         type: liveStreamLayoutType,
+      //         priority: liveStreamLayoutPriority,
+      //         gridSize: liveStreamLayoutGridSize,
+      //       },
+      //     });
+      //   }
+      // }}
+      tooltipTitle={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      buttonText={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      isFocused={isLiveStreaming}
+      lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
     />
   ) : (
     <OutlineIconTextButton
-      tooltipTitle={"Go Live"}
-      buttonText="GO LIVE"
+      // tooltipTitle={"Go Live"}
+      // buttonText="GO LIVE"
       bgColor={"#D32F2F"}
+      // onClick={() => {
+      //   if (isLiveStreaming) {
+      //     stopLivestream();
+      //   } else {
+      //     startLivestream(liveStreamOutputs, {
+      //       layout: {
+      //         type: liveStreamLayoutType,
+      //         priority: liveStreamLayoutPriority,
+      //         gridSize: liveStreamLayoutGridSize,
+      //       },
+      //     });
+      //   }
+      // }}
+      tooltipTitle={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      buttonText={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      isFocused={isLiveStreaming}
+      lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
     />
   );
@@ -484,7 +565,7 @@ const MicBTN = () => {
   );
 };
 
-const RecordingBTN = () => {
+const RecordingBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const isRecording = mMeeting?.isRecording;
@@ -537,7 +618,29 @@ const RecordingBTN = () => {
     width: 160,
   };
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={ScreenRecording}
+      onClick={() => {
+        if (isRecording) {
+          stopRecording();
+        } else {
+          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+            layout: {
+              type: recordingLayoutType,
+              priority: recordingLayoutPriority,
+              gridSize: recordingLayoutGridSize,
+            },
+          });
+        }
+      }}
+      tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
+      buttonText={isRecording ? "Stop Recording" : "Start Recording"}
+      isFocused={isRecording}
+      disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
+    />
+  ) : (
     <OutlineIconButton
       Icon={ScreenRecording}
       onClick={() => {
@@ -907,21 +1010,21 @@ const TopBar = ({ topBarHeight }) => {
 
     if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
-      mobileIconArr.unshift(topBarButtonTypes.END_CALL);
+      mobileIconArr.push(topBarButtonTypes.END_CALL);
     }
 
     const arrSideBar = [];
 
     if (canChangeLayout) {
       arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
-      mobileIconArr.unshift(topBarButtonTypes.CONFIGURATION);
+      mobileIconArr.push(topBarButtonTypes.CONFIGURATION);
     }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
-      mobileIconArr.unshift(topBarButtonTypes.CHAT);
+      mobileIconArr.push(topBarButtonTypes.CHAT);
     }
     arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
-    mobileIconArr.unshift(topBarButtonTypes.PARTICIPANTS);
+    mobileIconArr.push(topBarButtonTypes.PARTICIPANTS);
 
     arr.unshift(arrSideBar);
 
@@ -929,15 +1032,15 @@ const TopBar = ({ topBarHeight }) => {
 
     if (screenShareEnabled) {
       arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
-      mobileIconArr.unshift(topBarButtonTypes.SCREEN_SHARE);
+      mobileIconArr.push(topBarButtonTypes.SCREEN_SHARE);
     }
     if (participantCanToggleSelfWebcam) {
       arrMedia.unshift(topBarButtonTypes.WEBCAM);
-      mobileIconArr.unshift(topBarButtonTypes.WEBCAM);
+      mobileIconArr.push(topBarButtonTypes.WEBCAM);
     }
     if (participantCanToggleSelfMic) {
       arrMedia.unshift(topBarButtonTypes.MIC);
-      mobileIconArr.unshift(topBarButtonTypes.MIC);
+      mobileIconArr.push(topBarButtonTypes.MIC);
     }
 
     if (arrMedia.length) {
@@ -948,27 +1051,27 @@ const TopBar = ({ topBarHeight }) => {
 
     if (raiseHandEnabled) {
       utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
-      mobileIconArr.unshift(topBarButtonTypes.RAISE_HAND);
+      mobileIconArr.push(topBarButtonTypes.RAISE_HAND);
     }
 
     if (recordingEnabled) {
       utilsArr.unshift(topBarButtonTypes.RECORDING);
-      mobileIconArr.unshift(topBarButtonTypes.RECORDING);
+      mobileIconArr.push(topBarButtonTypes.RECORDING);
     }
 
     if (whiteboardEnabled) {
       utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
-      mobileIconArr.unshift(topBarButtonTypes.WHITEBOARD);
+      mobileIconArr.push(topBarButtonTypes.WHITEBOARD);
     }
 
     if (liveStreamEnabled) {
       utilsArr.unshift(topBarButtonTypes.GO_LIVE);
-      mobileIconArr.unshift(topBarButtonTypes.GO_LIVE);
+      mobileIconArr.push(topBarButtonTypes.GO_LIVE);
     }
 
     if (participantCanToggleLivestream) {
       utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
-      mobileIconArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
+      mobileIconArr.push(topBarButtonTypes.ADD_LIVE_STREAM);
     }
 
     if (utilsArr.length) {
