@@ -123,7 +123,7 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
-    setMeetingLayout,
+    setAppMeetingLayout,
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
@@ -443,11 +443,11 @@ const MeetingContainer = () => {
   // usePubsub(meetingLayoutTopic,)
   usePubSub("MEETING_LAYOUT", {
     onMessageReceived: (data) => {
-      setMeetingLayout(data.message);
+      setAppMeetingLayout(data.message);
       // console.log("data : ", data.message);
     },
     onOldMessagesReceived: (messages) => {
-      // setMeetingLayout(new layout());
+      // setAppMeetingLayout(new layout());
       console.log("messages : ", messages);
     },
   });

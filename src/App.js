@@ -247,32 +247,40 @@ const App = () => {
       paramKeys.canPin = "false";
     }
 
-    if (paramKeys.layoutPriority === "PIN") {
-      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
-      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
-      } else if (paramKeys.layout === meetingLayouts.GRID) {
-        paramKeys.layoutPriority = "SPEAKER";
-      }
-    } else if (paramKeys.layoutPriority === "SPEAKER") {
-      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
-        paramKeys.layout = meetingLayouts.UNPINNED_SPOTLIGHT;
-      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
-        paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
-      } else if (paramKeys.layout === meetingLayouts.GRID) {
-        paramKeys.layoutPriority = "SPEAKER";
-      }
-    } else if (
-      paramKeys.layoutPriority === "" ||
-      paramKeys.layoutPriority === null
+    if (
+      !paramKeys.layoutPriority ||
+      paramKeys.layoutPriority === "null" ||
+      paramKeys.layoutPriority === "undefined"
     ) {
-      if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
-        paramKeys.layout = meetingLayouts.SPOTLIGHT;
-        paramKeys.layoutPriority = "SPEAKER";
-      } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
-        paramKeys.layout = meetingLayouts.SIDEBAR;
-        paramKeys.layoutPriority = "SPEAKER";
-      }
+      paramKeys.layoutPriority = "SPEAKER";
     }
+
+    // if (paramKeys.layoutPriority === "PIN") {
+    //   if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+    //   } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+    //   } else if (paramKeys.layout === meetingLayouts.GRID) {
+    //     paramKeys.layoutPriority = "SPEAKER";
+    //   }
+    // } else if (paramKeys.layoutPriority === "SPEAKER") {
+    //   if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+    //     paramKeys.layout = meetingLayouts.UNPINNED_SPOTLIGHT;
+    //   } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+    //     paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
+    //   } else if (paramKeys.layout === meetingLayouts.GRID) {
+    //     paramKeys.layoutPriority = "SPEAKER";
+    //   }
+    // } else if (
+    //   paramKeys.layoutPriority === "" ||
+    //   paramKeys.layoutPriority === null
+    // ) {
+    //   if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
+    //     paramKeys.layout = meetingLayouts.SPOTLIGHT;
+    //     paramKeys.layoutPriority = "SPEAKER";
+    //   } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
+    //     paramKeys.layout = meetingLayouts.SIDEBAR;
+    //     paramKeys.layoutPriority = "SPEAKER";
+    //   }
+    // }
 
     if (paramKeys.isRecorder === "true") {
       paramKeys.micEnabled = "false";

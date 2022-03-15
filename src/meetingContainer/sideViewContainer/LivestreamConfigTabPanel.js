@@ -20,6 +20,12 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "#3D3C4E",
     color: "white",
   },
+  button: {
+    color: "#95959E",
+    "&:hover": {
+      color: "#ffffff",
+    },
+  },
   input: {
     color: "white",
   },
@@ -29,20 +35,6 @@ const useStyles = makeStyles(() => ({
     },
   },
 }));
-
-const styles = (theme) => ({
-  textField: {
-    width: "90%",
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingBottom: 0,
-    marginTop: 0,
-    fontWeight: 500,
-  },
-  input: {
-    color: "white",
-  },
-});
 
 export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const { width } = useWindowSize();
@@ -251,6 +243,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                         updateLiveStreamingDetailsEmpty(item.id);
                         // setOptionAsEditFalse(item.id);
                       }}
+                      className={classes.button}
                     >
                       CANCEL
                     </Button>
@@ -260,6 +253,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                         setOnSaveClick(true);
                         setOptionAsEditFalse(item.id);
                       }}
+                      className={classes.button}
                     >
                       SAVE
                     </Button>
@@ -272,6 +266,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                         onClick={() => {
                           updateLiveStreamingDetailsEmpty(item.id);
                         }}
+                        className={classes.button}
                       >
                         REMOVE
                       </Button>
@@ -281,6 +276,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                       onClick={() => {
                         setOptionAsEdit(item.id);
                       }}
+                      className={classes.button}
                     >
                       EDIT
                     </Button>

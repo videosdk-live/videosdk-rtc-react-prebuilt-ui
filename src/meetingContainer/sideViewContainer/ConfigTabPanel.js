@@ -7,7 +7,6 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-
 import {
   meetingLayouts,
   useMeetingAppContext,
@@ -19,13 +18,14 @@ import SpeakerIcon from "../../icons/SpeakerIcon";
 import PinParticipantIcon from "../../icons/PinParticipantIcon";
 import { usePubSub } from "@videosdk.live/react-sdk";
 import useIsMobile from "../../utils/useIsMobile";
+import { debounce } from "lodash";
 
 function ConfigTabPanel({ panelHeight }) {
   const isMobile = useIsMobile(375);
 
-  const { meetingLayout } = useMeetingAppContext();
+  const { appMeetingLayout } = useMeetingAppContext();
 
-  let { type, priority, gridSize } = meetingLayout;
+  let { type, priority, gridSize } = appMeetingLayout;
 
   const typeRef = useRef(type);
   const priorityRef = useRef(priority);
@@ -120,14 +120,35 @@ function ConfigTabPanel({ panelHeight }) {
     publishToPubSub();
   };
 
+  // const debounce = (func, delay) => {
+  //   let debounceTimer;
+  //   return function () {
+  //     const context = this;
+  //     const args = arguments;
+  //     clearTimeout(debounceTimer);
+  //     debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  //   };
+  // };
+
   const _handleChangePriority = (event) => {
     priority = event.currentTarget.value.toUpperCase() || priorityRef.current;
     publishToPubSub();
   };
-  const _handleGridSize = (event, newValue) => {
+
+  let _handleGridSize = (newValue) => {
+    gridSize = newValue || gridSizeRef.current;
+    // publishToPubSub();
+  };
+
+  const updateGridSize = debounce(function (e, newValue) {
     gridSize = newValue || gridSizeRef.current;
     publishToPubSub();
-  };
+  }, 2000);
+
+  // const updateGridSize = debounce((newValue) => {
+  //   gridSize = newValue || gridSizeRef.current;
+  //   publishToPubSub();
+  // }, 300);
 
   function publishToPubSub() {
     let layout = { type, gridSize, priority };
@@ -314,7 +335,9 @@ function ConfigTabPanel({ panelHeight }) {
             min={1}
             max={25}
             value={gridSize}
-            onChange={_handleGridSize}
+            // onChange={_handleGridSize}
+            // onChangeCommitted={(e) => updateGridSize(e)}
+            onChange={(e, newValue) => updateGridSize(e, newValue)}
             ValueLabelComponent={ValueLabelComponent}
             valueLabelDisplay="on"
             step={1}

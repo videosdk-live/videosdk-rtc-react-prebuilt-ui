@@ -193,21 +193,102 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
 };
 
 const GoLiveBTN = ({ isMobile, isTab }) => {
-  const { participantCanToggleLivestream } = useMeetingAppContext();
+  const mMeeting = useMeeting({});
+  const [defaultLiveStreamActionTaken, setDefaultLiveStreamActionTaken] =
+    useState(false);
+  const {
+    participantCanToggleLivestream,
+    autoStartLiveStream,
+    liveStreamLayoutType,
+    liveStreamLayoutPriority,
+    liveStreamLayoutGridSize,
+    liveStreamOutputs,
+  } = useMeetingAppContext();
+
+  const isLiveStreaming = mMeeting?.isLiveStreaming;
+  const startLivestream = mMeeting?.startLivestream;
+  const stopLivestream = mMeeting?.stopLivestream;
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: recordingBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 160,
+  };
+
+  useEffect(() => {
+    if (autoStartLiveStream) {
+      setDefaultLiveStreamActionTaken(true);
+      setTimeout(() => {
+        if (!defaultLiveStreamActionTaken) {
+          startLivestream(liveStreamOutputs, {
+            layout: {
+              type: liveStreamLayoutType,
+              priority: liveStreamLayoutPriority,
+              gridSize: liveStreamLayoutGridSize,
+            },
+          });
+        }
+      }, 5000);
+    }
+  }, [
+    liveStreamOutputs,
+    defaultLiveStreamActionTaken,
+    autoStartLiveStream,
+    startLivestream,
+  ]);
 
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={LiveIcon}
-      tooltipTitle={"Go Live"}
-      buttonText="GO LIVE"
+      // tooltipTitle={"Go Live"}
+      // buttonText="GO LIVE"
       bgColor={"#D32F2F"}
+      // onClick={() => {
+      //   if (isLiveStreaming) {
+      //     stopLivestream();
+      //   } else {
+      //     startLivestream(liveStreamOutputs, {
+      //       layout: {
+      //         type: liveStreamLayoutType,
+      //         priority: liveStreamLayoutPriority,
+      //         gridSize: liveStreamLayoutGridSize,
+      //       },
+      //     });
+      //   }
+      // }}
+      tooltipTitle={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      buttonText={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      isFocused={isLiveStreaming}
+      lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
     />
   ) : (
     <OutlineIconTextButton
-      tooltipTitle={"Go Live"}
-      buttonText="GO LIVE"
+      // tooltipTitle={"Go Live"}
+      // buttonText="GO LIVE"
       bgColor={"#D32F2F"}
+      // onClick={() => {
+      //   if (isLiveStreaming) {
+      //     stopLivestream();
+      //   } else {
+      //     startLivestream(liveStreamOutputs, {
+      //       layout: {
+      //         type: liveStreamLayoutType,
+      //         priority: liveStreamLayoutPriority,
+      //         gridSize: liveStreamLayoutGridSize,
+      //       },
+      //     });
+      //   }
+      // }}
+      tooltipTitle={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      buttonText={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      isFocused={isLiveStreaming}
+      lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
     />
   );
@@ -484,7 +565,7 @@ const MicBTN = () => {
   );
 };
 
-const RecordingBTN = () => {
+const RecordingBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const isRecording = mMeeting?.isRecording;
@@ -537,7 +618,29 @@ const RecordingBTN = () => {
     width: 160,
   };
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={ScreenRecording}
+      onClick={() => {
+        if (isRecording) {
+          stopRecording();
+        } else {
+          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+            layout: {
+              type: recordingLayoutType,
+              priority: recordingLayoutPriority,
+              gridSize: recordingLayoutGridSize,
+            },
+          });
+        }
+      }}
+      tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
+      buttonText={isRecording ? "Stop Recording" : "Start Recording"}
+      isFocused={isRecording}
+      disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
+    />
+  ) : (
     <OutlineIconButton
       Icon={ScreenRecording}
       onClick={() => {
@@ -907,7 +1010,7 @@ const TopBar = ({ topBarHeight }) => {
 
     if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
-      mobileIconArr.unshift(topBarButtonTypes.END_CALL);
+      mobileIconArr.unshift({ type: topBarButtonTypes.END_CALL, priority: 0 });
     }
 
     const arrSideBar = [];
@@ -937,7 +1040,7 @@ const TopBar = ({ topBarHeight }) => {
     }
     if (participantCanToggleSelfMic) {
       arrMedia.unshift(topBarButtonTypes.MIC);
-      mobileIconArr.unshift(topBarButtonTypes.MIC);
+      mobileIconArr.unshift({ type: topBarButtonTypes.MIC, priority: 1 });
     }
 
     if (arrMedia.length) {
@@ -974,6 +1077,9 @@ const TopBar = ({ topBarHeight }) => {
     if (utilsArr.length) {
       arr.unshift(utilsArr);
     }
+
+    // mobileIconArr.sort ( { priority}) .map( ({type}) => type )
+
     return { topBarIcons: arr, mobileIcons: mobileIconArr };
   }, [
     participantCanToggleSelfMic,
@@ -992,83 +1098,6 @@ const TopBar = ({ topBarHeight }) => {
   const firstFourElements = mobileIcons.slice(0, 4);
 
   const excludeFirstFourElements = mobileIcons.slice(4);
-
-  // console.log(
-  //   "mobileIcons",
-  //   mobileIcons,
-  //   firstFourElements,
-  //   excludeFirstFourElements
-  // );
-
-  const PermissionArray = [
-    {
-      permission: raiseHandEnabled,
-      render: (
-        <RaiseHandBTN
-          onClick={handleCloseFAB}
-          isMobile={isMobile}
-          isTab={isTab}
-        />
-      ),
-    },
-    {
-      permission: "",
-      render: (
-        <ParticipantsBTN
-          onClick={handleCloseFAB}
-          isMobile={isMobile}
-          isTab={isTab}
-        />
-      ),
-    },
-    {
-      permission: participantCanToggleLivestream && liveStreamEnabled,
-      render: (
-        <AddLiveStreamBTN
-          onClick={handleCloseFAB}
-          isMobile={isMobile}
-          isTab={isTab}
-        />
-      ),
-    },
-    {
-      permission: liveStreamEnabled,
-      render: <GoLiveBTN isMobile={isMobile} isTab={isTab} />,
-    },
-    {
-      permission: whiteboardEnabled,
-      render: (
-        <WhiteBoardBTN
-          onClick={handleCloseFAB}
-          isMobile={isMobile}
-          isTab={isTab}
-        />
-      ),
-    },
-    {
-      permission: screenShareEnabled,
-      render: (
-        <ScreenShareBTN
-          onClick={handleCloseFAB}
-          isMobile={isMobile}
-          isTab={isTab}
-        />
-      ),
-    },
-    {
-      permission: canChangeLayout,
-      render: (
-        <ConfigBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
-      ),
-    },
-
-    {
-      permission: isPortrait && recordingEnabled && chatEnabled,
-      render: (
-        <ChatBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
-      ),
-    },
-  ];
 
   useEffect(() => {
     setTimeout(() => {
