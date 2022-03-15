@@ -13,6 +13,7 @@
     "compressorjs": "^1.1.1",
     "emoji-mart": "^3.0.1",
     "fabric": "^4.6.0",
+    "lodash": "^4.17.21",
     "notistack": "^1.0.10",
     "react": "^17.0.2",
     "react-color": "^2.19.3",

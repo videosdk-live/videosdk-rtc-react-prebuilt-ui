@@ -907,7 +907,7 @@ const TopBar = ({ topBarHeight }) => {
 
     if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
-      mobileIconArr.unshift(topBarButtonTypes.END_CALL);
+      mobileIconArr.unshift({ type: topBarButtonTypes.END_CALL, priority: 0 });
     }
 
     const arrSideBar = [];
@@ -937,7 +937,7 @@ const TopBar = ({ topBarHeight }) => {
     }
     if (participantCanToggleSelfMic) {
       arrMedia.unshift(topBarButtonTypes.MIC);
-      mobileIconArr.unshift(topBarButtonTypes.MIC);
+      mobileIconArr.unshift({ type: topBarButtonTypes.MIC, priority: 1 });
     }
 
     if (arrMedia.length) {
@@ -974,6 +974,9 @@ const TopBar = ({ topBarHeight }) => {
     if (utilsArr.length) {
       arr.unshift(utilsArr);
     }
+
+    // mobileIconArr.sort ( { priority}) .map( ({type}) => type )
+
     return { topBarIcons: arr, mobileIcons: mobileIconArr };
   }, [
     participantCanToggleSelfMic,

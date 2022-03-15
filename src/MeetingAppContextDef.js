@@ -113,7 +113,7 @@ export const MeetingAppProvider = ({
     started: false,
     state: null,
   });
-  const [meetingLayout, setMeetingLayout] = useState({
+  const [appMeetingLayout, setAppMeetingLayout] = useState({
     type: layout,
     gridSize: layoutGridSize,
     priority: layoutPriority,
@@ -207,7 +207,19 @@ export const MeetingAppProvider = ({
         userHasInteracted,
         whiteboardStarted,
         whiteboardState,
-        meetingLayout,
+        meetingLayout:
+          appMeetingLayout.priority === "PIN"
+            ? appMeetingLayout.type === meetingLayouts.SPOTLIGHT
+              ? meetingLayouts.SPOTLIGHT
+              : appMeetingLayout.type === meetingLayouts.SIDEBAR
+              ? meetingLayouts.SIDEBAR
+              : meetingLayouts.GRID
+            : appMeetingLayout.type === meetingLayouts.SPOTLIGHT
+            ? meetingLayouts.UNPINNED_SPOTLIGHT
+            : appMeetingLayout.type === meetingLayouts.SIDEBAR
+            ? meetingLayouts.UNPINNED_SIDEBAR
+            : meetingLayouts.GRID,
+        appMeetingLayout,
         canPin,
         meetingLeft,
 
@@ -220,7 +232,7 @@ export const MeetingAppProvider = ({
         setUserHasInteracted,
         setWhiteboardState,
         setMeetingLeft,
-        setMeetingLayout,
+        setAppMeetingLayout,
       }}
     >
       <SnackbarProvider
