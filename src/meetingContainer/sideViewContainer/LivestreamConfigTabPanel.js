@@ -7,16 +7,25 @@ import {
   makeStyles,
   Input,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useWindowSize from "../../utils/useWindowSize";
 import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
+import { usePubSub } from "@videosdk.live/react-sdk";
+import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { v4 as uuid } from "uuid";
 
 const useStyles = makeStyles(() => ({
   textField: {
     borderRadius: "4px",
     backgroundColor: "#3D3C4E",
     color: "white",
+  },
+  button: {
+    color: "#95959E",
+    "&:hover": {
+      color: "#ffffff",
+    },
   },
   input: {
     color: "white",
@@ -28,20 +37,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const styles = (theme) => ({
-  textField: {
-    width: "90%",
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingBottom: 0,
-    marginTop: 0,
-    fontWeight: 500,
-  },
-  input: {
-    color: "white",
-  },
-});
-
 export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const { width } = useWindowSize();
   const isTab = useIsTab();
@@ -49,12 +44,28 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const theme = useTheme();
 
   const [onSaveClick, setOnSaveClick] = useState(false);
+  const [streamKey, setStreamKey] = useState("");
+  const [streamUrl, setStreamUrl] = useState("");
+  const [streamKeyErr, setStreamKeyErr] = useState(false);
+  const [streamUrlErr, setStreamUrlErr] = useState(false);
 
   const [liveStreamPlatform, setLiveStreamPlatform] = useState([
     // { id: 1, title: "Facebook", streamKey: "", streamUrl: "", isEdit: false },
     // { id: 2, title: "Youtube", streamKey: "", streamUrl: "", isEdit: false },
     { id: 1, title: "Custom", streamKey: "", streamUrl: "", isEdit: false },
   ]);
+
+  const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
+
+  const liveStreamConfigRef = useRef();
+
+  // todo :
+  // add liveStreamConfigRef using useRef and useEffect
+  useEffect(() => {
+    liveStreamConfigRef.current = liveStreamConfig;
+  }, [liveStreamConfig]);
+
+  const { publish } = usePubSub("LIVE_STREAM_CONFIG");
 
   const _createNewPlatform = (e) => {
     setLiveStreamPlatform((items) => [
@@ -168,6 +179,341 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
 
   const classes = useStyles();
 
+  const _handleRemove = ({ id }) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+
+    const filtered = liveStreamConfig.filter(({ id: _id }) => {
+      return id !== _id;
+    });
+
+    console.log("remove data", filtered);
+    publish(filtered);
+  };
+
+  const handleValidation = () => {
+    let isValid = true;
+    if (streamKey.length === 0) {
+      isValid = false;
+      setStreamKeyErr(true);
+      return false;
+    } else {
+      setStreamKeyErr(false);
+    }
+    if (streamUrl.length === 0) {
+      isValid = false;
+      setStreamUrlErr(true);
+      return false;
+    } else {
+      setStreamUrlErr(false);
+    }
+    return isValid;
+  };
+
+  const _handleSave = ({ streamKey, streamUrl }) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+    //  liveStreamConfig .push({ id : generatenewid() ,  streamKey,streamUrl})
+    liveStreamConfig.push({ id: uuid(), streamKey, streamUrl });
+
+    publish({ config: liveStreamConfig });
+    setStreamKey("");
+    setStreamUrl("");
+
+    // streamKey, streamUrl => clear this states
+  };
+
+  const rootDomain = extractRootDomain(streamUrl);
+  const mainDomain = rootDomain?.split(".")[0];
+  const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+
+  console.log("liveconfigtabpanel", liveStreamConfig);
+
+  return (
+    <Box
+      style={{
+        height: panelHeight - 32,
+        overflowY: "auto",
+        overflowX: "hidden",
+      }}
+    >
+      <Box
+        style={{
+          overflowY: "auto",
+
+          // height: panelHeight
+        }}
+        // style={{
+
+        //   // height: panelHeight - 32,
+        //   overflowY: "auto",
+        //   overflowX: "hidden",
+        // }}
+      >
+        {liveStreamConfig?.map((item, index) => {
+          const rootDomain = extractRootDomain(item.streamUrl);
+          const mainDomain = rootDomain?.split(".")[0];
+          const domainName =
+            mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+
+          return (
+            <Box
+              style={{
+                borderBottom: "3px solid #3A3F4B",
+                paddingRight: "12px",
+                paddingLeft: "12px",
+                paddingTop: "12px",
+                paddingBottom: "12px",
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Box style={{ display: "flex", flex: 1 }}>
+                  <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+                    {item.streamUrl ? domainName : item.title}
+                  </Typography>
+                </Box>
+
+                <Box
+                  style={{
+                    display: "flex",
+                    flex: 1,
+                    alignItems: "flex-end",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  {item.isEdit ? (
+                    <>
+                      <Button
+                        variant="text"
+                        onClick={() => {
+                          updateLiveStreamingDetailsEmpty(item.id);
+                          // setOptionAsEditFalse(item.id);
+                        }}
+                        className={classes.button}
+                      >
+                        CANCEL
+                      </Button>
+                      <Button
+                        variant="text"
+                        onClick={() => {
+                          setOnSaveClick(true);
+                          setOptionAsEditFalse(item.id);
+                        }}
+                        className={classes.button}
+                      >
+                        SAVE
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {/* {onSaveClick && item.streamKey != "" && ( */}
+                      <Button
+                        variant="text"
+                        onClick={() => {
+                          // updateLiveStreamingDetailsEmpty(item.id);
+                          _handleRemove({ id: item.id });
+                        }}
+                        className={classes.button}
+                      >
+                        REMOVE
+                      </Button>
+                      {/* )} */}
+                      <Button
+                        variant="text"
+                        onClick={() => {
+                          setOptionAsEdit(item.id);
+                        }}
+                        className={classes.button}
+                      >
+                        EDIT
+                      </Button>
+                    </>
+                  )}
+                </Box>
+              </Box>
+              <Box mt={1}>
+                <TextField
+                  placeholder="Stream Key"
+                  fullWidth
+                  variant="filled"
+                  type="password"
+                  className={classes.root}
+                  disabled={!item.isEdit}
+                  value={item.streamKey}
+                  InputProps={{
+                    disableUnderline: true,
+                    classes: {
+                      root: classes.textField,
+                    },
+                  }}
+                  onChange={(e) => {
+                    updateLiveStreamingKey(item.id, e.target.value);
+                  }}
+                />
+
+                <TextField
+                  placeholder="Stream Url"
+                  fullWidth
+                  variant="filled"
+                  style={{ marginTop: "8px" }}
+                  className={classes.root}
+                  disabled={!item.isEdit}
+                  value={item.streamUrl}
+                  InputProps={{
+                    disableUnderline: true,
+                    classes: {
+                      root: classes.textField,
+                    },
+                  }}
+                  onChange={(e) => {
+                    updateLiveStreamingUrl(item.id, e.target.value);
+                  }}
+                />
+              </Box>
+            </Box>
+          );
+        })}
+      </Box>
+      <Box
+        style={{
+          // borderBottom: "3px solid #3A3F4B",
+          paddingRight: "12px",
+          paddingLeft: "12px",
+          paddingTop: "12px",
+          paddingBottom: "12px",
+        }}
+      >
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box style={{ display: "flex", flex: 1 }}>
+            <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+              {streamUrl ? domainName : "Platform Name"}
+            </Typography>
+          </Box>
+
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+            }}
+          >
+            {/* {item.isEdit ? (
+              <>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    updateLiveStreamingDetailsEmpty(item.id);
+                    // setOptionAsEditFalse(item.id);
+                  }}
+                  className={classes.button}
+                >
+                  CANCEL
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    setOnSaveClick(true);
+                    setOptionAsEditFalse(item.id);
+                  }}
+                  className={classes.button}
+                >
+                  SAVE
+                </Button>
+              </>
+            ) : (
+              <> */}
+            {onSaveClick && streamKey != "" && (
+              <Button
+                variant="text"
+                onClick={() => {
+                  // updateLiveStreamingDetailsEmpty(item.id);
+                }}
+                className={classes.button}
+              >
+                REMOVE
+              </Button>
+            )}
+            <Button
+              variant="text"
+              onClick={() => {
+                const isValid = handleValidation();
+                if (isValid) {
+                  _handleSave({ streamKey: streamKey, streamUrl: streamUrl });
+                  // setOptionAsEdit(item.id);
+                }
+              }}
+              className={classes.button}
+            >
+              {/* EDIT */}
+              ADD
+            </Button>
+            {/* </>
+            )} */}
+          </Box>
+        </Box>
+        <Box mt={1}>
+          <TextField
+            placeholder="Stream Key"
+            fullWidth
+            variant="filled"
+            type="password"
+            className={classes.root}
+            // disabled={!item.isEdit}
+            value={streamKey}
+            InputProps={{
+              disableUnderline: true,
+              classes: {
+                root: classes.textField,
+              },
+            }}
+            onChange={(e) => {
+              setStreamKey(e.target.value);
+            }}
+          />
+          {streamKeyErr && (
+            <Typography variant="body2" style={{ color: "#D33730" }}>
+              Please provide stream key
+            </Typography>
+          )}
+          <TextField
+            placeholder="Stream Url"
+            fullWidth
+            variant="filled"
+            style={{ marginTop: "8px" }}
+            className={classes.root}
+            // disabled={!item.isEdit}
+            value={streamUrl}
+            InputProps={{
+              disableUnderline: true,
+              classes: {
+                root: classes.textField,
+              },
+            }}
+            onChange={(e) => {
+              setStreamUrl(e.target.value);
+            }}
+          />
+          {streamUrlErr && (
+            <Typography variant="body2" style={{ color: "#D33730" }}>
+              Please provide stream url
+            </Typography>
+          )}
+        </Box>
+      </Box>
+    </Box>
+  );
+
   return (
     <Box
       style={{
@@ -224,6 +570,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                         updateLiveStreamingDetailsEmpty(item.id);
                         // setOptionAsEditFalse(item.id);
                       }}
+                      className={classes.button}
                     >
                       CANCEL
                     </Button>
@@ -233,6 +580,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                         setOnSaveClick(true);
                         setOptionAsEditFalse(item.id);
                       }}
+                      className={classes.button}
                     >
                       SAVE
                     </Button>
@@ -245,6 +593,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                         onClick={() => {
                           updateLiveStreamingDetailsEmpty(item.id);
                         }}
+                        className={classes.button}
                       >
                         REMOVE
                       </Button>
@@ -254,6 +603,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                       onClick={() => {
                         setOptionAsEdit(item.id);
                       }}
+                      className={classes.button}
                     >
                       EDIT
                     </Button>

@@ -129,6 +129,8 @@ const MeetingContainer = () => {
     notificationAlertsEnabled,
     debug,
     meetingLayoutTopic,
+    setLiveStreamConfig,
+    liveStreamConfig,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -449,6 +451,21 @@ const MeetingContainer = () => {
     onOldMessagesReceived: (messages) => {
       // setAppMeetingLayout(new layout());
       // console.log("messages : ", messages);
+    },
+  });
+
+  usePubSub("LIVE_STREAM_CONFIG", {
+    onMessageReceived: (data) => {
+      console.log("data Meeting Container: ", data.message);
+      setLiveStreamConfig(data.message.config);
+    },
+
+    onOldMessagesReceived: (messages) => {
+      // const latestMessage = latestMessage(messages);
+      console.log("message : ", messages);
+      // if (latestMessage) {
+      // setLiveStreamConfig(latestMessage.data.config)
+      // }
     },
   });
 
