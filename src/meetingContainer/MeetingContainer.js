@@ -449,8 +449,18 @@ const MeetingContainer = () => {
       console.log("appMeetingLayout : ", appMeetingLayout);
     },
     onOldMessagesReceived: (messages) => {
-      // setAppMeetingLayout(new layout());
-      // console.log("messages : ", messages);
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+      }
     },
   });
 
@@ -461,11 +471,19 @@ const MeetingContainer = () => {
     },
 
     onOldMessagesReceived: (messages) => {
-      // const latestMessage = latestMessage(messages);
-      console.log("message : ", messages);
-      // if (latestMessage) {
-      // setLiveStreamConfig(latestMessage.data.config)
-      // }
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setLiveStreamConfig(latestMessage.message.config);
+      }
     },
   });
 

@@ -137,10 +137,10 @@ function ConfigTabPanel({ panelHeight }) {
 
   function publishToPubSub() {
     let layout = { type, gridSize, priority };
-    livestreamPublish(layout);
-    hlsPublish(layout);
-    meetingPublish(layout);
-    recordingPublish(layout);
+    livestreamPublish(layout, { persist: true });
+    hlsPublish(layout, { persist: true });
+    meetingPublish(layout, { persist: true });
+    recordingPublish(layout, { persist: true });
   }
 
   //layout and priority card

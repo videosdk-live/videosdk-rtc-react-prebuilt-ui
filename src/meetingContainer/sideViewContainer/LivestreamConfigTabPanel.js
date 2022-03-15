@@ -154,7 +154,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
       return id !== _id;
     });
 
-    publish({ config: filtered });
+    publish({ config: filtered }, { persist: true });
   };
 
   const handleValidation = () => {
@@ -180,7 +180,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
     const liveStreamConfig = liveStreamConfigRef.current;
     liveStreamConfig.push({ id: uuid(), streamKey, streamUrl });
 
-    publish({ config: liveStreamConfig });
+    publish({ config: liveStreamConfig }, { persist: true });
     setStreamKey("");
     setStreamUrl("");
   };
@@ -201,7 +201,7 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
       }
     });
 
-    publish({ config: newPlatforms });
+    publish({ config: newPlatforms }, { persist: true });
     setLiveStreamConfig(newPlatforms);
   };
 

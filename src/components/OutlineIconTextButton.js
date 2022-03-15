@@ -105,7 +105,7 @@ const OutlineIconTextButton = ({
               justifyContent: "center",
               alignItems: "center",
               borderRadius: theme.spacing(1),
-              transform: `scale(${mouseOver ? (mouseDown ? 0.95 : 1.1) : 1})`,
+              transform: `scale(${mouseOver ? (mouseDown ? 0.97 : 1.05) : 1})`,
               transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
               transitionTimingFunction: "linear",
             }}
