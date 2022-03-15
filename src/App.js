@@ -20,6 +20,29 @@ import useIsTab from "./utils/useIsTab";
 import useIsMobile from "./utils/useIsMobile";
 
 const App = () => {
+  const [meetingIdValidation, setMeetingIdValidation] = useState({
+    isLoading: true,
+    meetingId: null,
+    reqError: null,
+    reqStatusCode: null,
+  });
+
+  const [meetingError, setMeetingError] = useState({
+    message: null,
+    code: null,
+    isVisible: false,
+  });
+
+  const [meetingLeft, setMeetingLeft] = useState(false);
+
+  const playNotificationErr = async () => {
+    const errAudio = new Audio(
+      `https://static.videosdk.live/prebuilt/notification_err.mp3`
+    );
+
+    await errAudio.play();
+  };
+
   const getParams = ({ maxGridSize }) => {
     const location = window.location;
     const urlParams = new URLSearchParams(location.search);
@@ -327,29 +350,6 @@ const App = () => {
   const [userHasInteracted, setUserHasInteracted] = useState(
     paramKeys.joinWithoutUserInteraction === "true"
   );
-
-  const [meetingIdValidation, setMeetingIdValidation] = useState({
-    isLoading: true,
-    meetingId: null,
-    reqError: null,
-    reqStatusCode: null,
-  });
-
-  const [meetingError, setMeetingError] = useState({
-    message: null,
-    code: null,
-    isVisible: false,
-  });
-
-  const [meetingLeft, setMeetingLeft] = useState(false);
-
-  const playNotificationErr = async () => {
-    const errAudio = new Audio(
-      `https://static.videosdk.live/prebuilt/notification_err.mp3`
-    );
-
-    await errAudio.play();
-  };
 
   const [name, setName] = useState(paramKeys.name || "");
   const [joinScreenWebCam, setJoinScreenWebCam] = useState(

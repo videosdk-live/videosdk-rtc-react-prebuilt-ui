@@ -11,6 +11,8 @@ import React, { useState } from "react";
 import useWindowSize from "../../utils/useWindowSize";
 import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
+import { usePubSub } from "@videosdk.live/react-sdk";
+import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -55,6 +57,13 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
     // { id: 2, title: "Youtube", streamKey: "", streamUrl: "", isEdit: false },
     { id: 1, title: "Custom", streamKey: "", streamUrl: "", isEdit: false },
   ]);
+
+  const { liveStreamConfig } = useMeetingAppContext();
+
+  // todo :
+  // add liveStreamConfigRef using useRef and useEffect
+
+  const { publish } = usePubSub("LIVE_STREAM_CONFIG");
 
   const _createNewPlatform = (e) => {
     setLiveStreamPlatform((items) => [
@@ -167,6 +176,24 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   }
 
   const classes = useStyles();
+
+  // const _handleRemove = ({ id }) => {
+  //   const liveStreamConfig = liveStreamConfigRef.current;
+
+  //   const filtered = liveStreamConfig.filter(({ id: _id }) => {
+  //     id !== _id;
+  //   });
+
+  //   publish(filtered);
+  // };
+
+  const _handleSave = ({ streamKey, streamUrl }) => {
+    //  const liveStreamConfig =  liveStreamConfigRef.current
+    //  liveStreamConfig .push({ id : generatenewid() ,  streamKey,streamUrl})
+    // publish({ config :  liveStreamConfig})
+    //
+    // streamKey, streamUrl => clear this states
+  };
 
   return (
     <Box

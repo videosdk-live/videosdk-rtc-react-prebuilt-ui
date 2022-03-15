@@ -118,6 +118,7 @@ export const MeetingAppProvider = ({
     gridSize: layoutGridSize,
     priority: layoutPriority,
   });
+  const [liveStreamConfig, setLiveStreamConfig] = useState([]);
   // const [meetinglayoutGridSize, setLayoutGridSize] = useState(layoutGridSize);
   // const [layoutPriority, setLayoutPriority] = useState(layout);
 
@@ -210,6 +211,7 @@ export const MeetingAppProvider = ({
         meetingLayout,
         canPin,
         meetingLeft,
+        liveStreamConfig,
 
         // setters
         setSideBarMode,
@@ -221,6 +223,7 @@ export const MeetingAppProvider = ({
         setWhiteboardState,
         setMeetingLeft,
         setMeetingLayout,
+        setLiveStreamConfig,
       }}
     >
       <SnackbarProvider
