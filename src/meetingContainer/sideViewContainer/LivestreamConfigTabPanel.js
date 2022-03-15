@@ -34,20 +34,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const styles = (theme) => ({
-  textField: {
-    width: "90%",
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingBottom: 0,
-    marginTop: 0,
-    fontWeight: 500,
-  },
-  input: {
-    color: "white",
-  },
-});
-
 export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
   const { width } = useWindowSize();
   const isTab = useIsTab();
