@@ -24,6 +24,7 @@ const MobileIconButton = ({
   renderRightComponent,
   tooltipTitle,
   btnID,
+  isActive,
   buttonText,
   lottieOption,
 }) => {
@@ -127,17 +128,24 @@ const MobileIconButton = ({
               ) : (
                 <Icon
                   style={{
-                    color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
+                    color: isFocused ? focusIconColor || "#fff" : "#95959E",
                     height: iconSize,
                     width: iconSize,
                   }}
+                  fillColor={isActive ? "#fff" : "#95959E"}
                 />
               )}
             </Badge>
           </Box>
           <Box>
             {buttonText ? (
-              <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
+              <Typography
+                variant="subtitle2"
+                style={{
+                  fontWeight: "bold",
+                  color: isActive ? "#fff" : "#95959E",
+                }}
+              >
                 {buttonText}
               </Typography>
             ) : null}

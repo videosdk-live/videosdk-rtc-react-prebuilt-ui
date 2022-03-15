@@ -108,6 +108,7 @@ const MeetingContainer = () => {
     redirectOnLeave,
     sideBarMode,
     containerRef,
+    appMeetingLayout,
     participantCanToggleRecording,
     autoStartLiveStream,
     liveStreamLayoutType,
@@ -443,12 +444,13 @@ const MeetingContainer = () => {
   // usePubsub(meetingLayoutTopic,)
   usePubSub("MEETING_LAYOUT", {
     onMessageReceived: (data) => {
+      console.log("data.message", data.message);
       setAppMeetingLayout(data.message);
-      // console.log("data : ", data.message);
+      console.log("appMeetingLayout : ", appMeetingLayout);
     },
     onOldMessagesReceived: (messages) => {
       // setAppMeetingLayout(new layout());
-      console.log("messages : ", messages);
+      // console.log("messages : ", messages);
     },
   });
 
