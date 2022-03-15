@@ -1010,21 +1010,21 @@ const TopBar = ({ topBarHeight }) => {
 
     if (participantCanLeave || canEndMeeting) {
       arr.unshift([topBarButtonTypes.END_CALL]);
-      mobileIconArr.push(topBarButtonTypes.END_CALL);
+      mobileIconArr.unshift({ type: topBarButtonTypes.END_CALL, priority: 0 });
     }
 
     const arrSideBar = [];
 
     if (canChangeLayout) {
       arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
-      mobileIconArr.push(topBarButtonTypes.CONFIGURATION);
+      mobileIconArr.unshift(topBarButtonTypes.CONFIGURATION);
     }
     if (chatEnabled) {
       arrSideBar.unshift(topBarButtonTypes.CHAT);
-      mobileIconArr.push(topBarButtonTypes.CHAT);
+      mobileIconArr.unshift(topBarButtonTypes.CHAT);
     }
     arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
-    mobileIconArr.push(topBarButtonTypes.PARTICIPANTS);
+    mobileIconArr.unshift(topBarButtonTypes.PARTICIPANTS);
 
     arr.unshift(arrSideBar);
 
@@ -1032,15 +1032,15 @@ const TopBar = ({ topBarHeight }) => {
 
     if (screenShareEnabled) {
       arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
-      mobileIconArr.push(topBarButtonTypes.SCREEN_SHARE);
+      mobileIconArr.unshift(topBarButtonTypes.SCREEN_SHARE);
     }
     if (participantCanToggleSelfWebcam) {
       arrMedia.unshift(topBarButtonTypes.WEBCAM);
-      mobileIconArr.push(topBarButtonTypes.WEBCAM);
+      mobileIconArr.unshift(topBarButtonTypes.WEBCAM);
     }
     if (participantCanToggleSelfMic) {
       arrMedia.unshift(topBarButtonTypes.MIC);
-      mobileIconArr.push(topBarButtonTypes.MIC);
+      mobileIconArr.unshift({ type: topBarButtonTypes.MIC, priority: 1 });
     }
 
     if (arrMedia.length) {
@@ -1051,32 +1051,35 @@ const TopBar = ({ topBarHeight }) => {
 
     if (raiseHandEnabled) {
       utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
-      mobileIconArr.push(topBarButtonTypes.RAISE_HAND);
+      mobileIconArr.unshift(topBarButtonTypes.RAISE_HAND);
     }
 
     if (recordingEnabled) {
       utilsArr.unshift(topBarButtonTypes.RECORDING);
-      mobileIconArr.push(topBarButtonTypes.RECORDING);
+      mobileIconArr.unshift(topBarButtonTypes.RECORDING);
     }
 
     if (whiteboardEnabled) {
       utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
-      mobileIconArr.push(topBarButtonTypes.WHITEBOARD);
+      mobileIconArr.unshift(topBarButtonTypes.WHITEBOARD);
     }
 
     if (liveStreamEnabled) {
       utilsArr.unshift(topBarButtonTypes.GO_LIVE);
-      mobileIconArr.push(topBarButtonTypes.GO_LIVE);
+      mobileIconArr.unshift(topBarButtonTypes.GO_LIVE);
     }
 
     if (participantCanToggleLivestream) {
       utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
-      mobileIconArr.push(topBarButtonTypes.ADD_LIVE_STREAM);
+      mobileIconArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
     }
 
     if (utilsArr.length) {
       arr.unshift(utilsArr);
     }
+
+    // mobileIconArr.sort ( { priority}) .map( ({type}) => type )
+
     return { topBarIcons: arr, mobileIcons: mobileIconArr };
   }, [
     participantCanToggleSelfMic,
