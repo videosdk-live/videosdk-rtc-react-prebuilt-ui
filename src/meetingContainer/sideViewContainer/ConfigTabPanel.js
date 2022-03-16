@@ -125,15 +125,10 @@ function ConfigTabPanel({ panelHeight }) {
     publishToPubSub();
   };
 
-  let _handleGridSize = (newValue) => {
+  let _handleGridSize = (e, newValue) => {
     gridSize = newValue || gridSizeRef.current;
     // publishToPubSub();
   };
-
-  const updateGridSize = debounce(function (e, newValue) {
-    gridSize = newValue || gridSizeRef.current;
-    publishToPubSub();
-  }, 2000);
 
   function publishToPubSub() {
     let layout = { type, gridSize, priority };
@@ -319,10 +314,9 @@ function ConfigTabPanel({ panelHeight }) {
             getAriaValueText={valuetext}
             min={1}
             max={25}
-            value={gridSize}
-            // onChange={_handleGridSize}
-            // onChangeCommitted={(e) => updateGridSize(e)}
-            onChange={(e, newValue) => updateGridSize(e, newValue)}
+            defaultValue={gridSize}
+            onChange={(e, newValue) => _handleGridSize(e, newValue)}
+            onChangeCommitted={publishToPubSub}
             ValueLabelComponent={ValueLabelComponent}
             valueLabelDisplay="on"
             step={1}

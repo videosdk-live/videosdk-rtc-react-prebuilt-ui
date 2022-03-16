@@ -213,6 +213,7 @@ const MainViewContainer = ({
     hideLocalParticipant,
     sideStackSize,
     reduceEdgeSpacing,
+    appMeetingLayout,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -365,9 +366,11 @@ const MainViewContainer = ({
 
     let participantsCount = mainParticipants?.length;
 
-    if (participantsCount > layoutGridSize) {
-      mainParticipants = mainParticipants.slice(0, layoutGridSize);
-      const remainingMainParticipants = mainParticipants.splice(layoutGridSize);
+    if (participantsCount > appMeetingLayout.gridSize) {
+      mainParticipants = mainParticipants.slice(0, appMeetingLayout.gridSize);
+      const remainingMainParticipants = mainParticipants.splice(
+        appMeetingLayout.gridSize
+      );
 
       remainingMainParticipants.forEach((p) => {
         _pinnedParticipants.delete(p);
@@ -437,6 +440,7 @@ const MainViewContainer = ({
     mainParticipantId,
     layoutGridSize,
     hideLocalParticipant,
+    appMeetingLayout,
     sideStackSize,
   ]);
 
