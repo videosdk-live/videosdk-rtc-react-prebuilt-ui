@@ -317,13 +317,13 @@ function ConfigTabPanel({ panelHeight }) {
             defaultValue={gridSize}
             onChange={(e, newValue) => _handleGridSize(e, newValue)}
             onChangeCommitted={publishToPubSub}
-            ValueLabelComponent={ValueLabelComponent}
             valueLabelDisplay="on"
             step={1}
             style={{
               marginTop: "48px",
               color: "#ffffff",
             }}
+            area-label="default"
             marks={marks}
           />
         </Box>

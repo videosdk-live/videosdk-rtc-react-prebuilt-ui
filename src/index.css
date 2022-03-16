@@ -35,3 +35,10 @@ body {
   background-color: aliceblue;
   color: black;
 } */
+
+.MuiSlider-valueLabel {
+  color: transparent;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  margin-top: 14px;
+}
