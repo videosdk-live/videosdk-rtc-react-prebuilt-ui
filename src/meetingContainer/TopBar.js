@@ -53,8 +53,6 @@ import { useMediaQuery } from "react-responsive";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
-import MobileIconCard from "../components/MobileIconCard";
-import MobileWhiteBoardIcon from "../icons/MobileWhiteBoardIcon";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
