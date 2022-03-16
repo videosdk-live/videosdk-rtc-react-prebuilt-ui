@@ -54,6 +54,7 @@ import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
 import MobileWhiteBoardIcon from "../icons/MobileWhiteBoardIcon";
+import Live from "../icons/Live";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -262,9 +263,6 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={LiveIcon}
-      // tooltipTitle={"Go Live"}
-      // buttonText="GO LIVE"
-      // bgColor={"#95959E"}
       onClick={() => {
         if (isLiveStreaming) {
           stopLivestream();
@@ -284,12 +282,10 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
     />
-  ) : (
+  ) : isLiveStreaming ? (
     <OutlineIconTextButton
-      // tooltipTitle={"Go Live"}
-      // // buttonText="GO LIVE"
-      bgColor={isLiveStreaming ? "#fff" : "#D32F2F"}
       liveStreamStarted={isLiveStreaming ? true : false}
+      // Icon={Live}
       onClick={() => {
         if (isLiveStreaming) {
           stopLivestream();
@@ -304,7 +300,28 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
         }
       }}
       tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-      buttonText={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+      buttonText="GO LIVE"
+      lottieOption={isLiveStreaming ? defaultOptions : null}
+      disabled={!participantCanToggleLivestream}
+    />
+  ) : (
+    <OutlineIconTextButton
+      bgColor="#D32F2F"
+      onClick={() => {
+        if (isLiveStreaming) {
+          stopLivestream();
+        } else {
+          startLivestream(liveStreamOutputs, {
+            layout: {
+              type: liveStreamLayoutType,
+              priority: liveStreamLayoutPriority,
+              gridSize: liveStreamLayoutGridSize,
+            },
+          });
+        }
+      }}
+      tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+      buttonText="GO LIVE"
       isFocused={isLiveStreaming}
       lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}

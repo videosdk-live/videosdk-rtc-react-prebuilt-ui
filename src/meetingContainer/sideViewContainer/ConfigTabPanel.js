@@ -308,7 +308,7 @@ function ConfigTabPanel({ panelHeight }) {
             }}
             variant="body1"
           >
-            Max number of participants
+            Participants On Screen
           </Typography>
           <Slider
             getAriaValueText={valuetext}

@@ -7,24 +7,34 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
+import useResponsiveSize from "../utils/useResponsiveSize";
+import Lottie from "react-lottie";
 
 const OutlineIconTextButton = ({
   onClick,
   isFocused,
   bgColor,
+  Icon,
   focusBGColor,
   disabled,
   renderRightComponent,
   liveStreamStarted,
+  lottieOption,
   tooltipTitle,
   btnID,
   buttonText,
+  large,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
 
   const { animationsEnabled } = useMeetingAppContext();
+
+  const iconSize = useResponsiveSize({
+    xl: 24 * (large ? 1.7 : 1),
+    lg: 24 * (large ? 1.7 : 1),
+  });
 
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
@@ -55,6 +65,8 @@ const OutlineIconTextButton = ({
             ? bgColor
             : isFocused
             ? focusBGColor || "#fff"
+            : liveStreamStarted
+            ? "#D32F2F"
             : theme.palette.background.default,
           border: `${2}px solid ${
             mouseOver || mouseDown
@@ -85,15 +97,24 @@ const OutlineIconTextButton = ({
         >
           {buttonText ? (
             liveStreamStarted ? (
-              <Typography
-                variant="subtitle2"
+              <Box
                 style={{
-                  fontWeight: "bold",
-                  color: "#D32F2F",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                {buttonText}
-              </Typography>
+                <Lottie
+                  style={{ height: iconSize }}
+                  options={lottieOption}
+                  eventListeners={[{ eventName: "done" }]}
+                  height={iconSize}
+                  width={
+                    (iconSize * lottieOption?.width) / lottieOption?.height
+                  }
+                  isClickToPauseDisabled
+                />
+              </Box>
             ) : (
               <Typography
                 variant="subtitle2"
