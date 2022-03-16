@@ -36,11 +36,10 @@ const useStyles = makeStyles(() => ({
 
 const SingleLiveStreamItem = ({
   item,
-  liveStreamConfig,
   setLiveStreamConfig,
-  // setOnRemoveClick,
-  // setOnCancleClick,
   liveStreamConfigRef,
+  isEditingId,
+  setIsEditingId,
   _handleRemove,
   publish,
 }) => {
@@ -48,10 +47,14 @@ const SingleLiveStreamItem = ({
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
 
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState({ id: null, editing: false });
+  const isEditing = !!isEditingId;
+  const isSelfEditing = isEditingId === item.id;
   const [editedUrl, setEditedUrl] = useState("");
   const [editedStreamKey, setEditedStreamKey] = useState("");
-  const [onCancleClick, setOnCancleClick] = useState({
+  const [editedUrlErr, setEditedUrlErr] = useState(false);
+  const [editedStreamKeyErr, setEditedStreamKeyErr] = useState(false);
+  const [onCancelClick, setOnCancelClick] = useState({
     id: null,
     visible: false,
   });
@@ -61,6 +64,24 @@ const SingleLiveStreamItem = ({
     visible: false,
   });
 
+  const handleValidation = () => {
+    let isValid = true;
+    if (editedStreamKey.length === 0) {
+      isValid = false;
+      setEditedStreamKeyErr(true);
+      return false;
+    } else {
+      setEditedStreamKeyErr(false);
+    }
+    if (editedUrl.length === 0) {
+      isValid = false;
+      setEditedUrlErr(true);
+      return false;
+    } else {
+      setEditedUrlErr(false);
+    }
+    return isValid;
+  };
   const itemRef = useRef(item);
 
   useEffect(() => {
@@ -75,20 +96,6 @@ const SingleLiveStreamItem = ({
   }, [item]);
 
   const classes = useStyles();
-
-  const setOptionAsEdit = (itemId) => {
-    const liveStreamConfig = liveStreamConfigRef.current;
-
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, isEdit: true };
-      } else {
-        return { ...item, isEdit: false };
-      }
-    });
-
-    setLiveStreamConfig(newPlatforms);
-  };
 
   const _handleSaveInsideArray = ({ Id, streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
@@ -110,29 +117,6 @@ const SingleLiveStreamItem = ({
     setLiveStreamConfig(newPlatforms);
   };
 
-  const updateLiveStreamingUrl = (itemId, url) => {
-    const liveStreamConfig = liveStreamConfigRef.current;
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, url };
-      } else {
-        return item;
-      }
-    });
-    setLiveStreamConfig(newPlatforms);
-  };
-
-  const updateLiveStreamingKey = (itemId, key) => {
-    const liveStreamConfig = liveStreamConfigRef.current;
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, streamKey: key };
-      } else {
-        return item;
-      }
-    });
-    setLiveStreamConfig(newPlatforms);
-  };
   return (
     <>
       <Box
@@ -165,17 +149,20 @@ const SingleLiveStreamItem = ({
               justifyContent: "flex-end",
             }}
           >
-            {isEditing ? (
+            {isSelfEditing ? (
               <>
                 <Button
                   variant="text"
                   onClick={() => {
-                    _handleSaveInsideArray({
-                      Id: item.id,
-                      streamKey: editedStreamKey,
-                      url: editedUrl,
-                    });
-                    setIsEditing(false);
+                    const isValid = handleValidation();
+                    if (isValid) {
+                      _handleSaveInsideArray({
+                        Id: item.id,
+                        streamKey: editedStreamKey,
+                        url: editedUrl,
+                      });
+                      setIsEditingId(null);
+                    }
                   }}
                   className={classes.button}
                 >
@@ -184,11 +171,11 @@ const SingleLiveStreamItem = ({
                 <Button
                   variant="text"
                   onClick={() => {
-                    setOnCancleClick({ id: item.id, visible: true });
+                    setOnCancelClick({ id: item.id, visible: true });
                   }}
                   className={classes.button}
                 >
-                  Cancle
+                  Cancel
                 </Button>
               </>
             ) : (
@@ -196,9 +183,11 @@ const SingleLiveStreamItem = ({
                 <Button
                   variant="text"
                   onClick={() => {
-                    setIsEditing(true);
+                    // setIsEditing({ id: item.id, editing: true });
+                    setIsEditingId(item.id);
                   }}
                   className={classes.button}
+                  disabled={isEditing}
                 >
                   EDIT
                 </Button>
@@ -213,6 +202,7 @@ const SingleLiveStreamItem = ({
                     });
                   }}
                   className={classes.button}
+                  disabled={isEditing}
                 >
                   REMOVE
                 </Button>
@@ -227,8 +217,8 @@ const SingleLiveStreamItem = ({
             variant="filled"
             type="password"
             className={classes.root}
-            disabled={!isEditing}
-            value={isEditing ? editedStreamKey : item.streamKey}
+            disabled={!isSelfEditing}
+            value={isSelfEditing ? editedStreamKey : item.streamKey}
             InputProps={{
               disableUnderline: true,
               classes: {
@@ -237,9 +227,13 @@ const SingleLiveStreamItem = ({
             }}
             onChange={(e) => {
               setEditedStreamKey(e.target.value);
-              // updateLiveStreamingKey(item.id, e.target.value);
             }}
           />
+          {editedStreamKeyErr && (
+            <Typography variant="body2" style={{ color: "#D33730" }}>
+              Please provide stream key
+            </Typography>
+          )}
 
           <TextField
             placeholder="Stream Url"
@@ -247,8 +241,8 @@ const SingleLiveStreamItem = ({
             variant="filled"
             style={{ marginTop: "8px" }}
             className={classes.root}
-            disabled={!isEditing}
-            value={isEditing ? editedUrl : item.url}
+            disabled={!isSelfEditing}
+            value={isSelfEditing ? editedUrl : item.url}
             InputProps={{
               disableUnderline: true,
               classes: {
@@ -257,9 +251,13 @@ const SingleLiveStreamItem = ({
             }}
             onChange={(e) => {
               setEditedUrl(e.target.value);
-              // updateLiveStreamingUrl(item.id, e.target.value);
             }}
           />
+          {editedUrlErr && (
+            <Typography variant="body2" style={{ color: "#D33730" }}>
+              Please provide stream url
+            </Typography>
+          )}
         </Box>
       </Box>
 
@@ -274,7 +272,6 @@ const SingleLiveStreamItem = ({
         }}
         rejectText={"Cancel"}
         onReject={() => {
-          // setOptionAsEditFalse(item.id);
           setOnRemoveClick({
             visible: false,
             domainName: onRemoveClick.domainName,
@@ -282,17 +279,16 @@ const SingleLiveStreamItem = ({
         }}
       />
       <ConfirmBox
-        open={onCancleClick.visible}
-        title={"Are you sure want to cancle your changes?"}
+        open={onCancelClick.visible}
+        title={"Are you sure want to Cancel your changes?"}
         successText={"OKAY"}
         onSuccess={() => {
-          // setOptionAsEditFalse(onCancleClick.id);
-          setOnCancleClick({ visible: false });
-          setIsEditing(false);
+          setOnCancelClick({ visible: false });
+          setIsEditingId(null);
         }}
         rejectText={"Cancel"}
         onReject={() => {
-          setOnCancleClick({ visible: false });
+          setOnCancelClick({ visible: false });
         }}
       />
     </>
@@ -300,45 +296,24 @@ const SingleLiveStreamItem = ({
 };
 
 const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
-  // const [onCancleClick, setOnCancleClick] = useState({
-  //   id: null,
-  //   visible: false,
-  // });
-  // const [onRemoveClick, setOnRemoveClick] = useState({
-  //   id: null,
-  //   domainName: "",
-  //   visible: false,
-  // });
-
   const [editingItemId, setEditingItemId] = useState(null);
 
   const [streamKey, setStreamKey] = useState("");
   const [url, setStreamUrl] = useState("");
   const [streamKeyErr, setStreamKeyErr] = useState(false);
   const [streamUrlErr, setStreamUrlErr] = useState(false);
+  const [isEditing, setIsEditing] = useState({ id: null, editing: false });
+  const [isEditingId, setIsEditingId] = useState(null);
 
   const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
 
   const liveStreamConfigRef = useRef();
 
-  // add liveStreamConfigRef using useRef and useEffect
   useEffect(() => {
     liveStreamConfigRef.current = liveStreamConfig;
   }, [liveStreamConfig]);
 
   const { publish } = usePubSub("LIVE_STREAM_CONFIG");
-
-  const setOptionAsEditFalse = (itemId) => {
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, isEdit: false };
-      } else {
-        return { ...item, isEdit: false };
-      }
-    });
-
-    setLiveStreamConfig(newPlatforms);
-  };
 
   const classes = useStyles();
 
@@ -410,6 +385,8 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
                 editingItemId={editingItemId}
                 setEditingItemId={setEditingItemId}
                 _handleRemove={_handleRemove}
+                isEditingId={isEditingId}
+                setIsEditingId={setIsEditingId}
               />
             </>
           );
