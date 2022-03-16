@@ -20,7 +20,7 @@ import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import LiveIcon from "../icons/LiveIcon";
-
+import RaiseHandDesktop from "../icons/RaiseHandDesktop";
 import {
   Activities,
   Chat,
@@ -53,7 +53,6 @@ import { useMediaQuery } from "react-responsive";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
-import MobileIconCard from "../components/MobileIconCard";
 import MobileWhiteBoardIcon from "../icons/MobileWhiteBoardIcon";
 
 const useStyles = makeStyles({
@@ -71,11 +70,15 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting();
   const sendChatMessage = mMeeting?.sendChatMessage;
 
-  const onRaiseHand = () => {
-    // document.getElementById("RaiseHandBTN").style.color = "#fff";
-    onClick();
-    typeof onClick === "function" && onClick();
-    sendChatMessage(JSON.stringify({ buttonType: "RAISE_HAND", data: {} }));
+  const onRaiseHand = (event) => {
+    if (isMobile || isTab) {
+      onClick();
+      typeof onClick === "function" && onClick();
+      sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+    } else {
+      console.log("onRaiseHand of laptop");
+      sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+    }
   };
 
   return isMobile || isTab ? (
@@ -92,7 +95,7 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
     <Tooltip>
       <OutlineIconButton
         tooltipTitle={"Raise hand"}
-        Icon={RaiseHand}
+        Icon={RaiseHandDesktop}
         onClick={onRaiseHand}
       />
     </Tooltip>
@@ -254,21 +257,21 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       // tooltipTitle={"Go Live"}
       // buttonText="GO LIVE"
       // bgColor={"#95959E"}
-      // onClick={() => {
-      //   if (isLiveStreaming) {
-      //     stopLivestream();
-      //   } else {
-      //     startLivestream(liveStreamOutputs, {
-      //       layout: {
-      //         type: liveStreamLayoutType,
-      //         priority: liveStreamLayoutPriority,
-      //         gridSize: liveStreamLayoutGridSize,
-      //       },
-      //     });
-      //   }
-      // }}
-      tooltipTitle={isLiveStreaming ? "LIVE" : "GO LIVE"}
-      buttonText={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      onClick={() => {
+        if (isLiveStreaming) {
+          stopLivestream();
+        } else {
+          startLivestream(liveStreamOutputs, {
+            layout: {
+              type: liveStreamLayoutType,
+              priority: liveStreamLayoutPriority,
+              gridSize: liveStreamLayoutGridSize,
+            },
+          });
+        }
+      }}
+      tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+      buttonText={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
       isFocused={isLiveStreaming}
       lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
@@ -276,23 +279,24 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
   ) : (
     <OutlineIconTextButton
       // tooltipTitle={"Go Live"}
-      // buttonText="GO LIVE"
-      bgColor={"#D32F2F"}
-      // onClick={() => {
-      //   if (isLiveStreaming) {
-      //     stopLivestream();
-      //   } else {
-      //     startLivestream(liveStreamOutputs, {
-      //       layout: {
-      //         type: liveStreamLayoutType,
-      //         priority: liveStreamLayoutPriority,
-      //         gridSize: liveStreamLayoutGridSize,
-      //       },
-      //     });
-      //   }
-      // }}
-      tooltipTitle={isLiveStreaming ? "LIVE" : "GO LIVE"}
-      buttonText={isLiveStreaming ? "LIVE" : "GO LIVE"}
+      // // buttonText="GO LIVE"
+      bgColor={isLiveStreaming ? "#fff" : "#D32F2F"}
+      liveStreamStarted={isLiveStreaming ? true : false}
+      onClick={() => {
+        if (isLiveStreaming) {
+          stopLivestream();
+        } else {
+          startLivestream(liveStreamOutputs, {
+            layout: {
+              type: liveStreamLayoutType,
+              priority: liveStreamLayoutPriority,
+              gridSize: liveStreamLayoutGridSize,
+            },
+          });
+        }
+      }}
+      tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+      buttonText={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
       isFocused={isLiveStreaming}
       lottieOption={isLiveStreaming ? defaultOptions : null}
       disabled={!participantCanToggleLivestream}
@@ -365,7 +369,6 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const presenterId = mMeeting?.presenterId;
-  console.log("whiteboardStarted", whiteboardStarted);
 
   return (
     <>

@@ -17,6 +17,7 @@ const OutlineIconTextButton = ({
   bgColor,
   focusBGColor,
   disabled,
+  liveStreamStarted,
   large,
   renderRightComponent,
   tooltipTitle,
@@ -111,15 +112,27 @@ const OutlineIconTextButton = ({
             }}
           >
             {buttonText ? (
-              <Typography
-                variant="subtitle2"
-                style={{
-                  fontWeight: "bold",
-                  color: isFocused ? "#1C1F2E" : "#fff",
-                }}
-              >
-                {buttonText}
-              </Typography>
+              liveStreamStarted ? (
+                <Typography
+                  variant="subtitle2"
+                  style={{
+                    fontWeight: "bold",
+                    color: "#D32F2F",
+                  }}
+                >
+                  {buttonText}
+                </Typography>
+              ) : (
+                <Typography
+                  variant="subtitle2"
+                  style={{
+                    fontWeight: "bold",
+                    color: isFocused ? "#1C1F2E" : "#fff",
+                  }}
+                >
+                  {buttonText}
+                </Typography>
+              )
             ) : null}
           </Box>
         </ButtonBase>

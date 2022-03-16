@@ -334,6 +334,9 @@ const App = () => {
     }
 
     // validate meetingLayoutTopic here
+    if (typeof paramKeys.meetingLayoutTopic === undefined) {
+      paramKeys.meetingLayoutTopic = "MEETING_LAYOUT";
+    }
 
     return paramKeys;
   };
@@ -476,7 +479,7 @@ const App = () => {
               paramKeys.participantCanToggleSelfMic === "true",
             raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
             canChangeLayout: paramKeys.canChangeLayout === "true",
-
+            meetingLayoutTopic: paramKeys.meetingLayoutTopic,
             recordingEnabled: paramKeys.recordingEnabled === "true",
             recordingWebhookUrl: paramKeys.recordingWebhookUrl,
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,

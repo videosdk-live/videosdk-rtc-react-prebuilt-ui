@@ -212,6 +212,7 @@ const MeetingContainer = () => {
       }
 
       if (type === "RAISE_HAND") {
+        console.log("sendChatMsg has made request");
         if (notificationSoundEnabled) {
           new Audio(
             `https://static.videosdk.live/prebuilt/notification.mp3`
@@ -441,8 +442,7 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
-  // usePubsub(meetingLayoutTopic,)
-  usePubSub("MEETING_LAYOUT", {
+  usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
       console.log("data.message", data.message);
       setAppMeetingLayout(data.message);
