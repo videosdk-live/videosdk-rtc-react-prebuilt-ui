@@ -43,7 +43,7 @@ const SingleLiveStreamItem = ({
   liveStreamConfigRef,
   publish,
 }) => {
-  const rootDomain = extractRootDomain(item.streamUrl);
+  const rootDomain = extractRootDomain(item.url);
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
 
@@ -63,14 +63,14 @@ const SingleLiveStreamItem = ({
     setLiveStreamConfig(newPlatforms);
   };
 
-  const _handleSaveInsideArray = ({ Id, streamKey, streamUrl }) => {
+  const _handleSaveInsideArray = ({ Id, streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
 
     const newPlatforms = liveStreamConfig.map((item) => {
       if (item.id === Id) {
         return {
           ...item,
-          streamUrl: streamUrl,
+          url,
           streamKey: streamKey,
           isEdit: false,
         };
@@ -87,7 +87,7 @@ const SingleLiveStreamItem = ({
     const liveStreamConfig = liveStreamConfigRef.current;
     const newPlatforms = liveStreamConfig.map((item) => {
       if (item.id === itemId) {
-        return { ...item, streamUrl: url };
+        return { ...item, url };
       } else {
         return item;
       }
@@ -125,7 +125,7 @@ const SingleLiveStreamItem = ({
       >
         <Box style={{ display: "flex", flex: 1 }}>
           <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-            {item.streamUrl ? domainName : item.title}
+            {item.url ? domainName : item.title}
           </Typography>
         </Box>
 
@@ -145,7 +145,7 @@ const SingleLiveStreamItem = ({
                   _handleSaveInsideArray({
                     Id: item.id,
                     streamKey: item.streamKey,
-                    streamUrl: item.streamUrl,
+                    url: item.url,
                   });
                 }}
                 className={classes.button}
@@ -218,7 +218,7 @@ const SingleLiveStreamItem = ({
           style={{ marginTop: "8px" }}
           className={classes.root}
           disabled={!item.isEdit}
-          value={item.streamUrl}
+          value={item.url}
           InputProps={{
             disableUnderline: true,
             classes: {
@@ -246,7 +246,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   });
 
   const [streamKey, setStreamKey] = useState("");
-  const [streamUrl, setStreamUrl] = useState("");
+  const [url, setStreamUrl] = useState("");
   const [streamKeyErr, setStreamKeyErr] = useState(false);
   const [streamUrlErr, setStreamUrlErr] = useState(false);
 
@@ -294,7 +294,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
     } else {
       setStreamKeyErr(false);
     }
-    if (streamUrl.length === 0) {
+    if (url.length === 0) {
       isValid = false;
       setStreamUrlErr(true);
       return false;
@@ -304,16 +304,16 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
     return isValid;
   };
 
-  const _handleSave = ({ streamKey, streamUrl }) => {
+  const _handleSave = ({ streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
-    liveStreamConfig.push({ id: uuid(), streamKey, streamUrl });
+    liveStreamConfig.push({ id: uuid(), streamKey, url });
 
     publish({ config: liveStreamConfig }, { persist: true });
     setStreamKey("");
     setStreamUrl("");
   };
 
-  const rootDomain = extractRootDomain(streamUrl);
+  const rootDomain = extractRootDomain(url);
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
 
@@ -397,7 +397,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
         >
           <Box style={{ display: "flex", flex: 1 }}>
             <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-              {streamUrl ? domainName : "Platform Name"}
+              {url ? domainName : "Platform Name"}
             </Typography>
           </Box>
 
@@ -414,7 +414,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
               onClick={() => {
                 const isValid = handleValidation();
                 if (isValid) {
-                  _handleSave({ streamKey: streamKey, streamUrl: streamUrl });
+                  _handleSave({ streamKey: streamKey, url });
                 }
               }}
               className={classes.button}
@@ -452,7 +452,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
             variant="filled"
             style={{ marginTop: "8px" }}
             className={classes.root}
-            value={streamUrl}
+            value={url}
             InputProps={{
               disableUnderline: true,
               classes: {
