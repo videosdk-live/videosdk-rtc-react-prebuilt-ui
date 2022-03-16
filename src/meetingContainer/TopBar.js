@@ -234,6 +234,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       setDefaultLiveStreamActionTaken(true);
       setTimeout(() => {
         if (!defaultLiveStreamActionTaken) {
+          // publish()
           startLivestream(liveStreamOutputs, {
             layout: {
               type: liveStreamLayoutType,
