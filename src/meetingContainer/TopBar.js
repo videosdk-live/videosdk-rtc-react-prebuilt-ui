@@ -89,14 +89,6 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
       />
     </Tooltip>
   ) : (
-    // <Tooltip>
-    //   <MobileIconCard
-    //     isActive={isActiveState}
-    //     Icon={RaiseHand}
-    //     toolTip={"Raise Hand"}
-    //     onClick={onRaiseHand}
-    //   />
-    // </Tooltip>
     <Tooltip>
       <OutlineIconButton
         tooltipTitle={"Raise hand"}
@@ -177,6 +169,7 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       tooltipTitle={"Add Live Streams"}
+      Icon={AddLiveStreamIcon}
       buttonText={"Add Live Streams"}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
@@ -207,9 +200,11 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
   const [defaultLiveStreamActionTaken, setDefaultLiveStreamActionTaken] =
     useState(false);
+
   const {
     participantCanToggleLivestream,
     autoStartLiveStream,
+    liveStreamEnabled,
     liveStreamLayoutType,
     liveStreamLayoutPriority,
     liveStreamLayoutGridSize,
@@ -258,7 +253,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       Icon={LiveIcon}
       // tooltipTitle={"Go Live"}
       // buttonText="GO LIVE"
-      bgColor={"#D32F2F"}
+      // bgColor={"#95959E"}
       // onClick={() => {
       //   if (isLiveStreaming) {
       //     stopLivestream();
@@ -1107,7 +1102,13 @@ const TopBar = ({ topBarHeight }) => {
       });
     }
 
-    if (liveStreamEnabled) {
+    if (liveStreamEnabled && !participantCanToggleLivestream) {
+      console.log(
+        "liveStreamEnabled : ",
+        liveStreamEnabled,
+        "&& !participantCanToggleLivestream : ",
+        participantCanToggleLivestream
+      );
       utilsArr.unshift(topBarButtonTypes.GO_LIVE);
       mobileIconArr.unshift({
         buttonType: topBarButtonTypes.GO_LIVE,
@@ -1115,12 +1116,34 @@ const TopBar = ({ topBarHeight }) => {
       });
     }
 
-    if (participantCanToggleLivestream) {
+    if (participantCanToggleLivestream && liveStreamEnabled) {
+      console.log(
+        "liveStreamEnabled : ",
+        liveStreamEnabled,
+        "&& participantCanToggleLivestream : ",
+        participantCanToggleLivestream
+      );
+      //liveStreamIcon
+      utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+      mobileIconArr.unshift({
+        buttonType: topBarButtonTypes.GO_LIVE,
+        priority: 9,
+      });
+      //AddLiveStreamIcon
       utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
       mobileIconArr.unshift({
         buttonType: topBarButtonTypes.ADD_LIVE_STREAM,
         priority: 8,
       });
+    }
+
+    if (participantCanToggleLivestream && !liveStreamEnabled) {
+      console.log(
+        "!liveStreamEnabled : ",
+        liveStreamEnabled,
+        "&& participantCanToggleLivestream : ",
+        participantCanToggleLivestream
+      );
     }
 
     if (utilsArr.length) {
@@ -1148,7 +1171,6 @@ const TopBar = ({ topBarHeight }) => {
   const [topBarVisible, setTopBarVisible] = useState(false);
 
   const firstFourElements = mobileIcons.slice(0, 4);
-  console.log("first 4 ele : ", firstFourElements);
 
   const excludeFirstFourElements = mobileIcons.slice(4);
 

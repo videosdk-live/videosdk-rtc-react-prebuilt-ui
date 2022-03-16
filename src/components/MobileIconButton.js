@@ -21,7 +21,7 @@ const MobileIconButton = ({
   focusIconColor,
   disabled,
   large,
-  renderRightComponent,
+  // renderRightComponent,
   tooltipTitle,
   btnID,
   isActive,
@@ -132,7 +132,7 @@ const MobileIconButton = ({
                     height: iconSize,
                     width: iconSize,
                   }}
-                  fillColor={isActive ? "#fff" : "#95959E"}
+                  fillColor={isFocused ? "#fff" : "#95959E"}
                 />
               )}
             </Badge>
@@ -143,7 +143,7 @@ const MobileIconButton = ({
                 variant="subtitle2"
                 style={{
                   fontWeight: "bold",
-                  color: isActive ? "#fff" : "#95959E",
+                  color: isFocused ? "#fff" : "#95959E",
                 }}
               >
                 {buttonText}
@@ -151,7 +151,7 @@ const MobileIconButton = ({
             ) : null}
           </Box>
         </ButtonBase>
-        {typeof renderRightComponent === "function" && renderRightComponent()}
+        {/* {typeof renderRightComponent === "function" && renderRightComponent()} */}
       </Box>
     </Tooltip>
   );
