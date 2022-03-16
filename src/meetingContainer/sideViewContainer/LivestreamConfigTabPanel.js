@@ -34,13 +34,214 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
+const SingleLiveStreamItem = ({
+  item,
+  liveStreamConfig,
+  setLiveStreamConfig,
+  setOnRemoveClick,
+  setOnCancleClick,
+  liveStreamConfigRef,
+  publish,
+}) => {
+  const rootDomain = extractRootDomain(item.streamUrl);
+  const mainDomain = rootDomain?.split(".")[0];
+  const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+
+  const classes = useStyles();
+
+  const setOptionAsEdit = (itemId) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+
+    const newPlatforms = liveStreamConfig.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, isEdit: true };
+      } else {
+        return { ...item, isEdit: false };
+      }
+    });
+
+    setLiveStreamConfig(newPlatforms);
+  };
+
+  const _handleSaveInsideArray = ({ Id, streamKey, streamUrl }) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+
+    const newPlatforms = liveStreamConfig.map((item) => {
+      if (item.id === Id) {
+        return {
+          ...item,
+          streamUrl: streamUrl,
+          streamKey: streamKey,
+          isEdit: false,
+        };
+      } else {
+        return item;
+      }
+    });
+
+    publish({ config: newPlatforms }, { persist: true });
+    setLiveStreamConfig(newPlatforms);
+  };
+
+  const updateLiveStreamingUrl = (itemId, url) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+    const newPlatforms = liveStreamConfig.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, streamUrl: url };
+      } else {
+        return item;
+      }
+    });
+    setLiveStreamConfig(newPlatforms);
+  };
+
+  const updateLiveStreamingKey = (itemId, key) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+    const newPlatforms = liveStreamConfig.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, streamKey: key };
+      } else {
+        return item;
+      }
+    });
+    setLiveStreamConfig(newPlatforms);
+  };
+  return (
+    <Box
+      style={{
+        borderBottom: "3px solid #3A3F4B",
+        paddingRight: "12px",
+        paddingLeft: "12px",
+        paddingTop: "12px",
+        paddingBottom: "12px",
+      }}
+    >
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box style={{ display: "flex", flex: 1 }}>
+          <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+            {item.streamUrl ? domainName : item.title}
+          </Typography>
+        </Box>
+
+        <Box
+          style={{
+            display: "flex",
+            flex: 1,
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
+          }}
+        >
+          {item.isEdit ? (
+            <>
+              <Button
+                variant="text"
+                onClick={() => {
+                  _handleSaveInsideArray({
+                    Id: item.id,
+                    streamKey: item.streamKey,
+                    streamUrl: item.streamUrl,
+                  });
+                }}
+                className={classes.button}
+              >
+                Save
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => {
+                  setOnCancleClick({ id: item.id, visible: true });
+                }}
+                className={classes.button}
+              >
+                Cancle
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="text"
+                onClick={() => {
+                  setOptionAsEdit(item.id);
+                }}
+                className={classes.button}
+              >
+                EDIT
+              </Button>
+
+              <Button
+                variant="text"
+                onClick={() => {
+                  setOnRemoveClick({
+                    id: item.id,
+                    visible: true,
+                    domainName: domainName,
+                  });
+                }}
+                className={classes.button}
+              >
+                REMOVE
+              </Button>
+            </>
+          )}
+        </Box>
+      </Box>
+      <Box mt={1}>
+        <TextField
+          placeholder="Stream Key"
+          fullWidth
+          variant="filled"
+          type="password"
+          className={classes.root}
+          disabled={!item.isEdit}
+          value={item.streamKey}
+          InputProps={{
+            disableUnderline: true,
+            classes: {
+              root: classes.textField,
+            },
+          }}
+          onChange={(e) => {
+            updateLiveStreamingKey(item.id, e.target.value);
+          }}
+        />
+
+        <TextField
+          placeholder="Stream Url"
+          fullWidth
+          variant="filled"
+          style={{ marginTop: "8px" }}
+          className={classes.root}
+          disabled={!item.isEdit}
+          value={item.streamUrl}
+          InputProps={{
+            disableUnderline: true,
+            classes: {
+              root: classes.textField,
+            },
+          }}
+          onChange={(e) => {
+            updateLiveStreamingUrl(item.id, e.target.value);
+          }}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   const [onCancleClick, setOnCancleClick] = useState({
     id: null,
     visible: false,
   });
   const [onRemoveClick, setOnRemoveClick] = useState({
     id: null,
+    domainName: "",
     visible: false,
   });
 
@@ -60,18 +261,6 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
 
   const { publish } = usePubSub("LIVE_STREAM_CONFIG");
 
-  const setOptionAsEdit = (itemId) => {
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, isEdit: true };
-      } else {
-        return { ...item, isEdit: false };
-      }
-    });
-
-    setLiveStreamConfig(newPlatforms);
-  };
-
   const setOptionAsEditFalse = (itemId) => {
     const newPlatforms = liveStreamConfig.map((item) => {
       if (item.id === itemId) {
@@ -81,28 +270,6 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
       }
     });
 
-    setLiveStreamConfig(newPlatforms);
-  };
-
-  const updateLiveStreamingUrl = (itemId, url) => {
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, streamUrl: url };
-      } else {
-        return item;
-      }
-    });
-    setLiveStreamConfig(newPlatforms);
-  };
-
-  const updateLiveStreamingKey = (itemId, key) => {
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, streamKey: key };
-      } else {
-        return item;
-      }
-    });
     setLiveStreamConfig(newPlatforms);
   };
 
@@ -146,26 +313,6 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
     setStreamUrl("");
   };
 
-  const _handleSaveInsideArray = ({ Id, streamKey, streamUrl }) => {
-    const liveStreamConfig = liveStreamConfigRef.current;
-
-    const newPlatforms = liveStreamConfig.map((item) => {
-      if (item.id === Id) {
-        return {
-          ...item,
-          streamUrl: streamUrl,
-          streamKey: streamKey,
-          isEdit: false,
-        };
-      } else {
-        return item;
-      }
-    });
-
-    publish({ config: newPlatforms }, { persist: true });
-    setLiveStreamConfig(newPlatforms);
-  };
-
   const rootDomain = extractRootDomain(streamUrl);
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
@@ -184,140 +331,24 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
           // height: panelHeight
         }}
       >
-        {liveStreamConfig?.map((item, index) => {
-          const rootDomain = extractRootDomain(item.streamUrl);
-          const mainDomain = rootDomain?.split(".")[0];
-          const domainName =
-            mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
-
+        {liveStreamConfig?.map((item) => {
           return (
             <>
-              <Box
-                style={{
-                  borderBottom: "3px solid #3A3F4B",
-                  paddingRight: "12px",
-                  paddingLeft: "12px",
-                  paddingTop: "12px",
-                  paddingBottom: "12px",
-                }}
-              >
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box style={{ display: "flex", flex: 1 }}>
-                    <Typography
-                      variant={"body1"}
-                      style={{ fontWeight: "bold" }}
-                    >
-                      {item.streamUrl ? domainName : item.title}
-                    </Typography>
-                  </Box>
-
-                  <Box
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      alignItems: "flex-end",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    {item.isEdit ? (
-                      <>
-                        <Button
-                          variant="text"
-                          onClick={() => {
-                            _handleSaveInsideArray({
-                              Id: item.id,
-                              streamKey: item.streamKey,
-                              streamUrl: item.streamUrl,
-                            });
-                          }}
-                          className={classes.button}
-                        >
-                          Save
-                        </Button>
-                        <Button
-                          variant="text"
-                          onClick={() => {
-                            setOnCancleClick({ id: item.id, visible: true });
-                          }}
-                          className={classes.button}
-                        >
-                          Cancle
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="text"
-                          onClick={() => {
-                            setOptionAsEdit(item.id);
-                          }}
-                          className={classes.button}
-                        >
-                          EDIT
-                        </Button>
-
-                        <Button
-                          variant="text"
-                          onClick={() => {
-                            setOnRemoveClick({ id: item.id, visible: true });
-                          }}
-                          className={classes.button}
-                        >
-                          REMOVE
-                        </Button>
-                      </>
-                    )}
-                  </Box>
-                </Box>
-                <Box mt={1}>
-                  <TextField
-                    placeholder="Stream Key"
-                    fullWidth
-                    variant="filled"
-                    type="password"
-                    className={classes.root}
-                    disabled={!item.isEdit}
-                    value={item.streamKey}
-                    InputProps={{
-                      disableUnderline: true,
-                      classes: {
-                        root: classes.textField,
-                      },
-                    }}
-                    onChange={(e) => {
-                      updateLiveStreamingKey(item.id, e.target.value);
-                    }}
-                  />
-
-                  <TextField
-                    placeholder="Stream Url"
-                    fullWidth
-                    variant="filled"
-                    style={{ marginTop: "8px" }}
-                    className={classes.root}
-                    disabled={!item.isEdit}
-                    value={item.streamUrl}
-                    InputProps={{
-                      disableUnderline: true,
-                      classes: {
-                        root: classes.textField,
-                      },
-                    }}
-                    onChange={(e) => {
-                      updateLiveStreamingUrl(item.id, e.target.value);
-                    }}
-                  />
-                </Box>
-              </Box>
+              <SingleLiveStreamItem
+                item={item}
+                liveStreamConfig={liveStreamConfig}
+                setLiveStreamConfig={setLiveStreamConfig}
+                liveStreamConfigRef={liveStreamConfigRef}
+                setOnRemoveClick={setOnRemoveClick}
+                setOnCancleClick={setOnCancleClick}
+                publish={publish}
+              />
               <ConfirmBox
                 open={onRemoveClick.visible}
-                title={"Are you sure want to remove?"}
+                title={`${onRemoveClick.domainName} `}
+                subTitle={
+                  "Are you sure want to remove this live stream configuration?"
+                }
                 successText={"OKAY"}
                 onSuccess={() => {
                   _handleRemove({ id: onRemoveClick.id });
@@ -326,7 +357,10 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
                 rejectText={"Cancel"}
                 onReject={() => {
                   setOptionAsEditFalse(item.id);
-                  setOnRemoveClick({ visible: false });
+                  setOnRemoveClick({
+                    visible: false,
+                    domainName: onRemoveClick.domainName,
+                  });
                 }}
               />
               <ConfirmBox
@@ -438,4 +472,6 @@ export default function LiveStreamConfigTabPanel({ panelWidth, panelHeight }) {
       </Box>
     </Box>
   );
-}
+};
+
+export default LiveStreamConfigTabPanel;
