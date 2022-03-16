@@ -13,7 +13,7 @@ import {
   Grid,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
@@ -214,6 +214,8 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     liveStreamOutputs,
   } = useMeetingAppContext();
 
+  const { publish } = usePubSub("LIVE_STREAM_CONFIG");
+
   const isLiveStreaming = mMeeting?.isLiveStreaming;
   const startLivestream = mMeeting?.startLivestream;
   const stopLivestream = mMeeting?.stopLivestream;
@@ -233,15 +235,18 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     if (autoStartLiveStream) {
       setDefaultLiveStreamActionTaken(true);
       setTimeout(() => {
-        if (!defaultLiveStreamActionTaken) {
+        if (!defaultLiveStreamActionTaken && !isLiveStreaming) {
+          console.log(liveStreamOutputs, "liveStreamOutputs");
+
           // publish()
-          startLivestream(liveStreamOutputs, {
-            layout: {
-              type: liveStreamLayoutType,
-              priority: liveStreamLayoutPriority,
-              gridSize: liveStreamLayoutGridSize,
-            },
-          });
+
+          // startLivestream(liveStreamOutputs, {
+          //   layout: {
+          //     type: liveStreamLayoutType,
+          //     priority: liveStreamLayoutPriority,
+          //     gridSize: liveStreamLayoutGridSize,
+          //   },
+          // });
         }
       }, 5000);
     }
@@ -250,6 +255,8 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     defaultLiveStreamActionTaken,
     autoStartLiveStream,
     startLivestream,
+    isLiveStreaming,
+    publish,
   ]);
 
   return isMobile || isTab ? (

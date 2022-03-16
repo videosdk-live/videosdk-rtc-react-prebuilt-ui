@@ -38,14 +38,41 @@ const SingleLiveStreamItem = ({
   item,
   liveStreamConfig,
   setLiveStreamConfig,
-  setOnRemoveClick,
-  setOnCancleClick,
+  // setOnRemoveClick,
+  // setOnCancleClick,
   liveStreamConfigRef,
+  _handleRemove,
   publish,
 }) => {
   const rootDomain = extractRootDomain(item.url);
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUrl, setEditedUrl] = useState("");
+  const [editedStreamKey, setEditedStreamKey] = useState("");
+  const [onCancleClick, setOnCancleClick] = useState({
+    id: null,
+    visible: false,
+  });
+  const [onRemoveClick, setOnRemoveClick] = useState({
+    id: null,
+    domainName: "",
+    visible: false,
+  });
+
+  const itemRef = useRef(item);
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditedUrl(itemRef.current.url);
+      setEditedStreamKey(itemRef.current.streamKey);
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    itemRef.current = item;
+  }, [item]);
 
   const classes = useStyles();
 
@@ -107,143 +134,183 @@ const SingleLiveStreamItem = ({
     setLiveStreamConfig(newPlatforms);
   };
   return (
-    <Box
-      style={{
-        borderBottom: "3px solid #3A3F4B",
-        paddingRight: "12px",
-        paddingLeft: "12px",
-        paddingTop: "12px",
-        paddingBottom: "12px",
-      }}
-    >
+    <>
       <Box
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          borderBottom: "3px solid #3A3F4B",
+          paddingRight: "12px",
+          paddingLeft: "12px",
+          paddingTop: "12px",
+          paddingBottom: "12px",
         }}
       >
-        <Box style={{ display: "flex", flex: 1 }}>
-          <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-            {item.url ? domainName : item.title}
-          </Typography>
-        </Box>
-
         <Box
           style={{
             display: "flex",
-            flex: 1,
-            alignItems: "flex-end",
-            justifyContent: "flex-end",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {item.isEdit ? (
-            <>
-              <Button
-                variant="text"
-                onClick={() => {
-                  _handleSaveInsideArray({
-                    Id: item.id,
-                    streamKey: item.streamKey,
-                    url: item.url,
-                  });
-                }}
-                className={classes.button}
-              >
-                Save
-              </Button>
-              <Button
-                variant="text"
-                onClick={() => {
-                  setOnCancleClick({ id: item.id, visible: true });
-                }}
-                className={classes.button}
-              >
-                Cancle
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="text"
-                onClick={() => {
-                  setOptionAsEdit(item.id);
-                }}
-                className={classes.button}
-              >
-                EDIT
-              </Button>
+          <Box style={{ display: "flex", flex: 1 }}>
+            <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+              {item.url ? domainName : item.title}
+            </Typography>
+          </Box>
 
-              <Button
-                variant="text"
-                onClick={() => {
-                  setOnRemoveClick({
-                    id: item.id,
-                    visible: true,
-                    domainName: domainName,
-                  });
-                }}
-                className={classes.button}
-              >
-                REMOVE
-              </Button>
-            </>
-          )}
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+            }}
+          >
+            {isEditing ? (
+              <>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    _handleSaveInsideArray({
+                      Id: item.id,
+                      streamKey: editedStreamKey,
+                      url: editedUrl,
+                    });
+                    setIsEditing(false);
+                  }}
+                  className={classes.button}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    setOnCancleClick({ id: item.id, visible: true });
+                  }}
+                  className={classes.button}
+                >
+                  Cancle
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    setIsEditing(true);
+                  }}
+                  className={classes.button}
+                >
+                  EDIT
+                </Button>
+
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    setOnRemoveClick({
+                      id: item.id,
+                      visible: true,
+                      domainName: domainName,
+                    });
+                  }}
+                  className={classes.button}
+                >
+                  REMOVE
+                </Button>
+              </>
+            )}
+          </Box>
+        </Box>
+        <Box mt={1}>
+          <TextField
+            placeholder="Stream Key"
+            fullWidth
+            variant="filled"
+            type="password"
+            className={classes.root}
+            disabled={!isEditing}
+            value={isEditing ? editedStreamKey : item.streamKey}
+            InputProps={{
+              disableUnderline: true,
+              classes: {
+                root: classes.textField,
+              },
+            }}
+            onChange={(e) => {
+              setEditedStreamKey(e.target.value);
+              // updateLiveStreamingKey(item.id, e.target.value);
+            }}
+          />
+
+          <TextField
+            placeholder="Stream Url"
+            fullWidth
+            variant="filled"
+            style={{ marginTop: "8px" }}
+            className={classes.root}
+            disabled={!isEditing}
+            value={isEditing ? editedUrl : item.url}
+            InputProps={{
+              disableUnderline: true,
+              classes: {
+                root: classes.textField,
+              },
+            }}
+            onChange={(e) => {
+              setEditedUrl(e.target.value);
+              // updateLiveStreamingUrl(item.id, e.target.value);
+            }}
+          />
         </Box>
       </Box>
-      <Box mt={1}>
-        <TextField
-          placeholder="Stream Key"
-          fullWidth
-          variant="filled"
-          type="password"
-          className={classes.root}
-          disabled={!item.isEdit}
-          value={item.streamKey}
-          InputProps={{
-            disableUnderline: true,
-            classes: {
-              root: classes.textField,
-            },
-          }}
-          onChange={(e) => {
-            updateLiveStreamingKey(item.id, e.target.value);
-          }}
-        />
 
-        <TextField
-          placeholder="Stream Url"
-          fullWidth
-          variant="filled"
-          style={{ marginTop: "8px" }}
-          className={classes.root}
-          disabled={!item.isEdit}
-          value={item.url}
-          InputProps={{
-            disableUnderline: true,
-            classes: {
-              root: classes.textField,
-            },
-          }}
-          onChange={(e) => {
-            updateLiveStreamingUrl(item.id, e.target.value);
-          }}
-        />
-      </Box>
-    </Box>
+      <ConfirmBox
+        open={onRemoveClick.visible}
+        title={`${onRemoveClick.domainName} `}
+        subTitle={"Are you sure want to remove this live stream configuration?"}
+        successText={"OKAY"}
+        onSuccess={() => {
+          _handleRemove({ id: onRemoveClick.id });
+          setOnRemoveClick({ visible: false });
+        }}
+        rejectText={"Cancel"}
+        onReject={() => {
+          // setOptionAsEditFalse(item.id);
+          setOnRemoveClick({
+            visible: false,
+            domainName: onRemoveClick.domainName,
+          });
+        }}
+      />
+      <ConfirmBox
+        open={onCancleClick.visible}
+        title={"Are you sure want to cancle your changes?"}
+        successText={"OKAY"}
+        onSuccess={() => {
+          // setOptionAsEditFalse(onCancleClick.id);
+          setOnCancleClick({ visible: false });
+          setIsEditing(false);
+        }}
+        rejectText={"Cancel"}
+        onReject={() => {
+          setOnCancleClick({ visible: false });
+        }}
+      />
+    </>
   );
 };
 
 const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
-  const [onCancleClick, setOnCancleClick] = useState({
-    id: null,
-    visible: false,
-  });
-  const [onRemoveClick, setOnRemoveClick] = useState({
-    id: null,
-    domainName: "",
-    visible: false,
-  });
+  // const [onCancleClick, setOnCancleClick] = useState({
+  //   id: null,
+  //   visible: false,
+  // });
+  // const [onRemoveClick, setOnRemoveClick] = useState({
+  //   id: null,
+  //   domainName: "",
+  //   visible: false,
+  // });
+
+  const [editingItemId, setEditingItemId] = useState(null);
 
   const [streamKey, setStreamKey] = useState("");
   const [url, setStreamUrl] = useState("");
@@ -339,42 +406,10 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
                 liveStreamConfig={liveStreamConfig}
                 setLiveStreamConfig={setLiveStreamConfig}
                 liveStreamConfigRef={liveStreamConfigRef}
-                setOnRemoveClick={setOnRemoveClick}
-                setOnCancleClick={setOnCancleClick}
                 publish={publish}
-              />
-              <ConfirmBox
-                open={onRemoveClick.visible}
-                title={`${onRemoveClick.domainName} `}
-                subTitle={
-                  "Are you sure want to remove this live stream configuration?"
-                }
-                successText={"OKAY"}
-                onSuccess={() => {
-                  _handleRemove({ id: onRemoveClick.id });
-                  setOnRemoveClick({ visible: false });
-                }}
-                rejectText={"Cancel"}
-                onReject={() => {
-                  setOptionAsEditFalse(item.id);
-                  setOnRemoveClick({
-                    visible: false,
-                    domainName: onRemoveClick.domainName,
-                  });
-                }}
-              />
-              <ConfirmBox
-                open={onCancleClick.visible}
-                title={"Are you sure want to cancle your changes?"}
-                successText={"OKAY"}
-                onSuccess={() => {
-                  setOptionAsEditFalse(onCancleClick.id);
-                  setOnCancleClick({ visible: false });
-                }}
-                rejectText={"Cancel"}
-                onReject={() => {
-                  setOnCancleClick({ visible: false });
-                }}
+                editingItemId={editingItemId}
+                setEditingItemId={setEditingItemId}
+                _handleRemove={_handleRemove}
               />
             </>
           );
