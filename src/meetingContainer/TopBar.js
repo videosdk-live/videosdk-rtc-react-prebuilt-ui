@@ -212,7 +212,15 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     liveStreamLayoutPriority,
     liveStreamLayoutGridSize,
     liveStreamOutputs,
-  } = useMeetingAppContext();
+  } = useMeetingAppContext({
+    onLivestreamStarted: () => {
+      console.log("onLivestreamStarted");
+    },
+
+    onLivestreamStopped: () => {
+      console.log("onLivestreamStopped");
+    },
+  });
 
   const { publish } = usePubSub("LIVE_STREAM_CONFIG");
 
