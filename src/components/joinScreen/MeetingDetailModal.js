@@ -202,7 +202,7 @@ export default function MeetingDetailModal({
           error={nameErr}
           helperText={
             nameErr
-              ? "Enter Minimum 3 Characterrs"
+              ? "Enter Minimum 3 Characters"
               : "Your name will help everyone identify you in the meeting"
           }
           onChange={(ev) => {
