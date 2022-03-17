@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -6,11 +6,8 @@ import {
   ButtonBase,
   Tooltip,
 } from "@material-ui/core";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import {
-  meetingLayouts,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { withStyles } from "@material-ui/core/styles";
+import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import SpotlightIcon from "../../icons/SpotlightIcon";
 import SideBarIcon from "../../icons/SideBarIcon";
 import GridIcon from "../../icons/GridIcon";
@@ -18,7 +15,6 @@ import SpeakerIcon from "../../icons/SpeakerIcon";
 import PinParticipantIcon from "../../icons/PinParticipantIcon";
 import { usePubSub } from "@videosdk.live/react-sdk";
 import useIsMobile from "../../utils/useIsMobile";
-import { debounce } from "lodash";
 
 function ConfigTabPanel({ panelHeight }) {
   const isMobile = useIsMobile(375);
@@ -78,18 +74,6 @@ function ConfigTabPanel({ panelHeight }) {
     },
   ];
 
-  //lightToolTip
-  const LightTooltip = withStyles((theme) => ({
-    tooltip: {
-      background: "none",
-      fontSize: "14px",
-      lineHeight: "16px",
-      fontWeight: 600,
-      color: "fff",
-      marginBottom: "8px",
-    },
-  }))(Tooltip);
-
   //BaseButton focus
   function focusVisible() {
     document.getElementById("card").style.cursor = "pointer";
@@ -98,20 +82,6 @@ function ConfigTabPanel({ panelHeight }) {
   //sliders events
   function valuetext(value) {
     return `${value}`;
-  }
-  function ValueLabelComponent(props) {
-    const { children, open, value } = props;
-    return (
-      <LightTooltip
-        open={open}
-        interactive
-        enterTouchDelay={0}
-        placement="top"
-        title={value}
-      >
-        {children}
-      </LightTooltip>
-    );
   }
 
   //handlers

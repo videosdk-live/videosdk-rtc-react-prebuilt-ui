@@ -13,7 +13,7 @@ import {
   Grid,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import { useMeeting } from "@videosdk.live/react-sdk";
 import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
@@ -215,7 +215,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       preserveAspectRatio: "xMidYMid slice",
     },
     height: 64,
-    width: 160,
+    width: 170,
   };
 
   const {
@@ -231,8 +231,6 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     setSideBarMode,
   } = useMeetingAppContext();
 
-  const outputs = liveStreamConfig ? liveStreamConfig : liveStreamOutputs;
-
   return (
     <>
       {isMobile || isTab ? (
@@ -242,7 +240,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             if (isLiveStreaming) {
               stopLivestream();
             } else {
-              if (outputs.length > 0) {
+              if (liveStreamConfig.length > 0) {
                 startLivestream(liveStreamConfig, {
                   //todo: change layout option
                   // layout: {
@@ -271,7 +269,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             if (isLiveStreaming) {
               stopLivestream();
             } else {
-              if (outputs.length > 0) {
+              if (liveStreamConfig.length > 0) {
                 startLivestream(liveStreamConfig, {
                   // layout: {
                   //   type: liveStreamLayoutType,
@@ -586,41 +584,39 @@ const RecordingBTN = ({ isMobile, isTab }) => {
   const isRecording = mMeeting?.isRecording;
   const startRecording = mMeeting?.startRecording;
   const stopRecording = mMeeting?.stopRecording;
-  const [defaultRecordingActionTaken, setDefaultRecordingActionTaken] =
-    useState(false);
 
   const {
     recordingWebhookUrl,
     recordingAWSDirPath,
-    autoStartRecording,
+
     participantCanToggleRecording,
     recordingLayoutType,
     recordingLayoutPriority,
     recordingLayoutGridSize,
   } = useMeetingAppContext();
 
-  useEffect(() => {
-    if (autoStartRecording) {
-      setDefaultRecordingActionTaken(true);
-      setTimeout(() => {
-        if (!defaultRecordingActionTaken) {
-          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            layout: {
-              buttonType: recordingLayoutType,
-              priority: recordingLayoutPriority,
-              gridSize: recordingLayoutGridSize,
-            },
-          });
-        }
-      }, 5000);
-    }
-  }, [
-    recordingWebhookUrl,
-    recordingAWSDirPath,
-    defaultRecordingActionTaken,
-    autoStartRecording,
-    startRecording,
-  ]);
+  // useEffect(() => {
+  //   if (autoStartRecording) {
+  //     setDefaultRecordingActionTaken(true);
+  //     setTimeout(() => {
+  //       if (!defaultRecordingActionTaken) {
+  //         startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+  //           layout: {
+  //             buttonType: recordingLayoutType,
+  //             priority: recordingLayoutPriority,
+  //             gridSize: recordingLayoutGridSize,
+  //           },
+  //         });
+  //       }
+  //     }, 5000);
+  //   }
+  // }, [
+  //   recordingWebhookUrl,
+  //   recordingAWSDirPath,
+  //   defaultRecordingActionTaken,
+  //   autoStartRecording,
+  //   startRecording,
+  // ]);
 
   const defaultOptions = {
     loop: true,
@@ -1000,7 +996,6 @@ const TopBar = ({ topBarHeight }) => {
   const isTab = useIsTab();
 
   const theme = useTheme();
-  const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
   const topBarButtonTypes = useMemo(
     () => ({
