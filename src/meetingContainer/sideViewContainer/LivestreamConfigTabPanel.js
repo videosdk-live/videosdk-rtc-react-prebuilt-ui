@@ -6,11 +6,10 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import React, { useEffect, useRef, useState } from "react";
-import { usePubSub } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
-import { v4 as uuid } from "uuid";
 import ConfirmBox from "../../components/ConfirmBox";
-import { extractRootDomain } from "../../utils/common";
+import { extractRootDomain, getUniqueId } from "../../utils/common";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -42,6 +41,7 @@ const SingleLiveStreamItem = ({
   setIsEditingId,
   _handleRemove,
   publish,
+  isLiveStreaming,
 }) => {
   const rootDomain = extractRootDomain(item.url);
   const mainDomain = rootDomain?.split(".")[0];
@@ -85,11 +85,11 @@ const SingleLiveStreamItem = ({
   const itemRef = useRef(item);
 
   useEffect(() => {
-    if (isEditing) {
+    if (isSelfEditing) {
       setEditedUrl(itemRef.current.url);
       setEditedStreamKey(itemRef.current.streamKey);
     }
-  }, [isEditing]);
+  }, [isSelfEditing]);
 
   useEffect(() => {
     itemRef.current = item;
@@ -187,7 +187,7 @@ const SingleLiveStreamItem = ({
                     setIsEditingId(item.id);
                   }}
                   className={classes.button}
-                  disabled={isEditing}
+                  disabled={isEditing || isLiveStreaming}
                 >
                   EDIT
                 </Button>
@@ -202,7 +202,7 @@ const SingleLiveStreamItem = ({
                     });
                   }}
                   className={classes.button}
-                  disabled={isEditing}
+                  disabled={isEditing || isLiveStreaming}
                 >
                   REMOVE
                 </Button>
@@ -305,7 +305,10 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   const [isEditing, setIsEditing] = useState({ id: null, editing: false });
   const [isEditingId, setIsEditingId] = useState(null);
 
+  const mMeeting = useMeeting({});
   const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
+
+  const isLiveStreaming = mMeeting?.isLiveStreaming;
 
   const liveStreamConfigRef = useRef();
 
@@ -348,7 +351,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
 
   const _handleSave = ({ streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
-    liveStreamConfig.push({ id: uuid(), streamKey, url });
+    liveStreamConfig.push({ id: getUniqueId(), streamKey, url });
 
     publish({ config: liveStreamConfig }, { persist: true });
     setStreamKey("");
@@ -387,101 +390,104 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
                 _handleRemove={_handleRemove}
                 isEditingId={isEditingId}
                 setIsEditingId={setIsEditingId}
+                isLiveStreaming={isLiveStreaming}
               />
             </>
           );
         })}
       </Box>
-      <Box
-        style={{
-          paddingRight: "12px",
-          paddingLeft: "12px",
-          paddingTop: "12px",
-          paddingBottom: "12px",
-        }}
-      >
+      {!isLiveStreaming && (
         <Box
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            paddingRight: "12px",
+            paddingLeft: "12px",
+            paddingTop: "12px",
+            paddingBottom: "12px",
           }}
         >
-          <Box style={{ display: "flex", flex: 1 }}>
-            <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-              {url ? domainName : "Platform Name"}
-            </Typography>
-          </Box>
-
           <Box
             style={{
               display: "flex",
-              flex: 1,
-              alignItems: "flex-end",
-              justifyContent: "flex-end",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Button
-              variant="text"
-              onClick={() => {
-                const isValid = handleValidation();
-                if (isValid) {
-                  _handleSave({ streamKey: streamKey, url });
-                }
+            <Box style={{ display: "flex", flex: 1 }}>
+              <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+                {url ? domainName : "Platform Name"}
+              </Typography>
+            </Box>
+
+            <Box
+              style={{
+                display: "flex",
+                flex: 1,
+                alignItems: "flex-end",
+                justifyContent: "flex-end",
               }}
-              className={classes.button}
             >
-              ADD
-            </Button>
+              <Button
+                variant="text"
+                onClick={() => {
+                  const isValid = handleValidation();
+                  if (isValid) {
+                    _handleSave({ streamKey: streamKey, url });
+                  }
+                }}
+                className={classes.button}
+              >
+                ADD
+              </Button>
+            </Box>
+          </Box>
+          <Box mt={1}>
+            <TextField
+              placeholder="Stream Key"
+              fullWidth
+              variant="filled"
+              type="password"
+              className={classes.root}
+              value={streamKey}
+              InputProps={{
+                disableUnderline: true,
+                classes: {
+                  root: classes.textField,
+                },
+              }}
+              onChange={(e) => {
+                setStreamKey(e.target.value);
+              }}
+            />
+            {streamKeyErr && (
+              <Typography variant="body2" style={{ color: "#D33730" }}>
+                Please provide stream key
+              </Typography>
+            )}
+            <TextField
+              placeholder="Stream Url"
+              fullWidth
+              variant="filled"
+              style={{ marginTop: "8px" }}
+              className={classes.root}
+              value={url}
+              InputProps={{
+                disableUnderline: true,
+                classes: {
+                  root: classes.textField,
+                },
+              }}
+              onChange={(e) => {
+                setStreamUrl(e.target.value);
+              }}
+            />
+            {streamUrlErr && (
+              <Typography variant="body2" style={{ color: "#D33730" }}>
+                Please provide stream url
+              </Typography>
+            )}
           </Box>
         </Box>
-        <Box mt={1}>
-          <TextField
-            placeholder="Stream Key"
-            fullWidth
-            variant="filled"
-            type="password"
-            className={classes.root}
-            value={streamKey}
-            InputProps={{
-              disableUnderline: true,
-              classes: {
-                root: classes.textField,
-              },
-            }}
-            onChange={(e) => {
-              setStreamKey(e.target.value);
-            }}
-          />
-          {streamKeyErr && (
-            <Typography variant="body2" style={{ color: "#D33730" }}>
-              Please provide stream key
-            </Typography>
-          )}
-          <TextField
-            placeholder="Stream Url"
-            fullWidth
-            variant="filled"
-            style={{ marginTop: "8px" }}
-            className={classes.root}
-            value={url}
-            InputProps={{
-              disableUnderline: true,
-              classes: {
-                root: classes.textField,
-              },
-            }}
-            onChange={(e) => {
-              setStreamUrl(e.target.value);
-            }}
-          />
-          {streamUrlErr && (
-            <Typography variant="body2" style={{ color: "#D33730" }}>
-              Please provide stream url
-            </Typography>
-          )}
-        </Box>
-      </Box>
+      )}
     </Box>
   );
 };

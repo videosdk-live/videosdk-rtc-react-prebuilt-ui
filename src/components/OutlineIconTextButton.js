@@ -96,7 +96,7 @@ const OutlineIconTextButton = ({
           }}
         >
           {buttonText ? (
-            liveStreamStarted ? (
+            lottieOption ? (
               <Box
                 style={{
                   display: "flex",

@@ -11,6 +11,7 @@ import { usePubSub } from "@videosdk.live/react-sdk";
 import {
   appEvents,
   eventEmitter,
+  getUniqueId,
   json_verify,
   nameTructed,
   trimSnackBarText,
@@ -110,6 +111,7 @@ const MeetingContainer = () => {
     containerRef,
     appMeetingLayout,
     participantCanToggleRecording,
+    participantCanToggleLivestream,
     autoStartLiveStream,
     liveStreamLayoutType,
     liveStreamLayoutPriority,
@@ -138,21 +140,95 @@ const MeetingContainer = () => {
   const isTab = useIsTab();
   const isMobile = useIsMobile();
 
+  const liveStreamConfigRef = useRef();
+  useEffect(() => {
+    liveStreamConfigRef.current = liveStreamConfig;
+  }, [liveStreamConfig]);
+
+  usePubSub(meetingLayoutTopic, {
+    onMessageReceived: (data) => {
+      setAppMeetingLayout(data.message);
+    },
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+      }
+    },
+  });
+
+  const { publish: liveStreamConfigPublish } = usePubSub("LIVE_STREAM_CONFIG", {
+    onMessageReceived: (data) => {
+      setLiveStreamConfig(data.message.config);
+    },
+
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setLiveStreamConfig(latestMessage.message.config);
+      }
+    },
+  });
+
+  const liveStreamConfigPublishRef = useRef();
+
+  useEffect(() => {
+    liveStreamConfigPublishRef.current = liveStreamConfigPublish;
+  }, [liveStreamConfigPublish]);
+
   const _handleOnMeetingJoined = async () => {
-    const { changeWebcam, changeMic, muteMic, disableWebcam } =
+    const { changeWebcam, changeMic, muteMic, disableWebcam, isLiveStreaming } =
       mMeetingRef.current;
 
-    if (autoStartLiveStream && liveStreamOutputs?.length) {
+    // setTimeout(() => {
+    const outputs = liveStreamConfigRef?.current?.length
+      ? liveStreamConfigRef.current
+      : liveStreamOutputs?.length
+      ? liveStreamOutputs
+      : null;
+    if (
+      autoStartLiveStream &&
+      outputs?.length &&
+      participantCanToggleLivestream &&
+      !isLiveStreaming
+    ) {
       const { startLivestream } = mMeetingRef.current;
 
-      startLivestream(liveStreamOutputs, {
+      startLivestream(outputs, {
         layout: {
           type: liveStreamLayoutType,
           priority: liveStreamLayoutPriority,
           gridSize: liveStreamLayoutGridSize,
         },
       });
+
+      liveStreamConfigPublishRef.current(
+        {
+          config: outputs.map((output) => {
+            return { ...output, id: getUniqueId() };
+          }),
+        },
+        { persist: true }
+      );
     }
+    // }, 5000);
 
     if (joinScreenWebCam && selectedWebcam.id) {
       await new Promise((resolve) => {
@@ -441,51 +517,6 @@ const MeetingContainer = () => {
 
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
-
-  usePubSub(meetingLayoutTopic, {
-    onMessageReceived: (data) => {
-      console.log("data.message", data.message);
-      setAppMeetingLayout(data.message);
-      console.log("appMeetingLayout : ", appMeetingLayout);
-    },
-    onOldMessagesReceived: (messages) => {
-      const latestMessage = messages.sort((a, b) => {
-        if (a.timestamp > b.timestamp) {
-          return -1;
-        }
-        if (a.timestamp < b.timestamp) {
-          return 1;
-        }
-        return 0;
-      })[0];
-
-      if (latestMessage) {
-      }
-    },
-  });
-
-  usePubSub("LIVE_STREAM_CONFIG", {
-    onMessageReceived: (data) => {
-      console.log("data Meeting Container: ", data.message);
-      setLiveStreamConfig(data.message.config);
-    },
-
-    onOldMessagesReceived: (messages) => {
-      const latestMessage = messages.sort((a, b) => {
-        if (a.timestamp > b.timestamp) {
-          return -1;
-        }
-        if (a.timestamp < b.timestamp) {
-          return 1;
-        }
-        return 0;
-      })[0];
-
-      if (latestMessage) {
-        setLiveStreamConfig(latestMessage.message.config);
-      }
-    },
-  });
 
   return (
     <div

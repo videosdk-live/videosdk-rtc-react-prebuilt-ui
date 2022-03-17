@@ -77,7 +77,6 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
       typeof onClick === "function" && onClick();
       sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
     } else {
-      console.log("onRaiseHand of laptop");
       sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
     }
   };
@@ -202,28 +201,8 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
 
 const GoLiveBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const [defaultLiveStreamActionTaken, setDefaultLiveStreamActionTaken] =
-    useState(false);
 
-  const {
-    participantCanToggleLivestream,
-    autoStartLiveStream,
-    liveStreamEnabled,
-    liveStreamLayoutType,
-    liveStreamLayoutPriority,
-    liveStreamLayoutGridSize,
-    liveStreamOutputs,
-  } = useMeetingAppContext({
-    onLivestreamStarted: () => {
-      console.log("onLivestreamStarted");
-    },
-
-    onLivestreamStopped: () => {
-      console.log("onLivestreamStopped");
-    },
-  });
-
-  const { publish } = usePubSub("LIVE_STREAM_CONFIG");
+  const [isPopupShown, setIsPopupShown] = useState(false);
 
   const isLiveStreaming = mMeeting?.isLiveStreaming;
   const startLivestream = mMeeting?.startLivestream;
@@ -240,100 +219,96 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     width: 160,
   };
 
-  useEffect(() => {
-    if (autoStartLiveStream) {
-      setDefaultLiveStreamActionTaken(true);
-      setTimeout(() => {
-        if (!defaultLiveStreamActionTaken && !isLiveStreaming) {
-          console.log(liveStreamOutputs, "liveStreamOutputs");
-
-          // publish()
-
-          // startLivestream(liveStreamOutputs, {
-          //   layout: {
-          //     type: liveStreamLayoutType,
-          //     priority: liveStreamLayoutPriority,
-          //     gridSize: liveStreamLayoutGridSize,
-          //   },
-          // });
-        }
-      }, 5000);
-    }
-  }, [
-    liveStreamOutputs,
-    defaultLiveStreamActionTaken,
+  const {
+    participantCanToggleLivestream,
     autoStartLiveStream,
-    startLivestream,
-    isLiveStreaming,
-    publish,
-  ]);
+    liveStreamEnabled,
+    liveStreamLayoutType,
+    liveStreamLayoutPriority,
+    liveStreamLayoutGridSize,
+    liveStreamOutputs,
+    liveStreamConfig,
+    sideBarMode,
+    setSideBarMode,
+  } = useMeetingAppContext();
 
-  return isMobile || isTab ? (
-    <MobileIconButton
-      Icon={LiveIcon}
-      onClick={() => {
-        if (isLiveStreaming) {
-          stopLivestream();
-        } else {
-          startLivestream(liveStreamOutputs, {
-            layout: {
-              type: liveStreamLayoutType,
-              priority: liveStreamLayoutPriority,
-              gridSize: liveStreamLayoutGridSize,
-            },
-          });
-        }
-      }}
-      tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-      buttonText={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-      isFocused={isLiveStreaming}
-      lottieOption={isLiveStreaming ? defaultOptions : null}
-      disabled={!participantCanToggleLivestream}
-    />
-  ) : isLiveStreaming ? (
-    <OutlineIconTextButton
-      liveStreamStarted={isLiveStreaming ? true : false}
-      // Icon={Live}
-      onClick={() => {
-        if (isLiveStreaming) {
-          stopLivestream();
-        } else {
-          startLivestream(liveStreamOutputs, {
-            layout: {
-              type: liveStreamLayoutType,
-              priority: liveStreamLayoutPriority,
-              gridSize: liveStreamLayoutGridSize,
-            },
-          });
-        }
-      }}
-      tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-      buttonText="GO LIVE"
-      lottieOption={isLiveStreaming ? defaultOptions : null}
-      disabled={!participantCanToggleLivestream}
-    />
-  ) : (
-    <OutlineIconTextButton
-      bgColor="#D32F2F"
-      onClick={() => {
-        if (isLiveStreaming) {
-          stopLivestream();
-        } else {
-          startLivestream(liveStreamOutputs, {
-            layout: {
-              type: liveStreamLayoutType,
-              priority: liveStreamLayoutPriority,
-              gridSize: liveStreamLayoutGridSize,
-            },
-          });
-        }
-      }}
-      tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-      buttonText="GO LIVE"
-      isFocused={isLiveStreaming}
-      lottieOption={isLiveStreaming ? defaultOptions : null}
-      disabled={!participantCanToggleLivestream}
-    />
+  const outputs = liveStreamConfig ? liveStreamConfig : liveStreamOutputs;
+
+  return (
+    <>
+      {isMobile || isTab ? (
+        <MobileIconButton
+          Icon={LiveIcon}
+          onClick={() => {
+            if (isLiveStreaming) {
+              stopLivestream();
+            } else {
+              if (outputs.length > 0) {
+                startLivestream(liveStreamConfig, {
+                  //todo: change layout option
+                  // layout: {
+                  //   type: liveStreamLayoutType,
+                  //   priority: liveStreamLayoutPriority,
+                  //   gridSize: liveStreamLayoutGridSize,
+                  // },
+                });
+              } else {
+                setIsPopupShown(true);
+              }
+            }
+          }}
+          tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+          buttonText={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+          isFocused={isLiveStreaming}
+          lottieOption={isLiveStreaming ? defaultOptions : null}
+          disabled={!participantCanToggleLivestream}
+        />
+      ) : (
+        <OutlineIconTextButton
+          liveStreamStarted={isLiveStreaming ? true : false}
+          bgColor="#D32F2F"
+          // Icon={Live}
+          onClick={() => {
+            if (isLiveStreaming) {
+              stopLivestream();
+            } else {
+              if (outputs.length > 0) {
+                startLivestream(liveStreamConfig, {
+                  // layout: {
+                  //   type: liveStreamLayoutType,
+                  //   priority: liveStreamLayoutPriority,
+                  //   gridSize: liveStreamLayoutGridSize,
+                  // },
+                });
+              } else {
+                setIsPopupShown(true);
+              }
+            }
+          }}
+          tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+          buttonText="GO LIVE"
+          lottieOption={isLiveStreaming ? defaultOptions : null}
+          disabled={!participantCanToggleLivestream}
+        />
+      )}
+      <ConfirmBox
+        open={isPopupShown}
+        title={"Please provide live stream configuration"}
+        successText={"OKAY"}
+        onSuccess={() => {
+          setSideBarMode((s) =>
+            s === sideBarModes.ADD_LIVE_STREAM
+              ? null
+              : sideBarModes.ADD_LIVE_STREAM
+          );
+          setIsPopupShown(false);
+        }}
+        rejectText={"CANCEL"}
+        onReject={() => {
+          setIsPopupShown(false);
+        }}
+      />
+    </>
   );
 };
 const ChatBTN = ({ isMobile, isTab }) => {
@@ -1139,12 +1114,6 @@ const TopBar = ({ topBarHeight }) => {
     }
 
     if (liveStreamEnabled && !participantCanToggleLivestream) {
-      console.log(
-        "liveStreamEnabled : ",
-        liveStreamEnabled,
-        "&& !participantCanToggleLivestream : ",
-        participantCanToggleLivestream
-      );
       utilsArr.unshift(topBarButtonTypes.GO_LIVE);
       mobileIconArr.unshift({
         buttonType: topBarButtonTypes.GO_LIVE,
@@ -1153,12 +1122,6 @@ const TopBar = ({ topBarHeight }) => {
     }
 
     if (participantCanToggleLivestream && liveStreamEnabled) {
-      console.log(
-        "liveStreamEnabled : ",
-        liveStreamEnabled,
-        "&& participantCanToggleLivestream : ",
-        participantCanToggleLivestream
-      );
       //liveStreamIcon
       utilsArr.unshift(topBarButtonTypes.GO_LIVE);
       mobileIconArr.unshift({
@@ -1174,12 +1137,6 @@ const TopBar = ({ topBarHeight }) => {
     }
 
     if (participantCanToggleLivestream && !liveStreamEnabled) {
-      console.log(
-        "!liveStreamEnabled : ",
-        liveStreamEnabled,
-        "&& participantCanToggleLivestream : ",
-        participantCanToggleLivestream
-      );
     }
 
     if (utilsArr.length) {

@@ -355,3 +355,7 @@ export const extractRootDomain = (url) => {
   }
   return domain;
 };
+
+export const getUniqueId = () => {
+  return Math.random().toString(36).substring(2, 10);
+};
