@@ -18,6 +18,7 @@ import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
+import liveBlink from "../animations/live-blink.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import LiveIcon from "../icons/LiveIcon";
 import RaiseHandDesktop from "../icons/RaiseHandDesktop";
@@ -53,8 +54,6 @@ import { useMediaQuery } from "react-responsive";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
-import MobileWhiteBoardIcon from "../icons/MobileWhiteBoardIcon";
-import Live from "../icons/Live";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -211,7 +210,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
-    animationData: recordingBlink,
+    animationData: liveBlink,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
@@ -266,7 +265,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       ) : (
         <OutlineIconTextButton
           liveStreamStarted={isLiveStreaming ? true : false}
-          bgColor="#D32F2F"
+          bgColor={isLiveStreaming ? "" : "#D32F2F"}
           // Icon={Live}
           onClick={() => {
             if (isLiveStreaming) {

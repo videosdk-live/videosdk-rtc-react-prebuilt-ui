@@ -32,8 +32,8 @@ const OutlineIconTextButton = ({
   const { animationsEnabled } = useMeetingAppContext();
 
   const iconSize = useResponsiveSize({
-    xl: 24 * (large ? 1.7 : 1),
-    lg: 24 * (large ? 1.7 : 1),
+    xl: 22 * (large ? 1 : 1),
+    lg: 22 * (large ? 1 : 1),
   });
 
   return (
