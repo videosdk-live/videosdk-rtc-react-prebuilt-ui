@@ -65,8 +65,6 @@ const OutlineIconTextButton = ({
             ? bgColor
             : isFocused
             ? focusBGColor || "#fff"
-            : liveStreamStarted
-            ? "#D32F2F"
             : theme.palette.background.default,
           border: `${2}px solid ${
             mouseOver || mouseDown

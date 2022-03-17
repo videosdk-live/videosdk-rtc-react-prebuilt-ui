@@ -265,7 +265,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       ) : (
         <OutlineIconTextButton
           liveStreamStarted={isLiveStreaming ? true : false}
-          bgColor={isLiveStreaming ? "" : "#D32F2F"}
+          bgColor={"#D32F2F"}
           // Icon={Live}
           onClick={() => {
             if (isLiveStreaming) {
@@ -292,14 +292,10 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
       )}
       <ConfirmBox
         open={isPopupShown}
-        title={"Please provide live stream configuration"}
+        title={"Please provide live stream configurations"}
         successText={"OKAY"}
         onSuccess={() => {
-          setSideBarMode((s) =>
-            s === sideBarModes.ADD_LIVE_STREAM
-              ? null
-              : sideBarModes.ADD_LIVE_STREAM
-          );
+          setSideBarMode((s) => sideBarModes.ADD_LIVE_STREAM);
           setIsPopupShown(false);
         }}
         rejectText={"CANCEL"}
