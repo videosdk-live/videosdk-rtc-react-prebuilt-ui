@@ -60,7 +60,6 @@ const SingleLiveStreamItem = ({
   });
   const [onRemoveClick, setOnRemoveClick] = useState({
     id: null,
-    domainName: "",
     visible: false,
   });
 
@@ -198,7 +197,6 @@ const SingleLiveStreamItem = ({
                     setOnRemoveClick({
                       id: item.id,
                       visible: true,
-                      domainName: domainName,
                     });
                   }}
                   className={classes.button}
@@ -263,9 +261,9 @@ const SingleLiveStreamItem = ({
 
       <ConfirmBox
         open={onRemoveClick.visible}
-        title={`${onRemoveClick.domainName} `}
-        subTitle={"Are you sure want to remove this live stream configuration?"}
-        successText={"OKAY"}
+        title={`Remove Stream Configuration?`}
+        subTitle={"It will be removed forever"}
+        successText={"Remove"}
         onSuccess={() => {
           _handleRemove({ id: onRemoveClick.id });
           setOnRemoveClick({ visible: false });
@@ -274,14 +272,14 @@ const SingleLiveStreamItem = ({
         onReject={() => {
           setOnRemoveClick({
             visible: false,
-            domainName: onRemoveClick.domainName,
           });
         }}
       />
       <ConfirmBox
         open={onCancelClick.visible}
-        title={"Are you sure want to Cancel your changes?"}
-        successText={"OKAY"}
+        title={"Discard Changes?"}
+        subTitle={"Changes you made so far will not be saved"}
+        successText={"Discard"}
         onSuccess={() => {
           setOnCancelClick({ visible: false });
           setIsEditingId(null);

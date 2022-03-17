@@ -254,8 +254,8 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               }
             }
           }}
-          tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-          buttonText={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
+          tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          buttonText={isLiveStreaming ? "Stop Live" : "Go Live"}
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
           disabled={!participantCanToggleLivestream}
@@ -282,21 +282,24 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               }
             }
           }}
-          tooltipTitle={isLiveStreaming ? "STOP LIVE" : "GO LIVE"}
-          buttonText="GO LIVE"
+          tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          buttonText="Go Live"
           lottieOption={isLiveStreaming ? defaultOptions : null}
           disabled={!participantCanToggleLivestream}
         />
       )}
       <ConfirmBox
         open={isPopupShown}
-        title={"Please provide live stream configurations"}
-        successText={"OKAY"}
+        title={"Add live stream configuration"}
+        subTitle={
+          "Please add live stream configuration to start live streaming"
+        }
+        successText={"Proceed"}
         onSuccess={() => {
           setSideBarMode((s) => sideBarModes.ADD_LIVE_STREAM);
           setIsPopupShown(false);
         }}
-        rejectText={"CANCEL"}
+        rejectText={"Cancel"}
         onReject={() => {
           setIsPopupShown(false);
         }}
