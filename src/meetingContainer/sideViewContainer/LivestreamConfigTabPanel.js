@@ -365,11 +365,14 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
         height: panelHeight - 32,
         overflowY: "auto",
         overflowX: "hidden",
+        backgroundColor: "red",
       }}
     >
       <Box
         style={{
-          overflowY: "auto",
+          overflowY: "scroll",
+          backgroundColor: "green",
+          maxHeight: panelHeight - 32 - 120,
           // height: panelHeight
         }}
       >
