@@ -145,9 +145,12 @@ const MeetingContainer = () => {
     liveStreamConfigRef.current = liveStreamConfig;
   }, [liveStreamConfig]);
 
+  console.log(meetingLayoutTopic, "meetingLayoutTopic");
+
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      setAppMeetingLayout(data.message);
+      console.log(data, "on new appMeetingLayout");
+      setAppMeetingLayout(data.message.layout);
     },
     onOldMessagesReceived: (messages) => {
       const latestMessage = messages.sort((a, b) => {
@@ -161,6 +164,9 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
+        console.log(latestMessage, "on old appMeetingLayout");
+
+        setAppMeetingLayout(latestMessage.message.layout);
       }
     },
   });

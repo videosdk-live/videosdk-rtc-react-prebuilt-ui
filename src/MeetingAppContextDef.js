@@ -39,6 +39,13 @@ export const meetingLayouts = {
   UNPINNED_SPOTLIGHT: "UNPINNED_SPOTLIGHT",
 };
 
+export const meetingLayoutTopics = {
+  MEETING_LAYOUT: "MEETING_LAYOUT",
+  RECORDING_LAYOUT: "RECORDING_LAYOUT",
+  LIVE_STREAM_LAYOUT: "LIVE_STREAM_LAYOUT",
+  HLS_LAYOUT: "HLS_LAYOUT",
+};
+
 export const MeetingAppProvider = ({
   children,
   redirectOnLeave,

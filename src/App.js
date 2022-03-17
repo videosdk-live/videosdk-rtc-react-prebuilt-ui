@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import MeetingContainer from "./meetingContainer/MeetingContainer";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
-import { MeetingAppProvider, meetingLayouts } from "./MeetingAppContextDef";
+import {
+  MeetingAppProvider,
+  meetingLayouts,
+  meetingLayoutTopics,
+} from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
 import { Box, CircularProgress } from "@material-ui/core";
@@ -334,8 +338,17 @@ const App = () => {
     }
 
     // validate meetingLayoutTopic here
-    if (typeof paramKeys.meetingLayoutTopic === undefined) {
-      paramKeys.meetingLayoutTopic = "MEETING_LAYOUT";
+    switch (paramKeys.meetingLayoutTopic?.toUpperCase()) {
+      case meetingLayoutTopics.MEETING_LAYOUT:
+      case meetingLayoutTopics.RECORDING_LAYOUT:
+      case meetingLayoutTopics.LIVE_STREAM_LAYOUT:
+      case meetingLayoutTopics.HLS_LAYOUT:
+        paramKeys.meetingLayoutTopic =
+          paramKeys.meetingLayoutTopic.toUpperCase();
+        break;
+      default:
+        paramKeys.meetingLayoutTopic = meetingLayoutTopics.MEETING_LAYOUT;
+        break;
     }
 
     return paramKeys;

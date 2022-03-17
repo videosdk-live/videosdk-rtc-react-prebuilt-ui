@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   Box,
   Typography,
@@ -6,9 +6,9 @@ import {
   ButtonBase,
   Tooltip,
 } from "@material-ui/core";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import {
-  meetingLayouts,
+  meetingLayoutTopics,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import SpotlightIcon from "../../icons/SpotlightIcon";
@@ -18,14 +18,21 @@ import SpeakerIcon from "../../icons/SpeakerIcon";
 import PinParticipantIcon from "../../icons/PinParticipantIcon";
 import { usePubSub } from "@videosdk.live/react-sdk";
 import useIsMobile from "../../utils/useIsMobile";
-import { debounce } from "lodash";
+import { debounce } from "../../utils/common";
 
 function ConfigTabPanel({ panelHeight }) {
   const isMobile = useIsMobile(375);
 
   const { appMeetingLayout } = useMeetingAppContext();
 
-  let { type, priority, gridSize } = appMeetingLayout;
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
 
   const typeRef = useRef(type);
   const priorityRef = useRef(priority);
@@ -43,15 +50,37 @@ function ConfigTabPanel({ panelHeight }) {
     gridSizeRef.current = gridSize;
   }, [gridSize]);
 
-  const { publish: livestreamPublish } = usePubSub("LIVESTREAM_LAYOUT");
-  const { publish: recordingPublish } = usePubSub("RECORDING_LAYOUT");
-  const { publish: hlsPublish } = usePubSub("HLS_LAYOUT");
-  const { publish: meetingPublish } = usePubSub("MEETING_LAYOUT");
+  const { publish: livestreamPublish } = usePubSub(
+    meetingLayoutTopics.MEETING_LAYOUT
+  );
+  const { publish: recordingPublish } = usePubSub(
+    meetingLayoutTopics.RECORDING_LAYOUT
+  );
+  const { publish: hlsPublish } = usePubSub(
+    meetingLayoutTopics.LIVE_STREAM_LAYOUT
+  );
+  const { publish: meetingPublish } = usePubSub(meetingLayoutTopics.HLS_LAYOUT);
 
-  const marks = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25,
-  ];
+  const livestreamPublishRef = useRef(livestreamPublish);
+  const recordingPublishRef = useRef(recordingPublish);
+  const hlsPublishRef = useRef(hlsPublish);
+  const meetingPublishRef = useRef(meetingPublish);
+
+  useEffect(() => {
+    livestreamPublishRef.current = livestreamPublish;
+  }, [livestreamPublish]);
+  useEffect(() => {
+    recordingPublishRef.current = recordingPublish;
+  }, [recordingPublish]);
+  useEffect(() => {
+    hlsPublishRef.current = hlsPublish;
+  }, [hlsPublish]);
+  useEffect(() => {
+    meetingPublishRef.current = meetingPublish;
+  }, [meetingPublish]);
+
+  const marks = Array.from({ length: 25 }, (_, i) => i + 1);
+
   const layoutArr = [
     {
       type: "Spotlight",
@@ -116,27 +145,55 @@ function ConfigTabPanel({ panelHeight }) {
 
   //handlers
   const _handleChangeLayout = (event) => {
-    type = event.currentTarget.value.toUpperCase() || typeRef.current;
-    publishToPubSub();
+    console.log(
+      "_handleChangeLayout appMeetingLayout",
+      event.currentTarget.value.toUpperCase()
+    );
+
+    const type = event.currentTarget.value.toUpperCase() || typeRef.current;
+    publishToPubSub({ type });
   };
 
   const _handleChangePriority = (event) => {
-    priority = event.currentTarget.value.toUpperCase() || priorityRef.current;
-    publishToPubSub();
+    console.log(
+      "_handleChangePriority appMeetingLayout",
+      event.currentTarget.value.toUpperCase()
+    );
+
+    const priority =
+      event.currentTarget.value.toUpperCase() || priorityRef.current;
+    publishToPubSub({ priority });
   };
 
-  let _handleGridSize = (e, newValue) => {
-    gridSize = newValue || gridSizeRef.current;
-    // publishToPubSub();
+  const _handleGridSize = (newGridSize) => {
+    console.log("_handleGridSize appMeetingLayout", newGridSize);
+
+    const gridSize = newGridSize || gridSizeRef.current;
+    publishToPubSub({ gridSize });
   };
 
-  function publishToPubSub() {
-    let layout = { type, gridSize, priority };
-    livestreamPublish(layout, { persist: true });
-    hlsPublish(layout, { persist: true });
-    meetingPublish(layout, { persist: true });
-    recordingPublish(layout, { persist: true });
-  }
+  const publishToPubSub = debounce(function ({
+    type: _type,
+    gridSize: _gridSize,
+    priority: _priority,
+  }) {
+    const type = _type || typeRef.current;
+    const gridSize = _gridSize || gridSizeRef.current;
+    const priority = _priority || priorityRef.current;
+
+    const layout = { type, gridSize, priority };
+
+    console.log(
+      { _type, _gridSize, _priority, type, gridSize, priority },
+      "changing appMeetingLayout"
+    );
+
+    livestreamPublishRef.current({ layout }, { persist: true });
+    hlsPublishRef.current({ layout }, { persist: true });
+    meetingPublishRef.current({ layout }, { persist: true });
+    recordingPublishRef.current({ layout }, { persist: true });
+  },
+  500);
 
   //layout and priority card
   let Card = ({ isActive, ref, title, Icon, onClick }) => {
@@ -315,8 +372,9 @@ function ConfigTabPanel({ panelHeight }) {
             min={1}
             max={25}
             defaultValue={gridSize}
-            onChange={(e, newValue) => _handleGridSize(e, newValue)}
-            onChangeCommitted={publishToPubSub}
+            onChange={(_, newValue) => {
+              _handleGridSize(newValue);
+            }}
             valueLabelDisplay="on"
             step={1}
             style={{
