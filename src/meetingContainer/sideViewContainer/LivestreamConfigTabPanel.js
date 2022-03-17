@@ -302,7 +302,6 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   const [url, setStreamUrl] = useState("");
   const [streamKeyErr, setStreamKeyErr] = useState(false);
   const [streamUrlErr, setStreamUrlErr] = useState(false);
-  const [isEditing, setIsEditing] = useState({ id: null, editing: false });
   const [isEditingId, setIsEditingId] = useState(null);
 
   const mMeeting = useMeeting({});

@@ -107,18 +107,6 @@ function ConfigTabPanel({ panelHeight }) {
     },
   ];
 
-  //lightToolTip
-  const LightTooltip = withStyles((theme) => ({
-    tooltip: {
-      background: "none",
-      fontSize: "14px",
-      lineHeight: "16px",
-      fontWeight: 600,
-      color: "fff",
-      marginBottom: "8px",
-    },
-  }))(Tooltip);
-
   //BaseButton focus
   function focusVisible() {
     document.getElementById("card").style.cursor = "pointer";
@@ -127,20 +115,6 @@ function ConfigTabPanel({ panelHeight }) {
   //sliders events
   function valuetext(value) {
     return `${value}`;
-  }
-  function ValueLabelComponent(props) {
-    const { children, open, value } = props;
-    return (
-      <LightTooltip
-        open={open}
-        interactive
-        enterTouchDelay={0}
-        placement="top"
-        title={value}
-      >
-        {children}
-      </LightTooltip>
-    );
   }
 
   //handlers

@@ -113,6 +113,12 @@ const MeetingContainer = () => {
     participantCanToggleRecording,
     participantCanToggleLivestream,
     autoStartLiveStream,
+    autoStartRecording,
+    recordingWebhookUrl,
+    recordingAWSDirPath,
+    recordingLayoutType,
+    recordingLayoutPriority,
+    recordingLayoutGridSize,
     liveStreamLayoutType,
     liveStreamLayoutPriority,
     liveStreamLayoutGridSize,
@@ -235,6 +241,18 @@ const MeetingContainer = () => {
       );
     }
     // }, 5000);
+
+    const { startRecording } = mMeetingRef.current;
+
+    if (autoStartRecording) {
+      startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+        layout: {
+          buttonType: recordingLayoutType,
+          priority: recordingLayoutPriority,
+          gridSize: recordingLayoutGridSize,
+        },
+      });
+    }
 
     if (joinScreenWebCam && selectedWebcam.id) {
       await new Promise((resolve) => {
