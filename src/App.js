@@ -21,6 +21,7 @@ import {
 import useIsSMDesktop from "./utils/useIsSMDesktop";
 import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
+import { version as prebuiltSDKVersion } from "../package.json";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -119,6 +120,7 @@ const App = () => {
       leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
       meetingLayoutTopic: "meetingLayoutTopic",
+      rawUserAgent: "rawUserAgent",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -552,6 +554,11 @@ const App = () => {
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction
+            deviceInfo={{
+              sdkType: "prebuilt",
+              sdkVersion: prebuiltSDKVersion,
+              rawUserAgent: paramKeys.rawUserAgent,
+            }}
           >
             <MeetingContainer />
           </MeetingProvider>
