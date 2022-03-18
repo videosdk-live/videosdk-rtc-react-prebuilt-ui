@@ -3,6 +3,7 @@ import MeetingContainer from "./meetingContainer/MeetingContainer";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import {
   MeetingAppProvider,
+  meetingLayoutPriorities,
   meetingLayouts,
   meetingLayoutTopics,
 } from "./MeetingAppContextDef";
@@ -192,13 +193,13 @@ const App = () => {
       paramKeys.poweredBy = "true";
     }
     if (typeof paramKeys.liveStreamEnabled !== "string") {
-      paramKeys.liveStreamEnabled = "true";
+      paramKeys.liveStreamEnabled = "false";
     }
     if (typeof paramKeys.autoStartLiveStream !== "string") {
-      paramKeys.autoStartLiveStream = "true";
+      paramKeys.autoStartLiveStream = "false";
     }
     if (typeof paramKeys.participantCanToggleLivestream !== "string") {
-      paramKeys.participantCanToggleLivestream = "true";
+      paramKeys.participantCanToggleLivestream = "false";
     }
 
     if (paramKeys.autoStartLiveStream === "true") {
@@ -237,6 +238,10 @@ const App = () => {
       paramKeys.notificationSoundEnabled = "true";
     }
 
+    if (typeof paramKeys.canPin !== "string") {
+      paramKeys.canPin = "false";
+    }
+
     switch (paramKeys?.layoutType?.toUpperCase()) {
       case meetingLayouts.GRID:
       case meetingLayouts.SPOTLIGHT:
@@ -248,44 +253,21 @@ const App = () => {
         break;
     }
 
-    if (typeof paramKeys.canPin !== "string") {
-      paramKeys.canPin = "false";
+    switch (paramKeys.layoutPriority?.toUpperCase()) {
+      case meetingLayoutPriorities.PIN:
+      case meetingLayoutPriorities.SPEAKER:
+        paramKeys.layoutPriority = paramKeys.layoutPriority.toUpperCase();
+        break;
+      default:
+        paramKeys.layoutPriority = meetingLayoutPriorities.SPEAKER;
+        break;
     }
 
-    if (
-      !paramKeys.layoutPriority ||
-      paramKeys.layoutPriority === "null" ||
-      paramKeys.layoutPriority === "undefined"
-    ) {
-      paramKeys.layoutPriority = "SPEAKER";
-    }
+    paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
 
-    // if (paramKeys.layoutPriority === "PIN") {
-    //   if (paramKeys.layoutType === meetingLayouts.SPOTLIGHT) {
-    //   } else if (paramKeys.layoutType === meetingLayouts.SIDEBAR) {
-    //   } else if (paramKeys.layoutType === meetingLayouts.GRID) {
-    //     paramKeys.layoutPriority = "SPEAKER";
-    //   }
-    // } else if (paramKeys.layoutPriority === "SPEAKER") {
-    //   if (paramKeys.layoutType === meetingLayouts.SPOTLIGHT) {
-    //     paramKeys.layoutType = meetingLayouts.UNPINNED_SPOTLIGHT;
-    //   } else if (paramKeys.layoutType === meetingLayouts.SIDEBAR) {
-    //     paramKeys.layoutType = meetingLayouts.UNPINNED_SIDEBAR;
-    //   } else if (paramKeys.layoutType === meetingLayouts.GRID) {
-    //     paramKeys.layoutPriority = "SPEAKER";
-    //   }
-    // } else if (
-    //   paramKeys.layoutPriority === "" ||
-    //   paramKeys.layoutPriority === null
-    // ) {
-    //   if (paramKeys.layoutType === meetingLayouts.SPOTLIGHT) {
-    //     paramKeys.layoutType = meetingLayouts.SPOTLIGHT;
-    //     paramKeys.layoutPriority = "SPEAKER";
-    //   } else if (paramKeys.layoutType === meetingLayouts.SIDEBAR) {
-    //     paramKeys.layoutType = meetingLayouts.SIDEBAR;
-    //     paramKeys.layoutPriority = "SPEAKER";
-    //   }
-    // }
+    if (paramKeys.layoutGridSize <= 0 || isNaN(paramKeys.layoutGridSize)) {
+      paramKeys.layoutGridSize = maxGridSize;
+    }
 
     if (paramKeys.isRecorder === "true") {
       paramKeys.micEnabled = "false";
@@ -301,17 +283,7 @@ const App = () => {
       paramKeys.redirectOnLeave = undefined;
     }
 
-    paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
-
     paramKeys.sideStackSize = parseInt(paramKeys.sideStackSize);
-
-    if (
-      (typeof paramKeys.layoutGridSize === "number" &&
-        paramKeys.layoutGridSize <= 0) ||
-      isNaN(paramKeys.layoutGridSize)
-    ) {
-      paramKeys.layoutGridSize = maxGridSize;
-    }
 
     if (
       typeof paramKeys.sideStackSize === "number" &&

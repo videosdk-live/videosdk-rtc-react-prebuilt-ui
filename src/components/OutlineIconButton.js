@@ -26,7 +26,6 @@ const OutlineIconButton = ({
   btnID,
   buttonText,
   lottieOption,
-  isLGDesktop,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);

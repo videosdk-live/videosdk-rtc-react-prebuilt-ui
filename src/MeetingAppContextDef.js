@@ -39,6 +39,11 @@ export const meetingLayouts = {
   UNPINNED_SPOTLIGHT: "UNPINNED_SPOTLIGHT",
 };
 
+export const meetingLayoutPriorities = {
+  SPEAKER: "SPEAKER",
+  PIN: "PIN",
+};
+
 export const meetingLayoutTopics = {
   MEETING_LAYOUT: "MEETING_LAYOUT",
   RECORDING_LAYOUT: "RECORDING_LAYOUT",

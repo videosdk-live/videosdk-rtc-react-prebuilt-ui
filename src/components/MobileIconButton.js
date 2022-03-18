@@ -49,21 +49,6 @@ const MobileIconButton = ({
         style={{
           borderRadius: theme.spacing(1),
           overflow: "hidden",
-
-          //   backgroundColor: bgColor
-          //     ? bgColor
-          //     : isFocused
-          //     ? focusBGColor || "#fff"
-          //     : theme.palette.background.default,
-          //   border: `${2}px solid ${
-          //     mouseOver || mouseDown
-          //       ? "transparent"
-          //       : bgColor
-          //       ? bgColor
-          //       : focusBGColor
-          //       ? focusBGColor
-          //       : "#ffffff33"
-          //   }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
         }}

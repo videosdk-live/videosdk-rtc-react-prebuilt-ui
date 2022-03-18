@@ -1033,146 +1033,155 @@ const TopBar = ({ topBarHeight }) => {
     []
   );
 
-  const { topBarIcons, mobileIcons } = useMemo(() => {
-    const arr = [];
-    const mobileIconArr = [];
+  const { topBarIcons, firstFourElements, excludeFirstFourElements } =
+    useMemo(() => {
+      const arr = [];
+      const mobileIconArr = [];
 
-    if (participantCanLeave || canEndMeeting) {
-      arr.unshift([topBarButtonTypes.END_CALL]);
+      if (participantCanLeave || canEndMeeting) {
+        arr.unshift([topBarButtonTypes.END_CALL]);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.END_CALL,
+          priority: 1,
+        });
+      }
+
+      const arrSideBar = [];
+
+      if (canChangeLayout) {
+        arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CONFIGURATION,
+          priority: 7,
+        });
+      }
+      if (chatEnabled) {
+        arrSideBar.unshift(topBarButtonTypes.CHAT);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CHAT,
+          priority: 5,
+        });
+      }
+      arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
       mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.END_CALL,
-        priority: 1,
+        buttonType: topBarButtonTypes.PARTICIPANTS,
+        priority: 10,
       });
-    }
 
-    const arrSideBar = [];
+      arr.unshift(arrSideBar);
 
-    if (canChangeLayout) {
-      arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.CONFIGURATION,
-        priority: 7,
-      });
-    }
-    if (chatEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.CHAT);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.CHAT,
-        priority: 5,
-      });
-    }
-    arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
-    mobileIconArr.unshift({
-      buttonType: topBarButtonTypes.PARTICIPANTS,
-      priority: 10,
-    });
+      const arrMedia = [];
 
-    arr.unshift(arrSideBar);
+      if (screenShareEnabled) {
+        arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.SCREEN_SHARE,
+          priority: 6,
+        });
+      }
+      if (participantCanToggleSelfWebcam) {
+        arrMedia.unshift(topBarButtonTypes.WEBCAM);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.WEBCAM,
+          priority: 2,
+        });
+      }
+      if (participantCanToggleSelfMic) {
+        arrMedia.unshift(topBarButtonTypes.MIC);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.MIC,
+          priority: 3,
+        });
+      }
 
-    const arrMedia = [];
+      if (arrMedia.length) {
+        arr.unshift(arrMedia);
+      }
 
-    if (screenShareEnabled) {
-      arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.SCREEN_SHARE,
-        priority: 6,
-      });
-    }
-    if (participantCanToggleSelfWebcam) {
-      arrMedia.unshift(topBarButtonTypes.WEBCAM);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.WEBCAM,
-        priority: 2,
-      });
-    }
-    if (participantCanToggleSelfMic) {
-      arrMedia.unshift(topBarButtonTypes.MIC);
-      mobileIconArr.unshift({ buttonType: topBarButtonTypes.MIC, priority: 3 });
-    }
+      const utilsArr = [];
 
-    if (arrMedia.length) {
-      arr.unshift(arrMedia);
-    }
+      if (raiseHandEnabled) {
+        utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.RAISE_HAND,
+          priority: 13,
+        });
+      }
 
-    const utilsArr = [];
+      if (recordingEnabled) {
+        utilsArr.unshift(topBarButtonTypes.RECORDING);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.RECORDING,
+          priority: 4,
+        });
+      }
 
-    if (raiseHandEnabled) {
-      utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.RAISE_HAND,
-        priority: 13,
-      });
-    }
+      if (whiteboardEnabled) {
+        utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.WHITEBOARD,
+          priority: 11,
+        });
+      }
 
-    if (recordingEnabled) {
-      utilsArr.unshift(topBarButtonTypes.RECORDING);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.RECORDING,
-        priority: 4,
-      });
-    }
+      if (liveStreamEnabled && !participantCanToggleLivestream) {
+        utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.GO_LIVE,
+          priority: 9,
+        });
+      }
 
-    if (whiteboardEnabled) {
-      utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.WHITEBOARD,
-        priority: 11,
-      });
-    }
+      if (participantCanToggleLivestream && liveStreamEnabled) {
+        //liveStreamIcon
+        utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.GO_LIVE,
+          priority: 9,
+        });
+        //AddLiveStreamIcon
+        utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.ADD_LIVE_STREAM,
+          priority: 8,
+        });
+      }
 
-    if (liveStreamEnabled && !participantCanToggleLivestream) {
-      utilsArr.unshift(topBarButtonTypes.GO_LIVE);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.GO_LIVE,
-        priority: 9,
-      });
-    }
+      if (participantCanToggleLivestream && !liveStreamEnabled) {
+      }
 
-    if (participantCanToggleLivestream && liveStreamEnabled) {
-      //liveStreamIcon
-      utilsArr.unshift(topBarButtonTypes.GO_LIVE);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.GO_LIVE,
-        priority: 9,
-      });
-      //AddLiveStreamIcon
-      utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.ADD_LIVE_STREAM,
-        priority: 8,
-      });
-    }
+      if (utilsArr.length) {
+        arr.unshift(utilsArr);
+      }
 
-    if (participantCanToggleLivestream && !liveStreamEnabled) {
-    }
+      //sorting mobile icon
+      mobileIconArr
+        .sort((iconA, iconB) => iconA.priority - iconB.priority)
+        .map((icon) => icon.buttonType);
 
-    if (utilsArr.length) {
-      arr.unshift(utilsArr);
-    }
+      const firstFourElements = mobileIconArr.slice(0, 4);
 
-    //sorting mobile icon
-    mobileIconArr
-      .sort((iconA, iconB) => iconA.priority - iconB.priority)
-      .map((icon) => icon.buttonType);
+      const excludeFirstFourElements = mobileIconArr.slice(4);
 
-    return { topBarIcons: arr, mobileIcons: mobileIconArr };
-  }, [
-    participantCanToggleSelfMic,
-    participantCanToggleSelfWebcam,
-    screenShareEnabled,
-    pollEnabled,
-    whiteboardEnabled,
-    chatEnabled,
-    raiseHandEnabled,
-    topBarButtonTypes,
-    recordingEnabled,
-  ]);
+      return {
+        topBarIcons: arr,
+        mobileIcons: mobileIconArr,
+        firstFourElements,
+        excludeFirstFourElements,
+      };
+    }, [
+      participantCanToggleSelfMic,
+      participantCanToggleSelfWebcam,
+      screenShareEnabled,
+      pollEnabled,
+      whiteboardEnabled,
+      chatEnabled,
+      raiseHandEnabled,
+      topBarButtonTypes,
+      recordingEnabled,
+    ]);
 
   const [topBarVisible, setTopBarVisible] = useState(false);
-
-  const firstFourElements = mobileIcons.slice(0, 4);
-
-  const excludeFirstFourElements = mobileIcons.slice(4);
 
   useEffect(() => {
     setTimeout(() => {

@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import {
-  Box,
-  Typography,
-  Slider,
-  ButtonBase,
-  Tooltip,
-} from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { Box, Typography, Slider, ButtonBase } from "@material-ui/core";
 import {
   meetingLayoutTopics,
   useMeetingAppContext,
@@ -20,7 +13,7 @@ import { usePubSub } from "@videosdk.live/react-sdk";
 import useIsMobile from "../../utils/useIsMobile";
 import { debounce } from "../../utils/common";
 
-function ConfigTabPanel({ panelHeight }) {
+function ConfigTabPanel() {
   const isMobile = useIsMobile(375);
 
   const { appMeetingLayout } = useMeetingAppContext();
@@ -260,10 +253,10 @@ function ConfigTabPanel({ panelHeight }) {
             marginBottom: "24px",
           }}
         >
-          {heading == "Layout" ? (
+          {heading === "Layout" ? (
             <>
               {layoutArr.map((layoutObj) => {
-                return layoutObj.type.toUpperCase() == type ? (
+                return layoutObj.type.toUpperCase() === type ? (
                   <Card
                     onClick={onLayoutChange}
                     isActive={true}
@@ -285,7 +278,7 @@ function ConfigTabPanel({ panelHeight }) {
           ) : (
             <>
               {priorityArr.map((priorityObj) => {
-                return priorityObj.type.toUpperCase() == priority ? (
+                return priorityObj.type.toUpperCase() === priority ? (
                   <Card
                     onClick={onPriorityChange}
                     isActive={true}
@@ -322,7 +315,7 @@ function ConfigTabPanel({ panelHeight }) {
     >
       <Div onLayoutChange={_handleChangeLayout} heading="Layout" />
       <Div onPriorityChange={_handleChangePriority} heading="Priority" />
-      {type == "GRID" ? (
+      {type === "GRID" ? (
         <Box
           style={{
             display: "flex",
