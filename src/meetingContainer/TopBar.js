@@ -796,7 +796,7 @@ const EndCallBTN = () => {
   const classes = useStyles();
 
   const [isEndMeeting, setIsEndMeeting] = useState(false);
-  const { endCallContainerRef, canEndMeeting, participantCanLeave } =
+  const { endCallContainerRef, participantCanEndMeeting, participantCanLeave } =
     useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -832,7 +832,7 @@ const EndCallBTN = () => {
         tooltipTitle={
           !participantCanLeave
             ? "End Call"
-            : canEndMeeting
+            : participantCanEndMeeting
             ? "Open popup"
             : "Leave Call"
         }
@@ -841,12 +841,12 @@ const EndCallBTN = () => {
         onClick={(e) => {
           !participantCanLeave
             ? setIsEndMeeting(true)
-            : canEndMeeting
+            : participantCanEndMeeting
             ? handleClick(e)
             : leave();
         }}
       />
-      {canEndMeeting && (
+      {participantCanEndMeeting && (
         <>
           <Popover
             container={tollTipEl.current}
@@ -997,7 +997,7 @@ const TopBar = ({ topBarHeight }) => {
     brandName,
     participantCanLeave,
     poweredBy,
-    canEndMeeting,
+    participantCanEndMeeting,
     animationsEnabled,
   } = useMeetingAppContext();
 
@@ -1038,7 +1038,7 @@ const TopBar = ({ topBarHeight }) => {
       const arr = [];
       const mobileIconArr = [];
 
-      if (participantCanLeave || canEndMeeting) {
+      if (participantCanLeave || participantCanEndMeeting) {
         arr.unshift([topBarButtonTypes.END_CALL]);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.END_CALL,

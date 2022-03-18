@@ -63,65 +63,73 @@ const App = () => {
       screenShareEnabled: "screenShareEnabled",
       pollEnabled: "pollEnabled",
       whiteboardEnabled: "whiteboardEnabled",
+      raiseHandEnabled: "raiseHandEnabled",
+      //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
-      raiseHandEnabled: "raiseHandEnabled",
+      participantCanToggleRecording: "participantCanToggleRecording",
+      participantCanLeave: "participantCanLeave",
+      participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
+      participantCanToggleOtherMic: "participantCanToggleOtherMic",
+      participantCanToggleLivestream: "participantCanToggleLivestream",
+      participantCanEndMeeting: "participantCanEndMeeting",
+      //
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
-      canChangeLayout: "canChangeLayout",
-
       recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
-      participantCanToggleRecording: "participantCanToggleRecording",
+      //
       brandingEnabled: "brandingEnabled",
       brandLogoURL: "brandLogoURL",
       brandName: "brandName",
-      participantCanLeave: "participantCanLeave",
       poweredBy: "poweredBy",
+      //
       liveStreamEnabled: "liveStreamEnabled",
-      // liveStreamLayoutType: "liveStreamLayoutType",
-      // liveStreamLayoutPriority: "liveStreamLayoutPriority",
-      // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
       autoStartLiveStream: "autoStartLiveStream",
       liveStreamOutputs: "liveStreamOutputs",
+      //
       askJoin: "askJoin",
-      participantCanToggleOtherMic: "participantCanToggleOtherMic",
-      participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
-      participantCanToggleLivestream: "participantCanToggleLivestream",
+      //
       joinScreenEnabled: "joinScreenEnabled",
       joinScreenMeetingUrl: "joinScreenMeetingUrl",
       joinScreenTitle: "joinScreenTitle",
+      //
       notificationSoundEnabled: "notificationSoundEnabled",
       canPin: "canPin",
-      canEndMeeting: "canEndMeeting",
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
+      //
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
+      leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
+      //
       maxResolution: "maxResolution",
       animationsEnabled: "animationsEnabled",
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
       debug: "debug",
       participantId: "participantId",
-
+      //
       layoutType: "layoutType",
       layoutGridSize: "layoutGridSize",
       layoutPriority: "layoutPriority",
-
-      // recordingLayoutType: "recordingLayoutType",
-      // recordingLayoutPriority: "recordingLayoutPriority",
-      // recordingLayoutGridSize: "recordingLayoutGridSize",
+      meetingLayoutTopic: "meetingLayoutTopic",
+      //
+      isRecorder: "isRecorder",
       hideLocalParticipant: "hideLocalParticipant",
       alwaysShowOverlay: "alwaysShowOverlay",
       sideStackSize: "sideStackSize",
       reduceEdgeSpacing: "reduceEdgeSpacing",
-      isRecorder: "isRecorder",
-      leftScreenRejoinButtonEnabled: "leftScreenRejoinButtonEnabled",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
-      meetingLayoutTopic: "meetingLayoutTopic",
       rawUserAgent: "rawUserAgent",
+      canChangeLayout: "canChangeLayout",
+      // liveStreamLayoutType: "liveStreamLayoutType",
+      // liveStreamLayoutPriority: "liveStreamLayoutPriority",
+      // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
+      // recordingLayoutType: "recordingLayoutType",
+      // recordingLayoutPriority: "recordingLayoutPriority",
+      // recordingLayoutGridSize: "recordingLayoutGridSize",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -488,7 +496,8 @@ const App = () => {
             joinScreenMic,
             canRemoveOtherParticipant:
               paramKeys.canRemoveOtherParticipant === "true",
-            canEndMeeting: paramKeys.canEndMeeting === "true",
+            participantCanEndMeeting:
+              paramKeys.participantCanEndMeeting === "true",
             canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
             canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
             meetingLeft,
