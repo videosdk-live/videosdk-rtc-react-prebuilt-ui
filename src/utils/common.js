@@ -316,3 +316,68 @@ export const appEvents = {
   "exit-full-screen": "exit-full-screen",
   "toggle-full-screen": "toggle-full-screen",
 };
+
+export const extractHostname = (url) => {
+  var hostname;
+  //find & remove protocol (http, ftp, etc.) and get hostname
+
+  if (url.indexOf("//") > -1) {
+    hostname = url.split("/")[2];
+  } else {
+    hostname = url.split("/")[0];
+  }
+
+  //find & remove port number
+  hostname = hostname.split(":")[0];
+  //find & remove "?"
+  hostname = hostname.split("?")[0];
+
+  return hostname;
+};
+
+export const extractRootDomain = (url) => {
+  var domain = extractHostname(url),
+    splitArr = domain.split("."),
+    arrLen = splitArr.length;
+
+  //extracting the root domain here
+  //if there is a subdomain
+  if (arrLen > 2) {
+    domain = splitArr[arrLen - 2] + "." + splitArr[arrLen - 1];
+    //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+    if (
+      splitArr[arrLen - 2].length === 2 &&
+      splitArr[arrLen - 1].length === 2
+    ) {
+      //this is using a ccTLD
+      domain = splitArr[arrLen - 3] + "." + domain;
+    }
+  }
+  return domain;
+};
+
+export const getUniqueId = () => {
+  return Math.random().toString(36).substring(2, 10);
+};
+
+export function debounce(func, wait, immediate) {
+  var timeout;
+
+  return function executedFunction() {
+    var context = this;
+    var args = arguments;
+
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+
+    var callNow = immediate && !timeout;
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(later, wait);
+
+    if (callNow) func.apply(context, args);
+  };
+}

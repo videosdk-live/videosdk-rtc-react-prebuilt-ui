@@ -9,6 +9,8 @@ import {
   MenuList,
   Typography,
   Link,
+  SwipeableDrawer,
+  Grid,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
 import { useMeeting } from "@videosdk.live/react-sdk";
@@ -16,7 +18,10 @@ import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
-
+import liveBlink from "../animations/live-blink.json";
+import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
+import LiveIcon from "../icons/LiveIcon";
+import RaiseHandDesktop from "../icons/RaiseHandDesktop";
 import {
   Activities,
   Chat,
@@ -35,7 +40,6 @@ import {
   VideocamOff as VideocamOffIcon,
   Videocam as VideocamIcon,
   MoreHoriz as MoreHorizIcon,
-  Close as CloseIcon,
   ArrowDropDown as ArrowDropDownIcon,
   Gesture,
 } from "@material-ui/icons";
@@ -45,7 +49,9 @@ import {
   isTablet as RDDIsTablet,
 } from "react-device-detect";
 import ConfirmBox from "../components/ConfirmBox";
-import { useMediaQuery } from "react-responsive";
+import OutlineIconTextButton from "../components/OutlineIconTextButton";
+import MobileIconButton from "../components/MobileIconButton";
+import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -58,34 +64,62 @@ const useStyles = makeStyles({
     width: 300,
   },
 });
-const RaiseHandBTN = ({ onClick }) => {
+const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting();
-
   const sendChatMessage = mMeeting?.sendChatMessage;
 
   const onRaiseHand = () => {
-    typeof onClick === "function" && onClick();
-    sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+    if (isMobile || isTab) {
+      onClick();
+      typeof onClick === "function" && onClick();
+      sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+    } else {
+      sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+    }
   };
 
-  return (
+  return isMobile || isTab ? (
+    <Tooltip>
+      <MobileIconButton
+        id="RaiseHandBTN"
+        tooltipTitle={"Raise hand"}
+        Icon={RaiseHand}
+        onClick={onRaiseHand}
+        buttonText={"Raise Hand"}
+      />
+    </Tooltip>
+  ) : (
     <Tooltip>
       <OutlineIconButton
         tooltipTitle={"Raise hand"}
-        Icon={RaiseHand}
+        Icon={RaiseHandDesktop}
         onClick={onRaiseHand}
       />
     </Tooltip>
   );
 };
-const ParticipantsBTN = ({ onClick }) => {
+const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const participants = mMeeting?.participants;
   const participantsCount = participants ? new Map(participants).size : 0;
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Participants"}
+      isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
+      buttonText={"Participants"}
+      Icon={Participants}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+        setSideBarMode((s) =>
+          s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
+        );
+      }}
+      badge={participantsCount}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
@@ -100,10 +134,213 @@ const ParticipantsBTN = ({ onClick }) => {
     />
   );
 };
-const ChatBTN = () => {
+
+const ConfigBTN = ({ isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Configuration"}
+      buttonText={"Configuration"}
+      Icon={SettingsOutlinedIcon}
+      isFocused={sideBarMode === sideBarModes.CONFIGURATION}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION
+        );
+      }}
+    />
+  ) : (
+    <OutlineIconButton
+      tooltipTitle={"Configuration"}
+      Icon={SettingsOutlinedIcon}
+      isFocused={sideBarMode === sideBarModes.CONFIGURATION}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION
+        );
+      }}
+    />
+  );
+};
+
+const AddLiveStreamBTN = ({ isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Add Live Streams"}
+      Icon={AddLiveStreamIcon}
+      buttonText={"Add Live Streams"}
+      isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.ADD_LIVE_STREAM
+            ? null
+            : sideBarModes.ADD_LIVE_STREAM
+        );
+      }}
+    />
+  ) : (
+    <OutlineIconTextButton
+      tooltipTitle={"Add Live Streams"}
+      buttonText="Add Live Streams"
+      isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.ADD_LIVE_STREAM
+            ? null
+            : sideBarModes.ADD_LIVE_STREAM
+        );
+      }}
+    />
+  );
+};
+
+const GoLiveBTN = ({ isMobile, isTab }) => {
+  const mMeeting = useMeeting({});
+
+  const [isPopupShown, setIsPopupShown] = useState(false);
+
+  const isLiveStreaming = mMeeting?.isLiveStreaming;
+  const startLivestream = mMeeting?.startLivestream;
+  const stopLivestream = mMeeting?.stopLivestream;
+
+  const {
+    participantCanToggleLivestream,
+    liveStreamConfig,
+    setSideBarMode,
+    appMeetingLayout,
+  } = useMeetingAppContext();
+
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isLiveStreamingRef = useRef(isLiveStreaming);
+  const liveStreamConfigRef = useRef(liveStreamConfig);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isLiveStreamingRef.current = isLiveStreaming;
+  }, [isLiveStreaming]);
+
+  useEffect(() => {
+    liveStreamConfigRef.current = liveStreamConfig;
+  }, [liveStreamConfig]);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: liveBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 170,
+  };
+
+  const _handleStartLivestream = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startLivestream(liveStreamConfig, { layout });
+  };
+
+  const _handleClick = () => {
+    const isLiveStreaming = isLiveStreamingRef.current;
+
+    if (isLiveStreaming) {
+      stopLivestream();
+    } else {
+      if (liveStreamConfigRef.current.length > 0) {
+        _handleStartLivestream();
+      } else {
+        setIsPopupShown(true);
+      }
+    }
+  };
+
   return (
+    <>
+      {isMobile || isTab ? (
+        <MobileIconButton
+          Icon={LiveIcon}
+          onClick={_handleClick}
+          tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          buttonText={isLiveStreaming ? "Stop Live" : "Go Live"}
+          isFocused={isLiveStreaming}
+          lottieOption={isLiveStreaming ? defaultOptions : null}
+          disabled={!participantCanToggleLivestream}
+        />
+      ) : (
+        <OutlineIconTextButton
+          liveStreamStarted={isLiveStreaming ? true : false}
+          bgColor={"#D32F2F"}
+          // Icon={Live}
+          onClick={_handleClick}
+          tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          buttonText="Go Live"
+          lottieOption={isLiveStreaming ? defaultOptions : null}
+          disabled={!participantCanToggleLivestream}
+        />
+      )}
+      <ConfirmBox
+        open={isPopupShown}
+        title={"Add live stream configuration"}
+        subTitle={
+          "Please add live stream configuration to start live streaming"
+        }
+        successText={"Proceed"}
+        onSuccess={() => {
+          setSideBarMode((s) => sideBarModes.ADD_LIVE_STREAM);
+          setIsPopupShown(false);
+        }}
+        rejectText={"Cancel"}
+        onReject={() => {
+          setIsPopupShown(false);
+        }}
+      />
+    </>
+  );
+};
+const ChatBTN = ({ isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Chat"}
+      buttonText={"Chat"}
+      Icon={Chat}
+      isFocused={sideBarMode === sideBarModes.CHAT}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
+        );
+      }}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Chat"}
       Icon={Chat}
@@ -116,10 +353,22 @@ const ChatBTN = () => {
     />
   );
 };
-const ActivitiesBTN = ({ onClick }) => {
+const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={Activities}
+      isFocused={sideBarMode === sideBarModes.ACTIVITIES}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+
+        setSideBarMode((s) =>
+          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
+        );
+      }}
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={"Activities"}
       Icon={Activities}
@@ -135,35 +384,52 @@ const ActivitiesBTN = ({ onClick }) => {
   );
 };
 
-const WhiteBoardBTN = ({ onClick }) => {
+const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
   const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
     useMeetingAppContext();
+
   const mMeeting = useMeeting({});
 
   const presenterId = mMeeting?.presenterId;
 
   return (
     <>
-      {whiteboardEnabled && (
-        <OutlineIconButton
-          disabled={presenterId || !canToggleWhiteboard}
-          tooltipTitle={"Whiteboard"}
-          Icon={Gesture}
-          isFocused={whiteboardStarted}
-          onClick={() => {
-            typeof onClick === "function" && onClick();
+      {whiteboardEnabled &&
+        (isMobile || isTab ? (
+          <MobileIconButton
+            disabled={presenterId || !canToggleWhiteboard}
+            tooltipTitle={"Whiteboard"}
+            buttonText={"Whiteboard"}
+            Icon={Gesture}
+            isFocused={whiteboardStarted}
+            onClick={() => {
+              typeof onClick === "function" && onClick();
 
-            whiteboardStarted
-              ? mMeeting.meeting.stopWhiteboard()
-              : mMeeting.meeting.startWhiteboard();
-          }}
-        />
-      )}
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
+            }}
+          />
+        ) : (
+          <OutlineIconButton
+            disabled={presenterId || !canToggleWhiteboard}
+            tooltipTitle={"Whiteboard"}
+            Icon={Gesture}
+            isFocused={whiteboardStarted}
+            onClick={() => {
+              typeof onClick === "function" && onClick();
+
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
+            }}
+          />
+        ))}
     </>
   );
 };
 
-const ScreenShareBTN = ({ onClick }) => {
+const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
   const { whiteboardStarted } = useMeetingAppContext();
 
@@ -171,7 +437,41 @@ const ScreenShareBTN = ({ onClick }) => {
   const toggleScreenShare = mMeeting?.toggleScreenShare;
   const presenterId = mMeeting?.presenterId;
 
-  return (
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      buttonText={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      isFocused={localScreenShareOn}
+      Icon={ScreenShare}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+        toggleScreenShare();
+      }}
+      disabled={
+        RDDIsMobile || RDDIsTablet
+          ? true
+          : whiteboardStarted
+          ? true
+          : presenterId
+          ? localScreenShareOn
+            ? false
+            : true
+          : false
+      }
+    />
+  ) : (
     <OutlineIconButton
       tooltipTitle={
         presenterId
@@ -298,47 +598,49 @@ const MicBTN = () => {
   );
 };
 
-const RecordingBTN = () => {
+const RecordingBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const isRecording = mMeeting?.isRecording;
   const startRecording = mMeeting?.startRecording;
   const stopRecording = mMeeting?.stopRecording;
-  const [defaultRecordingActionTaken, setDefaultRecordingActionTaken] =
-    useState(false);
 
   const {
     recordingWebhookUrl,
     recordingAWSDirPath,
-    autoStartRecording,
     participantCanToggleRecording,
-    recordingLayoutType,
-    recordingLayoutPriority,
-    recordingLayoutGridSize,
+    appMeetingLayout,
   } = useMeetingAppContext();
 
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isRecordingRef = useRef(isRecording);
+
   useEffect(() => {
-    if (autoStartRecording) {
-      setDefaultRecordingActionTaken(true);
-      setTimeout(() => {
-        if (!defaultRecordingActionTaken) {
-          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            layout: {
-              type: recordingLayoutType,
-              priority: recordingLayoutPriority,
-              gridSize: recordingLayoutGridSize,
-            },
-          });
-        }
-      }, 5000);
-    }
-  }, [
-    recordingWebhookUrl,
-    recordingAWSDirPath,
-    defaultRecordingActionTaken,
-    autoStartRecording,
-    startRecording,
-  ]);
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   const defaultOptions = {
     loop: true,
@@ -351,22 +653,40 @@ const RecordingBTN = () => {
     width: 160,
   };
 
-  return (
+  const _handleStartRecording = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+  };
+
+  const _handleClick = () => {
+    const isRecording = isRecordingRef.current;
+
+    if (isRecording) {
+      stopRecording();
+    } else {
+      _handleStartRecording();
+    }
+  };
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={ScreenRecording}
+      onClick={_handleClick}
+      tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
+      isFocused={isRecording}
+      disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
+      buttonText={isRecording ? "Stop Recording" : "Start Recording"}
+    />
+  ) : (
     <OutlineIconButton
       Icon={ScreenRecording}
-      onClick={() => {
-        if (isRecording) {
-          stopRecording();
-        } else {
-          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            layout: {
-              type: recordingLayoutType,
-              priority: recordingLayoutPriority,
-              gridSize: recordingLayoutGridSize,
-            },
-          });
-        }
-      }}
+      onClick={_handleClick}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
@@ -476,7 +796,7 @@ const EndCallBTN = () => {
   const classes = useStyles();
 
   const [isEndMeeting, setIsEndMeeting] = useState(false);
-  const { endCallContainerRef, canEndMeeting, participantCanLeave } =
+  const { endCallContainerRef, participantCanEndMeeting, participantCanLeave } =
     useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -512,7 +832,7 @@ const EndCallBTN = () => {
         tooltipTitle={
           !participantCanLeave
             ? "End Call"
-            : canEndMeeting
+            : participantCanEndMeeting
             ? "Open popup"
             : "Leave Call"
         }
@@ -521,12 +841,12 @@ const EndCallBTN = () => {
         onClick={(e) => {
           !participantCanLeave
             ? setIsEndMeeting(true)
-            : canEndMeeting
+            : participantCanEndMeeting
             ? handleClick(e)
             : leave();
         }}
       />
-      {canEndMeeting && (
+      {participantCanEndMeeting && (
         <>
           <Popover
             container={tollTipEl.current}
@@ -636,7 +956,9 @@ const EndCallBTN = () => {
             title={"Are you sure to end this call for everyone?"}
             successText={"End Call"}
             onSuccess={() => {
-              sendChatMessage(JSON.stringify({ type: "END_CALL", data: {} }));
+              sendChatMessage(
+                JSON.stringify({ buttonType: "END_CALL", data: {} })
+              );
               setTimeout(() => {
                 end();
               }, 1000);
@@ -654,12 +976,16 @@ const EndCallBTN = () => {
 
 const TopBar = ({ topBarHeight }) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+
   const [defaultBrandLogoUrl, setDefaultBrandLogoUrl] = useState(null);
 
   const {
     chatEnabled,
     screenShareEnabled,
+    canChangeLayout,
+    participantCanToggleLivestream,
+    liveStreamEnabled,
     pollEnabled,
     whiteboardEnabled,
     participantCanToggleSelfWebcam,
@@ -671,23 +997,22 @@ const TopBar = ({ topBarHeight }) => {
     brandName,
     participantCanLeave,
     poweredBy,
-    canEndMeeting,
+    participantCanEndMeeting,
     animationsEnabled,
   } = useMeetingAppContext();
 
-  const handleClickFAB = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClickFAB = () => {
+    setOpen(true);
   };
 
   const handleCloseFAB = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
   const isMobile = useIsMobile();
   const isTab = useIsTab();
 
   const theme = useTheme();
-  const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
   const topBarButtonTypes = useMemo(
     () => ({
@@ -701,70 +1026,160 @@ const TopBar = ({ topBarHeight }) => {
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
       WHITEBOARD: "WHITEBOARD",
+      ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
+      CONFIGURATION: "CONFIGURATION",
+      GO_LIVE: "GO_LIVE",
     }),
     []
   );
 
-  const topBarIcons = useMemo(() => {
-    const arr = [];
+  const { topBarIcons, firstFourElements, excludeFirstFourElements } =
+    useMemo(() => {
+      const arr = [];
+      const mobileIconArr = [];
 
-    if (participantCanLeave || canEndMeeting) {
-      arr.unshift([topBarButtonTypes.END_CALL]);
-    }
+      if (participantCanLeave || participantCanEndMeeting) {
+        arr.unshift([topBarButtonTypes.END_CALL]);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.END_CALL,
+          priority: 1,
+        });
+      }
 
-    const arrSideBar = [];
+      const arrSideBar = [];
 
-    if (chatEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.CHAT);
-    }
-    arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
+      if (canChangeLayout) {
+        arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CONFIGURATION,
+          priority: 7,
+        });
+      }
+      if (chatEnabled) {
+        arrSideBar.unshift(topBarButtonTypes.CHAT);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CHAT,
+          priority: 5,
+        });
+      }
+      arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
+      mobileIconArr.unshift({
+        buttonType: topBarButtonTypes.PARTICIPANTS,
+        priority: 10,
+      });
 
-    arr.unshift(arrSideBar);
+      arr.unshift(arrSideBar);
 
-    const arrMedia = [];
-    if (screenShareEnabled) {
-      arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
-    }
-    if (participantCanToggleSelfWebcam) {
-      arrMedia.unshift(topBarButtonTypes.WEBCAM);
-    }
-    if (participantCanToggleSelfMic) {
-      arrMedia.unshift(topBarButtonTypes.MIC);
-    }
+      const arrMedia = [];
 
-    if (arrMedia.length) {
-      arr.unshift(arrMedia);
-    }
+      if (screenShareEnabled) {
+        arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.SCREEN_SHARE,
+          priority: 6,
+        });
+      }
+      if (participantCanToggleSelfWebcam) {
+        arrMedia.unshift(topBarButtonTypes.WEBCAM);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.WEBCAM,
+          priority: 2,
+        });
+      }
+      if (participantCanToggleSelfMic) {
+        arrMedia.unshift(topBarButtonTypes.MIC);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.MIC,
+          priority: 3,
+        });
+      }
 
-    const utilsArr = [];
+      if (arrMedia.length) {
+        arr.unshift(arrMedia);
+      }
 
-    if (raiseHandEnabled) {
-      utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
-    }
+      const utilsArr = [];
 
-    if (recordingEnabled) {
-      utilsArr.unshift(topBarButtonTypes.RECORDING);
-    }
+      if (raiseHandEnabled) {
+        utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.RAISE_HAND,
+          priority: 13,
+        });
+      }
 
-    if (whiteboardEnabled) {
-      utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
-    }
+      if (recordingEnabled) {
+        utilsArr.unshift(topBarButtonTypes.RECORDING);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.RECORDING,
+          priority: 4,
+        });
+      }
 
-    if (utilsArr.length) {
-      arr.unshift(utilsArr);
-    }
-    return arr;
-  }, [
-    participantCanToggleSelfMic,
-    participantCanToggleSelfWebcam,
-    screenShareEnabled,
-    pollEnabled,
-    whiteboardEnabled,
-    chatEnabled,
-    raiseHandEnabled,
-    topBarButtonTypes,
-    recordingEnabled,
-  ]);
+      if (whiteboardEnabled) {
+        utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.WHITEBOARD,
+          priority: 11,
+        });
+      }
+
+      if (liveStreamEnabled && !participantCanToggleLivestream) {
+        utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.GO_LIVE,
+          priority: 9,
+        });
+      }
+
+      if (participantCanToggleLivestream && liveStreamEnabled) {
+        //liveStreamIcon
+        utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.GO_LIVE,
+          priority: 9,
+        });
+        //AddLiveStreamIcon
+        utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.ADD_LIVE_STREAM,
+          priority: 8,
+        });
+      }
+
+      if (participantCanToggleLivestream && !liveStreamEnabled) {
+      }
+
+      if (utilsArr.length) {
+        arr.unshift(utilsArr);
+      }
+
+      //sorting mobile icon
+      mobileIconArr
+        .sort((iconA, iconB) => iconA.priority - iconB.priority)
+        .map((icon) => icon.buttonType);
+
+      const firstFourElements = mobileIconArr.slice(0, 4);
+
+      const excludeFirstFourElements = mobileIconArr.slice(4);
+
+      return {
+        topBarIcons: arr,
+        mobileIcons: mobileIconArr,
+        firstFourElements,
+        excludeFirstFourElements,
+      };
+    }, [
+      participantCanToggleSelfMic,
+      participantCanToggleSelfWebcam,
+      screenShareEnabled,
+      pollEnabled,
+      whiteboardEnabled,
+      chatEnabled,
+      raiseHandEnabled,
+      topBarButtonTypes,
+      recordingEnabled,
+    ]);
 
   const [topBarVisible, setTopBarVisible] = useState(false);
 
@@ -782,103 +1197,155 @@ const TopBar = ({ topBarHeight }) => {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: theme.palette.background.default,
-        borderTop: "1px solid #ffffff33",
       }}
     >
-      {(participantCanLeave || canEndMeeting) && (
-        <Box>
-          <EndCallBTN />
-        </Box>
-      )}
-      {participantCanToggleSelfMic && (
-        <Box ml={2}>
-          <MicBTN />
-        </Box>
-      )}
-      {participantCanToggleSelfWebcam && (
-        <Box ml={2}>
-          <WebcamBTN />
-        </Box>
-      )}
-      {isPortrait ? (
-        recordingEnabled ? (
-          <Box ml={2}>
-            <RecordingBTN />
+      {firstFourElements.map((icon, i) => {
+        return (
+          <Box key={`topbar_controls_j_${i}`} ml={i === 0 ? 0 : 1.5}>
+            {icon.buttonType === topBarButtonTypes.RAISE_HAND ? (
+              <RaiseHandBTN />
+            ) : icon.buttonType === topBarButtonTypes.MIC ? (
+              <MicBTN />
+            ) : icon.buttonType === topBarButtonTypes.WEBCAM ? (
+              <WebcamBTN />
+            ) : icon.buttonType === topBarButtonTypes.SCREEN_SHARE ? (
+              <ScreenShareBTN />
+            ) : icon.buttonType === topBarButtonTypes.PARTICIPANTS ? (
+              <ParticipantsBTN />
+            ) : icon.buttonType === topBarButtonTypes.CHAT ? (
+              <ChatBTN />
+            ) : icon.buttonType === topBarButtonTypes.ACTIVITIES ? (
+              <ActivitiesBTN />
+            ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
+              <EndCallBTN />
+            ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
+              <RecordingBTN />
+            ) : icon.buttonType === topBarButtonTypes.GO_LIVE ? (
+              <GoLiveBTN />
+            ) : icon.buttonType === topBarButtonTypes.WHITEBOARD ? (
+              <WhiteBoardBTN />
+            ) : icon.buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
+              <AddLiveStreamBTN />
+            ) : icon.buttonType === topBarButtonTypes.CONFIGURATION ? (
+              <ConfigBTN />
+            ) : null}
           </Box>
-        ) : chatEnabled ? (
-          <Box ml={2}>
-            <ChatBTN />
-          </Box>
-        ) : null
-      ) : chatEnabled ? (
-        <Box ml={2}>
-          <ChatBTN />
-        </Box>
-      ) : null}
-      {!isPortrait && recordingEnabled && (
-        <Box ml={2}>
-          <RecordingBTN />
-        </Box>
-      )}
+        );
+      })}
+
       <Box ml={2}>
         <OutlineIconButton
-          Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
-          isFocused={anchorEl}
+          Icon={MoreHorizIcon}
+          // Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
+          // isFocused={anchorEl}
           onClick={handleClickFAB}
         />
       </Box>
-      <Popover
-        container={anchorEl?.current}
-        PaperProps={{
-          style: {
-            backgroundColor: "transparent",
-            boxShadow: "none",
-          },
-        }}
-        className={classes.popover}
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
+
+      <SwipeableDrawer
+        anchor={"bottom"}
+        open={Boolean(open)}
         onClose={handleCloseFAB}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
+        onOpen={handleClickFAB}
+        style={{ paddingBottom: "100px" }}
       >
-        <Box>
-          {raiseHandEnabled && (
-            <Box mb={1.2}>
-              <RaiseHandBTN onClick={handleCloseFAB} />
-            </Box>
-          )}
-          <Box mb={1.2}>
-            <ParticipantsBTN onClick={handleCloseFAB} />
-          </Box>
-          {/* {(pollEnabled || whiteboardEnabled) && (
-            <Box mb={1.2}>
-              <ActivitiesBTN onClick={handleCloseFAB} />
-            </Box>
-          )} */}
-          {whiteboardEnabled && (
-            <Box mb={1.2}>
-              <WhiteBoardBTN onClick={handleCloseFAB} />
-            </Box>
-          )}
-          {screenShareEnabled && (
-            <Box mb={1.2}>
-              <ScreenShareBTN onClick={handleCloseFAB} />
-            </Box>
-          )}
-          {isPortrait && recordingEnabled && chatEnabled && (
-            <Box mb={1.2}>
-              <ChatBTN onClick={handleCloseFAB} />
-            </Box>
-          )}
-        </Box>
-      </Popover>
+        <Grid container>
+          {excludeFirstFourElements.map((icon, i) => {
+            return (
+              <Grid
+                item
+                xs={4}
+                sm={3}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {icon.buttonType === topBarButtonTypes.RAISE_HAND ? (
+                  <RaiseHandBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.MIC ? (
+                  <MicBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.WEBCAM ? (
+                  <WebcamBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.SCREEN_SHARE ? (
+                  <ScreenShareBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.PARTICIPANTS ? (
+                  <ParticipantsBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.CHAT ? (
+                  <ChatBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.ACTIVITIES ? (
+                  <ActivitiesBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
+                  <EndCallBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
+                  <RecordingBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.GO_LIVE ? (
+                  <GoLiveBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.WHITEBOARD ? (
+                  <WhiteBoardBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
+                  <AddLiveStreamBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.CONFIGURATION ? (
+                  <ConfigBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : null}
+              </Grid>
+            );
+          })}
+        </Grid>
+      </SwipeableDrawer>
     </Box>
   ) : (
     <Box
@@ -1012,8 +1479,14 @@ const TopBar = ({ topBarHeight }) => {
                         <EndCallBTN />
                       ) : buttonType === topBarButtonTypes.RECORDING ? (
                         <RecordingBTN />
+                      ) : buttonType === topBarButtonTypes.GO_LIVE ? (
+                        <GoLiveBTN />
                       ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
                         <WhiteBoardBTN />
+                      ) : buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
+                        <AddLiveStreamBTN />
+                      ) : buttonType === topBarButtonTypes.CONFIGURATION ? (
+                        <ConfigBTN />
                       ) : null}
                     </Box>
                   );

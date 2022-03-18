@@ -438,6 +438,7 @@ const MainViewContainer = ({
     layoutGridSize,
     hideLocalParticipant,
     sideStackSize,
+    mainScreenViewActive,
   ]);
 
   const spacing = reduceEdgeSpacing ? 4 : rowSpacing - gutter;

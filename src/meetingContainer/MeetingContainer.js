@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import MainViewContainer from "./mainViewContainer/MainViewContainer";
 import SideViewContainer from "./sideViewContainer/SideViewContainer";
 import TopBar from "./TopBar";
@@ -7,9 +7,11 @@ import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
+import { usePubSub } from "@videosdk.live/react-sdk";
 import {
   appEvents,
   eventEmitter,
+  getUniqueId,
   json_verify,
   nameTructed,
   trimSnackBarText,
@@ -108,10 +110,11 @@ const MeetingContainer = () => {
     sideBarMode,
     containerRef,
     participantCanToggleRecording,
+    participantCanToggleLivestream,
     autoStartLiveStream,
-    liveStreamLayoutType,
-    liveStreamLayoutPriority,
-    liveStreamLayoutGridSize,
+    autoStartRecording,
+    recordingWebhookUrl,
+    recordingAWSDirPath,
     liveStreamOutputs,
     askJoin,
     notificationSoundEnabled,
@@ -122,9 +125,14 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
+    appMeetingLayout,
+    setAppMeetingLayout,
     topbarEnabled,
     notificationAlertsEnabled,
     debug,
+    meetingLayoutTopic,
+    setLiveStreamConfig,
+    liveStreamConfig,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -132,21 +140,128 @@ const MeetingContainer = () => {
   const isTab = useIsTab();
   const isMobile = useIsMobile();
 
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const liveStreamConfigRef = useRef(liveStreamConfig);
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+
+  useEffect(() => {
+    liveStreamConfigRef.current = liveStreamConfig;
+  }, [liveStreamConfig]);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  usePubSub(meetingLayoutTopic, {
+    onMessageReceived: (data) => {
+      setAppMeetingLayout(data.message.layout);
+    },
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setAppMeetingLayout(latestMessage.message.layout);
+      }
+    },
+  });
+
+  const { publish: liveStreamConfigPublish } = usePubSub("LIVE_STREAM_CONFIG", {
+    onMessageReceived: (data) => {
+      setLiveStreamConfig(data.message.config);
+    },
+
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setLiveStreamConfig(latestMessage.message.config);
+      }
+    },
+  });
+
+  const liveStreamConfigPublishRef = useRef();
+
+  useEffect(() => {
+    liveStreamConfigPublishRef.current = liveStreamConfigPublish;
+  }, [liveStreamConfigPublish]);
+
   const _handleOnMeetingJoined = async () => {
     const { changeWebcam, changeMic, muteMic, disableWebcam } =
       mMeetingRef.current;
 
-    if (autoStartLiveStream && liveStreamOutputs?.length) {
-      const { startLivestream } = mMeetingRef.current;
+    setTimeout(() => {
+      const { isLiveStreaming, isRecording, startLivestream, startRecording } =
+        mMeetingRef.current;
 
-      startLivestream(liveStreamOutputs, {
-        layout: {
-          type: liveStreamLayoutType,
-          priority: liveStreamLayoutPriority,
-          gridSize: liveStreamLayoutGridSize,
-        },
-      });
-    }
+      const outputs = liveStreamConfigRef?.current?.length
+        ? liveStreamConfigRef.current
+        : liveStreamOutputs?.length
+        ? liveStreamOutputs
+        : null;
+
+      const type = typeRef.current;
+      const priority = priorityRef.current;
+      const gridSize = gridSizeRef.current;
+
+      const layout = { type, priority, gridSize };
+
+      //
+      //
+
+      if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
+        startLivestream(outputs, { layout });
+
+        liveStreamConfigPublishRef.current(
+          {
+            config: outputs.map((output) => {
+              return { ...output, id: getUniqueId() };
+            }),
+          },
+          { persist: true }
+        );
+      }
+
+      //
+      //
+
+      if (autoStartRecording && !isRecording) {
+        startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+      }
+    }, 3000);
 
     if (joinScreenWebCam && selectedWebcam.id) {
       await new Promise((resolve) => {
@@ -206,6 +321,7 @@ const MeetingContainer = () => {
       }
 
       if (type === "RAISE_HAND") {
+        console.log("sendChatMsg has made request");
         if (notificationSoundEnabled) {
           new Audio(
             `https://static.videosdk.live/prebuilt/notification.mp3`
@@ -314,6 +430,18 @@ const MeetingContainer = () => {
     }
   };
 
+  const _handleOnLiveStreamStarted = () => {
+    if (participantCanToggleLivestream && notificationAlertsEnabled) {
+      enqueueSnackbar("Meeting livestreaming is started.");
+    }
+  };
+
+  const _handleOnLiveStreamStopped = () => {
+    if (participantCanToggleLivestream && notificationAlertsEnabled) {
+      enqueueSnackbar("Meeting livestreaming is started.");
+    }
+  };
+
   const _handleOnEntryRequested = () => {};
 
   const _handleOnEntryResponded = (participantId, decision) => {
@@ -389,6 +517,8 @@ const MeetingContainer = () => {
     onPresenterChanged: _handlePresenterChanged,
     onRecordingStarted: _handleOnRecordingStarted,
     onRecordingStopped: _handleOnRecordingStopped,
+    onLiveStreamStarted: _handleOnLiveStreamStarted,
+    onLiveStreamStopped: _handleOnLiveStreamStopped,
     onEntryRequested: _handleOnEntryRequested,
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
