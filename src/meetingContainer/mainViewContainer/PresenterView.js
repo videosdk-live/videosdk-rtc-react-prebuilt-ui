@@ -83,7 +83,6 @@ const PresenterView = ({ presenterId }) => {
       gridInfo,
     });
   }, [
-    presenterId,
     mainViewParticipants,
     localParticipantId,
     pinnedParticipants,

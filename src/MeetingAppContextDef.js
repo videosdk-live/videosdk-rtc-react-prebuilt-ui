@@ -69,9 +69,9 @@ export const MeetingAppProvider = ({
   poweredBy,
   liveStreamEnabled,
   autoStartLiveStream,
-  liveStreamLayoutType,
-  liveStreamLayoutPriority,
-  liveStreamLayoutGridSize,
+  // liveStreamLayoutType,
+  // liveStreamLayoutPriority,
+  // liveStreamLayoutGridSize,
   liveStreamOutputs,
   askJoin,
   participantCanToggleOtherMic,
@@ -91,13 +91,13 @@ export const MeetingAppProvider = ({
   topbarEnabled,
   notificationAlertsEnabled,
   debug,
-  layout,
+  layoutType,
   layoutPriority,
   meetingLayoutTopic,
   layoutGridSize,
-  recordingLayoutType,
-  recordingLayoutPriority,
-  recordingLayoutGridSize,
+  // recordingLayoutType,
+  // recordingLayoutPriority,
+  // recordingLayoutGridSize,
   hideLocalParticipant,
   alwaysShowOverlay,
   sideStackSize,
@@ -122,18 +122,11 @@ export const MeetingAppProvider = ({
     state: null,
   });
   const [appMeetingLayout, setAppMeetingLayout] = useState({
-    type: layout,
+    type: layoutType,
     gridSize: layoutGridSize,
     priority: layoutPriority,
   });
-  // const [appMeetingLayout, setAppMeetingLayout] = useState({
-  //   layoutType: type,
-  //   layoutGridSize: gridSize,
-  //   layoutPriority: priority,
-  // });
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
-  // const [meetinglayoutGridSize, setLayoutGridSize] = useState(layoutGridSize);
-  // const [layoutPriority, setLayoutPriority] = useState(layout);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -148,6 +141,20 @@ export const MeetingAppProvider = ({
 
   const isMobile = useIsMobile();
   const isTab = useIsTab();
+
+  const meetingLayout = useMemo(() => {
+    return appMeetingLayout.priority === "PIN"
+      ? appMeetingLayout.type === meetingLayouts.SPOTLIGHT
+        ? meetingLayouts.SPOTLIGHT
+        : appMeetingLayout.type === meetingLayouts.SIDEBAR
+        ? meetingLayouts.SIDEBAR
+        : meetingLayouts.GRID
+      : appMeetingLayout.type === meetingLayouts.SPOTLIGHT
+      ? meetingLayouts.UNPINNED_SPOTLIGHT
+      : appMeetingLayout.type === meetingLayouts.SIDEBAR
+      ? meetingLayouts.UNPINNED_SIDEBAR
+      : meetingLayouts.GRID;
+  }, [appMeetingLayout, meetingLayouts]);
 
   return (
     <MeetingAppContext.Provider
@@ -186,9 +193,9 @@ export const MeetingAppProvider = ({
         poweredBy,
         liveStreamEnabled,
         autoStartLiveStream,
-        liveStreamLayoutType,
-        liveStreamLayoutPriority,
-        liveStreamLayoutGridSize,
+        // liveStreamLayoutType,
+        // liveStreamLayoutPriority,
+        // liveStreamLayoutGridSize,
         liveStreamOutputs,
         askJoin,
         participantCanToggleOtherMic,
@@ -201,12 +208,11 @@ export const MeetingAppProvider = ({
         topbarEnabled,
         notificationAlertsEnabled,
         debug,
-        layout,
         layoutPriority,
         layoutGridSize,
-        recordingLayoutType,
-        recordingLayoutPriority,
-        recordingLayoutGridSize,
+        // recordingLayoutType,
+        // recordingLayoutPriority,
+        // recordingLayoutGridSize,
         hideLocalParticipant,
         alwaysShowOverlay,
         sideStackSize,
@@ -222,18 +228,7 @@ export const MeetingAppProvider = ({
         userHasInteracted,
         whiteboardStarted,
         whiteboardState,
-        meetingLayout:
-          appMeetingLayout.priority === "PIN"
-            ? appMeetingLayout.type === meetingLayouts.SPOTLIGHT
-              ? meetingLayouts.SPOTLIGHT
-              : appMeetingLayout.type === meetingLayouts.SIDEBAR
-              ? meetingLayouts.SIDEBAR
-              : meetingLayouts.GRID
-            : appMeetingLayout.type === meetingLayouts.SPOTLIGHT
-            ? meetingLayouts.UNPINNED_SPOTLIGHT
-            : appMeetingLayout.type === meetingLayouts.SIDEBAR
-            ? meetingLayouts.UNPINNED_SIDEBAR
-            : meetingLayouts.GRID,
+        meetingLayout,
         appMeetingLayout,
         canPin,
         meetingLeft,

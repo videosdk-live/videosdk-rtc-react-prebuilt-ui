@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import MainViewContainer from "./mainViewContainer/MainViewContainer";
 import SideViewContainer from "./sideViewContainer/SideViewContainer";
 import TopBar from "./TopBar";
@@ -109,19 +109,12 @@ const MeetingContainer = () => {
     redirectOnLeave,
     sideBarMode,
     containerRef,
-    appMeetingLayout,
     participantCanToggleRecording,
     participantCanToggleLivestream,
     autoStartLiveStream,
     autoStartRecording,
     recordingWebhookUrl,
     recordingAWSDirPath,
-    recordingLayoutType,
-    recordingLayoutPriority,
-    recordingLayoutGridSize,
-    liveStreamLayoutType,
-    liveStreamLayoutPriority,
-    liveStreamLayoutGridSize,
     liveStreamOutputs,
     askJoin,
     notificationSoundEnabled,
@@ -132,6 +125,7 @@ const MeetingContainer = () => {
     joinScreenMic,
     canDrawOnWhiteboard,
     setMeetingLeft,
+    appMeetingLayout,
     setAppMeetingLayout,
     topbarEnabled,
     notificationAlertsEnabled,
@@ -146,16 +140,38 @@ const MeetingContainer = () => {
   const isTab = useIsTab();
   const isMobile = useIsMobile();
 
-  const liveStreamConfigRef = useRef();
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const liveStreamConfigRef = useRef(liveStreamConfig);
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+
   useEffect(() => {
     liveStreamConfigRef.current = liveStreamConfig;
   }, [liveStreamConfig]);
 
-  console.log(meetingLayoutTopic, "meetingLayoutTopic");
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      console.log(data, "on new appMeetingLayout");
       setAppMeetingLayout(data.message.layout);
     },
     onOldMessagesReceived: (messages) => {
@@ -170,8 +186,6 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        console.log(latestMessage, "on old appMeetingLayout");
-
         setAppMeetingLayout(latestMessage.message.layout);
       }
     },
@@ -206,53 +220,48 @@ const MeetingContainer = () => {
   }, [liveStreamConfigPublish]);
 
   const _handleOnMeetingJoined = async () => {
-    const { changeWebcam, changeMic, muteMic, disableWebcam, isLiveStreaming } =
+    const { changeWebcam, changeMic, muteMic, disableWebcam } =
       mMeetingRef.current;
 
-    // setTimeout(() => {
-    const outputs = liveStreamConfigRef?.current?.length
-      ? liveStreamConfigRef.current
-      : liveStreamOutputs?.length
-      ? liveStreamOutputs
-      : null;
-    if (
-      autoStartLiveStream &&
-      outputs?.length &&
-      participantCanToggleLivestream &&
-      !isLiveStreaming
-    ) {
-      const { startLivestream } = mMeetingRef.current;
+    setTimeout(() => {
+      const { isLiveStreaming, isRecording, startLivestream, startRecording } =
+        mMeetingRef.current;
 
-      startLivestream(outputs, {
-        layout: {
-          type: liveStreamLayoutType,
-          priority: liveStreamLayoutPriority,
-          gridSize: liveStreamLayoutGridSize,
-        },
-      });
+      const outputs = liveStreamConfigRef?.current?.length
+        ? liveStreamConfigRef.current
+        : liveStreamOutputs?.length
+        ? liveStreamOutputs
+        : null;
 
-      liveStreamConfigPublishRef.current(
-        {
-          config: outputs.map((output) => {
-            return { ...output, id: getUniqueId() };
-          }),
-        },
-        { persist: true }
-      );
-    }
-    // }, 5000);
+      const type = typeRef.current;
+      const priority = priorityRef.current;
+      const gridSize = gridSizeRef.current;
 
-    const { startRecording } = mMeetingRef.current;
+      const layout = { type, priority, gridSize };
 
-    if (autoStartRecording) {
-      startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-        layout: {
-          buttonType: recordingLayoutType,
-          priority: recordingLayoutPriority,
-          gridSize: recordingLayoutGridSize,
-        },
-      });
-    }
+      //
+      //
+
+      if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
+        startLivestream(outputs, { layout });
+
+        liveStreamConfigPublishRef.current(
+          {
+            config: outputs.map((output) => {
+              return { ...output, id: getUniqueId() };
+            }),
+          },
+          { persist: true }
+        );
+      }
+
+      //
+      //
+
+      if (autoStartRecording && !isRecording) {
+        startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+      }
+    }, 3000);
 
     if (joinScreenWebCam && selectedWebcam.id) {
       await new Promise((resolve) => {
@@ -421,6 +430,18 @@ const MeetingContainer = () => {
     }
   };
 
+  const _handleOnLiveStreamStarted = () => {
+    if (participantCanToggleLivestream && notificationAlertsEnabled) {
+      enqueueSnackbar("Meeting livestreaming is started.");
+    }
+  };
+
+  const _handleOnLiveStreamStopped = () => {
+    if (participantCanToggleLivestream && notificationAlertsEnabled) {
+      enqueueSnackbar("Meeting livestreaming is started.");
+    }
+  };
+
   const _handleOnEntryRequested = () => {};
 
   const _handleOnEntryResponded = (participantId, decision) => {
@@ -496,6 +517,8 @@ const MeetingContainer = () => {
     onPresenterChanged: _handlePresenterChanged,
     onRecordingStarted: _handleOnRecordingStarted,
     onRecordingStopped: _handleOnRecordingStopped,
+    onLiveStreamStarted: _handleOnLiveStreamStarted,
+    onLiveStreamStopped: _handleOnLiveStreamStopped,
     onEntryRequested: _handleOnEntryRequested,
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,

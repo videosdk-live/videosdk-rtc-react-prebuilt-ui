@@ -190,7 +190,7 @@ export default function JoinMeeting({
     ) {
       setBoxHeight(videoPlayerRef.current.offsetHeight);
     }
-  }, [windowWidth]);
+  }, [windowWidth, boxHeight]);
 
   const changeWebcam = async (deviceId) => {
     const currentvideoTrack = videoTrackRef.current;

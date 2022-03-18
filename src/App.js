@@ -21,7 +21,6 @@ import {
 import useIsSMDesktop from "./utils/useIsSMDesktop";
 import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
-import useIsMobile from "./utils/useIsMobile";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -78,9 +77,9 @@ const App = () => {
       participantCanLeave: "participantCanLeave",
       poweredBy: "poweredBy",
       liveStreamEnabled: "liveStreamEnabled",
-      liveStreamLayoutType: "liveStreamLayoutType",
-      liveStreamLayoutPriority: "liveStreamLayoutPriority",
-      liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
+      // liveStreamLayoutType: "liveStreamLayoutType",
+      // liveStreamLayoutPriority: "liveStreamLayoutPriority",
+      // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
       autoStartLiveStream: "autoStartLiveStream",
       liveStreamOutputs: "liveStreamOutputs",
       askJoin: "askJoin",
@@ -105,13 +104,13 @@ const App = () => {
       debug: "debug",
       participantId: "participantId",
 
-      layout: "layout",
+      layoutType: "layoutType",
       layoutGridSize: "layoutGridSize",
       layoutPriority: "layoutPriority",
 
-      recordingLayoutType: "recordingLayoutType",
-      recordingLayoutPriority: "recordingLayoutPriority",
-      recordingLayoutGridSize: "recordingLayoutGridSize",
+      // recordingLayoutType: "recordingLayoutType",
+      // recordingLayoutPriority: "recordingLayoutPriority",
+      // recordingLayoutGridSize: "recordingLayoutGridSize",
       hideLocalParticipant: "hideLocalParticipant",
       alwaysShowOverlay: "alwaysShowOverlay",
       sideStackSize: "sideStackSize",
@@ -236,14 +235,14 @@ const App = () => {
       paramKeys.notificationSoundEnabled = "true";
     }
 
-    switch (paramKeys?.layout?.toUpperCase()) {
+    switch (paramKeys?.layoutType?.toUpperCase()) {
       case meetingLayouts.GRID:
       case meetingLayouts.SPOTLIGHT:
       case meetingLayouts.SIDEBAR:
-        paramKeys.layout = paramKeys.layout.toUpperCase();
+        paramKeys.layoutType = paramKeys.layoutType.toUpperCase();
         break;
       default:
-        paramKeys.layout = meetingLayouts.GRID;
+        paramKeys.layoutType = meetingLayouts.GRID;
         break;
     }
 
@@ -260,28 +259,28 @@ const App = () => {
     }
 
     // if (paramKeys.layoutPriority === "PIN") {
-    //   if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
-    //   } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
-    //   } else if (paramKeys.layout === meetingLayouts.GRID) {
+    //   if (paramKeys.layoutType === meetingLayouts.SPOTLIGHT) {
+    //   } else if (paramKeys.layoutType === meetingLayouts.SIDEBAR) {
+    //   } else if (paramKeys.layoutType === meetingLayouts.GRID) {
     //     paramKeys.layoutPriority = "SPEAKER";
     //   }
     // } else if (paramKeys.layoutPriority === "SPEAKER") {
-    //   if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
-    //     paramKeys.layout = meetingLayouts.UNPINNED_SPOTLIGHT;
-    //   } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
-    //     paramKeys.layout = meetingLayouts.UNPINNED_SIDEBAR;
-    //   } else if (paramKeys.layout === meetingLayouts.GRID) {
+    //   if (paramKeys.layoutType === meetingLayouts.SPOTLIGHT) {
+    //     paramKeys.layoutType = meetingLayouts.UNPINNED_SPOTLIGHT;
+    //   } else if (paramKeys.layoutType === meetingLayouts.SIDEBAR) {
+    //     paramKeys.layoutType = meetingLayouts.UNPINNED_SIDEBAR;
+    //   } else if (paramKeys.layoutType === meetingLayouts.GRID) {
     //     paramKeys.layoutPriority = "SPEAKER";
     //   }
     // } else if (
     //   paramKeys.layoutPriority === "" ||
     //   paramKeys.layoutPriority === null
     // ) {
-    //   if (paramKeys.layout === meetingLayouts.SPOTLIGHT) {
-    //     paramKeys.layout = meetingLayouts.SPOTLIGHT;
+    //   if (paramKeys.layoutType === meetingLayouts.SPOTLIGHT) {
+    //     paramKeys.layoutType = meetingLayouts.SPOTLIGHT;
     //     paramKeys.layoutPriority = "SPEAKER";
-    //   } else if (paramKeys.layout === meetingLayouts.SIDEBAR) {
-    //     paramKeys.layout = meetingLayouts.SIDEBAR;
+    //   } else if (paramKeys.layoutType === meetingLayouts.SIDEBAR) {
+    //     paramKeys.layoutType = meetingLayouts.SIDEBAR;
     //     paramKeys.layoutPriority = "SPEAKER";
     //   }
     // }
@@ -302,10 +301,6 @@ const App = () => {
 
     paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
 
-    paramKeys.recordingLayoutGridSize = parseInt(
-      paramKeys.recordingLayoutGridSize
-    );
-
     paramKeys.sideStackSize = parseInt(paramKeys.sideStackSize);
 
     if (
@@ -314,18 +309,6 @@ const App = () => {
       isNaN(paramKeys.layoutGridSize)
     ) {
       paramKeys.layoutGridSize = maxGridSize;
-      // configErr = `"layoutGridSize" is not a valid number`;
-      // playNotificationErr();
-      // setMeetingError({ message: configErr, code: 4001, isVisible: true });
-    }
-
-    if (
-      typeof paramKeys.recordingLayoutGridSize === "number" &&
-      paramKeys.recordingLayoutGridSize <= 0
-    ) {
-      configErr = `"recordingLayoutGridSize" is not a valid number`;
-      playNotificationErr();
-      setMeetingError({ message: configErr, code: 4001, isVisible: true });
     }
 
     if (
@@ -357,7 +340,6 @@ const App = () => {
   const isLGDesktop = useIsLGDesktop();
   const isSMDesktop = useIsSMDesktop();
   const isTab = useIsTab();
-  const isMobile = useIsMobile();
 
   const maxGridSize = useMemo(() => {
     return isLGDesktop
@@ -367,7 +349,7 @@ const App = () => {
       : isTab
       ? maxParticipantGridCount_tab
       : maxParticipantGridCount_mobile;
-  }, [isLGDesktop, isSMDesktop, isTab, isMobile]);
+  }, [isLGDesktop, isSMDesktop, isTab]);
 
   const paramKeys = useMemo(() => getParams({ maxGridSize }), [maxGridSize]);
 
@@ -503,9 +485,9 @@ const App = () => {
             poweredBy: paramKeys.poweredBy === "true",
             liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
             autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
-            liveStreamLayoutType: paramKeys.liveStreamLayoutType,
-            liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
-            liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
+            // liveStreamLayoutType: paramKeys.liveStreamLayoutType,
+            // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
+            // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
             liveStreamOutputs: paramKeys.liveStreamOutputs,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0
@@ -523,7 +505,7 @@ const App = () => {
               paramKeys.participantCanToggleLivestream === "true",
             notificationSoundEnabled:
               paramKeys.notificationSoundEnabled === "true",
-            layout: paramKeys.layout,
+            layoutType: paramKeys.layoutType,
             layoutPriority: paramKeys.layoutPriority,
             canPin: paramKeys.canPin === "true",
             selectedMic,
@@ -543,9 +525,9 @@ const App = () => {
               paramKeys.notificationAlertsEnabled !== "false",
             debug: paramKeys.debug === "true",
             layoutGridSize: paramKeys.layoutGridSize,
-            recordingLayoutType: paramKeys.recordingLayoutType,
-            recordingLayoutPriority: paramKeys.recordingLayoutPriority,
-            recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
+            // recordingLayoutType: paramKeys.recordingLayoutType,
+            // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
+            // recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
             hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
             alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
             sideStackSize: paramKeys.sideStackSize,

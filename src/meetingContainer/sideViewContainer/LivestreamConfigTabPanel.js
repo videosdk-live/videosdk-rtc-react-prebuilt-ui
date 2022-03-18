@@ -5,7 +5,7 @@ import {
   Button,
   makeStyles,
 } from "@material-ui/core";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import ConfirmBox from "../../components/ConfirmBox";
@@ -42,12 +42,12 @@ const SingleLiveStreamItem = ({
   _handleRemove,
   publish,
   isLiveStreaming,
+  index,
 }) => {
   const rootDomain = extractRootDomain(item.url);
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
 
-  // const [isEditing, setIsEditing] = useState({ id: null, editing: false });
   const isEditing = !!isEditingId;
   const isSelfEditing = isEditingId === item.id;
   const [editedUrl, setEditedUrl] = useState("");
@@ -120,7 +120,7 @@ const SingleLiveStreamItem = ({
     <>
       <Box
         style={{
-          borderBottom: "3px solid #3A3F4B",
+          borderTop: index === 0 ? "" : "3px solid #3A3F4B",
           paddingRight: "12px",
           paddingLeft: "12px",
           paddingTop: "12px",
@@ -214,6 +214,7 @@ const SingleLiveStreamItem = ({
             fullWidth
             variant="filled"
             type="password"
+            autocomplete="off"
             className={classes.root}
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedStreamKey : item.streamKey}
@@ -237,6 +238,7 @@ const SingleLiveStreamItem = ({
             placeholder="Stream Url"
             fullWidth
             variant="filled"
+            autocomplete="off"
             style={{ marginTop: "8px" }}
             className={classes.root}
             disabled={!isSelfEditing}
@@ -293,41 +295,22 @@ const SingleLiveStreamItem = ({
   );
 };
 
-const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
-  const [editingItemId, setEditingItemId] = useState(null);
-
+const AddLiveStream = ({ _handleSave, renderCallback }) => {
   const [streamKey, setStreamKey] = useState("");
   const [url, setStreamUrl] = useState("");
   const [streamKeyErr, setStreamKeyErr] = useState(false);
   const [streamUrlErr, setStreamUrlErr] = useState(false);
-  const [isEditingId, setIsEditingId] = useState(null);
 
-  const mMeeting = useMeeting({});
-  const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
+  const elementRef = useRef();
 
-  const isLiveStreaming = mMeeting?.isLiveStreaming;
+  const domainName = useMemo(() => {
+    const rootDomain = extractRootDomain(url);
+    const mainDomain = rootDomain?.split(".")[0];
+    const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+    return domainName;
+  }, [url]);
 
-  const liveStreamConfigRef = useRef();
-
-  useEffect(() => {
-    liveStreamConfigRef.current = liveStreamConfig;
-  }, [liveStreamConfig]);
-
-  const { publish } = usePubSub("LIVE_STREAM_CONFIG");
-
-  const classes = useStyles();
-
-  const _handleRemove = ({ id }) => {
-    const liveStreamConfig = liveStreamConfigRef.current;
-
-    const filtered = liveStreamConfig.filter(({ id: _id }) => {
-      return id !== _id;
-    });
-
-    publish({ config: filtered }, { persist: true });
-  };
-
-  const handleValidation = () => {
+  const handleValidation = ({ streamKey, url }) => {
     let isValid = true;
     if (streamKey.length === 0) {
       isValid = false;
@@ -346,18 +329,161 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
     return isValid;
   };
 
+  const classes = useStyles();
+
+  useEffect(() => {
+    renderCallback(elementRef.current);
+  }, [streamKey, url, streamKeyErr, streamUrlErr]);
+
+  return (
+    <Box
+      ref={(el) => {
+        elementRef.current = el;
+        renderCallback(elementRef.current);
+      }}
+      style={{
+        paddingRight: "12px",
+        paddingLeft: "12px",
+        paddingTop: "12px",
+        paddingBottom: "12px",
+        boxShadow: "0 -10px 20px -5px rgba(0,0,0,0.35)",
+        borderTop: "3px solid #3A3F4B",
+      }}
+    >
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box style={{ display: "flex", flex: 1 }}>
+          <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+            {url ? domainName : "Platform Name"}
+          </Typography>
+        </Box>
+
+        <Box
+          style={{
+            display: "flex",
+            flex: 1,
+            alignItems: "flex-end",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Button
+            variant="text"
+            onClick={() => {
+              const isValid = handleValidation({ streamKey, url });
+              if (isValid) {
+                const _streamKey = streamKey;
+                const _url = url;
+
+                _handleSave({ streamKey: _streamKey, url: _url });
+                setStreamKey("");
+                setStreamUrl("");
+              }
+            }}
+            className={classes.button}
+          >
+            ADD
+          </Button>
+        </Box>
+      </Box>
+      <Box mt={1}>
+        <TextField
+          placeholder="Stream Key"
+          fullWidth
+          variant="filled"
+          type="password"
+          autocomplete="off"
+          className={classes.root}
+          value={streamKey}
+          InputProps={{
+            disableUnderline: true,
+            classes: {
+              root: classes.textField,
+            },
+          }}
+          onChange={(e) => {
+            setStreamKey(e.target.value);
+          }}
+        />
+        {streamKeyErr && (
+          <Typography variant="body2" style={{ color: "#D33730" }}>
+            Please provide stream key
+          </Typography>
+        )}
+        <TextField
+          placeholder="Stream Url"
+          fullWidth
+          variant="filled"
+          style={{ marginTop: "8px" }}
+          autocomplete="off"
+          className={classes.root}
+          value={url}
+          InputProps={{
+            disableUnderline: true,
+            classes: {
+              root: classes.textField,
+            },
+          }}
+          onChange={(e) => {
+            setStreamUrl(e.target.value);
+          }}
+        />
+        {streamUrlErr && (
+          <Typography variant="body2" style={{ color: "#D33730" }}>
+            Please provide stream url
+          </Typography>
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
+  const [editingItemId, setEditingItemId] = useState(null);
+  const [addLiveStreamBoxHeight, setAddLiveStreamBoxHeight] = useState(0);
+
+  const [isEditingId, setIsEditingId] = useState(null);
+
+  const mMeeting = useMeeting({});
+  const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
+
+  const isLiveStreaming = mMeeting?.isLiveStreaming;
+
+  const liveStreamConfigRef = useRef();
+  const addLiveStreamBoxRef = useRef();
+  const liveStreamsContainerRef = useRef();
+
+  useEffect(() => {
+    liveStreamConfigRef.current = liveStreamConfig;
+  }, [liveStreamConfig]);
+
+  const { publish } = usePubSub("LIVE_STREAM_CONFIG");
+
+  const _handleRemove = ({ id }) => {
+    const liveStreamConfig = liveStreamConfigRef.current;
+
+    const filtered = liveStreamConfig.filter(({ id: _id }) => {
+      return id !== _id;
+    });
+
+    publish({ config: filtered }, { persist: true });
+  };
+
   const _handleSave = ({ streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
     liveStreamConfig.push({ id: getUniqueId(), streamKey, url });
 
     publish({ config: liveStreamConfig }, { persist: true });
-    setStreamKey("");
-    setStreamUrl("");
-  };
 
-  const rootDomain = extractRootDomain(url);
-  const mainDomain = rootDomain?.split(".")[0];
-  const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
+    setTimeout(() => {
+      liveStreamsContainerRef.current.scrollTop =
+        liveStreamsContainerRef.current.scrollHeight;
+    }, 500);
+  };
 
   return (
     <Box
@@ -365,128 +491,144 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
         height: panelHeight - 32,
         overflowY: "auto",
         overflowX: "hidden",
-        backgroundColor: "red",
       }}
     >
       <Box
+        ref={liveStreamsContainerRef}
         style={{
           overflowY: "scroll",
-          backgroundColor: "green",
-          maxHeight: panelHeight - 32 - 120,
-          // height: panelHeight
+          maxHeight: panelHeight - 32 - addLiveStreamBoxHeight,
         }}
       >
-        {liveStreamConfig?.map((item) => {
+        {liveStreamConfig?.map((item, i) => {
           return (
-            <>
-              <SingleLiveStreamItem
-                item={item}
-                liveStreamConfig={liveStreamConfig}
-                setLiveStreamConfig={setLiveStreamConfig}
-                liveStreamConfigRef={liveStreamConfigRef}
-                publish={publish}
-                editingItemId={editingItemId}
-                setEditingItemId={setEditingItemId}
-                _handleRemove={_handleRemove}
-                isEditingId={isEditingId}
-                setIsEditingId={setIsEditingId}
-                isLiveStreaming={isLiveStreaming}
-              />
-            </>
+            <SingleLiveStreamItem
+              key={`live_stream_op_item${i}`}
+              item={item}
+              liveStreamConfig={liveStreamConfig}
+              setLiveStreamConfig={setLiveStreamConfig}
+              liveStreamConfigRef={liveStreamConfigRef}
+              publish={publish}
+              editingItemId={editingItemId}
+              setEditingItemId={setEditingItemId}
+              _handleRemove={_handleRemove}
+              isEditingId={isEditingId}
+              setIsEditingId={setIsEditingId}
+              isLiveStreaming={isLiveStreaming}
+              index={i}
+            />
           );
         })}
       </Box>
       {!isLiveStreaming && (
-        <Box
-          style={{
-            paddingRight: "12px",
-            paddingLeft: "12px",
-            paddingTop: "12px",
-            paddingBottom: "12px",
-          }}
-        >
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Box style={{ display: "flex", flex: 1 }}>
-              <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-                {url ? domainName : "Platform Name"}
-              </Typography>
-            </Box>
+        <AddLiveStream
+          {...{
+            _handleSave,
+            renderCallback: (el) => {
+              addLiveStreamBoxRef.current = el;
 
-            <Box
-              style={{
-                display: "flex",
-                flex: 1,
-                alignItems: "flex-end",
-                justifyContent: "flex-end",
-              }}
-            >
-              <Button
-                variant="text"
-                onClick={() => {
-                  const isValid = handleValidation();
-                  if (isValid) {
-                    _handleSave({ streamKey: streamKey, url });
-                  }
-                }}
-                className={classes.button}
-              >
-                ADD
-              </Button>
-            </Box>
-          </Box>
-          <Box mt={1}>
-            <TextField
-              placeholder="Stream Key"
-              fullWidth
-              variant="filled"
-              type="password"
-              className={classes.root}
-              value={streamKey}
-              InputProps={{
-                disableUnderline: true,
-                classes: {
-                  root: classes.textField,
-                },
-              }}
-              onChange={(e) => {
-                setStreamKey(e.target.value);
-              }}
-            />
-            {streamKeyErr && (
-              <Typography variant="body2" style={{ color: "#D33730" }}>
-                Please provide stream key
-              </Typography>
-            )}
-            <TextField
-              placeholder="Stream Url"
-              fullWidth
-              variant="filled"
-              style={{ marginTop: "8px" }}
-              className={classes.root}
-              value={url}
-              InputProps={{
-                disableUnderline: true,
-                classes: {
-                  root: classes.textField,
-                },
-              }}
-              onChange={(e) => {
-                setStreamUrl(e.target.value);
-              }}
-            />
-            {streamUrlErr && (
-              <Typography variant="body2" style={{ color: "#D33730" }}>
-                Please provide stream url
-              </Typography>
-            )}
-          </Box>
-        </Box>
+              const addLiveStreamBoxHeight =
+                addLiveStreamBoxRef.current?.clientHeight + 3 || 0;
+
+              setAddLiveStreamBoxHeight(addLiveStreamBoxHeight);
+            },
+          }}
+        />
+        // <Box
+        //   ref={(el) => {
+        //     console.log(el, "addLiveStreamBoxRef.current el callback");
+        //   }}
+        //   style={{
+        //     paddingRight: "12px",
+        //     paddingLeft: "12px",
+        //     paddingTop: "12px",
+        //     paddingBottom: "12px",
+        //   }}
+        // >
+        //   <Box
+        //     style={{
+        //       display: "flex",
+        //       justifyContent: "center",
+        //       alignItems: "center",
+        //     }}
+        //   >
+        //     <Box style={{ display: "flex", flex: 1 }}>
+        //       <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+        //         {url ? domainName : "Platform Name"}
+        //       </Typography>
+        //     </Box>
+
+        //     <Box
+        //       style={{
+        //         display: "flex",
+        //         flex: 1,
+        //         alignItems: "flex-end",
+        //         justifyContent: "flex-end",
+        //       }}
+        //     >
+        //       <Button
+        //         variant="text"
+        //         onClick={() => {
+        //           const isValid = handleValidation();
+        //           if (isValid) {
+        //             _handleSave({ streamKey: streamKey, url });
+        //           }
+        //         }}
+        //         className={classes.button}
+        //       >
+        //         ADD
+        //       </Button>
+        //     </Box>
+        //   </Box>
+        //   <Box mt={1}>
+        //     <TextField
+        //       placeholder="Stream Key"
+        //       fullWidth
+        //       variant="filled"
+        //       type="password"
+        //       autocomplete="off"
+        //       className={classes.root}
+        //       value={streamKey}
+        //       InputProps={{
+        //         disableUnderline: true,
+        //         classes: {
+        //           root: classes.textField,
+        //         },
+        //       }}
+        //       onChange={(e) => {
+        //         setStreamKey(e.target.value);
+        //       }}
+        //     />
+        //     {streamKeyErr && (
+        //       <Typography variant="body2" style={{ color: "#D33730" }}>
+        //         Please provide stream key
+        //       </Typography>
+        //     )}
+        //     <TextField
+        //       placeholder="Stream Url"
+        //       fullWidth
+        //       variant="filled"
+        //       style={{ marginTop: "8px" }}
+        //       autocomplete="off"
+        //       className={classes.root}
+        //       value={url}
+        //       InputProps={{
+        //         disableUnderline: true,
+        //         classes: {
+        //           root: classes.textField,
+        //         },
+        //       }}
+        //       onChange={(e) => {
+        //         setStreamUrl(e.target.value);
+        //       }}
+        //     />
+        //     {streamUrlErr && (
+        //       <Typography variant="body2" style={{ color: "#D33730" }}>
+        //         Please provide stream url
+        //       </Typography>
+        //     )}
+        //   </Box>
+        // </Box>
       )}
     </Box>
   );

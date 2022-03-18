@@ -442,6 +442,7 @@ const MainViewContainer = ({
     hideLocalParticipant,
     appMeetingLayout,
     sideStackSize,
+    mainScreenViewActive,
   ]);
 
   const spacing = reduceEdgeSpacing ? 4 : rowSpacing - gutter;

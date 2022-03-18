@@ -40,7 +40,6 @@ import {
   VideocamOff as VideocamOffIcon,
   Videocam as VideocamIcon,
   MoreHoriz as MoreHorizIcon,
-  Close as CloseIcon,
   ArrowDropDown as ArrowDropDownIcon,
   Gesture,
 } from "@material-ui/icons";
@@ -50,7 +49,6 @@ import {
   isTablet as RDDIsTablet,
 } from "react-device-detect";
 import ConfirmBox from "../components/ConfirmBox";
-import { useMediaQuery } from "react-responsive";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
@@ -70,7 +68,7 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting();
   const sendChatMessage = mMeeting?.sendChatMessage;
 
-  const onRaiseHand = (event) => {
+  const onRaiseHand = () => {
     if (isMobile || isTab) {
       onClick();
       typeof onClick === "function" && onClick();
@@ -207,6 +205,48 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
   const startLivestream = mMeeting?.startLivestream;
   const stopLivestream = mMeeting?.stopLivestream;
 
+  const {
+    participantCanToggleLivestream,
+    liveStreamConfig,
+    setSideBarMode,
+    appMeetingLayout,
+  } = useMeetingAppContext();
+
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isLiveStreamingRef = useRef(isLiveStreaming);
+  const liveStreamConfigRef = useRef(liveStreamConfig);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isLiveStreamingRef.current = isLiveStreaming;
+  }, [isLiveStreaming]);
+
+  useEffect(() => {
+    liveStreamConfigRef.current = liveStreamConfig;
+  }, [liveStreamConfig]);
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -218,42 +258,36 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const {
-    participantCanToggleLivestream,
-    autoStartLiveStream,
-    liveStreamEnabled,
-    liveStreamLayoutType,
-    liveStreamLayoutPriority,
-    liveStreamLayoutGridSize,
-    liveStreamOutputs,
-    liveStreamConfig,
-    sideBarMode,
-    setSideBarMode,
-  } = useMeetingAppContext();
+  const _handleStartLivestream = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startLivestream(liveStreamConfig, { layout });
+  };
+
+  const _handleClick = () => {
+    const isLiveStreaming = isLiveStreamingRef.current;
+
+    if (isLiveStreaming) {
+      stopLivestream();
+    } else {
+      if (liveStreamConfigRef.current.length > 0) {
+        _handleStartLivestream();
+      } else {
+        setIsPopupShown(true);
+      }
+    }
+  };
 
   return (
     <>
       {isMobile || isTab ? (
         <MobileIconButton
           Icon={LiveIcon}
-          onClick={() => {
-            if (isLiveStreaming) {
-              stopLivestream();
-            } else {
-              if (liveStreamConfig.length > 0) {
-                startLivestream(liveStreamConfig, {
-                  //todo: change layout option
-                  // layout: {
-                  //   type: liveStreamLayoutType,
-                  //   priority: liveStreamLayoutPriority,
-                  //   gridSize: liveStreamLayoutGridSize,
-                  // },
-                });
-              } else {
-                setIsPopupShown(true);
-              }
-            }
-          }}
+          onClick={_handleClick}
           tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
           buttonText={isLiveStreaming ? "Stop Live" : "Go Live"}
           isFocused={isLiveStreaming}
@@ -265,23 +299,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
           liveStreamStarted={isLiveStreaming ? true : false}
           bgColor={"#D32F2F"}
           // Icon={Live}
-          onClick={() => {
-            if (isLiveStreaming) {
-              stopLivestream();
-            } else {
-              if (liveStreamConfig.length > 0) {
-                startLivestream(liveStreamConfig, {
-                  // layout: {
-                  //   type: liveStreamLayoutType,
-                  //   priority: liveStreamLayoutPriority,
-                  //   gridSize: liveStreamLayoutGridSize,
-                  // },
-                });
-              } else {
-                setIsPopupShown(true);
-              }
-            }
-          }}
+          onClick={_handleClick}
           tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
           buttonText="Go Live"
           lottieOption={isLiveStreaming ? defaultOptions : null}
@@ -369,7 +387,7 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
 const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
   const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
     useMeetingAppContext();
-  let [isActiveState, setIsActiveState] = useState(false);
+
   const mMeeting = useMeeting({});
 
   const presenterId = mMeeting?.presenterId;
@@ -379,7 +397,6 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
       {whiteboardEnabled &&
         (isMobile || isTab ? (
           <MobileIconButton
-            isActive={isActiveState}
             disabled={presenterId || !canToggleWhiteboard}
             tooltipTitle={"Whiteboard"}
             buttonText={"Whiteboard"}
@@ -591,35 +608,39 @@ const RecordingBTN = ({ isMobile, isTab }) => {
   const {
     recordingWebhookUrl,
     recordingAWSDirPath,
-
     participantCanToggleRecording,
-    recordingLayoutType,
-    recordingLayoutPriority,
-    recordingLayoutGridSize,
+    appMeetingLayout,
   } = useMeetingAppContext();
 
-  // useEffect(() => {
-  //   if (autoStartRecording) {
-  //     setDefaultRecordingActionTaken(true);
-  //     setTimeout(() => {
-  //       if (!defaultRecordingActionTaken) {
-  //         startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-  //           layout: {
-  //             buttonType: recordingLayoutType,
-  //             priority: recordingLayoutPriority,
-  //             gridSize: recordingLayoutGridSize,
-  //           },
-  //         });
-  //       }
-  //     }, 5000);
-  //   }
-  // }, [
-  //   recordingWebhookUrl,
-  //   recordingAWSDirPath,
-  //   defaultRecordingActionTaken,
-  //   autoStartRecording,
-  //   startRecording,
-  // ]);
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isRecordingRef = useRef(isRecording);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   const defaultOptions = {
     loop: true,
@@ -632,44 +653,40 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     width: 160,
   };
 
+  const _handleStartRecording = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+  };
+
+  const _handleClick = () => {
+    const isRecording = isRecordingRef.current;
+
+    if (isRecording) {
+      stopRecording();
+    } else {
+      _handleStartRecording();
+    }
+  };
+
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={ScreenRecording}
-      onClick={() => {
-        if (isRecording) {
-          stopRecording();
-        } else {
-          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            layout: {
-              type: recordingLayoutType,
-              priority: recordingLayoutPriority,
-              gridSize: recordingLayoutGridSize,
-            },
-          });
-        }
-      }}
+      onClick={_handleClick}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
-      buttonText={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
+      buttonText={isRecording ? "Stop Recording" : "Start Recording"}
     />
   ) : (
     <OutlineIconButton
       Icon={ScreenRecording}
-      onClick={() => {
-        if (isRecording) {
-          stopRecording();
-        } else {
-          startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-            layout: {
-              buttonType: recordingLayoutType,
-              priority: recordingLayoutPriority,
-              gridSize: recordingLayoutGridSize,
-            },
-          });
-        }
-      }}
+      onClick={_handleClick}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
@@ -959,7 +976,6 @@ const EndCallBTN = () => {
 
 const TopBar = ({ topBarHeight }) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
 
   const [defaultBrandLogoUrl, setDefaultBrandLogoUrl] = useState(null);
@@ -985,13 +1001,11 @@ const TopBar = ({ topBarHeight }) => {
     animationsEnabled,
   } = useMeetingAppContext();
 
-  const handleClickFAB = (event) => {
-    // setAnchorEl(event.currentTarget);
+  const handleClickFAB = () => {
     setOpen(true);
   };
 
   const handleCloseFAB = () => {
-    // setAnchorEl(null);
     setOpen(false);
   };
 
@@ -1212,8 +1226,9 @@ const TopBar = ({ topBarHeight }) => {
 
       <Box ml={2}>
         <OutlineIconButton
-          Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
-          isFocused={anchorEl}
+          Icon={MoreHorizIcon}
+          // Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
+          // isFocused={anchorEl}
           onClick={handleClickFAB}
         />
       </Box>
@@ -1243,91 +1258,78 @@ const TopBar = ({ topBarHeight }) => {
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.MIC ? (
                   <MicBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.WEBCAM ? (
                   <WebcamBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.SCREEN_SHARE ? (
                   <ScreenShareBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.PARTICIPANTS ? (
                   <ParticipantsBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.CHAT ? (
                   <ChatBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.ACTIVITIES ? (
                   <ActivitiesBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
                   <EndCallBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
                   <RecordingBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.GO_LIVE ? (
                   <GoLiveBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.WHITEBOARD ? (
                   <WhiteBoardBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
                   <AddLiveStreamBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : icon.buttonType === topBarButtonTypes.CONFIGURATION ? (
                   <ConfigBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
-                    // isActive={false}
                   />
                 ) : null}
               </Grid>
