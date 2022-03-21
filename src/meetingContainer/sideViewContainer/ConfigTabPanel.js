@@ -112,29 +112,17 @@ function ConfigTabPanel() {
 
   //handlers
   const _handleChangeLayout = (event) => {
-    console.log(
-      "_handleChangeLayout appMeetingLayout",
-      event.currentTarget.value.toUpperCase()
-    );
-
     const type = event.currentTarget.value.toUpperCase() || typeRef.current;
     publishToPubSub({ type });
   };
 
   const _handleChangePriority = (event) => {
-    console.log(
-      "_handleChangePriority appMeetingLayout",
-      event.currentTarget.value.toUpperCase()
-    );
-
     const priority =
       event.currentTarget.value.toUpperCase() || priorityRef.current;
     publishToPubSub({ priority });
   };
 
   const _handleGridSize = (newGridSize) => {
-    console.log("_handleGridSize appMeetingLayout", newGridSize);
-
     const gridSize = newGridSize || gridSizeRef.current;
     publishToPubSub({ gridSize });
   };
@@ -149,11 +137,6 @@ function ConfigTabPanel() {
     const priority = _priority || priorityRef.current;
 
     const layout = { type, gridSize, priority };
-
-    console.log(
-      { _type, _gridSize, _priority, type, gridSize, priority },
-      "changing appMeetingLayout"
-    );
 
     livestreamPublishRef.current({ layout }, { persist: true });
     hlsPublishRef.current({ layout }, { persist: true });

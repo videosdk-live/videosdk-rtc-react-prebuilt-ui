@@ -1036,9 +1036,6 @@ const TopBar = ({ topBarHeight }) => {
       const arr = [];
       const mobileIconArr = [];
 
-      console.log(
-        `participantCanLeave : ${participantCanLeave} || participantCanEndMeeting ${participantCanEndMeeting}`
-      );
       if (participantCanLeave || participantCanEndMeeting) {
         arr.unshift([topBarButtonTypes.END_CALL]);
         mobileIconArr.unshift({

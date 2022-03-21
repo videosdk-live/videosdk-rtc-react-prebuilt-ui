@@ -321,7 +321,6 @@ const MeetingContainer = () => {
       }
 
       if (type === "RAISE_HAND") {
-        console.log("sendChatMsg has made request");
         if (notificationSoundEnabled) {
           new Audio(
             `https://static.videosdk.live/prebuilt/notification.mp3`
