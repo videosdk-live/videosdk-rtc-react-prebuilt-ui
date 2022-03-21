@@ -166,7 +166,7 @@ function ConfigTabPanel() {
   let Card = ({ isActive, ref, title, Icon, onClick }) => {
     return isActive ? (
       <Box
-        mr={isMobile ? "7px" : "12px"}
+        mr={isMobile ? 0.8 : 2}
         style={{
           justifyItems: "center",
           alignItems: "center",
@@ -185,7 +185,7 @@ function ConfigTabPanel() {
         </ButtonBase>
         <Typography
           style={{
-            marginTop: "12px",
+            marginTop: 12,
             fontSize: "14px",
             fontWeight: "400",
             color: "white",
@@ -196,7 +196,7 @@ function ConfigTabPanel() {
       </Box>
     ) : (
       <Box
-        mr={isMobile ? "7px" : "12px"}
+        mr={isMobile ? 0.8 : 2}
         style={{
           justifyItems: "center",
           alignItems: "center",
@@ -215,7 +215,7 @@ function ConfigTabPanel() {
         </ButtonBase>
         <Typography
           style={{
-            marginTop: "12px",
+            marginTop: 12,
             fontSize: "14px",
             fontWeight: "400",
             color: "#95959E",
@@ -240,7 +240,7 @@ function ConfigTabPanel() {
             fontWeight: 600,
             lineHeight: "16px",
             fontSize: "16px",
-            marginTop: "24px",
+            marginTop: 24,
           }}
           variant="body1"
         >
@@ -249,8 +249,8 @@ function ConfigTabPanel() {
         <Box
           style={{
             display: "flex",
-            marginTop: "16px",
-            marginBottom: "24px",
+            marginTop: 16,
+            marginBottom: 24,
           }}
         >
           {heading === "Layout" ? (
@@ -298,7 +298,7 @@ function ConfigTabPanel() {
           )}
         </Box>
         <Box
-          style={{ borderBottom: "2px solid #3A3F4B", marginLeft: "-12px" }}
+          style={{ borderBottom: "2px solid #3A3F4B", marginLeft: -12 }}
         ></Box>
       </Box>
     );
@@ -309,7 +309,7 @@ function ConfigTabPanel() {
       style={{
         display: "flex",
         maxWidth: "100%",
-        marginLeft: "12px",
+        marginLeft: 12,
         flexDirection: "column",
       }}
     >
@@ -320,7 +320,7 @@ function ConfigTabPanel() {
           style={{
             display: "flex",
             flexDirection: "column",
-            marginRight: "12px",
+            marginRight: 12,
           }}
         >
           <Typography
@@ -328,7 +328,7 @@ function ConfigTabPanel() {
               fontWeight: 600,
               lineHeight: "16px",
               fontSize: "16px",
-              marginTop: "24px",
+              marginTop: 24,
             }}
             variant="body1"
           >
@@ -345,7 +345,7 @@ function ConfigTabPanel() {
             valueLabelDisplay="on"
             step={1}
             style={{
-              marginTop: "48px",
+              marginTop: 48,
               color: "#ffffff",
             }}
             area-label="default"
