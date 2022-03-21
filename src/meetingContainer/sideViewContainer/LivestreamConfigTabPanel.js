@@ -489,7 +489,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
     <Box
       style={{
         height: panelHeight - 32,
-        overflowY: "auto",
+        overflowY: "hidden",
         overflowX: "hidden",
       }}
     >

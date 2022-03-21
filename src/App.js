@@ -538,7 +538,10 @@ const App = () => {
             deviceInfo={{
               sdkType: "prebuilt",
               sdkVersion: prebuiltSDKVersion,
-              rawUserAgent: paramKeys.rawUserAgent,
+              rawUserAgent:
+                paramKeys.rawUserAgent || typeof window !== "undefined"
+                  ? window?.navigator?.userAgent
+                  : null,
             }}
           >
             <MeetingContainer />

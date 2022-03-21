@@ -99,36 +99,39 @@ const OutlineIconButton = ({
               transitionTimingFunction: "linear",
             }}
           >
-            <Badge color={"secondary"} badgeContent={badge}>
-              {lottieOption ? (
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Lottie
-                    style={{ height: iconSize }}
-                    options={lottieOption}
-                    eventListeners={[{ eventName: "done" }]}
-                    height={iconSize}
-                    width={
-                      (iconSize * lottieOption?.width) / lottieOption?.height
-                    }
-                    isClickToPauseDisabled
+            {Icon && (
+              <Badge color={"secondary"} badgeContent={badge}>
+                {lottieOption ? (
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Lottie
+                      style={{ height: iconSize }}
+                      options={lottieOption}
+                      eventListeners={[{ eventName: "done" }]}
+                      height={iconSize}
+                      width={
+                        (iconSize * lottieOption?.width) / lottieOption?.height
+                      }
+                      isClickToPauseDisabled
+                    />
+                  </Box>
+                ) : (
+                  <Icon
+                    style={{
+                      color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
+                      height: iconSize,
+                      width: iconSize,
+                    }}
+                    fillColor={isFocused ? focusIconColor || "#1C1F2E" : "#fff"}
                   />
-                </Box>
-              ) : (
-                <Icon
-                  style={{
-                    color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
-                    height: iconSize,
-                    width: iconSize,
-                  }}
-                />
-              )}
-            </Badge>
+                )}
+              </Badge>
+            )}
           </Box>
           {buttonText ? (
             <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>

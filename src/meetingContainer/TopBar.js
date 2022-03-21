@@ -21,7 +21,7 @@ import recordingBlink from "../animations/recording-blink.json";
 import liveBlink from "../animations/live-blink.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import LiveIcon from "../icons/LiveIcon";
-import RaiseHandDesktop from "../icons/RaiseHandDesktop";
+import RaiseHand from "../icons/RaiseHand";
 import {
   Activities,
   Chat,
@@ -29,7 +29,6 @@ import {
   Participants,
   ScreenRecording,
   ScreenShare,
-  RaiseHand,
   LeaveMeetingIcon,
   EndCallIcon,
 } from "../icons";
@@ -92,7 +91,7 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
     <Tooltip>
       <OutlineIconButton
         tooltipTitle={"Raise hand"}
-        Icon={RaiseHandDesktop}
+        Icon={RaiseHand}
         onClick={onRaiseHand}
       />
     </Tooltip>
@@ -286,9 +285,10 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     <>
       {isMobile || isTab ? (
         <MobileIconButton
-          Icon={LiveIcon}
+          bgColor={"#D32F2F"}
           onClick={_handleClick}
           tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          Icon={LiveIcon}
           buttonText={isLiveStreaming ? "Stop Live" : "Go Live"}
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
@@ -296,9 +296,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
         />
       ) : (
         <OutlineIconTextButton
-          liveStreamStarted={isLiveStreaming ? true : false}
           bgColor={"#D32F2F"}
-          // Icon={Live}
           onClick={_handleClick}
           tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
           buttonText="Go Live"
