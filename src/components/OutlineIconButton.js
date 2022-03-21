@@ -133,6 +133,7 @@ const OutlineIconButton = ({
                       height: iconSize,
                       width: iconSize,
                     }}
+                    fillColor={isFocused ? focusIconColor || "#1C1F2E" : "#fff"}
                   />
                 )}
               </Badge>

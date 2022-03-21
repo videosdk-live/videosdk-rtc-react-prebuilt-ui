@@ -21,6 +21,7 @@ const MobileIconButton = ({
   focusIconColor,
   disabled,
   large,
+  // liveStreamStarted,
   // renderRightComponent,
   tooltipTitle,
   btnID,
@@ -97,6 +98,9 @@ const MobileIconButton = ({
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    backgroundColor: bgColor,
+                    padding: "5px",
+                    borderRadius: "5px",
                   }}
                 >
                   <Lottie

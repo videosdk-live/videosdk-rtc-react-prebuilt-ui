@@ -438,7 +438,7 @@ const MeetingContainer = () => {
 
   const _handleOnLiveStreamStopped = () => {
     if (participantCanToggleLivestream && notificationAlertsEnabled) {
-      enqueueSnackbar("Meeting livestreaming is started.");
+      enqueueSnackbar("Meeting livestreaming is Stopped.");
     }
   };
 

@@ -18,7 +18,7 @@ const OutlineIconTextButton = ({
   focusBGColor,
   disabled,
   renderRightComponent,
-  liveStreamStarted,
+  fillColor,
   lottieOption,
   tooltipTitle,
   btnID,
