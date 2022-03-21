@@ -17,6 +17,7 @@ const ConfirmBox = ({
   onReject,
   title,
   subTitle,
+  subTitleColor,
 }) => {
   const v = useMeetingAppContext();
 
@@ -58,7 +59,10 @@ const ConfirmBox = ({
               </Typography>
               <Typography
                 variant="subtitle1"
-                style={{ marginTop: 3, color: "#808080" }}
+                style={{
+                  marginTop: 3,
+                  color: subTitleColor ? subTitleColor : "#9FA0A7",
+                }}
               >
                 {subTitle}
                 {/* {`${name} wants to join meeting.`} */}

@@ -21,13 +21,6 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
           disabled: true,
           onClick: () => {},
         },
-        // {
-        //   Icon: GestureIcon,
-        //   primary: "White board",
-        //   secondary: "White board - Coming Soon.",
-        //   disabled: true,
-        //   onClick: () => {},
-        // },
       ].map(({ Icon, primary, secondary, disabled, onClick }, i) => (
         <ButtonBase
           disabled={disabled}

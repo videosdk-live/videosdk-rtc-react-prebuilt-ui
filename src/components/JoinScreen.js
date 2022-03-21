@@ -190,7 +190,7 @@ export default function JoinMeeting({
     ) {
       setBoxHeight(videoPlayerRef.current.offsetHeight);
     }
-  }, [windowWidth]);
+  }, [windowWidth, boxHeight]);
 
   const changeWebcam = async (deviceId) => {
     const currentvideoTrack = videoTrackRef.current;
@@ -448,7 +448,6 @@ export default function JoinMeeting({
               meetingUrl === "" || meetingTitle === "" ? "row" : "column",
             justifyContent: "center",
             alignItems: "center",
-            // backgroundColor: "pink",
           }}
         >
           <Grid
@@ -460,7 +459,6 @@ export default function JoinMeeting({
               flexDirection: meetingUrl || meetingTitle ? "row" : "column",
               alignItems: "center",
               justifyContent: "center",
-              // backgroundColor: "purple",
             }}
           >
             <Grid
@@ -470,7 +468,6 @@ export default function JoinMeeting({
               style={{
                 display: "flex",
                 flex: 1,
-                // backgroundColor: "lightblue",
               }}
             >
               <Box
@@ -494,9 +491,7 @@ export default function JoinMeeting({
 
                     position: "relative",
                     width: "100%",
-                    // backgroundColor: "purple",
                   }}
-                  // mt={gtThenMD ? 4 : 3}
                 >
                   <Box
                     style={{
@@ -617,8 +612,6 @@ export default function JoinMeeting({
                         bottom={theme.spacing(2)}
                         left="0"
                         right="0"
-                        // style={{ backgroundColor: "yellow" }}
-                        // height={"80%"}
                       >
                         <Grid
                           container
@@ -698,7 +691,6 @@ export default function JoinMeeting({
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
-                // backgroundColor: "pink",
               }}
             >
               <Box

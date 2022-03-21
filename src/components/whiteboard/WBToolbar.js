@@ -63,16 +63,10 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         style={{
           backgroundColor: isSelected ? "#D5E8FF" : "",
           borderRadius: 6,
-          // height: whiteboardToolbarWidth - 16,
-          // width: whiteboardToolbarWidth - 16,
         }}
         onClick={onClick}
       >
-        <Icon
-          // height={whiteboardToolbarWidth - 16}
-          // width={whiteboardToolbarWidth - 16}
-          fill={isSelected ? theme.palette.primary.main : "black"}
-        />
+        <Icon fill={isSelected ? theme.palette.primary.main : "black"} />
       </ButtonBase>
     </Tooltip>
   );
@@ -182,9 +176,7 @@ const CustomImagePicker = ({ addImage }) => {
         <div
           style={{
             display: "flex",
-            flex: 1,
             justifyContent: "center",
-
             position: "relative",
           }}
         >
@@ -213,9 +205,7 @@ const CustomImagePicker = ({ addImage }) => {
                 name="image-input"
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
-                  addImage(e);
-                }}
+                onChange={addImage}
                 style={{
                   position: "absolute",
                   opacity: 0,
@@ -286,12 +276,14 @@ const WBToolbar = ({
           position: "absolute",
           top: whiteboardSpacing,
           left: whiteboardSpacing,
+          bottom: whiteboardSpacing,
           display: "flex",
           flexDirection: "column",
           backgroundColor: "white",
           boxShadow: "0px 5px 10px #00000029",
           alignItems: "center",
           width: whiteboardToolbarWidth,
+          overflow: "auto",
         }}
       >
         <ToolBarIcon

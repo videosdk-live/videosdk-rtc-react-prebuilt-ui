@@ -31,7 +31,6 @@ const useSortActiveParticipants = () => {
     mainViewParticipants,
     setActiveSortedParticipants,
     setMainViewParticipants,
-    meetingLayout,
     whiteboardStarted,
     layoutGridSize,
     hideLocalParticipant,
@@ -268,7 +267,6 @@ const useSortActiveParticipants = () => {
     isTab,
     isMobile,
     presenterId,
-    meetingLayout,
     whiteboardStarted,
     layoutGridSize,
   ]);

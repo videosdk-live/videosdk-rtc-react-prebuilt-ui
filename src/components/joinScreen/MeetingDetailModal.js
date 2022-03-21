@@ -68,14 +68,11 @@ export default function MeetingDetailModal({
 
   return (
     <Box
-      // mt={3}
       style={{
-        // maxHeight: boxHeight,
         width: "100%",
         display: "flex",
         flex: 1,
         flexDirection: "column",
-        // backgroundColor: "pink",
       }}
     >
       {(meetingUrl && meetingTitle) || meetingUrl ? (
@@ -89,7 +86,7 @@ export default function MeetingDetailModal({
             {meetingTitle ? (
               <div
                 style={{
-                  fontFamily: "Inter,Arial,sans-serif",
+                  fontFamily: "Roboto, sans-serif",
                   color: theme.palette.primary.contrastText,
                 }}
               >
@@ -146,15 +143,11 @@ export default function MeetingDetailModal({
                 </Box>
                 <Box
                   style={{
-                    // backgroundColor: theme.palette.primary.main,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
                   }}
-                  //   onClick={(e) => {
-                  //     setCopied(e);
-                  //   }}
                 >
                   <Tooltip title={copied ? "Copied" : "Copy"} aria-label="add">
                     <IconButton
@@ -182,7 +175,7 @@ export default function MeetingDetailModal({
       ) : meetingTitle ? (
         <div
           style={{
-            fontFamily: "Inter,Arial,sans-serif",
+            fontFamily: "Roboto, sans-serif",
             color: theme.palette.primary.contrastText,
           }}
         >
@@ -203,14 +196,13 @@ export default function MeetingDetailModal({
         <TextField
           id={"inputJoin"}
           placeholder="Enter your name"
-          // helperText="Your name will help everyone identify you in the meeting"
           variant="outlined"
           fullWidth
           value={name}
           error={nameErr}
           helperText={
             nameErr
-              ? "Enter Minimum 3 Characterrs"
+              ? "Enter Minimum 3 Characters"
               : "Your name will help everyone identify you in the meeting"
           }
           onChange={(ev) => {
@@ -231,10 +223,8 @@ export default function MeetingDetailModal({
             endAdornment: (
               <InputAdornment position="end">
                 <Button
-                  //   disabled={name.length <= 3}
                   color="primary"
                   variant="contained"
-                  //   onClick={startMeeting}
                   onClick={(e) => {
                     const isValid = handleValidation();
                     if (isValid) {

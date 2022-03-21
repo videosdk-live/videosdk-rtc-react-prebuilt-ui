@@ -163,12 +163,6 @@ export const localAndPinnedOnTop = ({
 
     const localParticipantPinned = localParticipantPinnedIndex !== -1;
 
-    // const localParticipantInGridIndex = participants.findIndex(
-    //   (id) => id === localParticipantId
-    // );
-
-    // const localParticipantInGrid = localParticipantInGridIndex !== -1;
-
     const unPinnedGridParticipants = participants.filter(
       (id) => pinnedParticipantIds.findIndex((_id) => _id === id) === -1
     );
@@ -181,15 +175,6 @@ export const localAndPinnedOnTop = ({
       pinnedParticipantIds.splice(localParticipantPinnedIndex, 1);
       pinnedParticipantIds.unshift(localParticipantId);
     }
-    // else if (localParticipantInGrid && !skipUnPinnedLocal) {
-    //   if (remaining.findIndex((id) => id === localParticipantId) !== -1) {
-    //     remaining.splice(localParticipantInGridIndex, 1);
-    //     remaining.unshift(localParticipantId);
-    //   } else {
-    //     remaining.splice(remaining.length - 1, 1);
-    //     remaining.unshift(localParticipantId);
-    //   }
-    // }
 
     const combined = [...pinnedParticipantIds, ...remaining];
 
@@ -205,25 +190,7 @@ export const localAndPinnedOnTop = ({
     }
 
     return combined;
-
-    // return [...pinnedParticipantIds, ...remaining];
-  }
-  //  else if (!skipUnPinnedLocal) {
-  //   const localIndex = participants.findIndex(
-  //     (participantId) => participantId === localParticipantId
-  //   );
-
-  //   if (localIndex === 0 || localIndex === -1) {
-  //     return participants;
-  //   } else {
-  //     const arr = [...participants];
-  //     arr.splice(localIndex, 1);
-  //     arr.unshift(localParticipantId);
-
-  //     return arr;
-  //   }
-  // }
-  else {
+  } else {
     const participantsArr = [...participants];
 
     const localParticipantIndex = participantsArr.findIndex(
@@ -349,3 +316,68 @@ export const appEvents = {
   "exit-full-screen": "exit-full-screen",
   "toggle-full-screen": "toggle-full-screen",
 };
+
+export const extractHostname = (url) => {
+  var hostname;
+  //find & remove protocol (http, ftp, etc.) and get hostname
+
+  if (url.indexOf("//") > -1) {
+    hostname = url.split("/")[2];
+  } else {
+    hostname = url.split("/")[0];
+  }
+
+  //find & remove port number
+  hostname = hostname.split(":")[0];
+  //find & remove "?"
+  hostname = hostname.split("?")[0];
+
+  return hostname;
+};
+
+export const extractRootDomain = (url) => {
+  var domain = extractHostname(url),
+    splitArr = domain.split("."),
+    arrLen = splitArr.length;
+
+  //extracting the root domain here
+  //if there is a subdomain
+  if (arrLen > 2) {
+    domain = splitArr[arrLen - 2] + "." + splitArr[arrLen - 1];
+    //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+    if (
+      splitArr[arrLen - 2].length === 2 &&
+      splitArr[arrLen - 1].length === 2
+    ) {
+      //this is using a ccTLD
+      domain = splitArr[arrLen - 3] + "." + domain;
+    }
+  }
+  return domain;
+};
+
+export const getUniqueId = () => {
+  return Math.random().toString(36).substring(2, 10);
+};
+
+export function debounce(func, wait, immediate) {
+  var timeout;
+
+  return function executedFunction() {
+    var context = this;
+    var args = arguments;
+
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+
+    var callNow = immediate && !timeout;
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(later, wait);
+
+    if (callNow) func.apply(context, args);
+  };
+}

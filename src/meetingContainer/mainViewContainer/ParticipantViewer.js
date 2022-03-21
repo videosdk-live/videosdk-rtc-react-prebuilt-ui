@@ -94,7 +94,7 @@ export const CornerDisplayName = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: animationsEnabled ? "all 200ms" : "all 100ms",
+          transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
         }}
       >
@@ -116,7 +116,7 @@ export const CornerDisplayName = ({
             right: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             bottom: showPin ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
             transform: `scale(${showPin ? 1 : 0})`,
-            transition: animationsEnabled ? "all 200ms" : "all 100ms",
+            transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
             transitionTimingFunction: "linear",
           }}
         >
@@ -164,7 +164,7 @@ export const CornerDisplayName = ({
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 24,
-            transition: animationsEnabled ? "all 200ms" : "all 100ms",
+            transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
             transitionTimingFunction: "linear",
           }}
         >
@@ -203,7 +203,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     setOverlaidInfoVisible,
     whiteboardStarted,
     animationsEnabled,
-    alwaysShowOverlay,
     isRecorder,
   } = useMeetingAppContext();
 
@@ -374,7 +373,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             <Box
               style={{
                 zIndex: 10,
-                // aspectRatio: 1,
                 height: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
                 width: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
                 display: "flex",

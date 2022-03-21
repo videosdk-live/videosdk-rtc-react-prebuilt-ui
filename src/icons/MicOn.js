@@ -21,7 +21,7 @@ const MicOn = (props) => {
             />
           </clipPath>
         </defs>
-        <g id="mic_on" clip-path="url(#clip-path)">
+        <g id="mic_on" clipPath="url(#clip-path)">
           <g id="mic" transform="translate(1.935 1.05)">
             <path
               id="Path_3"

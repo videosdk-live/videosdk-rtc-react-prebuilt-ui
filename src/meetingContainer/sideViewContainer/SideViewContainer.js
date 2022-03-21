@@ -18,6 +18,8 @@ import useIsMobile from "../../utils/useIsMobile";
 import ActivitiesTabPanel from "./ActivitiesTabPanel";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMeeting } from "@videosdk.live/react-sdk";
+import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
+import ConfigTabPanel from "./ConfigTabPanel";
 
 const SideBarTabView = ({ width, height }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
@@ -30,6 +32,10 @@ const SideBarTabView = ({ width, height }) => {
       ? 1
       : sideBarMode === sideBarModes.ACTIVITIES
       ? 2
+      : sideBarMode === sideBarModes.ADD_LIVE_STREAM
+      ? 3
+      : sideBarMode === sideBarModes.CONFIGURATION
+      ? 4
       : null;
 
   const panelPadding = 8;
@@ -97,6 +103,8 @@ const SideBarTabView = ({ width, height }) => {
                     ? `${capitalize(
                         String(sideBarMode || "").toLowerCase()
                       )} (${new Map(participants)?.size})`
+                    : sideBarMode === "ADD_LIVE_STREAM"
+                    ? "Add Live Streams"
                     : capitalize(String(sideBarMode || "").toLowerCase())}
                 </Typography>
                 <IconButton onClick={handleClose}>
@@ -110,6 +118,10 @@ const SideBarTabView = ({ width, height }) => {
               <ChatTabPanel {...{ panelHeight }} />
             ) : value === 2 ? (
               <ActivitiesTabPanel {...{ panelHeight }} />
+            ) : value === 3 ? (
+              <LiveStreamConfigTabPanel {...{ panelHeight }} />
+            ) : value === 4 ? (
+              <ConfigTabPanel {...{ panelHeight }} />
             ) : null}
           </>
         </div>
@@ -157,7 +169,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
         height,
         position: "relative",
         width: isOpen ? width : 0,
-        transition: animationsEnabled ? "width 400ms" : "width 200ms",
+        transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
         transitionTimingFunction: "ease-in-out",
       }}
     >

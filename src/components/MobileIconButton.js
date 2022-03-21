@@ -11,7 +11,7 @@ import { useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
-const OutlineIconButton = ({
+const MobileIconButton = ({
   badge,
   onClick,
   Icon,
@@ -21,9 +21,10 @@ const OutlineIconButton = ({
   focusIconColor,
   disabled,
   large,
-  renderRightComponent,
+  // renderRightComponent,
   tooltipTitle,
   btnID,
+  isActive,
   buttonText,
   lottieOption,
 }) => {
@@ -44,31 +45,21 @@ const OutlineIconButton = ({
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
       <Box
+        p={1}
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           borderRadius: theme.spacing(1),
           overflow: "hidden",
-          backgroundColor: bgColor
-            ? bgColor
-            : isFocused
-            ? focusBGColor || "#fff"
-            : theme.palette.background.default,
-          border: `${2}px solid ${
-            mouseOver || mouseDown
-              ? "transparent"
-              : bgColor
-              ? bgColor
-              : focusBGColor
-              ? focusBGColor
-              : "#ffffff33"
-          }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
         }}
       >
         <ButtonBase
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
           id={btnID}
           onMouseEnter={() => {
             setMouseOver(true);
@@ -122,24 +113,33 @@ const OutlineIconButton = ({
               ) : (
                 <Icon
                   style={{
-                    color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
+                    color: isFocused ? focusIconColor || "#fff" : "#95959E",
                     height: iconSize,
                     width: iconSize,
                   }}
+                  fillColor={isFocused ? "#fff" : "#95959E"}
                 />
               )}
             </Badge>
           </Box>
-          {buttonText ? (
-            <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
-              {buttonText}
-            </Typography>
-          ) : null}
+          <Box>
+            {buttonText ? (
+              <Typography
+                variant="subtitle2"
+                style={{
+                  fontWeight: "bold",
+                  color: isFocused ? "#fff" : "#95959E",
+                }}
+              >
+                {buttonText}
+              </Typography>
+            ) : null}
+          </Box>
         </ButtonBase>
-        {typeof renderRightComponent === "function" && renderRightComponent()}
+        {/* {typeof renderRightComponent === "function" && renderRightComponent()} */}
       </Box>
     </Tooltip>
   );
 };
 
-export default OutlineIconButton;
+export default MobileIconButton;
