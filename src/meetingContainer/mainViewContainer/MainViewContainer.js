@@ -557,6 +557,7 @@ const MainViewContainer = ({
                       (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
                     width: whiteboardStarted
                       ? width -
+                        (isMobile ? 0 : presentingSideBarWidth) -
                         2 * spacing -
                         (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
                         (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
