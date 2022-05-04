@@ -124,6 +124,7 @@ const App = () => {
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
       rawUserAgent: "rawUserAgent",
       canChangeLayout: "canChangeLayout",
+      region: "region",
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
       // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
@@ -316,6 +317,22 @@ const App = () => {
         break;
     }
 
+    if (!paramKeys.region || typeof paramKeys.region !== "string") {
+      paramKeys.region = "sg001";
+    }
+
+    switch (paramKeys.region?.toLowerCase()) {
+      case "sg001":
+      case "eu001":
+      case "us001":
+      case "uk001":
+        paramKeys.region = paramKeys.region.toLowerCase();
+        break;
+      default:
+        paramKeys.region = "sg001";
+        break;
+    }
+
     return paramKeys;
   };
 
@@ -356,7 +373,7 @@ const App = () => {
   const [selectedMic, setSelectedMic] = useState({ id: null });
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
-  const validateMeetingId = async ({ meetingId, token, debug }) => {
+  const validateMeetingId = async ({ meetingId, token, debug, region }) => {
     const BASE_URL = "https://api.videosdk.live";
 
     const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
@@ -364,6 +381,7 @@ const App = () => {
     const resMeetingId = await fetch(urlMeetingId, {
       method: "POST",
       headers: { "Content-type": "application/json", Authorization: token },
+      body: JSON.stringify({ region }),
     });
 
     const meetingIdJson = await resMeetingId.json();
@@ -401,6 +419,7 @@ const App = () => {
         meetingId: paramKeys.meetingId,
         token: paramKeys.token,
         debug: paramKeys.debug === "true",
+        region: paramKeys.region,
       });
     }
   }, [paramKeys]);

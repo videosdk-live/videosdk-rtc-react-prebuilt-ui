@@ -55,6 +55,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | webcamEnabled                   | false            | webcam enabled by default                                                                   |
 | name                            | -                | participant name                                                                            |
 | meetingId _`required`_          | -                | meeting id                                                                                  |
+| region                          | "sg001"          | meeting region                                                                              |
 | redirectOnLeave                 | -                | URL where user will be redirected, after leaving the meeting                                |
 | chatEnabled                     | false            | chat panel visible or not                                                                   |
 | screenShareEnabled              | false            | can start screen sharing                                                                    |
