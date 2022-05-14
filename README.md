@@ -111,6 +111,7 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | joinWithoutUserInteraction      | false            | do not require interaction before starting the meeting                                      |
 | rawUserAgent                    | -                | -                                                                                           |
 | canChangeLayout                 | `false`          | can change meeting layout                                                                   |
+| preferredProtocol               | `UDP_ONLY`       | `UDP_ONLY` or `UDP_ONLY`                                                                    |
 
 ---
 

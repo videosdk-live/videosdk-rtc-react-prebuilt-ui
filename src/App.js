@@ -125,6 +125,7 @@ const App = () => {
       rawUserAgent: "rawUserAgent",
       canChangeLayout: "canChangeLayout",
       region: "region",
+      preferredProtocol: "preferredProtocol",
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
       // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
@@ -330,6 +331,20 @@ const App = () => {
         break;
       default:
         paramKeys.region = "sg001";
+        break;
+    }
+
+    if (typeof paramKeys.preferredProtocol !== "string") {
+      paramKeys.preferredProtocol = "UDP_ONLY";
+    }
+
+    switch (paramKeys.preferredProtocol.toUpperCase()) {
+      case "UDP_ONLY":
+      case "UDP_OVER_TCP":
+        paramKeys.preferredProtocol = paramKeys.preferredProtocol.toUpperCase();
+        break;
+      default:
+        paramKeys.preferredProtocol = "UDP_ONLY";
         break;
     }
 
@@ -551,6 +566,7 @@ const App = () => {
                   ? paramKeys.maxResolution
                   : "sd",
               participantId: paramKeys.participantId,
+              preferredProtocol: paramKeys.preferredProtocol,
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction
