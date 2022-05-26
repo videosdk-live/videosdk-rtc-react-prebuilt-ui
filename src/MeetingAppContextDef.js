@@ -111,6 +111,11 @@ export const MeetingAppProvider = ({
   participantCanToggleLivestream,
   reduceEdgeSpacing,
   isRecorder,
+  cameraResolution,
+  cameraOptimizationMode,
+  screenShareResolution,
+  screenShareOptimizationMode,
+  micQuality
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -152,13 +157,13 @@ export const MeetingAppProvider = ({
       ? appMeetingLayout.type === meetingLayouts.SPOTLIGHT
         ? meetingLayouts.SPOTLIGHT
         : appMeetingLayout.type === meetingLayouts.SIDEBAR
-        ? meetingLayouts.SIDEBAR
-        : meetingLayouts.GRID
+          ? meetingLayouts.SIDEBAR
+          : meetingLayouts.GRID
       : appMeetingLayout.type === meetingLayouts.SPOTLIGHT
-      ? meetingLayouts.UNPINNED_SPOTLIGHT
-      : appMeetingLayout.type === meetingLayouts.SIDEBAR
-      ? meetingLayouts.UNPINNED_SIDEBAR
-      : meetingLayouts.GRID;
+        ? meetingLayouts.UNPINNED_SPOTLIGHT
+        : appMeetingLayout.type === meetingLayouts.SIDEBAR
+          ? meetingLayouts.UNPINNED_SIDEBAR
+          : meetingLayouts.GRID;
   }, [appMeetingLayout, meetingLayouts]);
 
   return (
@@ -223,6 +228,11 @@ export const MeetingAppProvider = ({
         sideStackSize,
         reduceEdgeSpacing,
         isRecorder,
+        cameraResolution,
+        cameraOptimizationMode,
+        screenShareResolution,
+        screenShareOptimizationMode,
+        micQuality,
 
         // states
         sideBarMode,

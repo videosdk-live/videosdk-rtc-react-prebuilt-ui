@@ -126,6 +126,11 @@ const App = () => {
       canChangeLayout: "canChangeLayout",
       region: "region",
       preferredProtocol: "preferredProtocol",
+      cameraResolution:"cameraResolution",
+      cameraOptimizationMode:"cameraOptimizationMode",
+      screenShareResolution:"screenShareResolution",
+      screenShareOptimizationMode:"screenShareOptimizationMode",
+      micQuality:"micQuality",
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
       // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
@@ -348,6 +353,23 @@ const App = () => {
         break;
     }
 
+    if(!paramKeys.cameraResolution || typeof paramKeys.cameraResolution !== "string"){
+      paramKeys.cameraResolution = "h360p_w640p";
+    }
+    if(!paramKeys.cameraOptimizationMode || typeof paramKeys.cameraOptimizationMode !== "string"){
+      paramKeys.cameraOptimizationMode = "motion";
+    }
+
+    if(!paramKeys.screenShareResolution || typeof paramKeys.screenShareResolution !== "string"){
+      paramKeys.screenShareResolution = "h720p_15fps";
+    }
+    if(!paramKeys.screenShareOptimizationMode || typeof paramKeys.screenShareOptimizationMode !== "string"){
+      paramKeys.screenShareOptimizationMode = "motion";
+    }
+
+    if(!paramKeys.micQuality || typeof paramKeys.micQuality !== "string"){
+      paramKeys.micQuality = "speech_standard";
+    }  
     return paramKeys;
   };
 
@@ -550,6 +572,11 @@ const App = () => {
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
+            cameraResolution: paramKeys.cameraResolution,
+            cameraOptimizationMode: paramKeys.cameraOptimizationMode,
+            screenShareResolution: paramKeys.screenShareResolution,
+            screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
+            micQuality: paramKeys.micQuality
           }}
         >
           <MeetingProvider

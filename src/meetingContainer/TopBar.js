@@ -51,6 +51,7 @@ import ConfirmBox from "../components/ConfirmBox";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
+import useCustomTrack from "../utils/useCustomTrack";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -432,8 +433,17 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const { whiteboardStarted } = useMeetingAppContext();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
-  const toggleScreenShare = mMeeting?.toggleScreenShare;
   const presenterId = mMeeting?.presenterId;
+
+  const {getCustomScreenShareTrack} = useCustomTrack();
+
+  const toggleScreenShare = async ()=>{
+    let track;
+    if(!localScreenShareOn)
+      track = await getCustomScreenShareTrack();
+    console.log("screneshare ",track)
+    mMeeting?.toggleScreenShare(track);
+  };
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -517,8 +527,20 @@ const MicBTN = () => {
   };
 
   const localMicOn = mMeeting?.localMicOn;
-  const toggleMic = mMeeting?.toggleMic;
-  const changeMic = mMeeting?.changeMic;
+
+  const {getCustomAudioTrack} = useCustomTrack();
+
+  const localWebcamOn = mMeeting?.localWebcamOn;
+  const toggleMic = async ()=>{
+    let track;
+    if(!localMicOn)
+      track = await getCustomAudioTrack(selectedDeviceId);
+    mMeeting?.toggleMic(track);
+  };
+  const changeMic = async (deviceId)=>{
+    const track = await getCustomAudioTrack(deviceId);
+    mMeeting?.changeMic(track ? track : deviceId);
+  };
 
   const getMics = async (mGetMics) => {
     const mics = await mGetMics();
@@ -703,9 +725,19 @@ const WebcamBTN = () => {
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
+  const {getCustomVideoTrack} = useCustomTrack();
+
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = mMeeting?.toggleWebcam;
-  const changeWebcam = mMeeting?.changeWebcam;
+  const toggleWebcam = async ()=>{
+    let track;
+    if(!localWebcamOn)
+      track = await getCustomVideoTrack(selectedDeviceId);
+    mMeeting?.toggleWebcam(track);
+  };
+  const changeWebcam = async (deviceId)=>{
+    const track = await getCustomVideoTrack(deviceId);
+    mMeeting?.changeWebcam(track ? track : deviceId);
+  };
 
   const handleClick = (event) => {
     setDownArrow(event.currentTarget);

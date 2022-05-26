@@ -26,6 +26,7 @@ import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutV
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
+import useCustomTrack from "../utils/useCustomTrack";
 
 const getPinMsg = ({
   localParticipant,
@@ -134,6 +135,8 @@ const MeetingContainer = () => {
     setLiveStreamConfig,
     liveStreamConfig,
   } = useMeetingAppContext();
+
+  const {getCustomVideoTrack, getCustomAudioTrack} = useCustomTrack();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
 
@@ -266,8 +269,9 @@ const MeetingContainer = () => {
     if (joinScreenWebCam && selectedWebcam.id) {
       await new Promise((resolve) => {
         disableWebcam();
-        setTimeout(() => {
-          changeWebcam(selectedWebcam.id);
+        setTimeout(async () => {
+          const track = await getCustomVideoTrack(selectedWebcam.id);
+          changeWebcam(track);
           resolve();
         }, 500);
       });
@@ -276,8 +280,9 @@ const MeetingContainer = () => {
     if (joinScreenMic && selectedMic.id) {
       await new Promise((resolve) => {
         muteMic();
-        setTimeout(() => {
-          changeMic(selectedMic.id);
+        setTimeout(async () => {
+          const track = await getCustomAudioTrack(selectedMic.id);
+          changeMic(track);
           resolve();
         }, 500);
       });

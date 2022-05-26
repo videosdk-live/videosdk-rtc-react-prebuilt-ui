@@ -28,6 +28,7 @@ import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
 import ConfirmBox from "../../components/ConfirmBox";
 import { nameTructed } from "../../utils/common";
+import useCustomTrack from "../../utils/useCustomTrack";
 
 function ParticipantListItem({
   raisedHand,
@@ -57,6 +58,8 @@ function ParticipantListItem({
     canPin,
     animationsEnabled,
   } = useMeetingAppContext();
+
+  const {getCustomVideoTrack, getCustomAudioTrack} = useCustomTrack();
 
   const [isParticipantKickoutVisible, setIsParticipantKickoutVisible] =
     useState(false);
@@ -158,11 +161,12 @@ function ParticipantListItem({
                 <IconButton
                   disabled={!participantCanToggleOtherMic || isLocal}
                   style={{ padding: 0 }}
-                  onClick={() => {
+                  onClick={async () => {
                     if (micOn) {
                       disableMic();
                     } else {
-                      enableMic();
+                      const track = await getCustomAudioTrack()
+                      enableMic(track);
                     }
                   }}
                 >
@@ -194,11 +198,12 @@ function ParticipantListItem({
                 <IconButton
                   disabled={!participantCanToggleOtherWebcam || isLocal}
                   style={{ padding: 0 }}
-                  onClick={() => {
+                  onClick={async() => {
                     if (webcamOn) {
                       disableWebcam();
                     } else {
-                      enableWebcam();
+                      const track = await getCustomVideoTrack()
+                      enableWebcam(track);
                     }
                   }}
                 >

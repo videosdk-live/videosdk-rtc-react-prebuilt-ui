@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-              ? undefined
-              : "#D32F2Fcc",
+                ? undefined
+                : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -221,6 +221,8 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const mediaStream = useMemo(() => {
     if (webcamOn) {
+      console.log(webcamStream);
+      console.log("Recieve Track Settings = ", webcamStream.track.getSettings())
       const mediaStream = new MediaStream();
       mediaStream.addTrack(webcamStream.track);
       return mediaStream;
@@ -264,6 +266,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     if (!presenterId) {
       typeof webcamStream?.resume === "function" && webcamStream?.resume();
     }
+
+    if (webcamStream)
+      console.log("Recieve Track Settings = ", webcamStream.track)
   }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {
@@ -307,7 +312,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        className={"video-cover"}
+        // className={"video-cover"}
       >
         {webcamOn ? (
           <>
