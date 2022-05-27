@@ -312,7 +312,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        // className={"video-cover"}
+        className={"video-cover"}
       >
         {webcamOn ? (
           <>
