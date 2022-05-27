@@ -221,8 +221,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const mediaStream = useMemo(() => {
     if (webcamOn) {
-      console.log(webcamStream);
-      console.log("Recieve Track Settings = ", webcamStream.track.getSettings())
       const mediaStream = new MediaStream();
       mediaStream.addTrack(webcamStream.track);
       return mediaStream;
@@ -266,9 +264,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     if (!presenterId) {
       typeof webcamStream?.resume === "function" && webcamStream?.resume();
     }
-
-    if (webcamStream)
-      console.log("Recieve Track Settings = ", webcamStream.track)
   }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {

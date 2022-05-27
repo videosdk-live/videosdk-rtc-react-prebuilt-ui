@@ -271,7 +271,7 @@ const MeetingContainer = () => {
         disableWebcam();
         setTimeout(async () => {
           const track = await getCustomVideoTrack(selectedWebcam.id);
-          changeWebcam(track);
+          changeWebcam(track? track: selectedWebcam.id);
           resolve();
         }, 500);
       });

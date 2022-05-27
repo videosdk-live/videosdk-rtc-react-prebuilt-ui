@@ -25,7 +25,7 @@ const useCustomTrack = () => {
       encoderConfig: screenShareResolution,
       optimizationMode: screenShareOptimizationMode,
     }).catch((error) => {
-      console.log("Unable to create custom video Track", error);
+      console.log("Unable to create custom screen share Track", error);
     })
     return track;
   }
