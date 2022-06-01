@@ -26,6 +26,9 @@ import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutV
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
+import { WhiteBoardViewContainer } from "./whiteBoardViewContainer/WhiteBoardViewContainer";
+import { WhiteboardPinLayout } from "../components/WhiteboardPinLayout";
+import { WhiteboardLayout } from "../components/WhiteboardLayout";
 
 const getPinMsg = ({
   localParticipant,
@@ -129,6 +132,7 @@ const MeetingContainer = () => {
     setAppMeetingLayout,
     topbarEnabled,
     notificationAlertsEnabled,
+    whiteboardEnabled,
     debug,
     meetingLayoutTopic,
     setLiveStreamConfig,
@@ -525,21 +529,25 @@ const MeetingContainer = () => {
   });
 
   const _handleToggleFullScreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      const elem = containerRef.current;
-      if (elem) {
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-          /* Safari */
-          elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-          /* IE11 */
-          elem.msRequestFullscreen();
+    try {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        const elem = containerRef.current;
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch((e) => {
+            console.log(`request to full screen is rejected due to ${e}`);
+          });
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          /*  This for Safari */
+          document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          /*  IE11 */
+          document.documentElement.msRequestFullscreen();
         }
       }
+    } catch (err) {
+      console.log("Unable to full screen due to ", err);
     }
   };
 
@@ -569,6 +577,7 @@ const MeetingContainer = () => {
       ref={containerRef}
       style={{
         height: "100vh",
+        width: "100vw",
         overflow: "hidden",
         position: "relative",
       }}
@@ -600,6 +609,27 @@ const MeetingContainer = () => {
                   height: containerHeight - topBarHeight,
                 }}
               >
+                {/* {whiteboardEnabled ? (
+                  mMeeting?.pinnedParticipants.size > 0 ? (
+                    <WhiteboardPinLayout />
+                  ) : (
+                    <WhiteboardLayout
+                      {...{
+                        height: containerHeight - topBarHeight,
+                        width: containerWidth,
+                        // width:
+                        //   containerWidth -
+                        //   (isTab || isMobile
+                        //     ? 0
+                        //     : typeof sideBarMode === "string"
+                        //     ? sideBarContainerWidth
+                        //     : 0),
+                        whiteboardToolbarWidth,
+                        whiteboardSpacing,
+                      }}
+                    />
+                  )
+                ) :  */}
                 {mMeeting?.pinnedParticipants.size > 0 &&
                 (meetingLayout === meetingLayouts.SPOTLIGHT ||
                   meetingLayout === meetingLayouts.SIDEBAR) ? (
@@ -621,6 +651,7 @@ const MeetingContainer = () => {
                   <MainViewContainer
                     {...{
                       height: containerHeight - topBarHeight,
+                      // width: containerWidth,
                       width:
                         containerWidth -
                         (isTab || isMobile

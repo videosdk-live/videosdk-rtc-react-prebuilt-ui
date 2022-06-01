@@ -64,6 +64,7 @@ const App = () => {
       pollEnabled: "pollEnabled",
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
+      topBarEnabled: "topBarEnabled",
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
@@ -181,12 +182,16 @@ const App = () => {
     if (typeof paramKeys.screenShareEnabled !== "string") {
       paramKeys.screenShareEnabled = "true";
     }
+    if (typeof paramKeys.topBarEnabled !== "string") {
+      paramKeys.topBarEnabled = "true";
+    }
     if (typeof paramKeys.pollEnabled !== "string") {
       paramKeys.pollEnabled = "true";
     }
     if (typeof paramKeys.whiteboardEnabled !== "string") {
       paramKeys.whiteboardEnabled = "true";
     }
+
     if (typeof paramKeys.participantCanToggleSelfWebcam !== "string") {
       paramKeys.participantCanToggleSelfWebcam = "true";
     }
@@ -274,6 +279,7 @@ const App = () => {
     }
 
     paramKeys.layoutGridSize = parseInt(paramKeys.layoutGridSize);
+    paramKeys.reduceEdgeSpacing = "true";
 
     if (paramKeys.layoutGridSize <= 0 || isNaN(paramKeys.layoutGridSize)) {
       paramKeys.layoutGridSize = maxGridSize;
@@ -285,7 +291,7 @@ const App = () => {
       paramKeys.hideLocalParticipant = "true";
       paramKeys.alwaysShowOverlay = "true";
       paramKeys.sideStackSize = "5";
-      paramKeys.reduceEdgeSpacing = "true";
+
       paramKeys.topbarEnabled = "false";
       paramKeys.notificationSoundEnabled = "false";
       paramKeys.notificationAlertsEnabled = "false";

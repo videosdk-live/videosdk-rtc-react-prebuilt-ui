@@ -1,5 +1,5 @@
 import { useMeeting } from "@videosdk.live/react-sdk";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ParticipantViewer from "./ParticipantViewer";
 import PresenterView from "./PresenterView";
 import {
@@ -7,6 +7,7 @@ import {
   getGridForMainParticipants,
   calcQuality,
   localAndPinnedOnTop,
+  getGridForPinnedParticipants,
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
@@ -61,7 +62,7 @@ const MotionParticipant = ({
 
   const animeConfig = { stiffness: 180, damping: 22 };
 
-  const { animationsEnabled } = useMeetingAppContext();
+  const { animationsEnabled, whiteboardEnabled } = useMeetingAppContext();
 
   return (
     <TransitionMotion
@@ -76,10 +77,9 @@ const MotionParticipant = ({
       {({ top, left, height, width, scale }) => (
         <div
           style={{
-            position: "absolute",
             top: `${top}%`,
             left: `${left}%`,
-            height: `${height}%`,
+            height: `${100}%`,
             width: `${width}%`,
             paddingTop: gutter,
             paddingBottom: gutter,
@@ -178,10 +178,12 @@ const MainViewContainer = ({
 }) => {
   const mMeeting = useMeeting();
 
+  console.log("mMeeting : ", mMeeting);
+
   const participants = mMeeting?.participants;
   const presenterId = mMeeting?.presenterId;
   const localParticipantId = mMeeting?.localParticipant?.id;
-  const pinnedParticipants = mMeeting?.pinnedParticipants;
+  const pinnedParticipants = mMeeting.pinnedParticipants;
   const activeSpeakerId = mMeeting?.activeSpeakerId;
   const mainParticipantId = mMeeting?.mainParticipant?.id;
 
@@ -191,6 +193,8 @@ const MainViewContainer = ({
   const isLGDesktop = useIsLGDesktop();
 
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
+
+  console.log("## participants : ", participants);
 
   const rowSpacing = useResponsiveSize({
     xl: 24,
@@ -229,7 +233,12 @@ const MainViewContainer = ({
     [presenterId, whiteboardStarted, meetingLayout]
   );
 
-  const { singleRow, mainLayoutParticipantId } = useMemo(() => {
+  const {
+    singleRow,
+    mainLayoutParticipantId,
+    _pinnedParticipants,
+    // pinnedParticipantsArr,
+  } = useMemo(() => {
     let mainLayoutParticipantId;
 
     let _pinnedParticipants = new Map(pinnedParticipants);
@@ -364,6 +373,7 @@ const MainViewContainer = ({
     }
 
     let participantsCount = mainParticipants?.length;
+    // let pinnedParticipantsCount;
 
     if (participantsCount > layoutGridSize) {
       mainParticipants = mainParticipants.slice(0, layoutGridSize);
@@ -391,6 +401,10 @@ const MainViewContainer = ({
       participantsCount = mainParticipants?.length;
     }
 
+    // if (pinnedParticipants.size > 0) {
+    //   pinnedParticipantsCount = pinnedParticipants?.length;
+    // }
+
     const gridInfo = getGridRowsAndColumns({
       participantsCount,
       isMobile,
@@ -400,6 +414,16 @@ const MainViewContainer = ({
       isLandscape: !isPortrait,
       isPresenting: !!mainScreenViewActive,
     });
+
+    // const pinnedParticipantsGridInfo = getGridRowsAndColumns({
+    //   pinnedParticipantsCount,
+    //   isMobile,
+    //   isTab,
+    //   isSMDesktop,
+    //   isLGDesktop,
+    //   isLandscape: !isPortrait,
+    //   isPresenting: !!mainScreenViewActive,
+    // });
 
     const { singleRow } = getGridForMainParticipants({
       participants: localAndPinnedOnTop({
@@ -418,7 +442,29 @@ const MainViewContainer = ({
       gridInfo,
     });
 
-    return { singleRow, mainLayoutParticipantId };
+    // const { pinnedParticipantsArr } = getGridForPinnedParticipants({
+    //   pinnedParticipants: localAndPinnedOnTop({
+    //     localParticipantId: hideLocalParticipant ? null : localParticipantId,
+    //     participants: participants,
+    //     pinnedParticipantIds:
+    //       meetingLayout === meetingLayouts.UNPINNED_SIDEBAR ||
+    //       meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT
+    //         ? []
+    //         : [..._pinnedParticipants.keys()],
+    //     moveLocalUnpinnedOnTop:
+    //       _pinnedParticipants.size && meetingLayout !== meetingLayouts.GRID
+    //         ? false
+    //         : true,
+    //   }),
+    //   pinnedParticipantsGridInfo,
+    // });
+
+    return {
+      singleRow,
+      mainLayoutParticipantId,
+      _pinnedParticipants,
+      // pinnedParticipantsArr,
+    };
   }, [
     meetingLayout,
     participants,
@@ -445,6 +491,22 @@ const MainViewContainer = ({
 
   const theme = useTheme();
 
+  console.log("singleRow :", singleRow);
+
+  const gridOfPinnedParticipants = useMemo(() => {
+    let gridOfPinnedParticipants = [];
+    _pinnedParticipants.forEach((p, key) => {
+      gridOfPinnedParticipants.push({
+        participantId: key,
+        relativeHeight: 100,
+        relativeLeft: 0,
+        relativeTop: 0,
+        relativeWidth: 100,
+      });
+    });
+    return gridOfPinnedParticipants;
+  }, [_pinnedParticipants]);
+
   const presentingSideBarWidth = useResponsiveSize({
     xl: 320,
     lg: 280,
@@ -452,6 +514,8 @@ const MainViewContainer = ({
     sm: 240,
     xs: 200,
   });
+
+  console.log("## _pinndedParticipants : ", _pinnedParticipants);
 
   const mainContainerHorizontalPadding = useMemo(
     () =>
@@ -514,13 +578,56 @@ const MainViewContainer = ({
           transitionTimingFunction: "ease-in-out",
           display: "flex",
           position: "relative",
+          flexDirection: "column",
         }}
       >
+        {pinnedParticipants.size > 0 && (
+          <div
+            style={{
+              backgroundColor: theme.palette.background.default,
+              overflowX: "hidden",
+              overflowY: "hidden",
+              width: width - 2 * spacing,
+              height: actualPresentingSideBarWidth,
+              margin: spacing,
+              transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
+              transitionTimingFunction: "ease-in-out",
+              display: "flex",
+            }}
+          >
+            <div
+              style={{
+                // height: actualPresentingSideBarWidth,
+                position: "relative",
+                display: "flex",
+                flexDirection: "row",
+                transition: `height ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
+                transitionTimingFunction: "ease-in-out",
+              }}
+            >
+              {gridOfPinnedParticipants.map((c) => (
+                <div
+                  style={{
+                    width: "200px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <MemoizedMotionParticipant
+                    quality={calcQuality(mainViewParticipants?.length || 1)}
+                    key={`main_participant_${c.participantId}`}
+                    {...c}
+                    gutter={gutter}
+                    useVisibilitySensor={mainScreenViewActive ? true : false}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div
           style={{
-            width: mainScreenViewActive
-              ? width - actualPresentingSideBarWidth
-              : 0,
+            width,
             height,
             transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
             transitionTimingFunction: "ease-in-out",
@@ -530,10 +637,14 @@ const MainViewContainer = ({
         >
           <div
             style={{
-              height: height - 2 * spacing,
+              height:
+                pinnedParticipants.size > 0
+                  ? height - 2 * spacing - (actualPresentingSideBarWidth - 50)
+                  : height,
+
               width: mainScreenViewActive
                 ? width -
-                  (isMobile ? 0 : actualPresentingSideBarWidth) -
+                  // (isMobile ? 0 : actualPresentingSideBarWidth) -
                   2 * spacing
                 : 0,
               backgroundColor:
@@ -568,7 +679,7 @@ const MainViewContainer = ({
                   originalHeight: height - 2 * spacing,
                   originalWidth: whiteboardStarted
                     ? width -
-                      (isMobile ? 0 : actualPresentingSideBarWidth) -
+                      // (isMobile ? 0 : actualPresentingSideBarWidth) -
                       2 * spacing
                     : 0,
                 }}
@@ -605,8 +716,8 @@ const MainViewContainer = ({
             )}
           </div>
         </div>
-        {isMobile && mainScreenViewActive ? null : singleRow.length <=
-          0 ? null : (
+        {(isMobile && mainScreenViewActive) ||
+        whiteboardStarted ? null : singleRow.length <= 0 ? null : (
           <div
             style={{
               backgroundColor: theme.palette.background.default,

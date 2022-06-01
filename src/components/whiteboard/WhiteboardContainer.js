@@ -66,7 +66,7 @@ function WhiteboardContainer({
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [color, setColor] = useState(theme.palette.primary.main);
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
-    whiteboardState.state.config?.bgColor || "#f5f7f9"
+    whiteboardState.state?.config?.bgColor || "#f5f7f9"
   );
 
   const [tool, _setTool] = useState(null);
@@ -193,7 +193,7 @@ function WhiteboardContainer({
 
     if (whiteboardState.started) {
       //
-      const oldObjects = whiteboardState.state.objects;
+      const oldObjects = whiteboardState.state?.objects;
 
       fabric.util.enlivenObjects(oldObjects, function (objects) {
         const origRenderOnAddRemove = canvas.renderOnAddRemove;
@@ -208,8 +208,8 @@ function WhiteboardContainer({
       });
 
       //
-      if (whiteboardState.state.zoom) {
-        const zoom = convertZoomFrom800(whiteboardState.state.zoom);
+      if (whiteboardState.state?.zoom) {
+        const zoom = convertZoomFrom800(whiteboardState.state?.zoom);
         canvas.setZoom(zoom);
       } else {
         const zoom = convertZoomFrom800(1);
@@ -217,13 +217,13 @@ function WhiteboardContainer({
         canvas.setZoom(zoom);
       }
 
-      if (whiteboardState.state.vpt) {
-        const vpt = convertPanFrom800(whiteboardState.state.vpt);
+      if (whiteboardState.state?.vpt) {
+        const vpt = convertPanFrom800(whiteboardState.state?.vpt);
         canvas.setViewportTransform(vpt);
       }
 
       setCanvasBackgroundColor(
-        whiteboardState.state.config?.bgColor || "#F5F7F9"
+        whiteboardState.state?.config?.bgColor || "#F5F7F9"
       );
 
       canvas.renderAll();

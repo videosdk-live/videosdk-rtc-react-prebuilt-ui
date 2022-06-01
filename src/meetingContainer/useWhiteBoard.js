@@ -4,21 +4,28 @@ import { useMeetingAppContext } from "../MeetingAppContextDef";
 
 const useWhiteBoard = () => {
   const meetingRef = useRef(null);
-  const { setWhiteboardState } = useMeetingAppContext();
+  const { setWhiteboardState, whiteboardEnabled, whiteboardState } =
+    useMeetingAppContext();
 
   const _handleWhiteboardStarted = (state) => {
-    const newState = { started: true, state };
-
+    const newState = {
+      started: true,
+      state: state === undefined ? null : state,
+    };
     setWhiteboardState(newState);
+    console.log("- from _handleWhiteboardStarted : ", whiteboardState);
   };
 
   const _handleWhiteboardStopped = () => {
     const newState = { started: false, state: null };
-
     setWhiteboardState(newState);
   };
 
   const _handleOnMeetingJoined = () => {
+    if (whiteboardEnabled) {
+      _handleWhiteboardStarted();
+    }
+
     meetingRef.current?.meeting?.on(
       "whiteboard-started",
       _handleWhiteboardStarted
