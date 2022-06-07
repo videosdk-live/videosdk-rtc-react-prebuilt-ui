@@ -50,6 +50,7 @@ const App = () => {
 
   const getParams = ({ maxGridSize }) => {
     const location = window.location;
+
     const urlParams = new URLSearchParams(location.search);
 
     const paramKeys = {
