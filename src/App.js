@@ -322,17 +322,18 @@ const App = () => {
       paramKeys.region = "sg001";
     }
 
-    switch (paramKeys.region?.toLowerCase()) {
-      case "sg001":
-      case "eu001":
-      case "us001":
-      case "uk001":
-        paramKeys.region = paramKeys.region.toLowerCase();
-        break;
-      default:
-        paramKeys.region = "sg001";
-        break;
-    }
+    // switch (paramKeys.region?.toLowerCase()) {
+    //   case "sg001":
+    //   case "eu001":
+    //   case "us001":
+    //   case "uk001":
+    //   case "uae001":
+    //     paramKeys.region = paramKeys.region.toLowerCase();
+    //     break;
+    //   default:
+    //     paramKeys.region = "sg001";
+    //     break;
+    // }
 
     if (typeof paramKeys.preferredProtocol !== "string") {
       paramKeys.preferredProtocol = "UDP_ONLY";
