@@ -16,7 +16,6 @@ const useCustomTrack = () => {
     }).catch((error) => {
       console.log("Unable to create custom video Track", error);
     })
-    console.log("Settings", track.getSettings())
     return track;
   }
 
