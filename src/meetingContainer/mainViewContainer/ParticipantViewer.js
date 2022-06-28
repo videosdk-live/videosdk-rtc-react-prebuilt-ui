@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-              ? undefined
-              : "#D32F2Fcc",
+                ? undefined
+                : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -193,7 +193,7 @@ export const CornerDisplayName = ({
 
 const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const videoPlayer = useRef();
-  const videoDivWrapper = useRef();
+  const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
 
   const mMeeting = useMeeting();
@@ -272,12 +272,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     setQuality("high");
   }, [isRecorder]);
 
-  useEffect(()=>{
-    if(videoDivWrapper.current && !isLocal && webcamStream){
-      console.log(participantId, videoDivWrapper.current.offsetWidth,videoDivWrapper.current.offsetHeight )
-      setViewPort(videoDivWrapper.current.offsetWidth,videoDivWrapper.current.offsetHeight);
-    }
-  },[videoDivWrapper.current?.offsetHeight, videoDivWrapper.current?.offsetWidth, webcamStream])
+  useMemo(
+    () => {
+      if (videoDivWrapperRef?.offsetWidth && videoDivWrapperRef?.offsetHeight)
+        setViewPort(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight);
+    }, [videoDivWrapperRef?.offsetHeight, videoDivWrapperRef?.offsetWidth]
+  )
 
   return (
     <VisibilitySensor
@@ -296,7 +296,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       }}
     >
       <div
-        ref={videoDivWrapper}
+        ref={setVideoDivWrapperRef}
         onMouseEnter={() => {
           setMouseOver(true);
         }}
