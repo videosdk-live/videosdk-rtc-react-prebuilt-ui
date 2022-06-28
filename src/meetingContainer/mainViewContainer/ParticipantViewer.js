@@ -233,11 +233,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const theme = useTheme();
 
-  useEffect(() => {
-    if (!quality || isRecorder) return;
+  // useEffect(() => {
+  //   if (!quality || isRecorder) return;
 
-    // setQuality(quality);
-  }, [quality, setQuality, isRecorder]);
+  // setQuality(quality);
+  // }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -269,15 +269,17 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {
-    setQuality("high");
+    if (isRecorder) {
+      setQuality("high");
+    }
   }, [isRecorder]);
 
-  useMemo(
-    () => {
-      if (videoDivWrapperRef?.offsetWidth && videoDivWrapperRef?.offsetHeight)
-        setViewPort(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight);
-    }, [videoDivWrapperRef?.offsetHeight, videoDivWrapperRef?.offsetWidth]
-  )
+  useEffect(() => {
+    if (videoDivWrapperRef?.offsetWidth && videoDivWrapperRef?.offsetHeight && !isRecorder && !isLocal){
+      console.log(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight)
+      setViewPort(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight);
+    }
+  }, [isRecorder, isLocal, videoDivWrapperRef?.offsetHeight, videoDivWrapperRef?.offsetWidth])
 
   return (
     <VisibilitySensor
