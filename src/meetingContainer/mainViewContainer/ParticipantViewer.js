@@ -276,7 +276,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   useEffect(() => {
     if (videoDivWrapperRef?.offsetWidth && videoDivWrapperRef?.offsetHeight && !isRecorder && !isLocal){
-      console.log(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight)
       setViewPort(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight);
     }
   }, [isRecorder, isLocal, videoDivWrapperRef?.offsetHeight, videoDivWrapperRef?.offsetWidth])
