@@ -455,7 +455,7 @@ export default function JoinMeeting({
             spacing={padding}
             style={{
               display: "flex",
-              flex: 1,
+              flex: isSMOnly ? 0 : 1,
               flexDirection: meetingUrl || meetingTitle ? "row" : "column",
               alignItems: "center",
               justifyContent: "center",
@@ -472,7 +472,8 @@ export default function JoinMeeting({
             >
               <Box
                 style={{
-                  width: isXSOnly ? "100%" : isSMOnly ? "96%" : "100vw",
+                  width: isXSOnly ? "100%" : "100vw",
+                  // isXSOnly ? "100%" : isSMOnly ? "96%" : "100vw",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
