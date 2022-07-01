@@ -525,22 +525,24 @@ const MeetingContainer = () => {
   });
 
   const _handleToggleFullScreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      const elem = containerRef.current;
-      if (elem) {
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-          /* Safari */
-          elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-          /* IE11 */
-          elem.msRequestFullscreen();
+    try {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        const elem = containerRef.current;
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch((e) => {
+            console.log(`request to full screen is rejected due to ${e}`);
+          });
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          /*  Safari */
+          document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          /*  IE11 */
+          document.documentElement.msRequestFullscreen();
         }
       }
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

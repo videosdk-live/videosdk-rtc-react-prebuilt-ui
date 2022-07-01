@@ -50,6 +50,7 @@ const App = () => {
 
   const getParams = ({ maxGridSize }) => {
     const location = window.location;
+
     const urlParams = new URLSearchParams(location.search);
 
     const paramKeys = {
@@ -320,18 +321,6 @@ const App = () => {
 
     if (!paramKeys.region || typeof paramKeys.region !== "string") {
       paramKeys.region = "sg001";
-    }
-
-    switch (paramKeys.region?.toLowerCase()) {
-      case "sg001":
-      case "eu001":
-      case "us001":
-      case "uk001":
-        paramKeys.region = paramKeys.region.toLowerCase();
-        break;
-      default:
-        paramKeys.region = "sg001";
-        break;
     }
 
     if (typeof paramKeys.preferredProtocol !== "string") {

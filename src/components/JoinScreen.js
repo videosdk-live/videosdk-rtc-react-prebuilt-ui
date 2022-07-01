@@ -728,7 +728,7 @@ export default function JoinMeeting({
               setDlgMuted(false);
             }}
             title="System mic is muted"
-            subTitle="You're default microphone is muted, please umute it or increase audio
+            subTitle="You're default microphone is muted, please unmute it or increase audio
             input volume from system settings."
           />
 

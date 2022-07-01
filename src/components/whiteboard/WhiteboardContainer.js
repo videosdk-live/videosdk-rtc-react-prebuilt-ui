@@ -571,7 +571,7 @@ function WhiteboardContainer({
 
           try {
             const res = await fetch(
-              `https://call-api.videosdk.live/file-upload?roomId=${mMeeting.meetingId}`,
+              `https://${mMeeting?.meeting?.baseUrl}/file-upload?roomId=${mMeeting.meetingId}`,
               requestOptions
             );
 
@@ -589,6 +589,7 @@ function WhiteboardContainer({
       });
     });
   }
+
   async function addImage(event) {
     const url = await uploadImageAndGetUrl(event);
 
