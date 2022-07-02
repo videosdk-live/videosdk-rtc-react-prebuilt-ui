@@ -8,6 +8,7 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import { usePubSub } from "@videosdk.live/react-sdk";
+import Lottie from "react-lottie";
 import {
   appEvents,
   eventEmitter,
@@ -26,6 +27,7 @@ import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutV
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
+import animationData from "../../src/animations/join_meeting.json";
 
 const getPinMsg = ({
   localParticipant,
@@ -139,6 +141,14 @@ const MeetingContainer = () => {
 
   const isTab = useIsTab();
   const isMobile = useIsMobile();
+
+  const lottieSize = useResponsiveSize({
+    xl: 500,
+    lg: 500,
+    md: 400,
+    sm: 200,
+    xs: 180,
+  });
 
   const { type, priority, gridSize } = useMemo(
     () => ({
@@ -563,6 +573,15 @@ const MeetingContainer = () => {
     };
   }, []);
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
@@ -653,6 +672,23 @@ const MeetingContainer = () => {
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
       ) : null}
+      {!mMeeting.isMeetingJoined && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+          }}
+        >
+          <Lottie
+            options={defaultOptions}
+            eventListeners={[{ eventName: "done" }]}
+            height={lottieSize}
+            width={lottieSize}
+          />
+        </div>
+      )}
     </div>
   );
 };
