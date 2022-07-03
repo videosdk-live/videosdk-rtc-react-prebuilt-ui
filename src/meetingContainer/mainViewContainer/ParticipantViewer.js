@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-              ? "You"
-              : nameTructed(displayName, 26)}
+            ? "You"
+            : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-                ? undefined
-                : "#D32F2Fcc",
+              ? undefined
+              : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -275,10 +275,25 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   }, [isRecorder]);
 
   useEffect(() => {
-    if (videoDivWrapperRef?.offsetWidth && videoDivWrapperRef?.offsetHeight && !isRecorder && !isLocal && webcamStream){
-      setViewPort(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight);
+    if (
+      videoDivWrapperRef?.offsetWidth &&
+      videoDivWrapperRef?.offsetHeight &&
+      !isRecorder &&
+      !isLocal &&
+      webcamStream
+    ) {
+      setViewPort(
+        videoDivWrapperRef?.offsetWidth,
+        videoDivWrapperRef?.offsetHeight
+      );
     }
-  }, [isRecorder, isLocal, videoDivWrapperRef?.offsetHeight, videoDivWrapperRef?.offsetWidth, webcamStream])
+  }, [
+    isRecorder,
+    isLocal,
+    videoDivWrapperRef?.offsetHeight,
+    videoDivWrapperRef?.offsetWidth,
+    webcamStream,
+  ]);
 
   return (
     <VisibilitySensor
