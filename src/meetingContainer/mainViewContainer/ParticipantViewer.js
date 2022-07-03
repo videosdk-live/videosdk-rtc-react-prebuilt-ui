@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-              ? undefined
-              : "#D32F2Fcc",
+                ? undefined
+                : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -193,6 +193,7 @@ export const CornerDisplayName = ({
 
 const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const videoPlayer = useRef();
+  const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
 
   const mMeeting = useMeeting();
@@ -209,6 +210,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const {
     displayName,
     setQuality,
+    setViewPort,
     webcamStream,
     webcamOn,
     micOn,
@@ -231,11 +233,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const theme = useTheme();
 
-  useEffect(() => {
-    if (!quality || isRecorder) return;
+  // useEffect(() => {
+  //   if (!quality || isRecorder) return;
 
-    setQuality(quality);
-  }, [quality, setQuality, isRecorder]);
+  // setQuality(quality);
+  // }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -267,8 +269,16 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {
-    setQuality("high");
+    if (isRecorder) {
+      setQuality("high");
+    }
   }, [isRecorder]);
+
+  useEffect(() => {
+    if (videoDivWrapperRef?.offsetWidth && videoDivWrapperRef?.offsetHeight && !isRecorder && !isLocal && webcamStream){
+      setViewPort(videoDivWrapperRef?.offsetWidth, videoDivWrapperRef?.offsetHeight);
+    }
+  }, [isRecorder, isLocal, videoDivWrapperRef?.offsetHeight, videoDivWrapperRef?.offsetWidth, webcamStream])
 
   return (
     <VisibilitySensor
@@ -287,6 +297,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       }}
     >
       <div
+        ref={setVideoDivWrapperRef}
         onMouseEnter={() => {
           setMouseOver(true);
         }}
