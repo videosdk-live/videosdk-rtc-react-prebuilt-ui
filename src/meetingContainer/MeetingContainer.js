@@ -671,8 +671,7 @@ const MeetingContainer = () => {
         )
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
-      ) : null}
-      {!mMeeting.isMeetingJoined && (
+      ) : !mMeeting.isMeetingJoined ? (
         <div
           style={{
             display: "flex",
@@ -688,7 +687,7 @@ const MeetingContainer = () => {
             width={lottieSize}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
