@@ -26,6 +26,7 @@ import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutV
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
+import WaitingToJoin from "../components/WaitingToJoin";
 
 const getPinMsg = ({
   localParticipant,
@@ -652,6 +653,8 @@ const MeetingContainer = () => {
         )
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
+      ) : !mMeeting.isMeetingJoined ? (
+        <WaitingToJoin />
       ) : null}
     </div>
   );
