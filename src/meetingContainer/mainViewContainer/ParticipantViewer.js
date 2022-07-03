@@ -287,13 +287,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
         videoDivWrapperRef?.offsetHeight
       );
     }
-  }, [
-    isRecorder,
-    isLocal,
-    videoDivWrapperRef?.offsetHeight,
-    videoDivWrapperRef?.offsetWidth,
-    webcamStream,
-  ]);
+  }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
   return (
     <VisibilitySensor
