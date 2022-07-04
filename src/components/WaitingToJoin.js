@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import animationData from "../../src/animations/join_meeting.json";
 import Lottie from "react-lottie";
@@ -11,14 +11,20 @@ const WaitingToJoin = () => {
   ];
   const [message, setMessage] = useState(waitingMessages[0]);
 
+  const intervalRef = useRef(null);
+
   useEffect(() => {
-    setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setMessage((s) =>
         s.index === waitingMessages.length - 1
           ? s
           : waitingMessages[s.index + 1]
       );
-    }, 2000);
+    }, 3000);
+
+    return () => {
+      clearInterval(intervalRef.current);
+    };
   }, []);
 
   const lottieSize = useResponsiveSize({
