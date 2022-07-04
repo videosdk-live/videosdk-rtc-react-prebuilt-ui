@@ -1,13 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import animationData from "../../src/animations/join_meeting.json";
 import Lottie from "react-lottie";
+import { Box } from "@material-ui/core";
 
 const WaitingToJoin = () => {
+  const waitingMessages = [
+    { index: 0, text: "Creating a room for you..." },
+    { index: 1, text: "Almost there..." },
+  ];
+  const [message, setMessage] = useState(waitingMessages[0]);
+
+  useEffect(() => {
+    setInterval(() => {
+      setMessage((s) =>
+        s.index === waitingMessages.length - 1
+          ? s
+          : waitingMessages[s.index + 1]
+      );
+    }, 2000);
+  }, []);
+
   const lottieSize = useResponsiveSize({
-    xl: 500,
-    lg: 500,
-    md: 400,
+    xl: 250,
+    lg: 250,
+    md: 200,
     sm: 200,
     xs: 180,
   });
@@ -30,12 +47,17 @@ const WaitingToJoin = () => {
         height: "100vh",
       }}
     >
-      <Lottie
-        options={defaultOptions}
-        eventListeners={[{ eventName: "done" }]}
-        height={lottieSize}
-        width={lottieSize}
-      />
+      <Box style={{ display: "flex", flexDirection: "column" }}>
+        <Lottie
+          options={defaultOptions}
+          eventListeners={[{ eventName: "done" }]}
+          height={lottieSize}
+          width={lottieSize}
+        />
+        <h2 style={{ color: "white", marginTop: 4, textAlign: "center" }}>
+          {message.text}
+        </h2>
+      </Box>
     </div>
   );
 };
