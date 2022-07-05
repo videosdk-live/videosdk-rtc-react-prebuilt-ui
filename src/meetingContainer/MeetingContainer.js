@@ -27,6 +27,7 @@ import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
+import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
 
 const getPinMsg = ({
   localParticipant,
@@ -588,6 +589,7 @@ const MeetingContainer = () => {
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
           <>
+            <PauseInvisibleParticipants />
             <ParticipantsAudioPlayer />
             <div
               style={{
