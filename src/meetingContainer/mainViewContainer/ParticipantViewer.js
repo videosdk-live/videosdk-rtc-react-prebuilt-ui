@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-              ? undefined
-              : "#D32F2Fcc",
+                ? undefined
+                : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -195,6 +195,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const videoPlayer = useRef();
   const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
+  const [portrait, setPortrait] = useState(false);
 
   const mMeeting = useMeeting();
 
@@ -289,6 +290,21 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
+  useEffect(()=>{
+    if (webcamStream) {
+      console.log({ webcamStream });
+      const { height, width } = webcamStream.track.getSettings();
+      console.log({ height, width })
+      if (height > width) {
+        setPortrait(true);
+      } else {
+        setPortrait(false);
+      }
+    } else {
+      setPortrait(false);
+    }
+  },[webcamStream, webcamStream?.track])
+
   return (
     <VisibilitySensor
       active={!!useVisibilitySensor}
@@ -327,7 +343,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        className={"video-cover"}
+        className={`${!portrait ? "video-cover" : ""}`}
       >
         {webcamOn ? (
           <>
@@ -350,6 +366,20 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               style={flipStyle}
               onError={(err) => {
                 console.log(err, "participant video error");
+              }}
+              onPlay={() => {
+                if (webcamStream) {
+                  console.log({ webcamStream });
+                  const { height, width } = webcamStream.track.getSettings();
+                  console.log({ height, width })
+                  if (height > width) {
+                    setPortrait(true);
+                  } else {
+                    setPortrait(false);
+                  }
+                } else {
+                  setPortrait(false);
+                }
               }}
             />
           </>
