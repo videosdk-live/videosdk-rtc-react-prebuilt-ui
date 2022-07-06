@@ -34,7 +34,11 @@
    npm install
    ```
 
-3. Run the app
+3. Copy .env.example as .env
+
+4. Update the REACT_APP_BANUBA_TOKEN with your Banuba Token
+
+5. Run the app
 
    ```sh
    npm run start

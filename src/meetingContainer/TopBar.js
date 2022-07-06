@@ -41,6 +41,7 @@ import {
   MoreHoriz as MoreHorizIcon,
   ArrowDropDown as ArrowDropDownIcon,
   Gesture,
+  AddAPhoto
 } from "@material-ui/icons";
 
 import {
@@ -435,13 +436,13 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const presenterId = mMeeting?.presenterId;
 
-  const {getCustomScreenShareTrack} = useCustomTrack();
+  const { getCustomScreenShareTrack } = useCustomTrack();
 
-  const toggleScreenShare = async ()=>{
+  const toggleScreenShare = async () => {
     let track;
-    if(!localScreenShareOn)
+    if (!localScreenShareOn)
       track = await getCustomScreenShareTrack();
-    console.log("screneshare ",track)
+    console.log("screneshare ", track)
     mMeeting?.toggleScreenShare(track);
   };
 
@@ -471,12 +472,12 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         RDDIsMobile || RDDIsTablet
           ? true
           : whiteboardStarted
-          ? true
-          : presenterId
-          ? localScreenShareOn
-            ? false
-            : true
-          : false
+            ? true
+            : presenterId
+              ? localScreenShareOn
+                ? false
+                : true
+              : false
       }
     />
   ) : (
@@ -498,12 +499,12 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         RDDIsMobile || RDDIsTablet
           ? true
           : whiteboardStarted
-          ? true
-          : presenterId
-          ? localScreenShareOn
-            ? false
-            : true
-          : false
+            ? true
+            : presenterId
+              ? localScreenShareOn
+                ? false
+                : true
+              : false
       }
     />
   );
@@ -528,16 +529,16 @@ const MicBTN = () => {
 
   const localMicOn = mMeeting?.localMicOn;
 
-  const {getCustomAudioTrack} = useCustomTrack();
+  const { getCustomAudioTrack } = useCustomTrack();
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleMic = async ()=>{
+  const toggleMic = async () => {
     let track;
-    if(!localMicOn)
+    if (!localMicOn)
       track = await getCustomAudioTrack(selectedDeviceId);
     mMeeting?.toggleMic(track);
   };
-  const changeMic = async (deviceId)=>{
+  const changeMic = async (deviceId) => {
     const track = await getCustomAudioTrack(deviceId);
     mMeeting?.changeMic(track ? track : deviceId);
   };
@@ -715,6 +716,101 @@ const RecordingBTN = ({ isMobile, isTab }) => {
   );
 };
 
+const BanubaEffectBTN = () => {
+  const theme = useTheme();
+  const mMeeting = useMeeting({});
+  const [selectedEffect, setSelectedEffect] = useState("");
+
+  const [downArrow, setDownArrow] = useState(null);
+
+  const { getCustomVideoTrack } = useCustomTrack();
+
+  const changeEffect = async (banubaEffectName) => {
+    const track = await getCustomVideoTrack(null, banubaEffectName);
+    mMeeting?.changeWebcam(track ? track : null);
+  };
+
+  const handleClick = (event) => {
+    setDownArrow(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setDownArrow(null);
+  };
+
+  const tollTipEl = useRef();
+
+  return (
+    <Box
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      ref={tollTipEl}
+    >
+      <OutlineIconButton
+        btnID={"btnEffect"}
+        tooltipTitle={selectedEffect  ? "Turn off Effect" : "Turn on Effects"}
+        isFocused={selectedEffect ? true : false}
+        Icon={AddAPhoto}
+        onClick={() => {
+          changeEffect(selectedEffect ? null : "test_BG");
+          setSelectedEffect(selectedEffect ? null : "test_BG");
+        }}
+        focusBGColor={"#ffffff33"}
+        focusIconColor={theme.palette.common.white}
+        renderRightComponent={() => {
+          return (
+            <Tooltip placement="bottom" title={"Change Effect"}>
+              <IconButton
+                onClick={(e) => {
+                  handleClick(e);
+                }}
+                size={"small"}
+              >
+                <ArrowDropDownIcon fontSize={"small"} />
+              </IconButton>
+            </Tooltip>
+          );
+        }}
+      />
+      <Popover
+        container={tollTipEl.current}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        anchorEl={tollTipEl.current}
+        open={Boolean(downArrow)}
+        onClose={handleClose}
+      >
+        <MenuList>
+          {[{ "label": "test_BG" },
+          { "label": "Glasses" },
+          { "label": "ActionunitsGrout" },].map(({ label }, index) => (
+            <MenuItem
+              key={`output_effect_${label}`}
+              selected={label === selectedEffect}
+              onClick={() => {
+                handleClose();
+                changeEffect(label);
+                setSelectedEffect(label)
+              }}
+            >
+              {label || `Webcam ${index + 1}`}
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Popover>
+    </Box>
+  );
+};
+
 const WebcamBTN = () => {
   const theme = useTheme();
   const mMeeting = useMeeting({});
@@ -725,16 +821,16 @@ const WebcamBTN = () => {
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
-  const {getCustomVideoTrack} = useCustomTrack();
+  const { getCustomVideoTrack } = useCustomTrack();
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = async ()=>{
+  const toggleWebcam = async () => {
     let track;
-    if(!localWebcamOn)
+    if (!localWebcamOn)
       track = await getCustomVideoTrack(selectedDeviceId);
     mMeeting?.toggleWebcam(track);
   };
-  const changeWebcam = async (deviceId)=>{
+  const changeWebcam = async (deviceId) => {
     const track = await getCustomVideoTrack(deviceId);
     mMeeting?.changeWebcam(track ? track : deviceId);
   };
@@ -863,8 +959,8 @@ const EndCallBTN = () => {
           !participantCanLeave
             ? "End Call"
             : participantCanEndMeeting
-            ? "Open popup"
-            : "Leave Call"
+              ? "Open popup"
+              : "Leave Call"
         }
         bgColor={theme.palette.error.main}
         Icon={EndCall}
@@ -872,8 +968,8 @@ const EndCallBTN = () => {
           !participantCanLeave
             ? setIsEndMeeting(true)
             : participantCanEndMeeting
-            ? handleClick(e)
-            : leave();
+              ? handleClick(e)
+              : leave();
         }}
       />
       {participantCanEndMeeting && (
@@ -1053,6 +1149,7 @@ const TopBar = ({ topBarHeight }) => {
       SCREEN_SHARE: "SCREEN_SHARE",
       WEBCAM: "WEBCAM",
       MIC: "MIC",
+      EFFECTS: "EFFECTS",
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
       WHITEBOARD: "WHITEBOARD",
@@ -1123,6 +1220,8 @@ const TopBar = ({ topBarHeight }) => {
           priority: 3,
         });
       }
+
+      arrMedia.unshift(topBarButtonTypes.EFFECTS);
 
       if (arrMedia.length) {
         arr.unshift(arrMedia);
@@ -1488,6 +1587,7 @@ const TopBar = ({ topBarHeight }) => {
                 mr={i === topBarIcons.length - 1 ? 0 : 3}
                 className={classes.row}
               >
+
                 {row.map((buttonType, j) => {
                   return (
                     <Box key={`topbar_controls_j_${j}`} ml={j === 0 ? 0 : 1.5}>
@@ -1497,6 +1597,8 @@ const TopBar = ({ topBarHeight }) => {
                         <MicBTN />
                       ) : buttonType === topBarButtonTypes.WEBCAM ? (
                         <WebcamBTN />
+                      ) : buttonType === topBarButtonTypes.EFFECTS ? (
+                        <BanubaEffectBTN />
                       ) : buttonType === topBarButtonTypes.SCREEN_SHARE ? (
                         <ScreenShareBTN />
                       ) : buttonType === topBarButtonTypes.PARTICIPANTS ? (
