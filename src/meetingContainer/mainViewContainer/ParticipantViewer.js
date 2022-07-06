@@ -290,6 +290,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
   useEffect(() => {
+    eventEmitter.emit(appEvents["participant-visible"], {
+      participantId,
+    });
+
     return () => {
       eventEmitter.emit(appEvents["participant-invisible"], {
         participantId,
