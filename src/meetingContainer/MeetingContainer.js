@@ -28,6 +28,10 @@ import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
 import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
+import {
+  RECORDER_MAX_GRID_SIZE,
+  RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
+} from "../CONSTS";
 
 const getPinMsg = ({
   localParticipant,
@@ -135,6 +139,7 @@ const MeetingContainer = () => {
     meetingLayoutTopic,
     setLiveStreamConfig,
     liveStreamConfig,
+    isRecorder,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -174,7 +179,14 @@ const MeetingContainer = () => {
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      setAppMeetingLayout(data.message.layout);
+      setAppMeetingLayout({
+        ...data.message.layout,
+        gridSize: isRecorder
+          ? mMeetingRef.current?.presenterId
+            ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+            : RECORDER_MAX_GRID_SIZE
+          : data.message.layout.gridSize,
+      });
     },
     onOldMessagesReceived: (messages) => {
       const latestMessage = messages.sort((a, b) => {
@@ -188,7 +200,14 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        setAppMeetingLayout(latestMessage.message.layout);
+        setAppMeetingLayout({
+          ...latestMessage.message.layout,
+          gridSize: isRecorder
+            ? mMeetingRef.current?.presenterId
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : RECORDER_MAX_GRID_SIZE
+            : latestMessage.message.layout.gridSize,
+        });
       }
     },
   });
@@ -379,6 +398,21 @@ const MeetingContainer = () => {
   };
 
   const _handlePresenterChanged = (presenterId) => {
+    // reduce grid size in recorder if presenter changes
+    if (isRecorder) {
+      if (presenterId) {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize: RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
+        }));
+      } else {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize: RECORDER_MAX_GRID_SIZE,
+        }));
+      }
+    }
+
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
       mMeetingRef.current?.localParticipant.unpin();
       localParticipantAutoPinnedOnShare.current = false;
