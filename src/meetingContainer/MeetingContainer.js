@@ -32,7 +32,7 @@ import {
   RECORDER_MAX_GRID_SIZE,
   RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
 } from "../CONSTS";
-import { CircularProgress } from "@material-ui/core";
+import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 
 const getPinMsg = ({
