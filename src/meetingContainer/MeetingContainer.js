@@ -32,6 +32,8 @@ import {
   RECORDER_MAX_GRID_SIZE,
   RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
 } from "../CONSTS";
+import { CircularProgress } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 
 const getPinMsg = ({
   localParticipant,
@@ -618,6 +620,8 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
+  const theme = useTheme();
+
   return (
     <div
       ref={containerRef}
@@ -706,7 +710,23 @@ const MeetingContainer = () => {
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
       ) : !mMeeting.isMeetingJoined ? (
-        <WaitingToJoin />
+        isRecorder ? (
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.palette.background.default,
+            }}
+          >
+            <CircularProgress size={"4rem"} />
+          </Box>
+        ) : (
+          <WaitingToJoin />
+        )
       ) : null}
     </div>
   );
