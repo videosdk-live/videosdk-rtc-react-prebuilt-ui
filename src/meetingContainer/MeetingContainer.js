@@ -183,8 +183,13 @@ const MeetingContainer = () => {
         ...data.message.layout,
         gridSize: isRecorder
           ? mMeetingRef.current?.presenterId
-            ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
-            : RECORDER_MAX_GRID_SIZE
+            ? data.message.layout.gridSize >
+              RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : data.message.layout.gridSize
+            : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+            ? RECORDER_MAX_GRID_SIZE
+            : data.message.layout.gridSize
           : data.message.layout.gridSize,
       });
     },
@@ -204,8 +209,13 @@ const MeetingContainer = () => {
           ...latestMessage.message.layout,
           gridSize: isRecorder
             ? mMeetingRef.current?.presenterId
-              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
-              : RECORDER_MAX_GRID_SIZE
+              ? latestMessage.message.layout.gridSize >
+                RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                : latestMessage.message.layout.gridSize
+              : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : latestMessage.message.layout.gridSize
             : latestMessage.message.layout.gridSize,
         });
       }
@@ -403,12 +413,18 @@ const MeetingContainer = () => {
       if (presenterId) {
         setAppMeetingLayout((s) => ({
           ...s,
-          gridSize: RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : s.gridSize,
         }));
       } else {
         setAppMeetingLayout((s) => ({
           ...s,
-          gridSize: RECORDER_MAX_GRID_SIZE,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : s.gridSize,
         }));
       }
     }
