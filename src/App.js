@@ -72,6 +72,8 @@ const App = () => {
       participantCanLeave: "participantCanLeave",
       participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
       participantCanToggleOtherMic: "participantCanToggleOtherMic",
+      partcipantCanToogleOtherScreenShare:
+        "partcipantCanToogleOtherScreenShare",
       participantCanToggleLivestream: "participantCanToggleLivestream",
       participantCanEndMeeting: "participantCanEndMeeting",
       //
@@ -506,6 +508,8 @@ const App = () => {
               paramKeys.participantCanToggleOtherMic === "true",
             participantCanToggleOtherWebcam:
               paramKeys.participantCanToggleOtherWebcam === "true",
+            partcipantCanToogleOtherScreenShare:
+              paramKeys.partcipantCanToogleOtherScreenShare === "true",
             participantCanToggleLivestream:
               paramKeys.participantCanToggleLivestream === "true",
             notificationSoundEnabled:

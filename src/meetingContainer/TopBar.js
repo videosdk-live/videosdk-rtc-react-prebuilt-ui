@@ -1231,14 +1231,16 @@ const TopBar = ({ topBarHeight }) => {
         );
       })}
 
-      <Box ml={2}>
-        <OutlineIconButton
-          Icon={MoreHorizIcon}
-          // Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
-          // isFocused={anchorEl}
-          onClick={handleClickFAB}
-        />
-      </Box>
+      {excludeFirstFourElements.length >= 1 && (
+        <Box ml={2}>
+          <OutlineIconButton
+            Icon={MoreHorizIcon}
+            // Icon={Boolean(anchorEl) ? CloseIcon : MoreHorizIcon}
+            // isFocused={anchorEl}
+            onClick={handleClickFAB}
+          />
+        </Box>
+      )}
 
       <SwipeableDrawer
         anchor={"bottom"}
