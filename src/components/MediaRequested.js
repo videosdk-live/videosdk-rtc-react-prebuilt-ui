@@ -1,4 +1,4 @@
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useState } from "react";
 import ConfirmBox from "./ConfirmBox";
 
@@ -12,6 +12,8 @@ const MediaRequested = () => {
 
   const [reqMicInfo, setReqMicInfo] = useState(reqInfoDefaultState);
   const [reqWebcamInfo, setReqWebcamInfo] = useState(reqInfoDefaultState);
+  const [reqScreenShareInfo, setReqScreenShareInfo] =
+    useState(reqInfoDefaultState);
 
   const mMeetingRef = useRef();
 
@@ -42,11 +44,33 @@ const MediaRequested = () => {
     mMeetingRef.current = mMeeting;
   }, [mMeeting]);
 
+  usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant.id}`, {
+    onMessageReceived: (data) => {
+      if (data.message.setScreenShareOn) {
+        setReqScreenShareInfo({
+          enabled: true,
+          participantName: "Host",
+          accept: () => {
+            mMeeting?.toggleScreenShare();
+          },
+          reject: () => {},
+        });
+      } else {
+        mMeeting?.toggleScreenShare();
+      }
+    },
+  });
+
   return (
     <>
       {[
         { ...reqMicInfo, setter: setReqMicInfo, type: "mic" },
         { ...reqWebcamInfo, setter: setReqWebcamInfo, type: "webcam" },
+        {
+          ...reqScreenShareInfo,
+          setter: setReqScreenShareInfo,
+          type: "screenShare",
+        },
       ].map(({ accept, enabled, participantName, setter, reject, type }, i) => {
         return (
           <ConfirmBox
