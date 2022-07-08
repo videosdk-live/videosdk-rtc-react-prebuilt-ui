@@ -27,6 +27,13 @@ import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
+import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
+import {
+  RECORDER_MAX_GRID_SIZE,
+  RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
+} from "../CONSTS";
+import { Box, CircularProgress } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 
 const getPinMsg = ({
   localParticipant,
@@ -134,6 +141,7 @@ const MeetingContainer = () => {
     meetingLayoutTopic,
     setLiveStreamConfig,
     liveStreamConfig,
+    isRecorder,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -173,7 +181,19 @@ const MeetingContainer = () => {
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      setAppMeetingLayout(data.message.layout);
+      setAppMeetingLayout({
+        ...data.message.layout,
+        gridSize: isRecorder
+          ? mMeetingRef.current?.presenterId
+            ? data.message.layout.gridSize >
+              RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : data.message.layout.gridSize
+            : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+            ? RECORDER_MAX_GRID_SIZE
+            : data.message.layout.gridSize
+          : data.message.layout.gridSize,
+      });
     },
     onOldMessagesReceived: (messages) => {
       const latestMessage = messages.sort((a, b) => {
@@ -187,7 +207,19 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        setAppMeetingLayout(latestMessage.message.layout);
+        setAppMeetingLayout({
+          ...latestMessage.message.layout,
+          gridSize: isRecorder
+            ? mMeetingRef.current?.presenterId
+              ? latestMessage.message.layout.gridSize >
+                RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                : latestMessage.message.layout.gridSize
+              : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : latestMessage.message.layout.gridSize
+            : latestMessage.message.layout.gridSize,
+        });
       }
     },
   });
@@ -378,6 +410,27 @@ const MeetingContainer = () => {
   };
 
   const _handlePresenterChanged = (presenterId) => {
+    // reduce grid size in recorder if presenter changes
+    if (isRecorder) {
+      if (presenterId) {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : s.gridSize,
+        }));
+      } else {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : s.gridSize,
+        }));
+      }
+    }
+
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
       mMeetingRef.current?.localParticipant.unpin();
       localParticipantAutoPinnedOnShare.current = false;
@@ -567,6 +620,8 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
+  const theme = useTheme();
+
   return (
     <div
       ref={containerRef}
@@ -588,6 +643,7 @@ const MeetingContainer = () => {
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
           <>
+            <PauseInvisibleParticipants />
             <ParticipantsAudioPlayer />
             <div
               style={{
@@ -654,7 +710,23 @@ const MeetingContainer = () => {
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
       ) : !mMeeting.isMeetingJoined ? (
-        <WaitingToJoin />
+        isRecorder ? (
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.palette.background.default,
+            }}
+          >
+            <CircularProgress size={"4rem"} />
+          </Box>
+        ) : (
+          <WaitingToJoin />
+        )
       ) : null}
     </div>
   );

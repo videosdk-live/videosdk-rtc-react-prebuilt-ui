@@ -315,6 +315,8 @@ export const appEvents = {
   "enter-full-screen": "enter-full-screen",
   "exit-full-screen": "exit-full-screen",
   "toggle-full-screen": "toggle-full-screen",
+  "participant-visible": "participant-visible",
+  "participant-invisible": "participant-invisible",
 };
 
 export const extractHostname = (url) => {
