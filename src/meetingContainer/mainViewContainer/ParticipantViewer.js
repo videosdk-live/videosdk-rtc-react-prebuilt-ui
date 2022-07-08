@@ -293,20 +293,15 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const checkAndUpdatePortrait = ()=>{
     if (webcamStream) {
       const { height, width } = webcamStream.track.getSettings();
-      console.log({height, width});
-      if (height > width) {
+      if (height > width && !portrait) {
         setPortrait(true);
-      } else {
+      } else if(height < width && portrait) {
         setPortrait(false);
       }
     } else {
       setPortrait(false);
     }
   }
-
-  useEffect(()=>{
-    checkAndUpdatePortrait();
-  },[webcamStream, webcamStream?.track])
 
   return (
     <VisibilitySensor
@@ -370,7 +365,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               onError={(err) => {
                 console.log(err, "participant video error");
               }}
-              onReady={()=>{
+              onProgress={()=>{
                 checkAndUpdatePortrait();
               }}
             />
