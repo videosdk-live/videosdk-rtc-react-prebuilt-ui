@@ -1,4 +1,8 @@
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+import {
+  useMeeting,
+  useParticipant,
+  usePubSub,
+} from "@videosdk.live/react-sdk";
 import {
   Close,
   MoreVert,
@@ -7,6 +11,8 @@ import {
   Mic as MicIcon,
   VideocamOff as VideocamOffIcon,
   Videocam as VideocamIcon,
+  ScreenShareOutlined,
+  ScreenShare,
 } from "@material-ui/icons";
 import {
   Avatar,
@@ -35,6 +41,7 @@ function ParticipantListItem({
   participantExpandedId,
   setParticipantExpandedId,
 }) {
+  const { presenterId } = useMeeting();
   const {
     participant,
     micOn,
@@ -53,10 +60,17 @@ function ParticipantListItem({
   const {
     participantCanToggleOtherMic,
     participantCanToggleOtherWebcam,
+    partcipantCanToogleOtherScreenShare,
     canRemoveOtherParticipant,
     canPin,
     animationsEnabled,
   } = useMeetingAppContext();
+
+  const isParticipantPresenting = useMemo(() => {
+    return presenterId === participantId;
+  }, [presenterId, participantId]);
+
+  const { publish } = usePubSub(`SCR_SHR_REQ_${participantId}`);
 
   const [isParticipantKickoutVisible, setIsParticipantKickoutVisible] =
     useState(false);
@@ -284,6 +298,41 @@ function ParticipantListItem({
                   </Tooltip>
                 </Box>
               )}
+
+              <Box ml={1} mr={0}>
+                <Tooltip title={`Screen share`}>
+                  <IconButton
+                    disabled={
+                      !(
+                        !isLocal &&
+                        partcipantCanToogleOtherScreenShare &&
+                        (presenterId ? isParticipantPresenting : true)
+                      )
+                    }
+                    style={{ padding: 0 }}
+                    onClick={() => {
+                      publish({ setScreenShareOn: !isParticipantPresenting });
+                    }}
+                  >
+                    <Box
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 100,
+                      }}
+                      p={0.5}
+                    >
+                      {isParticipantPresenting ? (
+                        <ScreenShare />
+                      ) : (
+                        <ScreenShareOutlined color="#ffffff80" />
+                      )}
+                    </Box>
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
               {!isLocal && canRemoveOtherParticipant && (
                 <Box ml={1} mr={0}>
                   <Tooltip title={`Remove`}>
