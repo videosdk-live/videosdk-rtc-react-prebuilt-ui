@@ -11,8 +11,6 @@ import {
   Mic as MicIcon,
   VideocamOff as VideocamOffIcon,
   Videocam as VideocamIcon,
-  ScreenShareOutlined,
-  ScreenShare,
 } from "@material-ui/icons";
 import {
   Avatar,
@@ -34,6 +32,7 @@ import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
 import ConfirmBox from "../../components/ConfirmBox";
 import { nameTructed } from "../../utils/common";
+import ScreenShareIcon from "../../icons/ScreenShareIcon";
 
 function ParticipantListItem({
   raisedHand,
@@ -299,7 +298,7 @@ function ParticipantListItem({
                 </Box>
               )}
 
-              <Box ml={1} mr={0}>
+              <Box ml={0.5} mr={0.5}>
                 <Tooltip title={`Screen share`}>
                   <IconButton
                     disabled={
@@ -323,11 +322,18 @@ function ParticipantListItem({
                       }}
                       p={0.5}
                     >
-                      {isParticipantPresenting ? (
-                        <ScreenShare />
-                      ) : (
-                        <ScreenShareOutlined color="#ffffff80" />
-                      )}
+                      <ScreenShareIcon
+                        fill={
+                          isParticipantPresenting ||
+                          !(
+                            !isLocal &&
+                            partcipantCanToogleOtherScreenShare &&
+                            (presenterId ? isParticipantPresenting : true)
+                          )
+                            ? "#ffffff80"
+                            : "white"
+                        }
+                      />
                     </Box>
                   </IconButton>
                 </Tooltip>
