@@ -1,45 +1,29 @@
+import { useTheme } from "@material-ui/core";
 import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMediaQuery } from "react-responsive";
 import React, { useEffect, useMemo, useState } from "react";
-import ParticipantViewer from "./ParticipantViewer";
-import PresenterView from "./PresenterView";
-import {
-  getGridRowsAndColumns,
-  getGridForMainParticipants,
-  calcQuality,
-  localAndPinnedOnTop,
-} from "../../utils/common";
-import useIsMobile from "../../utils/useIsMobile";
-import useIsTab from "../../utils/useIsTab";
-import useIsSMDesktop from "../../utils/useIsSMDesktop";
-import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import {
   meetingLayouts,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
+import {
+  getGridForMainParticipants,
+  getGridRowsAndColumns,
+  localAndPinnedOnTop,
+} from "../../utils/common";
+import useIsLGDesktop from "../../utils/useIsLGDesktop";
+import useIsMobile from "../../utils/useIsMobile";
+import useIsSMDesktop from "../../utils/useIsSMDesktop";
+import useIsTab from "../../utils/useIsTab";
 import { Motion as TransitionMotion, spring } from "react-motion";
-import { useTheme } from "@material-ui/core";
 import useResponsiveSize from "../../utils/useResponsiveSize";
-import { useMediaQuery } from "react-responsive";
-import WhiteboardContainer, {
-  convertHWAspectRatio,
-} from "../../components/whiteboard/WhiteboardContainer";
+import PlayerViewer from "./PlayerViewer";
 
-const MemoizedParticipant = React.memo(
-  ParticipantViewer,
-  (
-    { participantId, quality, useVisibilitySensor },
-    {
-      participantId: oldParticipantId,
-      quality: oldQuality,
-      useVisibilitySensor: oldUseVisibilitySensor,
-    }
-  ) =>
-    participantId === oldParticipantId &&
-    quality === oldQuality &&
-    useVisibilitySensor === oldUseVisibilitySensor
-);
+const MemoizedPlayer = ({ downstreamUrl }) => {
+  return <PlayerViewer downstreamUrl={downstreamUrl} />;
+};
 
-const MotionParticipant = ({
+const MotionPlayer = ({
   participantId,
   gutter,
   quality,
@@ -48,6 +32,7 @@ const MotionParticipant = ({
   relativeTop,
   relativeLeft,
   useVisibilitySensor,
+  downstreamUrl,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -94,8 +79,10 @@ const MotionParticipant = ({
               width: `calc(100% - ${2 * gutter}px)`,
             }}
           >
-            <MemoizedParticipant
-              {...{ participantId, quality, useVisibilitySensor }}
+            <MemoizedPlayer
+              {...{
+                downstreamUrl,
+              }}
             />
           </div>
         </div>
@@ -104,7 +91,7 @@ const MotionParticipant = ({
   );
 };
 
-const MotionParticipantContainer = ({
+const MotionPlayerContainer = ({
   participantId,
   gutter,
   quality,
@@ -113,11 +100,12 @@ const MotionParticipantContainer = ({
   relativeTop: top,
   relativeLeft: left,
   useVisibilitySensor,
+  downstreamUrl,
 }) => {
   const { animationsEnabled } = useMeetingAppContext();
 
   return animationsEnabled ? (
-    <MotionParticipant
+    <MotionPlayer
       {...{
         participantId,
         gutter,
@@ -127,6 +115,7 @@ const MotionParticipantContainer = ({
         relativeTop: top,
         relativeLeft: left,
         useVisibilitySensor,
+        downstreamUrl,
       }}
     />
   ) : (
@@ -149,16 +138,14 @@ const MotionParticipantContainer = ({
           width: `calc(100% - ${2 * gutter}px)`,
         }}
       >
-        <MemoizedParticipant
-          {...{ participantId, quality, useVisibilitySensor }}
-        />
+        <MemoizedPlayer {...{ downstreamUrl }} />
       </div>
     </div>
   );
 };
 
-export const MemoizedMotionParticipant = React.memo(
-  MotionParticipantContainer,
+export const MemoizedMotionPlayer = React.memo(
+  MotionPlayerContainer,
   (prevProps, nextProps) =>
     prevProps.participantId === nextProps.participantId &&
     prevProps.gutter === nextProps.gutter &&
@@ -167,16 +154,25 @@ export const MemoizedMotionParticipant = React.memo(
     prevProps.relativeWidth === nextProps.relativeWidth &&
     prevProps.relativeTop === nextProps.relativeTop &&
     prevProps.relativeLeft === nextProps.relativeLeft &&
+    prevProps.downstreamUrl === nextProps.downstreamUrl &&
     prevProps.useVisibilitySensor === nextProps.useVisibilitySensor
 );
 
-const MainViewContainer = ({
-  height,
-  width,
-  whiteboardToolbarWidth,
-  whiteboardSpacing,
-}) => {
-  const mMeeting = useMeeting();
+const HLSPlayer = ({ height, width }) => {
+  const [downstreamUrl, setDownstreamUrl] = useState(null);
+  const _handleOnHlsStarted = (data) => {
+    console.log("HLS started", data);
+    setDownstreamUrl(data);
+  };
+
+  const _handleOnHlsStopped = () => {
+    console.log("HLS stopped");
+  };
+
+  const mMeeting = useMeeting({
+    onHlsStarted: _handleOnHlsStarted,
+    onHlsStopped: _handleOnHlsStopped,
+  });
 
   const participants = mMeeting?.participants;
   const presenterId = mMeeting?.presenterId;
@@ -184,24 +180,12 @@ const MainViewContainer = ({
   const pinnedParticipants = mMeeting?.pinnedParticipants;
   const activeSpeakerId = mMeeting?.activeSpeakerId;
   const mainParticipantId = mMeeting?.mainParticipant?.id;
-
   const isMobile = useIsMobile();
   const isTab = useIsTab();
   const isSMDesktop = useIsSMDesktop();
   const isLGDesktop = useIsLGDesktop();
 
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
-
-  const rowSpacing = useResponsiveSize({
-    xl: 24,
-    lg: 16,
-    md: 14,
-    sm: 12,
-    xs: 8,
-  });
-
-  const gutter = 4;
-
   const {
     mainViewParticipants,
     sideBarMode,
@@ -213,7 +197,6 @@ const MainViewContainer = ({
     hideLocalParticipant,
     sideStackSize,
     reduceEdgeSpacing,
-    mode,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -230,6 +213,14 @@ const MainViewContainer = ({
     [presenterId, whiteboardStarted, meetingLayout]
   );
 
+  const presentingSideBarWidth = useResponsiveSize({
+    xl: 320,
+    lg: 280,
+    md: 260,
+    sm: 240,
+    xs: 200,
+  });
+
   const { singleRow, mainLayoutParticipantId } = useMemo(() => {
     let mainLayoutParticipantId;
 
@@ -237,13 +228,13 @@ const MainViewContainer = ({
 
     let mainParticipants = [...mainViewParticipants];
 
-    if (presenterId || whiteboardStarted) {
-      const remainingParticipants = [...participants.keys()].filter(
-        (pId) => mainParticipants.findIndex((id) => id === pId) === -1
-      );
+    // if (presenterId || whiteboardStarted) {
+    //   const remainingParticipants = [...participants.keys()].filter(
+    //     (pId) => mainParticipants.findIndex((id) => id === pId) === -1
+    //   );
 
-      mainParticipants = [...mainParticipants, ...remainingParticipants];
-    }
+    //   mainParticipants = [...mainParticipants, ...remainingParticipants];
+    // }
 
     if (hideLocalParticipant) {
       mainParticipants = mainParticipants.filter(
@@ -441,24 +432,32 @@ const MainViewContainer = ({
     sideStackSize,
     mainScreenViewActive,
   ]);
+  const actualPresentingSideBarWidth = useMemo(
+    () => (singleRow.length ? presentingSideBarWidth : 0),
+    [singleRow, presentingSideBarWidth]
+  );
+
+  const rowSpacing = useResponsiveSize({
+    xl: 24,
+    lg: 16,
+    md: 14,
+    sm: 12,
+    xs: 8,
+  });
+
+  const mobilePortrait = isMobile && isPortrait;
+
+  const gutter = 4;
 
   const spacing = reduceEdgeSpacing ? 4 : rowSpacing - gutter;
 
   const theme = useTheme();
 
-  const presentingSideBarWidth = useResponsiveSize({
-    xl: 320,
-    lg: 280,
-    md: 260,
-    sm: 240,
-    xs: 200,
-  });
-
   const mainContainerHorizontalPadding = useMemo(
     () =>
-      presenterId ||
-      whiteboardStarted ||
-      (mainLayoutParticipantId && singleRow.length !== 0)
+      //   presenterId ||
+      //   whiteboardStarted ||
+      mainLayoutParticipantId && singleRow.length !== 0
         ? 0
         : typeof sideBarMode === "string"
         ? 0
@@ -490,211 +489,85 @@ const MainViewContainer = ({
       meetingLayout,
     ]
   );
-
-  const gridVerticalSpacing = useResponsiveSize({
-    xl: 160,
-    lg: 90,
-    md: 90,
-    sm: 60,
-    xs: 60,
-  });
-
-  const actualPresentingSideBarWidth = useMemo(
-    () => (singleRow.length ? presentingSideBarWidth : 0),
-    [singleRow, presentingSideBarWidth]
-  );
-
-  return participants ? (
-    <>
+  console.log("downstreamUrl", downstreamUrl);
+  return (
+    <div
+      style={{
+        width,
+        backgroundColor: theme.palette.background.default,
+        overflow: "hidden",
+        transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
+        transitionTimingFunction: "ease-in-out",
+        display: "flex",
+        position: "relative",
+      }}
+    >
       <div
         style={{
-          width,
-          backgroundColor: theme.palette.background.default,
-          overflow: "hidden",
-          transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
+          width: mainScreenViewActive
+            ? width - actualPresentingSideBarWidth
+            : 0,
+          height,
+          transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "ease-in-out",
-          display: "flex",
-          position: "relative",
+          paddingLeft: mainScreenViewActive ? spacing : 0,
+          paddingTop: mainScreenViewActive ? spacing : 0,
         }}
       >
         <div
           style={{
+            height: height - 2 * spacing,
             width: mainScreenViewActive
-              ? width - actualPresentingSideBarWidth
+              ? width -
+                (isMobile ? 0 : actualPresentingSideBarWidth) -
+                2 * spacing
               : 0,
-            height,
-            transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
+            backgroundColor: undefined,
+            //   presenterId || whiteboardStarted
+            //     ? theme.palette.background.paper
+            //     : undefined,
+            transition: `width ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
             transitionTimingFunction: "ease-in-out",
-            paddingLeft: mainScreenViewActive ? spacing : 0,
-            paddingTop: mainScreenViewActive ? spacing : 0,
+            borderRadius: theme.spacing(1),
+            overflow: "hidden",
+            position: "relative",
           }}
         >
+          {/* {!presenterId && !whiteboardStarted && mainLayoutParticipantId && ( */}
           <div
             style={{
-              height: height - 2 * spacing,
-              width: mainScreenViewActive
-                ? width -
-                  (isMobile ? 0 : actualPresentingSideBarWidth) -
-                  2 * spacing
-                : 0,
-              backgroundColor:
-                presenterId || whiteboardStarted
-                  ? theme.palette.background.paper
-                  : undefined,
-              transition: `width ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
-              transitionTimingFunction: "ease-in-out",
-              borderRadius: theme.spacing(1),
-              overflow: "hidden",
-              position: "relative",
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: mainContainerHorizontalPadding,
+              right: mainContainerHorizontalPadding,
             }}
           >
-            {mode === "viewer" && (
-              <div>
-                <h1>Hello</h1>
-              </div>
-            )}
-            {whiteboardStarted && mode === "conference" && (
-              <WhiteboardContainer
-                {...{
-                  ...convertHWAspectRatio({
-                    height:
-                      height -
-                      2 * spacing -
-                      (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
-                    width: whiteboardStarted
-                      ? width -
-                        (isMobile ? 0 : presentingSideBarWidth) -
-                        2 * spacing -
-                        (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
-                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
-                      : 0,
-                  }),
-                  whiteboardToolbarWidth,
-                  whiteboardSpacing,
-                  originalHeight: height - 2 * spacing,
-                  originalWidth: whiteboardStarted
-                    ? width -
-                      (isMobile ? 0 : actualPresentingSideBarWidth) -
-                      2 * spacing
-                    : 0,
-                }}
-              />
-            )}
-
-            {presenterId && mode === "conference" && (
-              <PresenterView presenterId={presenterId} />
-            )}
-
-            {!presenterId &&
-              !whiteboardStarted &&
-              mainLayoutParticipantId &&
-              mode === "conference" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left:
-                      singleRow.length === 0
-                        ? mainContainerHorizontalPadding
-                        : 0,
-                    right:
-                      singleRow.length === 0
-                        ? mainContainerHorizontalPadding
-                        : 0,
-                  }}
-                >
-                  <MemoizedMotionParticipant
-                    {...{
-                      participantId: mainLayoutParticipantId,
-                      gutter,
-                      quality: "high",
-                      relativeHeight: 100,
-                      relativeWidth: 100,
-                      relativeTop: 0,
-                      relativeLeft: 0,
-                    }}
-                    key={`mainLayoutParticipantId_${mainLayoutParticipantId}`}
-                  />
-                </div>
-              )}
-          </div>
-        </div>
-        {isMobile && mainScreenViewActive ? null : singleRow.length <=
-          0 ? null : (
-          <div
-            style={{
-              backgroundColor: theme.palette.background.default,
-              overflowX: "hidden",
-              overflowY: mainScreenViewActive ? "scroll" : "hidden",
-              width: mainScreenViewActive
-                ? actualPresentingSideBarWidth
-                : width - 2 * spacing,
-              height:
-                height -
-                2 * spacing -
-                (singleRow.length === 2 && !mainScreenViewActive && !isMobile
-                  ? 2 * gridVerticalSpacing
-                  : 0),
-              margin: spacing,
-              transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
-              transitionTimingFunction: "ease-in-out",
-              paddingLeft:
-                mainContainerHorizontalPadding +
-                (!mainScreenViewActive &&
-                singleRow.length > 12 &&
-                singleRow.length < 17 &&
-                typeof sideBarMode !== "string"
-                  ? 160
-                  : 0),
-              paddingRight:
-                mainContainerHorizontalPadding +
-                (!mainScreenViewActive &&
-                singleRow.length > 12 &&
-                singleRow.length < 17 &&
-                typeof sideBarMode !== "string"
-                  ? 160
-                  : 0),
-              paddingTop:
-                singleRow.length === 2 && !mainScreenViewActive && !isMobile
-                  ? gridVerticalSpacing
-                  : 0,
-            }}
-          >
-            <div
-              style={{
-                height:
-                  (mainScreenViewActive
-                    ? (singleRow.length * actualPresentingSideBarWidth * 2) / 3
-                    : height) -
-                  2 * spacing -
-                  (singleRow.length === 2 && !mainScreenViewActive && !isMobile
-                    ? 2 * gridVerticalSpacing
-                    : 0),
-                position: "relative",
-                transition: `height ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
-                transitionTimingFunction: "ease-in-out",
+            <MemoizedMotionPlayer
+              {...{
+                participantId: mainLayoutParticipantId,
+                gutter,
+                quality: "high",
+                relativeHeight: 100,
+                relativeWidth: 100,
+                relativeTop: 0,
+                relativeLeft: 0,
+                downstreamUrl,
               }}
-            >
-              {singleRow.map((c) => (
-                <MemoizedMotionParticipant
-                  quality={calcQuality(mainViewParticipants?.length || 1)}
-                  key={`main_participant_${c.participantId}`}
-                  {...c}
-                  gutter={gutter}
-                  useVisibilitySensor={mainScreenViewActive ? true : false}
-                />
-              ))}
-            </div>
+              key={`mainLayoutParticipantId_${mainLayoutParticipantId}`}
+            />
           </div>
-        )}
+          {/* )} */}
+        </div>
       </div>
-    </>
-  ) : null;
+
+      {/* Memorized participant mobile view */}
+    </div>
+  );
 };
 
 export default React.memo(
-  MainViewContainer,
+  HLSPlayer,
   (prevProps, nextProps) =>
     prevProps.width === nextProps.width &&
     prevProps.height === nextProps.height &&

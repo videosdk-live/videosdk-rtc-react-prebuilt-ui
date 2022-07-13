@@ -135,6 +135,9 @@ const App = () => {
       // recordingLayoutType: "recordingLayoutType",
       // recordingLayoutPriority: "recordingLayoutPriority",
       // recordingLayoutGridSize: "recordingLayoutGridSize",
+
+      //
+      mode: "mode",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -515,6 +518,7 @@ const App = () => {
             notificationSoundEnabled:
               paramKeys.notificationSoundEnabled === "true",
             layoutType: paramKeys.layoutType,
+            mode: paramKeys.mode,
             layoutPriority: paramKeys.layoutPriority,
             canPin: paramKeys.canPin === "true",
             selectedMic,

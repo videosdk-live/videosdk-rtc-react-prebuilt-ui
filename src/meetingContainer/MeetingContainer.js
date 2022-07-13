@@ -27,6 +27,7 @@ import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
+import HLSPlayer from "./hlsViewContainer/HLSPlayer";
 
 const getPinMsg = ({
   localParticipant,
@@ -134,6 +135,7 @@ const MeetingContainer = () => {
     meetingLayoutTopic,
     setLiveStreamConfig,
     liveStreamConfig,
+    mode,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -567,6 +569,8 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
+  console.log("mode", mode);
+
   return (
     <div
       ref={containerRef}
@@ -587,8 +591,7 @@ const MeetingContainer = () => {
       />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
-          <>
-            <ParticipantsAudioPlayer />
+          mode === "viewer" ? (
             <div
               style={{
                 display: "flex",
@@ -603,39 +606,20 @@ const MeetingContainer = () => {
                   height: containerHeight - topBarHeight,
                 }}
               >
-                {mMeeting?.pinnedParticipants.size > 0 &&
-                (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                  meetingLayout === meetingLayouts.SIDEBAR) ? (
-                  <PinnedLayoutViewContainer
-                    {...{
-                      height: containerHeight - topBarHeight,
-                      width:
-                        containerWidth -
-                        (isTab || isMobile
-                          ? 0
-                          : typeof sideBarMode === "string"
-                          ? sideBarContainerWidth
-                          : 0),
-                      whiteboardToolbarWidth,
-                      whiteboardSpacing,
-                    }}
-                  />
-                ) : (
-                  <MainViewContainer
-                    {...{
-                      height: containerHeight - topBarHeight,
-                      width:
-                        containerWidth -
-                        (isTab || isMobile
-                          ? 0
-                          : typeof sideBarMode === "string"
-                          ? sideBarContainerWidth
-                          : 0),
-                      whiteboardToolbarWidth,
-                      whiteboardSpacing,
-                    }}
-                  />
-                )}
+                <HLSPlayer
+                  {...{
+                    height: containerHeight - topBarHeight,
+                    width:
+                      containerWidth -
+                      (isTab || isMobile
+                        ? 0
+                        : typeof sideBarMode === "string"
+                        ? sideBarContainerWidth
+                        : 0),
+                    whiteboardToolbarWidth,
+                    whiteboardSpacing,
+                  }}
+                />
                 <SideViewContainer
                   {...{
                     topBarHeight,
@@ -645,9 +629,70 @@ const MeetingContainer = () => {
                 />
               </div>
             </div>
-            <MediaRequested />
-            <RequestedEntries />
-          </>
+          ) : (
+            <>
+              <ParticipantsAudioPlayer />
+              <div
+                style={{
+                  display: "flex",
+                  flex: 1,
+                  flexDirection:
+                    isTab || isMobile ? "column-reverse" : "column",
+                }}
+              >
+                {topbarEnabled && <TopBar {...{ topBarHeight }} />}
+                <div
+                  style={{
+                    display: "flex",
+                    height: containerHeight - topBarHeight,
+                  }}
+                >
+                  {mMeeting?.pinnedParticipants.size > 0 &&
+                  (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                    meetingLayout === meetingLayouts.SIDEBAR) ? (
+                    <PinnedLayoutViewContainer
+                      {...{
+                        height: containerHeight - topBarHeight,
+                        width:
+                          containerWidth -
+                          (isTab || isMobile
+                            ? 0
+                            : typeof sideBarMode === "string"
+                            ? sideBarContainerWidth
+                            : 0),
+                        whiteboardToolbarWidth,
+                        whiteboardSpacing,
+                      }}
+                    />
+                  ) : (
+                    <MainViewContainer
+                      {...{
+                        height: containerHeight - topBarHeight,
+                        width:
+                          containerWidth -
+                          (isTab || isMobile
+                            ? 0
+                            : typeof sideBarMode === "string"
+                            ? sideBarContainerWidth
+                            : 0),
+                        whiteboardToolbarWidth,
+                        whiteboardSpacing,
+                      }}
+                    />
+                  )}
+                  <SideViewContainer
+                    {...{
+                      topBarHeight,
+                      width: sideBarContainerWidth,
+                      height: containerHeight - topBarHeight,
+                    }}
+                  />
+                </div>
+              </div>
+              <MediaRequested />
+              <RequestedEntries />
+            </>
+          )
         ) : (
           <ClickAnywhereToContinue title="Entry denied!" />
         )
