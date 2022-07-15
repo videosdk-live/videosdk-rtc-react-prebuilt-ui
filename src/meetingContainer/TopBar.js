@@ -135,13 +135,13 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
 };
 
 const ConfigBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, mode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+
   return isMobile || isTab ? (
     <MobileIconButton
       tooltipTitle={"Configuration"}
       buttonText={"Configuration"}
       Icon={SettingsOutlinedIcon}
-      disabled={mode === "viewer"}
       isFocused={sideBarMode === sideBarModes.CONFIGURATION}
       onClick={() => {
         setSideBarMode((s) =>
@@ -151,7 +151,6 @@ const ConfigBTN = ({ isMobile, isTab }) => {
     />
   ) : (
     <OutlineIconButton
-      disabled={mode === "viewer"}
       tooltipTitle={"Configuration"}
       Icon={SettingsOutlinedIcon}
       isFocused={sideBarMode === sideBarModes.CONFIGURATION}
@@ -165,7 +164,7 @@ const ConfigBTN = ({ isMobile, isTab }) => {
 };
 
 const AddLiveStreamBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, mode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -173,7 +172,6 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
       Icon={AddLiveStreamIcon}
       buttonText={"Add Live Streams"}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
-      disabled={mode === "viewer"}
       onClick={() => {
         setSideBarMode((s) =>
           s === sideBarModes.ADD_LIVE_STREAM
@@ -186,7 +184,6 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
     <OutlineIconTextButton
       tooltipTitle={"Add Live Streams"}
       buttonText="Add Live Streams"
-      disabled={mode === "viewer"}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
         setSideBarMode((s) =>
@@ -213,7 +210,6 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     liveStreamConfig,
     setSideBarMode,
     appMeetingLayout,
-    mode,
   } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
@@ -297,7 +293,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
           buttonText={isLiveStreaming ? "Stop Live" : "Go Live"}
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
-          disabled={!participantCanToggleLivestream || mode === "viewer"}
+          disabled={!participantCanToggleLivestream}
         />
       ) : (
         <OutlineIconTextButton
@@ -306,7 +302,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
           tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
           buttonText="Go Live"
           lottieOption={isLiveStreaming ? defaultOptions : null}
-          disabled={!participantCanToggleLivestream || mode === "viewer"}
+          disabled={!participantCanToggleLivestream}
         />
       )}
       <ConfirmBox
@@ -388,7 +384,7 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
 };
 
 const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
-  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard, mode } =
+  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
     useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -400,7 +396,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
       {whiteboardEnabled &&
         (isMobile || isTab ? (
           <MobileIconButton
-            disabled={presenterId || !canToggleWhiteboard || mode === "viewer"}
+            disabled={presenterId || !canToggleWhiteboard}
             tooltipTitle={"Whiteboard"}
             buttonText={"Whiteboard"}
             Icon={Gesture}
@@ -415,7 +411,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
           />
         ) : (
           <OutlineIconButton
-            disabled={presenterId || !canToggleWhiteboard || mode === "viewer"}
+            disabled={presenterId || !canToggleWhiteboard}
             tooltipTitle={"Whiteboard"}
             Icon={Gesture}
             isFocused={whiteboardStarted}
@@ -434,7 +430,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
 
 const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const { whiteboardStarted, mode } = useMeetingAppContext();
+  const { whiteboardStarted } = useMeetingAppContext();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const toggleScreenShare = mMeeting?.toggleScreenShare;
@@ -463,7 +459,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         toggleScreenShare();
       }}
       disabled={
-        RDDIsMobile || RDDIsTablet || mode === "viewer"
+        RDDIsMobile || RDDIsTablet
           ? true
           : whiteboardStarted
           ? true
@@ -490,7 +486,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         toggleScreenShare();
       }}
       disabled={
-        RDDIsMobile || RDDIsTablet || mode === "viewer"
+        RDDIsMobile || RDDIsTablet
           ? true
           : whiteboardStarted
           ? true
@@ -505,8 +501,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
 };
 
 const MicBTN = () => {
-  const { selectedMic, mode } = useMeetingAppContext();
-
+  const { selectedMic } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
@@ -547,7 +542,6 @@ const MicBTN = () => {
         tooltipTitle={localMicOn ? "Turn off mic" : "Turn on mic"}
         isFocused={localMicOn}
         Icon={localMicOn ? MicIcon : MicOffIcon}
-        disabled={mode === "viewer"}
         onClick={toggleMic}
         focusBGColor={"#ffffff33"}
         focusIconColor={theme.palette.common.white}
@@ -614,7 +608,6 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     recordingAWSDirPath,
     participantCanToggleRecording,
     appMeetingLayout,
-    mode,
   } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
@@ -684,7 +677,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       onClick={_handleClick}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
-      disabled={!participantCanToggleRecording || mode === "viewer"}
+      disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
       buttonText={isRecording ? "Stop Recording" : "Start Recording"}
     />
@@ -694,7 +687,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       onClick={_handleClick}
       tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
       isFocused={isRecording}
-      disabled={!participantCanToggleRecording || mode === "viewer"}
+      disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
     />
   );
@@ -705,36 +698,88 @@ const HLSBTN = ({ isMobile, isTab }) => {
 
   const startHls = mMeeting?.startHls;
   const stopHls = mMeeting?.stopHls;
+  const isHLS = mMeeting?.isHLS;
 
-  const config = {
-    layout: {
-      type: "SPOTLIGHT",
-      priority: "PIN",
-      gridSize: 9,
+  console.log("isHLS", isHLS);
+
+  const { appMeetingLayout } = useMeetingAppContext();
+
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isHLSRef = useRef(isHLS);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isHLSRef.current = isHLS;
+  }, [isHLS]);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: liveBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
     },
+    height: 64,
+    width: 170,
+  };
+
+  const _handleStartHLS = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startHls(layout);
   };
 
   const _handleClick = () => {
-    startHls(config);
+    const isHLS = isHLSRef.current;
+
+    if (isHLS) {
+      stopHls();
+    } else {
+      _handleStartHLS();
+    }
   };
 
   return isMobile || isTab ? (
     <MobileIconButton
       onClick={_handleClick}
-      // tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+      tooltipTitle={isHLS ? "Stop HLS" : "Start HLS"}
       Icon={LiveIcon}
-      buttonText={"Start HLS"}
-      // isFocused={isLiveStreaming}
-      // lottieOption={isLiveStreaming ? defaultOptions : null}
-      // disabled={!participantCanToggleLivestream || mode === "viewer"}
+      buttonText={isHLS ? "Stop HLS" : "Start HLS"}
+      isFocused={isHLS}
+      lottieOption={isHLS ? defaultOptions : null}
     />
   ) : (
     <OutlineIconTextButton
       onClick={_handleClick}
-      // tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
-      buttonText="Start HLS"
-      // lottieOption={isLiveStreaming ? defaultOptions : null}
-      // disabled={!participantCanToggleLivestream || mode === "viewer"}
+      tooltipTitle={isHLS ? "Stop HLS" : "Start HLS"}
+      buttonText={isHLS ? "Stop HLS" : "Start HLS"}
+      lottieOption={isHLS ? defaultOptions : null}
     />
   );
 };
@@ -742,10 +787,8 @@ const HLSBTN = ({ isMobile, isTab }) => {
 const WebcamBTN = () => {
   const theme = useTheme();
   const mMeeting = useMeeting({});
-  const { selectedWebcam, mode } = useMeetingAppContext();
-
+  const { selectedWebcam } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
-
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
@@ -785,7 +828,6 @@ const WebcamBTN = () => {
         Icon={localWebcamOn ? VideocamIcon : VideocamOffIcon}
         onClick={toggleWebcam}
         focusBGColor={"#ffffff33"}
-        disabled={mode === "viewer"}
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
@@ -845,7 +887,7 @@ const EndCallBTN = () => {
     endCallContainerRef,
     participantCanEndMeeting,
     participantCanLeave,
-    mode,
+    meetingMode,
   } = useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -879,18 +921,18 @@ const EndCallBTN = () => {
       <OutlineIconButton
         ref={endCallContainerRef}
         tooltipTitle={
-          !participantCanLeave
+          !participantCanLeave && meetingMode !== "viewer"
             ? "End Call"
-            : participantCanEndMeeting
+            : participantCanEndMeeting && meetingMode !== "viewer"
             ? "Open popup"
             : "Leave Call"
         }
         bgColor={theme.palette.error.main}
         Icon={EndCall}
         onClick={(e) => {
-          !participantCanLeave
+          !participantCanLeave && meetingMode !== "viewer"
             ? setIsEndMeeting(true)
-            : participantCanEndMeeting
+            : participantCanEndMeeting && meetingMode !== "viewer"
             ? handleClick(e)
             : leave();
         }}
@@ -956,7 +998,6 @@ const EndCallBTN = () => {
               </MenuItem>
               <MenuItem
                 style={{ marginTop: 4 }}
-                disabled={mode === "viewer"}
                 key={`end`}
                 onClick={() => {
                   setIsEndMeeting(true);
@@ -1049,7 +1090,10 @@ const TopBar = ({ topBarHeight }) => {
     poweredBy,
     participantCanEndMeeting,
     animationsEnabled,
+    meetingMode,
   } = useMeetingAppContext();
+
+  const isModeConference = meetingMode === "conference";
 
   const handleClickFAB = () => {
     setOpen(true);
@@ -1061,7 +1105,6 @@ const TopBar = ({ topBarHeight }) => {
 
   const isMobile = useIsMobile();
   const isTab = useIsTab();
-
   const theme = useTheme();
 
   const topBarButtonTypes = useMemo(
@@ -1099,7 +1142,7 @@ const TopBar = ({ topBarHeight }) => {
 
       const arrSideBar = [];
 
-      if (canChangeLayout) {
+      if (canChangeLayout && meetingMode !== "viewer") {
         arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.CONFIGURATION,
@@ -1123,21 +1166,21 @@ const TopBar = ({ topBarHeight }) => {
 
       const arrMedia = [];
 
-      if (screenShareEnabled) {
+      if (screenShareEnabled && meetingMode !== "viewer") {
         arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.SCREEN_SHARE,
           priority: 6,
         });
       }
-      if (participantCanToggleSelfWebcam) {
+      if (participantCanToggleSelfWebcam && meetingMode !== "viewer") {
         arrMedia.unshift(topBarButtonTypes.WEBCAM);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.WEBCAM,
           priority: 2,
         });
       }
-      if (participantCanToggleSelfMic) {
+      if (participantCanToggleSelfMic && meetingMode !== "viewer") {
         arrMedia.unshift(topBarButtonTypes.MIC);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.MIC,
@@ -1159,7 +1202,7 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (recordingEnabled) {
+      if (recordingEnabled && meetingMode !== "viewer") {
         utilsArr.unshift(topBarButtonTypes.RECORDING);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.RECORDING,
@@ -1167,7 +1210,7 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (whiteboardEnabled) {
+      if (whiteboardEnabled && meetingMode !== "viewer") {
         utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.WHITEBOARD,
@@ -1175,7 +1218,11 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (liveStreamEnabled && !participantCanToggleLivestream) {
+      if (
+        liveStreamEnabled &&
+        !participantCanToggleLivestream &&
+        meetingMode !== "viewer"
+      ) {
         utilsArr.unshift(topBarButtonTypes.GO_LIVE);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.GO_LIVE,
@@ -1183,13 +1230,19 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      utilsArr.unshift(topBarButtonTypes.HLS);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.HLS,
-        priority: 14,
-      });
+      if (isModeConference) {
+        utilsArr.unshift(topBarButtonTypes.HLS);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.HLS,
+          priority: 14,
+        });
+      }
 
-      if (participantCanToggleLivestream && liveStreamEnabled) {
+      if (
+        participantCanToggleLivestream &&
+        liveStreamEnabled &&
+        meetingMode !== "viewer"
+      ) {
         //liveStreamIcon
         utilsArr.unshift(topBarButtonTypes.GO_LIVE);
         mobileIconArr.unshift({

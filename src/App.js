@@ -74,6 +74,7 @@ const App = () => {
       participantCanToggleOtherMic: "participantCanToggleOtherMic",
       partcipantCanToogleOtherScreenShare:
         "partcipantCanToogleOtherScreenShare",
+      participantCanToggleOtherMode: "participantCanToggleOtherMode",
       participantCanToggleLivestream: "participantCanToggleLivestream",
       participantCanEndMeeting: "participantCanEndMeeting",
       //
@@ -515,6 +516,8 @@ const App = () => {
               paramKeys.partcipantCanToogleOtherScreenShare === "true",
             participantCanToggleLivestream:
               paramKeys.participantCanToggleLivestream === "true",
+            participantCanToggleOtherMode:
+              paramKeys.participantCanToggleOtherMode === "true",
             notificationSoundEnabled:
               paramKeys.notificationSoundEnabled === "true",
             layoutType: paramKeys.layoutType,

@@ -28,6 +28,7 @@ import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
 import HLSPlayer from "./hlsViewContainer/HLSPlayer";
+import ModeListner from "../components/ModeListner";
 
 const getPinMsg = ({
   localParticipant,
@@ -135,7 +136,7 @@ const MeetingContainer = () => {
     meetingLayoutTopic,
     setLiveStreamConfig,
     liveStreamConfig,
-    mode,
+    meetingMode,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -404,13 +405,13 @@ const MeetingContainer = () => {
           }
         }
       }
-      if (notificationSoundEnabled) {
+      if (notificationSoundEnabled && meetingMode !== "viewer") {
         new Audio(
           `https://static.zujonow.com/prebuilt/notification.mp3`
         ).play();
       }
 
-      if (notificationAlertsEnabled) {
+      if (notificationAlertsEnabled && meetingMode !== "viewer") {
         enqueueSnackbar(
           `${
             isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
@@ -421,25 +422,41 @@ const MeetingContainer = () => {
   };
 
   const _handleOnRecordingStarted = () => {
-    if (participantCanToggleRecording && notificationAlertsEnabled) {
+    if (
+      participantCanToggleRecording &&
+      notificationAlertsEnabled &&
+      meetingMode !== "viewer"
+    ) {
       enqueueSnackbar("Meeting recording is started.");
     }
   };
 
   const _handleOnRecordingStopped = () => {
-    if (participantCanToggleRecording && notificationAlertsEnabled) {
+    if (
+      participantCanToggleRecording &&
+      notificationAlertsEnabled &&
+      meetingMode !== "viewer"
+    ) {
       enqueueSnackbar("Meeting recording stopped.");
     }
   };
 
   const _handleOnLiveStreamStarted = () => {
-    if (participantCanToggleLivestream && notificationAlertsEnabled) {
+    if (
+      participantCanToggleLivestream &&
+      notificationAlertsEnabled &&
+      meetingMode !== "viewer"
+    ) {
       enqueueSnackbar("Meeting livestreaming is started.");
     }
   };
 
   const _handleOnLiveStreamStopped = () => {
-    if (participantCanToggleLivestream && notificationAlertsEnabled) {
+    if (
+      participantCanToggleLivestream &&
+      notificationAlertsEnabled &&
+      meetingMode !== "viewer"
+    ) {
       enqueueSnackbar("Meeting livestreaming is Stopped.");
     }
   };
@@ -470,7 +487,11 @@ const MeetingContainer = () => {
     const partcipantDisplayName =
       mMeetingRef.current.participants.get(participantId)?.displayName || "";
 
-    if (showJoinNotificationRef.current && notificationAlertsEnabled) {
+    if (
+      showJoinNotificationRef.current &&
+      notificationAlertsEnabled &&
+      meetingMode !== "viewer"
+    ) {
       enqueueSnackbar(
         getPinMsg({
           localParticipant,
@@ -569,8 +590,6 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
-  console.log("mode", mode);
-
   return (
     <div
       ref={containerRef}
@@ -580,6 +599,7 @@ const MeetingContainer = () => {
         position: "relative",
       }}
     >
+      {mMeeting?.localParticipant?.id && <ModeListner />}
       <ConfirmBox
         open={meetingError}
         successText="OKAY"
@@ -591,45 +611,7 @@ const MeetingContainer = () => {
       />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
-          mode === "viewer" ? (
-            <div
-              style={{
-                display: "flex",
-                flex: 1,
-                flexDirection: isTab || isMobile ? "column-reverse" : "column",
-              }}
-            >
-              {topbarEnabled && <TopBar {...{ topBarHeight }} />}
-              <div
-                style={{
-                  display: "flex",
-                  height: containerHeight - topBarHeight,
-                }}
-              >
-                <HLSPlayer
-                  {...{
-                    height: containerHeight - topBarHeight,
-                    width:
-                      containerWidth -
-                      (isTab || isMobile
-                        ? 0
-                        : typeof sideBarMode === "string"
-                        ? sideBarContainerWidth
-                        : 0),
-                    whiteboardToolbarWidth,
-                    whiteboardSpacing,
-                  }}
-                />
-                <SideViewContainer
-                  {...{
-                    topBarHeight,
-                    width: sideBarContainerWidth,
-                    height: containerHeight - topBarHeight,
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
+          meetingMode !== "viewer" ? (
             <>
               <ParticipantsAudioPlayer />
               <div
@@ -692,6 +674,44 @@ const MeetingContainer = () => {
               <MediaRequested />
               <RequestedEntries />
             </>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                flex: 1,
+                flexDirection: isTab || isMobile ? "column-reverse" : "column",
+              }}
+            >
+              {topbarEnabled && <TopBar {...{ topBarHeight }} />}
+              <div
+                style={{
+                  display: "flex",
+                  height: containerHeight - topBarHeight,
+                }}
+              >
+                <HLSPlayer
+                  {...{
+                    height: containerHeight - topBarHeight,
+                    width:
+                      containerWidth -
+                      (isTab || isMobile
+                        ? 0
+                        : typeof sideBarMode === "string"
+                        ? sideBarContainerWidth
+                        : 0),
+                    whiteboardToolbarWidth,
+                    whiteboardSpacing,
+                  }}
+                />
+                <SideViewContainer
+                  {...{
+                    topBarHeight,
+                    width: sideBarContainerWidth,
+                    height: containerHeight - topBarHeight,
+                  }}
+                />
+              </div>
+            </div>
           )
         ) : (
           <ClickAnywhereToContinue title="Entry denied!" />

@@ -82,6 +82,7 @@ export const MeetingAppProvider = ({
   participantCanToggleOtherMic,
   participantCanToggleOtherWebcam,
   partcipantCanToogleOtherScreenShare,
+  participantCanToggleOtherMode,
   canRemoveOtherParticipant,
   notificationSoundEnabled,
   canPin,
@@ -134,6 +135,7 @@ export const MeetingAppProvider = ({
     priority: layoutPriority,
   });
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
+  const [meetingMode, setMeetingMode] = useState(mode);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -208,6 +210,7 @@ export const MeetingAppProvider = ({
         participantCanToggleOtherMic,
         participantCanToggleOtherWebcam,
         partcipantCanToogleOtherScreenShare,
+        participantCanToggleOtherMode,
         canRemoveOtherParticipant,
         notificationSoundEnabled,
         canToggleWhiteboard,
@@ -242,6 +245,7 @@ export const MeetingAppProvider = ({
         canPin,
         meetingLeft,
         liveStreamConfig,
+        meetingMode,
 
         // setters
         setSideBarMode,
@@ -254,6 +258,7 @@ export const MeetingAppProvider = ({
         setMeetingLeft,
         setLiveStreamConfig,
         setAppMeetingLayout,
+        setMeetingMode,
       }}
     >
       <SnackbarProvider

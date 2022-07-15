@@ -548,12 +548,7 @@ const MainViewContainer = ({
               position: "relative",
             }}
           >
-            {mode === "viewer" && (
-              <div>
-                <h1>Hello</h1>
-              </div>
-            )}
-            {whiteboardStarted && mode === "conference" && (
+            {whiteboardStarted && (
               <WhiteboardContainer
                 {...{
                   ...convertHWAspectRatio({
@@ -581,43 +576,34 @@ const MainViewContainer = ({
               />
             )}
 
-            {presenterId && mode === "conference" && (
-              <PresenterView presenterId={presenterId} />
-            )}
+            {presenterId && <PresenterView presenterId={presenterId} />}
 
-            {!presenterId &&
-              !whiteboardStarted &&
-              mainLayoutParticipantId &&
-              mode === "conference" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left:
-                      singleRow.length === 0
-                        ? mainContainerHorizontalPadding
-                        : 0,
-                    right:
-                      singleRow.length === 0
-                        ? mainContainerHorizontalPadding
-                        : 0,
+            {!presenterId && !whiteboardStarted && mainLayoutParticipantId && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  bottom: 0,
+                  left:
+                    singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
+                  right:
+                    singleRow.length === 0 ? mainContainerHorizontalPadding : 0,
+                }}
+              >
+                <MemoizedMotionParticipant
+                  {...{
+                    participantId: mainLayoutParticipantId,
+                    gutter,
+                    quality: "high",
+                    relativeHeight: 100,
+                    relativeWidth: 100,
+                    relativeTop: 0,
+                    relativeLeft: 0,
                   }}
-                >
-                  <MemoizedMotionParticipant
-                    {...{
-                      participantId: mainLayoutParticipantId,
-                      gutter,
-                      quality: "high",
-                      relativeHeight: 100,
-                      relativeWidth: 100,
-                      relativeTop: 0,
-                      relativeLeft: 0,
-                    }}
-                    key={`mainLayoutParticipantId_${mainLayoutParticipantId}`}
-                  />
-                </div>
-              )}
+                  key={`mainLayoutParticipantId_${mainLayoutParticipantId}`}
+                />
+              </div>
+            )}
           </div>
         </div>
         {isMobile && mainScreenViewActive ? null : singleRow.length <=
