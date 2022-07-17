@@ -699,8 +699,6 @@ const MeetingContainer = () => {
                         : typeof sideBarMode === "string"
                         ? sideBarContainerWidth
                         : 0),
-                    whiteboardToolbarWidth,
-                    whiteboardSpacing,
                   }}
                 />
                 <SideViewContainer

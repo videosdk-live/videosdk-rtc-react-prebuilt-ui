@@ -11,11 +11,11 @@ const PlayerViewer = ({ downstreamUrl }) => {
   const [canPlay, setCanPlay] = useState(false);
 
   const lottieSize = useResponsiveSize({
-    xl: 250,
-    lg: 250,
-    md: 200,
-    sm: 200,
-    xs: 180,
+    xl: 240,
+    lg: 240,
+    md: 180,
+    sm: 180,
+    xs: 160,
   });
 
   const defaultOptions = {
@@ -143,7 +143,7 @@ const PlayerViewer = ({ downstreamUrl }) => {
             alignItems: "center",
             height: "100%",
             width: "100%",
-            backgroundColor: theme.palette.background.paper,
+            // backgroundColor: theme.palette.background.paper,
           }}
         >
           <Box
@@ -168,12 +168,12 @@ const PlayerViewer = ({ downstreamUrl }) => {
             <h2
               style={{
                 color: "white",
-                marginTop: 4,
+                marginTop: 0,
                 marginBottom: 4,
                 textAlign: "center",
               }}
             >
-              Waiting for the host to start the meeting.
+              Waiting for host to start live stream.
             </h2>
             <h2 style={{ color: "white", marginTop: 0, textAlign: "center" }}>
               Meanwhile, take a few deep breaths.

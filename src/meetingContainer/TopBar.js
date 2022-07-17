@@ -19,6 +19,7 @@ import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import liveBlink from "../animations/live-blink.json";
+import liveHLS from "../animations/live-hls.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import LiveIcon from "../icons/LiveIcon";
 import RaiseHand from "../icons/RaiseHand";
@@ -737,7 +738,7 @@ const HLSBTN = ({ isMobile, isTab }) => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
-    animationData: liveBlink,
+    animationData: liveHLS,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },

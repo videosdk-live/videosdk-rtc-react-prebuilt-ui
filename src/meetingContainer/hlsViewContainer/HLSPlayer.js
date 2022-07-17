@@ -338,8 +338,8 @@ const HLSPlayer = ({ height, width }) => {
                 position: "absolute",
                 top: 0,
                 bottom: 0,
-                left: mainContainerHorizontalPadding,
-                right: mainContainerHorizontalPadding,
+                // left: mainContainerHorizontalPadding,
+                // right: mainContainerHorizontalPadding,
               }}
             >
               <MemoizedMotionPlayer
@@ -370,20 +370,20 @@ const HLSPlayer = ({ height, width }) => {
             margin: spacing,
             transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
             transitionTimingFunction: "ease-in-out",
-            paddingLeft:
-              mainContainerHorizontalPadding +
-              (singleRow.length > 12 &&
-              singleRow.length < 17 &&
-              typeof sideBarMode !== "string"
-                ? 160
-                : 0),
-            paddingRight:
-              mainContainerHorizontalPadding +
-              (singleRow.length > 12 &&
-              singleRow.length < 17 &&
-              typeof sideBarMode !== "string"
-                ? 160
-                : 0),
+            // paddingLeft:
+            //   mainContainerHorizontalPadding +
+            //   (singleRow.length > 12 &&
+            //   singleRow.length < 17 &&
+            //   typeof sideBarMode !== "string"
+            //     ? 160
+            //     : 0),
+            // paddingRight:
+            //   mainContainerHorizontalPadding +
+            //   (singleRow.length > 12 &&
+            //   singleRow.length < 17 &&
+            //   typeof sideBarMode !== "string"
+            //     ? 160
+            //     : 0),
           }}
         >
           <div
