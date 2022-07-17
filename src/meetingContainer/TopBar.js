@@ -679,7 +679,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
   const isHls = useIsHls();
 
-  const { appMeetingLayout } = useMeetingAppContext();
+  const { appMeetingLayout, participantCanToggleHls } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
     () => ({
@@ -750,6 +750,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       buttonText={isHls ? "Stop HLS" : "Start HLS"}
       isFocused={isHls}
       lottieOption={isHls ? defaultOptions : null}
+      disabled={!participantCanToggleHls}
     />
   ) : (
     <OutlineIconTextButton
@@ -757,6 +758,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
       buttonText={isHls ? "Stop HLS" : "Start HLS"}
       lottieOption={isHls ? defaultOptions : null}
+      disabled={!participantCanToggleHls}
     />
   );
 };

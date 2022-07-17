@@ -31,6 +31,7 @@ import HLSPlayer from "./hlsViewContainer/HLSPlayer";
 import ModeListner from "../components/ModeListner";
 import useIsRecording from "./useIsRecording";
 import useIsLivestreaming from "./useIsLivestreaming";
+import useIsHls from "./useIsHls";
 
 const getPinMsg = ({
   localParticipant,
@@ -89,9 +90,11 @@ const MeetingContainer = () => {
   const { participantRaisedHand } = useRaisedHandParticipants();
   const isLiveStreaming = useIsLivestreaming();
   const isRecording = useIsRecording();
+  const isHls = useIsHls();
 
   const isLiveStreamingRef = useRef(isLiveStreaming);
   const isRecordingRef = useRef(isRecording);
+  const isHlsRef = useRef(isHls);
 
   const sideBarContainerWidth = useResponsiveSize({
     xl: 400,
@@ -123,14 +126,20 @@ const MeetingContainer = () => {
     isRecordingRef.current = isRecording;
   }, [isRecording]);
 
+  useEffect(() => {
+    isHlsRef.current = isHls;
+  }, [isHls]);
+
   const {
     redirectOnLeave,
     sideBarMode,
     containerRef,
     participantCanToggleRecording,
+    participantCanToggleHls,
     participantCanToggleLivestream,
     autoStartLiveStream,
     autoStartRecording,
+    autoStartHls,
     recordingWebhookUrl,
     recordingAWSDirPath,
     liveStreamOutputs,
@@ -248,10 +257,11 @@ const MeetingContainer = () => {
       mMeetingRef.current;
 
     setTimeout(() => {
-      const { startLivestream, startRecording } = mMeetingRef.current;
+      const { startLivestream, startRecording, startHls } = mMeetingRef.current;
 
       const isLiveStreaming = isLiveStreamingRef.current;
       const isRecording = isRecordingRef.current;
+      const isHls = isHlsRef.current;
 
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
@@ -286,6 +296,13 @@ const MeetingContainer = () => {
 
       if (autoStartRecording && !isRecording) {
         startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+      }
+
+      //
+      //
+
+      if (autoStartHls && !isHls) {
+        startHls({ layout });
       }
     }, 3000);
 
@@ -481,6 +498,26 @@ const MeetingContainer = () => {
     }
   };
 
+  const _handleOnHlsStarted = () => {
+    if (
+      participantCanToggleHls &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current !== "viewer"
+    ) {
+      enqueueSnackbar("Meeting HLS is started.");
+    }
+  };
+
+  const _handleOnHlsStopped = () => {
+    if (
+      participantCanToggleHls &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current !== "viewer"
+    ) {
+      enqueueSnackbar("Meeting HLS is stopped.");
+    }
+  };
+
   const _handleOnEntryRequested = () => {};
 
   const _handleOnEntryResponded = (participantId, decision) => {
@@ -568,6 +605,8 @@ const MeetingContainer = () => {
     onError: _handleOnError,
     onRecordingStateChanged: _handleOnRecordingStateChanged,
     onLivestreamStateChanged: _handleOnLivestreamStateChanged,
+    onHlsStarted: _handleOnHlsStarted,
+    onHlsStopped: _handleOnHlsStopped,
   });
 
   const _handleToggleFullScreen = () => {
