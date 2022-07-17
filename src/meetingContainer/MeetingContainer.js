@@ -362,7 +362,7 @@ const MeetingContainer = () => {
     // if (showJoinNotificationRef.current) {
     //   const { displayName } = data;
     // if (notificationSoundEnabled) {
-    //   new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    //   new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     // }
     // if (notificationAlertsEnabled) {
     //   enqueueSnackbar(`${displayName} joined the meeting`, {});
@@ -373,7 +373,7 @@ const MeetingContainer = () => {
   const _handleParticipantLeft = (data) => {
     // const { displayName } = data;
     // if (notificationSoundEnabled) {
-    // new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    // new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     // }
     // if (notificationAlertsEnabled) {
     // enqueueSnackbar(`${displayName} left the meeting`, {});
@@ -407,7 +407,7 @@ const MeetingContainer = () => {
       }
       if (notificationSoundEnabled && meetingMode !== "viewer") {
         new Audio(
-          `https://static.zujonow.com/prebuilt/notification.mp3`
+          `https://static.videosdk.live/prebuilt/notification.mp3`
         ).play();
       }
 
