@@ -694,7 +694,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
   );
 };
 
-const HLSBTN = ({ isMobile, isTab }) => {
+const HlsBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const startHls = mMeeting?.startHls;
@@ -1332,7 +1332,7 @@ const TopBar = ({ topBarHeight }) => {
             ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
               <RecordingBTN />
             ) : icon.buttonType === topBarButtonTypes.HLS ? (
-              <HLSBTN />
+              <HlsBTN />
             ) : icon.buttonType === topBarButtonTypes.GO_LIVE ? (
               <GoLiveBTN />
             ) : icon.buttonType === topBarButtonTypes.WHITEBOARD ? (
@@ -1432,7 +1432,7 @@ const TopBar = ({ topBarHeight }) => {
                     isTab={isTab}
                   />
                 ) : icon.buttonType === topBarButtonTypes.HLS ? (
-                  <HLSBTN
+                  <HlsBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
@@ -1601,7 +1601,7 @@ const TopBar = ({ topBarHeight }) => {
                       ) : buttonType === topBarButtonTypes.RECORDING ? (
                         <RecordingBTN />
                       ) : buttonType === topBarButtonTypes.HLS ? (
-                        <HLSBTN />
+                        <HlsBTN />
                       ) : buttonType === topBarButtonTypes.GO_LIVE ? (
                         <GoLiveBTN />
                       ) : buttonType === topBarButtonTypes.WHITEBOARD ? (
