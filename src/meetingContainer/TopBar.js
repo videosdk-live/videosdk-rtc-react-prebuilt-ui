@@ -699,9 +699,9 @@ const HLSBTN = ({ isMobile, isTab }) => {
 
   const startHls = mMeeting?.startHls;
   const stopHls = mMeeting?.stopHls;
-  const isHLS = mMeeting?.isHLS;
+  const isHls = mMeeting?.isHls;
 
-  console.log("isHLS", isHLS);
+  console.log("isHls", isHls);
 
   const { appMeetingLayout } = useMeetingAppContext();
 
@@ -717,7 +717,7 @@ const HLSBTN = ({ isMobile, isTab }) => {
   const typeRef = useRef(type);
   const priorityRef = useRef(priority);
   const gridSizeRef = useRef(gridSize);
-  const isHLSRef = useRef(isHLS);
+  const isHlsRef = useRef(isHls);
 
   useEffect(() => {
     typeRef.current = type;
@@ -732,8 +732,8 @@ const HLSBTN = ({ isMobile, isTab }) => {
   }, [gridSize]);
 
   useEffect(() => {
-    isHLSRef.current = isHLS;
-  }, [isHLS]);
+    isHlsRef.current = isHls;
+  }, [isHls]);
 
   const defaultOptions = {
     loop: true,
@@ -757,9 +757,9 @@ const HLSBTN = ({ isMobile, isTab }) => {
   };
 
   const _handleClick = () => {
-    const isHLS = isHLSRef.current;
+    const isHls = isHlsRef.current;
 
-    if (isHLS) {
+    if (isHls) {
       stopHls();
     } else {
       _handleStartHLS();
@@ -769,18 +769,18 @@ const HLSBTN = ({ isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       onClick={_handleClick}
-      tooltipTitle={isHLS ? "Stop HLS" : "Start HLS"}
+      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
       Icon={LiveIcon}
-      buttonText={isHLS ? "Stop HLS" : "Start HLS"}
-      isFocused={isHLS}
-      lottieOption={isHLS ? defaultOptions : null}
+      buttonText={isHls ? "Stop HLS" : "Start HLS"}
+      isFocused={isHls}
+      lottieOption={isHls ? defaultOptions : null}
     />
   ) : (
     <OutlineIconTextButton
       onClick={_handleClick}
-      tooltipTitle={isHLS ? "Stop HLS" : "Start HLS"}
-      buttonText={isHLS ? "Stop HLS" : "Start HLS"}
-      lottieOption={isHLS ? defaultOptions : null}
+      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
+      buttonText={isHls ? "Stop HLS" : "Start HLS"}
+      lottieOption={isHls ? defaultOptions : null}
     />
   );
 };
