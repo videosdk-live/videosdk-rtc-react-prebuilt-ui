@@ -29,6 +29,8 @@ import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
 import HLSPlayer from "./hlsViewContainer/HLSPlayer";
 import ModeListner from "../components/ModeListner";
+import useIsRecording from "./useIsRecording";
+import useIsLivestreaming from "./useIsLivestreaming";
 
 const getPinMsg = ({
   localParticipant,
@@ -85,6 +87,11 @@ const MeetingContainer = () => {
 
   useSortActiveParticipants();
   const { participantRaisedHand } = useRaisedHandParticipants();
+  const isLiveStreaming = useIsLivestreaming();
+  const isRecording = useIsRecording();
+
+  const isLiveStreamingRef = useRef(isLiveStreaming);
+  const isRecordingRef = useRef(isRecording);
 
   const sideBarContainerWidth = useResponsiveSize({
     xl: 400,
@@ -107,6 +114,14 @@ const MeetingContainer = () => {
         setContainerWidth(containerRef.current.offsetWidth);
     });
   }, []);
+
+  useEffect(() => {
+    isLiveStreamingRef.current = isLiveStreaming;
+  }, [isLiveStreaming]);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   const {
     redirectOnLeave,
@@ -157,6 +172,7 @@ const MeetingContainer = () => {
   const typeRef = useRef(type);
   const priorityRef = useRef(priority);
   const gridSizeRef = useRef(gridSize);
+  const meetingModeRef = useRef(meetingMode);
 
   useEffect(() => {
     liveStreamConfigRef.current = liveStreamConfig;
@@ -173,6 +189,10 @@ const MeetingContainer = () => {
   useEffect(() => {
     gridSizeRef.current = gridSize;
   }, [gridSize]);
+
+  useEffect(() => {
+    meetingModeRef.current = meetingMode;
+  }, [meetingMode]);
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
@@ -228,8 +248,10 @@ const MeetingContainer = () => {
       mMeetingRef.current;
 
     setTimeout(() => {
-      const { isLiveStreaming, isRecording, startLivestream, startRecording } =
-        mMeetingRef.current;
+      const { startLivestream, startRecording } = mMeetingRef.current;
+
+      const isLiveStreaming = isLiveStreamingRef.current;
+      const isRecording = isRecordingRef.current;
 
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
@@ -405,13 +427,13 @@ const MeetingContainer = () => {
           }
         }
       }
-      if (notificationSoundEnabled && meetingMode !== "viewer") {
+      if (notificationSoundEnabled && meetingModeRef.current !== "viewer") {
         new Audio(
           `https://static.videosdk.live/prebuilt/notification.mp3`
         ).play();
       }
 
-      if (notificationAlertsEnabled && meetingMode !== "viewer") {
+      if (notificationAlertsEnabled && meetingModeRef.current !== "viewer") {
         enqueueSnackbar(
           `${
             isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
@@ -421,43 +443,41 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnRecordingStarted = () => {
+  const _handleOnRecordingStarted = () => {};
+
+  const _handleOnRecordingStopped = () => {};
+
+  const _handleOnLiveStreamStarted = () => {};
+
+  const _handleOnLiveStreamStopped = () => {};
+
+  const _handleOnRecordingStateChanged = ({ status }) => {
     if (
       participantCanToggleRecording &&
       notificationAlertsEnabled &&
-      meetingMode !== "viewer"
+      meetingModeRef.current !== "viewer" &&
+      (status === "recordingStarted" || status === "recordingStopped")
     ) {
-      enqueueSnackbar("Meeting recording is started.");
+      enqueueSnackbar(
+        status === "recordingStarted"
+          ? "Meeting recording is started."
+          : "Meeting recording is stopped."
+      );
     }
   };
 
-  const _handleOnRecordingStopped = () => {
-    if (
-      participantCanToggleRecording &&
-      notificationAlertsEnabled &&
-      meetingMode !== "viewer"
-    ) {
-      enqueueSnackbar("Meeting recording stopped.");
-    }
-  };
-
-  const _handleOnLiveStreamStarted = () => {
+  const _handleOnLivestreamStateChanged = ({ status }) => {
     if (
       participantCanToggleLivestream &&
       notificationAlertsEnabled &&
-      meetingMode !== "viewer"
+      meetingModeRef.current !== "viewer" &&
+      (status === "livestreamStarted" || status === "livestreamStopped")
     ) {
-      enqueueSnackbar("Meeting livestreaming is started.");
-    }
-  };
-
-  const _handleOnLiveStreamStopped = () => {
-    if (
-      participantCanToggleLivestream &&
-      notificationAlertsEnabled &&
-      meetingMode !== "viewer"
-    ) {
-      enqueueSnackbar("Meeting livestreaming is Stopped.");
+      enqueueSnackbar(
+        status === "livestreamStarted"
+          ? "Meeting livestreaming is started."
+          : "Meeting livestreaming is stopped."
+      );
     }
   };
 
@@ -490,7 +510,7 @@ const MeetingContainer = () => {
     if (
       showJoinNotificationRef.current &&
       notificationAlertsEnabled &&
-      meetingMode !== "viewer"
+      meetingModeRef.current !== "viewer"
     ) {
       enqueueSnackbar(
         getPinMsg({
@@ -546,6 +566,8 @@ const MeetingContainer = () => {
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
     onError: _handleOnError,
+    onRecordingStateChanged: _handleOnRecordingStateChanged,
+    onLivestreamStateChanged: _handleOnLivestreamStateChanged,
   });
 
   const _handleToggleFullScreen = () => {
@@ -611,7 +633,7 @@ const MeetingContainer = () => {
       />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
-          meetingMode !== "viewer" ? (
+          meetingModeRef.current !== "viewer" ? (
             <>
               <ParticipantsAudioPlayer />
               <div

@@ -52,6 +52,9 @@ import ConfirmBox from "../components/ConfirmBox";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
 import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
+import useIsLivestreaming from "./useIsLivestreaming";
+import useIsRecording from "./useIsRecording";
+import useIsHls from "./useIsHls";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -64,6 +67,7 @@ const useStyles = makeStyles({
     width: 300,
   },
 });
+
 const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting();
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -134,7 +138,6 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
     />
   );
 };
-
 const ConfigBTN = ({ isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
@@ -163,7 +166,179 @@ const ConfigBTN = ({ isMobile, isTab }) => {
     />
   );
 };
+const ChatBTN = ({ isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={"Chat"}
+      buttonText={"Chat"}
+      Icon={Chat}
+      isFocused={sideBarMode === sideBarModes.CHAT}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
+        );
+      }}
+    />
+  ) : (
+    <OutlineIconButton
+      tooltipTitle={"Chat"}
+      Icon={Chat}
+      isFocused={sideBarMode === sideBarModes.CHAT}
+      onClick={() => {
+        setSideBarMode((s) =>
+          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
+        );
+      }}
+    />
+  );
+};
+const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={Activities}
+      isFocused={sideBarMode === sideBarModes.ACTIVITIES}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+
+        setSideBarMode((s) =>
+          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
+        );
+      }}
+    />
+  ) : (
+    <OutlineIconButton
+      tooltipTitle={"Activities"}
+      Icon={Activities}
+      isFocused={sideBarMode === sideBarModes.ACTIVITIES}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+
+        setSideBarMode((s) =>
+          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
+        );
+      }}
+    />
+  );
+};
+const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
+  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
+    useMeetingAppContext();
+
+  const mMeeting = useMeeting({});
+
+  const presenterId = mMeeting?.presenterId;
+
+  return (
+    <>
+      {whiteboardEnabled &&
+        (isMobile || isTab ? (
+          <MobileIconButton
+            disabled={presenterId || !canToggleWhiteboard}
+            tooltipTitle={"Whiteboard"}
+            buttonText={"Whiteboard"}
+            Icon={Gesture}
+            isFocused={whiteboardStarted}
+            onClick={() => {
+              typeof onClick === "function" && onClick();
+
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
+            }}
+          />
+        ) : (
+          <OutlineIconButton
+            disabled={presenterId || !canToggleWhiteboard}
+            tooltipTitle={"Whiteboard"}
+            Icon={Gesture}
+            isFocused={whiteboardStarted}
+            onClick={() => {
+              typeof onClick === "function" && onClick();
+
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
+            }}
+          />
+        ))}
+    </>
+  );
+};
+const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
+  const mMeeting = useMeeting({});
+  const { whiteboardStarted } = useMeetingAppContext();
+
+  const localScreenShareOn = mMeeting?.localScreenShareOn;
+  const toggleScreenShare = mMeeting?.toggleScreenShare;
+  const presenterId = mMeeting?.presenterId;
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      tooltipTitle={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      buttonText={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      isFocused={localScreenShareOn}
+      Icon={ScreenShare}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+        toggleScreenShare();
+      }}
+      disabled={
+        RDDIsMobile || RDDIsTablet
+          ? true
+          : whiteboardStarted
+          ? true
+          : presenterId
+          ? localScreenShareOn
+            ? false
+            : true
+          : false
+      }
+    />
+  ) : (
+    <OutlineIconButton
+      tooltipTitle={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      isFocused={localScreenShareOn}
+      Icon={ScreenShare}
+      onClick={() => {
+        typeof onClick === "function" && onClick();
+        toggleScreenShare();
+      }}
+      disabled={
+        RDDIsMobile || RDDIsTablet
+          ? true
+          : whiteboardStarted
+          ? true
+          : presenterId
+          ? localScreenShareOn
+            ? false
+            : true
+          : false
+      }
+    />
+  );
+};
 const AddLiveStreamBTN = ({ isMobile, isTab }) => {
   const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
@@ -196,15 +371,160 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
     />
   );
 };
+const RecordingBTN = ({ isMobile, isTab }) => {
+  const mMeeting = useMeeting({});
 
+  const startRecording = mMeeting?.startRecording;
+  const stopRecording = mMeeting?.stopRecording;
+  const recordingState = mMeeting?.recordingState;
+
+  const isRecording = useIsRecording();
+
+  const { isRequestProcessing } = useMemo(
+    () => ({
+      isRequestProcessing:
+        recordingState === "recordingStarting" ||
+        recordingState === "recordingStopping",
+    }),
+    [recordingState]
+  );
+
+  const {
+    recordingWebhookUrl,
+    recordingAWSDirPath,
+    participantCanToggleRecording,
+    appMeetingLayout,
+  } = useMeetingAppContext();
+
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isRecordingRef = useRef(isRecording);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: recordingBlink,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 160,
+  };
+
+  const _handleStartRecording = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+  };
+
+  const _handleClick = () => {
+    const isRecording = isRecordingRef.current;
+
+    if (isRecording) {
+      stopRecording();
+    } else {
+      _handleStartRecording();
+    }
+  };
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      Icon={ScreenRecording}
+      onClick={_handleClick}
+      tooltipTitle={
+        recordingState === "recordingStarted"
+          ? "Stop Recording"
+          : recordingState === "recordingStarting"
+          ? "Starting Recording"
+          : recordingState === "recordingStopped"
+          ? "Start Recording"
+          : "Stopping Recording"
+      }
+      isFocused={isRecording}
+      disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
+      buttonText={
+        recordingState === "recordingStarted"
+          ? "Stop Recording"
+          : recordingState === "recordingStarting"
+          ? "Starting Recording"
+          : recordingState === "recordingStopped"
+          ? "Start Recording"
+          : "Stopping Recording"
+      }
+      isRequestProcessing={isRequestProcessing}
+    />
+  ) : (
+    <OutlineIconButton
+      Icon={ScreenRecording}
+      onClick={_handleClick}
+      tooltipTitle={
+        recordingState === "recordingStarted"
+          ? "Stop Recording"
+          : recordingState === "recordingStarting"
+          ? "Starting Recording"
+          : recordingState === "recordingStopped"
+          ? "Start Recording"
+          : "Stopping Recording"
+      }
+      isFocused={isRecording}
+      disabled={!participantCanToggleRecording}
+      lottieOption={isRecording ? defaultOptions : null}
+      isRequestProcessing={isRequestProcessing}
+    />
+  );
+};
 const GoLiveBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const [isPopupShown, setIsPopupShown] = useState(false);
 
-  const isLiveStreaming = mMeeting?.isLiveStreaming;
   const startLivestream = mMeeting?.startLivestream;
   const stopLivestream = mMeeting?.stopLivestream;
+  const livestreamState = mMeeting?.livestreamState;
+
+  console.log(livestreamState, "livestreamState");
+
+  const isLiveStreaming = useIsLivestreaming();
+
+  const { isRequestProcessing } = useMemo(
+    () => ({
+      isRequestProcessing:
+        livestreamState === "livestreamStarting" ||
+        livestreamState === "livestreamStopping",
+    }),
+    [livestreamState]
+  );
 
   const {
     participantCanToggleLivestream,
@@ -289,21 +609,47 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
         <MobileIconButton
           bgColor={"#D32F2F"}
           onClick={_handleClick}
-          tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          tooltipTitle={
+            livestreamState === "livestreamStarted"
+              ? "Stop Live"
+              : livestreamState === "livestreamStarting"
+              ? "Starting Livestream"
+              : livestreamState === "livestreamStopped"
+              ? "Go Live"
+              : "Stopping Livestream"
+          }
           Icon={LiveIcon}
-          buttonText={isLiveStreaming ? "Stop Live" : "Go Live"}
+          buttonText={
+            livestreamState === "livestreamStarted"
+              ? "Stop Live"
+              : livestreamState === "livestreamStarting"
+              ? "Starting Livestream"
+              : livestreamState === "livestreamStopped"
+              ? "Go Live"
+              : "Stopping Livestream"
+          }
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
           disabled={!participantCanToggleLivestream}
+          isRequestProcessing={isRequestProcessing}
         />
       ) : (
         <OutlineIconTextButton
           bgColor={"#D32F2F"}
           onClick={_handleClick}
-          tooltipTitle={isLiveStreaming ? "Stop Live" : "Go Live"}
+          tooltipTitle={
+            livestreamState === "livestreamStarted"
+              ? "Stop Live"
+              : livestreamState === "livestreamStarting"
+              ? "Starting Livestream"
+              : livestreamState === "livestreamStopped"
+              ? "Go Live"
+              : "Stopping Livestream"
+          }
           buttonText="Go Live"
           lottieOption={isLiveStreaming ? defaultOptions : null}
           disabled={!participantCanToggleLivestream}
+          isRequestProcessing={isRequestProcessing}
         />
       )}
       <ConfirmBox
@@ -325,182 +671,189 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     </>
   );
 };
-const ChatBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
-
-  return isMobile || isTab ? (
-    <MobileIconButton
-      tooltipTitle={"Chat"}
-      buttonText={"Chat"}
-      Icon={Chat}
-      isFocused={sideBarMode === sideBarModes.CHAT}
-      onClick={() => {
-        setSideBarMode((s) =>
-          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
-        );
-      }}
-    />
-  ) : (
-    <OutlineIconButton
-      tooltipTitle={"Chat"}
-      Icon={Chat}
-      isFocused={sideBarMode === sideBarModes.CHAT}
-      onClick={() => {
-        setSideBarMode((s) =>
-          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
-        );
-      }}
-    />
-  );
-};
-const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
-
-  return isMobile || isTab ? (
-    <MobileIconButton
-      Icon={Activities}
-      isFocused={sideBarMode === sideBarModes.ACTIVITIES}
-      onClick={() => {
-        typeof onClick === "function" && onClick();
-
-        setSideBarMode((s) =>
-          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
-        );
-      }}
-    />
-  ) : (
-    <OutlineIconButton
-      tooltipTitle={"Activities"}
-      Icon={Activities}
-      isFocused={sideBarMode === sideBarModes.ACTIVITIES}
-      onClick={() => {
-        typeof onClick === "function" && onClick();
-
-        setSideBarMode((s) =>
-          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
-        );
-      }}
-    />
-  );
-};
-
-const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
-  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
-    useMeetingAppContext();
-
+const HlsBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
-  const presenterId = mMeeting?.presenterId;
+  const startHls = mMeeting?.startHls;
+  const stopHls = mMeeting?.stopHls;
+
+  const isHls = useIsHls();
+
+  const { appMeetingLayout } = useMeetingAppContext();
+
+  const { type, priority, gridSize } = useMemo(
+    () => ({
+      type: appMeetingLayout.type,
+      priority: appMeetingLayout.priority,
+      gridSize: appMeetingLayout.gridSize,
+    }),
+    [appMeetingLayout]
+  );
+
+  const typeRef = useRef(type);
+  const priorityRef = useRef(priority);
+  const gridSizeRef = useRef(gridSize);
+  const isHlsRef = useRef(isHls);
+
+  useEffect(() => {
+    typeRef.current = type;
+  }, [type]);
+
+  useEffect(() => {
+    priorityRef.current = priority;
+  }, [priority]);
+
+  useEffect(() => {
+    gridSizeRef.current = gridSize;
+  }, [gridSize]);
+
+  useEffect(() => {
+    isHlsRef.current = isHls;
+  }, [isHls]);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: liveHLS,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 170,
+  };
+
+  const _handleStartHLS = () => {
+    const type = typeRef.current;
+    const priority = priorityRef.current;
+    const gridSize = gridSizeRef.current;
+
+    const layout = { type, priority, gridSize };
+
+    startHls(layout);
+  };
+
+  const _handleClick = () => {
+    const isHls = isHlsRef.current;
+
+    if (isHls) {
+      stopHls();
+    } else {
+      _handleStartHLS();
+    }
+  };
+
+  return isMobile || isTab ? (
+    <MobileIconButton
+      onClick={_handleClick}
+      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
+      Icon={LiveIcon}
+      buttonText={isHls ? "Stop HLS" : "Start HLS"}
+      isFocused={isHls}
+      lottieOption={isHls ? defaultOptions : null}
+    />
+  ) : (
+    <OutlineIconTextButton
+      onClick={_handleClick}
+      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
+      buttonText={isHls ? "Stop HLS" : "Start HLS"}
+      lottieOption={isHls ? defaultOptions : null}
+    />
+  );
+};
+const WebcamBTN = () => {
+  const theme = useTheme();
+  const mMeeting = useMeeting({});
+  const { selectedWebcam } = useMeetingAppContext();
+  const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
+  const [downArrow, setDownArrow] = useState(null);
+  const [webcams, setWebcams] = useState([]);
+
+  const localWebcamOn = mMeeting?.localWebcamOn;
+  const toggleWebcam = mMeeting?.toggleWebcam;
+  const changeWebcam = mMeeting?.changeWebcam;
+
+  const handleClick = (event) => {
+    setDownArrow(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setDownArrow(null);
+  };
+
+  const getWebcams = async (mGetWebcams) => {
+    const webcams = await mGetWebcams();
+
+    webcams && webcams?.length && setWebcams(webcams);
+  };
+
+  const tollTipEl = useRef();
 
   return (
-    <>
-      {whiteboardEnabled &&
-        (isMobile || isTab ? (
-          <MobileIconButton
-            disabled={presenterId || !canToggleWhiteboard}
-            tooltipTitle={"Whiteboard"}
-            buttonText={"Whiteboard"}
-            Icon={Gesture}
-            isFocused={whiteboardStarted}
-            onClick={() => {
-              typeof onClick === "function" && onClick();
-
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
-            }}
-          />
-        ) : (
-          <OutlineIconButton
-            disabled={presenterId || !canToggleWhiteboard}
-            tooltipTitle={"Whiteboard"}
-            Icon={Gesture}
-            isFocused={whiteboardStarted}
-            onClick={() => {
-              typeof onClick === "function" && onClick();
-
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
-            }}
-          />
-        ))}
-    </>
+    <Box
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      ref={tollTipEl}
+    >
+      <OutlineIconButton
+        btnID={"btnWebcam"}
+        tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
+        isFocused={localWebcamOn}
+        Icon={localWebcamOn ? VideocamIcon : VideocamOffIcon}
+        onClick={toggleWebcam}
+        focusBGColor={"#ffffff33"}
+        focusIconColor={theme.palette.common.white}
+        renderRightComponent={() => {
+          return (
+            <Tooltip placement="bottom" title={"Change webcam"}>
+              <IconButton
+                onClick={(e) => {
+                  getWebcams(mMeeting?.getWebcams);
+                  handleClick(e);
+                }}
+                size={"small"}
+              >
+                <ArrowDropDownIcon fontSize={"small"} />
+              </IconButton>
+            </Tooltip>
+          );
+        }}
+      />
+      <Popover
+        container={tollTipEl.current}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        anchorEl={tollTipEl.current}
+        open={Boolean(downArrow)}
+        onClose={handleClose}
+      >
+        <MenuList>
+          {webcams.map(({ deviceId, label }, index) => (
+            <MenuItem
+              key={`output_webcams_${deviceId}`}
+              selected={deviceId === selectedDeviceId}
+              onClick={() => {
+                handleClose();
+                setSelectedDeviceId(deviceId);
+                changeWebcam(deviceId);
+              }}
+            >
+              {label || `Webcam ${index + 1}`}
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Popover>
+    </Box>
   );
 };
-
-const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
-  const mMeeting = useMeeting({});
-  const { whiteboardStarted } = useMeetingAppContext();
-
-  const localScreenShareOn = mMeeting?.localScreenShareOn;
-  const toggleScreenShare = mMeeting?.toggleScreenShare;
-  const presenterId = mMeeting?.presenterId;
-
-  return isMobile || isTab ? (
-    <MobileIconButton
-      tooltipTitle={
-        presenterId
-          ? localScreenShareOn
-            ? "Stop Presenting"
-            : null
-          : "Present Screen"
-      }
-      buttonText={
-        presenterId
-          ? localScreenShareOn
-            ? "Stop Presenting"
-            : null
-          : "Present Screen"
-      }
-      isFocused={localScreenShareOn}
-      Icon={ScreenShare}
-      onClick={() => {
-        typeof onClick === "function" && onClick();
-        toggleScreenShare();
-      }}
-      disabled={
-        RDDIsMobile || RDDIsTablet
-          ? true
-          : whiteboardStarted
-          ? true
-          : presenterId
-          ? localScreenShareOn
-            ? false
-            : true
-          : false
-      }
-    />
-  ) : (
-    <OutlineIconButton
-      tooltipTitle={
-        presenterId
-          ? localScreenShareOn
-            ? "Stop Presenting"
-            : null
-          : "Present Screen"
-      }
-      isFocused={localScreenShareOn}
-      Icon={ScreenShare}
-      onClick={() => {
-        typeof onClick === "function" && onClick();
-        toggleScreenShare();
-      }}
-      disabled={
-        RDDIsMobile || RDDIsTablet
-          ? true
-          : whiteboardStarted
-          ? true
-          : presenterId
-          ? localScreenShareOn
-            ? false
-            : true
-          : false
-      }
-    />
-  );
-};
-
 const MicBTN = () => {
   const { selectedMic } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
@@ -589,289 +942,6 @@ const MicBTN = () => {
               }}
             >
               {label || `Mic ${index + 1}`}
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Popover>
-    </Box>
-  );
-};
-
-const RecordingBTN = ({ isMobile, isTab }) => {
-  const mMeeting = useMeeting({});
-
-  const isRecording = mMeeting?.isRecording;
-  const startRecording = mMeeting?.startRecording;
-  const stopRecording = mMeeting?.stopRecording;
-
-  const {
-    recordingWebhookUrl,
-    recordingAWSDirPath,
-    participantCanToggleRecording,
-    appMeetingLayout,
-  } = useMeetingAppContext();
-
-  const { type, priority, gridSize } = useMemo(
-    () => ({
-      type: appMeetingLayout.type,
-      priority: appMeetingLayout.priority,
-      gridSize: appMeetingLayout.gridSize,
-    }),
-    [appMeetingLayout]
-  );
-
-  const typeRef = useRef(type);
-  const priorityRef = useRef(priority);
-  const gridSizeRef = useRef(gridSize);
-  const isRecordingRef = useRef(isRecording);
-
-  useEffect(() => {
-    typeRef.current = type;
-  }, [type]);
-
-  useEffect(() => {
-    priorityRef.current = priority;
-  }, [priority]);
-
-  useEffect(() => {
-    gridSizeRef.current = gridSize;
-  }, [gridSize]);
-
-  useEffect(() => {
-    isRecordingRef.current = isRecording;
-  }, [isRecording]);
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: recordingBlink,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-    height: 64,
-    width: 160,
-  };
-
-  const _handleStartRecording = () => {
-    const type = typeRef.current;
-    const priority = priorityRef.current;
-    const gridSize = gridSizeRef.current;
-
-    const layout = { type, priority, gridSize };
-
-    startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
-  };
-
-  const _handleClick = () => {
-    const isRecording = isRecordingRef.current;
-
-    if (isRecording) {
-      stopRecording();
-    } else {
-      _handleStartRecording();
-    }
-  };
-
-  return isMobile || isTab ? (
-    <MobileIconButton
-      Icon={ScreenRecording}
-      onClick={_handleClick}
-      tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
-      isFocused={isRecording}
-      disabled={!participantCanToggleRecording}
-      lottieOption={isRecording ? defaultOptions : null}
-      buttonText={isRecording ? "Stop Recording" : "Start Recording"}
-    />
-  ) : (
-    <OutlineIconButton
-      Icon={ScreenRecording}
-      onClick={_handleClick}
-      tooltipTitle={isRecording ? "Stop Recording" : "Start Recording"}
-      isFocused={isRecording}
-      disabled={!participantCanToggleRecording}
-      lottieOption={isRecording ? defaultOptions : null}
-    />
-  );
-};
-
-const HlsBTN = ({ isMobile, isTab }) => {
-  const mMeeting = useMeeting({});
-
-  const startHls = mMeeting?.startHls;
-  const stopHls = mMeeting?.stopHls;
-  const isHls = mMeeting?.isHls;
-
-  console.log("isHls", isHls);
-
-  const { appMeetingLayout } = useMeetingAppContext();
-
-  const { type, priority, gridSize } = useMemo(
-    () => ({
-      type: appMeetingLayout.type,
-      priority: appMeetingLayout.priority,
-      gridSize: appMeetingLayout.gridSize,
-    }),
-    [appMeetingLayout]
-  );
-
-  const typeRef = useRef(type);
-  const priorityRef = useRef(priority);
-  const gridSizeRef = useRef(gridSize);
-  const isHlsRef = useRef(isHls);
-
-  useEffect(() => {
-    typeRef.current = type;
-  }, [type]);
-
-  useEffect(() => {
-    priorityRef.current = priority;
-  }, [priority]);
-
-  useEffect(() => {
-    gridSizeRef.current = gridSize;
-  }, [gridSize]);
-
-  useEffect(() => {
-    isHlsRef.current = isHls;
-  }, [isHls]);
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: liveHLS,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-    height: 64,
-    width: 170,
-  };
-
-  const _handleStartHLS = () => {
-    const type = typeRef.current;
-    const priority = priorityRef.current;
-    const gridSize = gridSizeRef.current;
-
-    const layout = { type, priority, gridSize };
-
-    startHls(layout);
-  };
-
-  const _handleClick = () => {
-    const isHls = isHlsRef.current;
-
-    if (isHls) {
-      stopHls();
-    } else {
-      _handleStartHLS();
-    }
-  };
-
-  return isMobile || isTab ? (
-    <MobileIconButton
-      onClick={_handleClick}
-      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
-      Icon={LiveIcon}
-      buttonText={isHls ? "Stop HLS" : "Start HLS"}
-      isFocused={isHls}
-      lottieOption={isHls ? defaultOptions : null}
-    />
-  ) : (
-    <OutlineIconTextButton
-      onClick={_handleClick}
-      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
-      buttonText={isHls ? "Stop HLS" : "Start HLS"}
-      lottieOption={isHls ? defaultOptions : null}
-    />
-  );
-};
-
-const WebcamBTN = () => {
-  const theme = useTheme();
-  const mMeeting = useMeeting({});
-  const { selectedWebcam } = useMeetingAppContext();
-  const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
-  const [downArrow, setDownArrow] = useState(null);
-  const [webcams, setWebcams] = useState([]);
-
-  const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = mMeeting?.toggleWebcam;
-  const changeWebcam = mMeeting?.changeWebcam;
-
-  const handleClick = (event) => {
-    setDownArrow(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setDownArrow(null);
-  };
-
-  const getWebcams = async (mGetWebcams) => {
-    const webcams = await mGetWebcams();
-
-    webcams && webcams?.length && setWebcams(webcams);
-  };
-
-  const tollTipEl = useRef();
-
-  return (
-    <Box
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-      ref={tollTipEl}
-    >
-      <OutlineIconButton
-        btnID={"btnWebcam"}
-        tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
-        isFocused={localWebcamOn}
-        Icon={localWebcamOn ? VideocamIcon : VideocamOffIcon}
-        onClick={toggleWebcam}
-        focusBGColor={"#ffffff33"}
-        focusIconColor={theme.palette.common.white}
-        renderRightComponent={() => {
-          return (
-            <Tooltip placement="bottom" title={"Change webcam"}>
-              <IconButton
-                onClick={(e) => {
-                  getWebcams(mMeeting?.getWebcams);
-                  handleClick(e);
-                }}
-                size={"small"}
-              >
-                <ArrowDropDownIcon fontSize={"small"} />
-              </IconButton>
-            </Tooltip>
-          );
-        }}
-      />
-      <Popover
-        container={tollTipEl.current}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        anchorEl={tollTipEl.current}
-        open={Boolean(downArrow)}
-        onClose={handleClose}
-      >
-        <MenuList>
-          {webcams.map(({ deviceId, label }, index) => (
-            <MenuItem
-              key={`output_webcams_${deviceId}`}
-              selected={deviceId === selectedDeviceId}
-              onClick={() => {
-                handleClose();
-                setSelectedDeviceId(deviceId);
-                changeWebcam(deviceId);
-              }}
-            >
-              {label || `Webcam ${index + 1}`}
             </MenuItem>
           ))}
         </MenuList>
