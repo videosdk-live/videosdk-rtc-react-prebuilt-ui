@@ -3,19 +3,22 @@ import { useEffect, useState } from "react";
 import { appEvents, eventEmitter } from "../../utils/common";
 
 const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
-  const { webcamStream, webcamOn, isLocal } = useParticipant(participantId);
+  const { webcamStream, webcamOn, isLocal, consumeVideoStreams, stopConsumingVideoStreams } = useParticipant(participantId);
 
   useEffect(() => {
-    if (!isLocal && webcamStream && webcamOn) {
+    console.log("PauseInvisibleParticipant")
+    if (!isLocal) {
       if (isVisible) {
         console.log("resuming participant stream", participantId);
-        typeof webcamStream?.resume === "function" && webcamStream?.resume();
+        // typeof webcamStream?.resume === "function" && webcamStream?.resume();
+        consumeVideoStreams();
       } else {
         console.log("pausing participant stream", participantId);
-        typeof webcamStream?.pause === "function" && webcamStream?.pause();
+        // typeof webcamStream?.pause === "function" && webcamStream?.pause();
+        stopConsumingVideoStreams();
       }
     }
-  }, [webcamStream, isLocal, webcamOn, isVisible]);
+  }, [isLocal, isVisible]);
 
   return <></>;
 };
@@ -26,17 +29,21 @@ const PauseInvisibleParticipants = () => {
   const mMeeting = useMeeting();
 
   const _handleParticipantVisible = ({ participantId }) => {
+    console.log("Participant Visible ", participantId)
     setVisibleParticipantIds((s) => [...new Set([...s, participantId])]);
   };
 
   const _handleParticipantInvisible = ({ participantId }) => {
+    console.log("Participant NOT Visible ", participantId)
     setVisibleParticipantIds((s) => s.filter((s) => s !== participantId));
   };
 
   useEffect(() => {
     eventEmitter.on(
-      appEvents["participant-visible"],
-      _handleParticipantVisible
+      appEvents["participant-visible"],({participantId})=>{
+        console.log("Evevnt Participant Visible");
+        _handleParticipantVisible({participantId})
+      }
     );
     eventEmitter.on(
       appEvents["participant-invisible"],

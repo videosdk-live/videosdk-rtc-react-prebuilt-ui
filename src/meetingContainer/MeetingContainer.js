@@ -727,6 +727,7 @@ const MeetingContainer = () => {
         localParticipantAllowedJoin ? (
           meetingModeRef.current !== "viewer" ? (
             <>
+              <PauseInvisibleParticipants />
               <ParticipantsAudioPlayer />
               <div
                 style={{

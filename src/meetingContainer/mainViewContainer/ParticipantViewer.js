@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-              ? undefined
-              : "#D32F2Fcc",
+                ? undefined
+                : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -207,6 +207,14 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     isRecorder,
   } = useMeetingAppContext();
 
+  const onStreamEnabled = (stream) => {
+    console.log(participantId, stream.kind, " Stream started ");
+  }
+
+  const onStreamDisabled = (stream) => {
+    console.log(participantId, stream.kind, " Stream stopped ");
+  }
+
   const {
     displayName,
     setQuality,
@@ -219,7 +227,14 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     pinState,
     pin,
     unpin,
-  } = useParticipant(participantId, {});
+    consumeAudioStreams,
+    consumeVideoStreams,
+    stopConsumingAudioStreams,
+    stopConsumingVideoStreams,
+  } = useParticipant(participantId, {
+    onStreamDisabled,
+    onStreamEnabled
+  });
 
   const mediaStream = useMemo(() => {
     if (webcamOn) {
