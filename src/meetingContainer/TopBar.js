@@ -13,7 +13,7 @@ import {
   Grid,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { Constants, useMeeting } from "@videosdk.live/react-sdk";
 import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
@@ -383,8 +383,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
   const { isRequestProcessing } = useMemo(
     () => ({
       isRequestProcessing:
-        recordingState === "recordingStarting" ||
-        recordingState === "recordingStopping",
+        recordingState === Constants.recordingEvents.RECORDING_STARTING ||
+        recordingState === Constants.recordingEvents.RECORDING_STOPPING,
     }),
     [recordingState]
   );
@@ -462,11 +462,11 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       Icon={ScreenRecording}
       onClick={_handleClick}
       tooltipTitle={
-        recordingState === "recordingStarted"
+        recordingState === Constants.recordingEvents.RECORDING_STARTED
           ? "Stop Recording"
-          : recordingState === "recordingStarting"
+          : recordingState === Constants.recordingEvents.RECORDING_STARTING
           ? "Starting Recording"
-          : recordingState === "recordingStopped"
+          : recordingState === Constants.recordingEvents.RECORDING_STOPPED
           ? "Start Recording"
           : "Stopping Recording"
       }
@@ -474,11 +474,11 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
       buttonText={
-        recordingState === "recordingStarted"
+        recordingState === Constants.recordingEvents.RECORDING_STARTED
           ? "Stop Recording"
-          : recordingState === "recordingStarting"
+          : recordingState === Constants.recordingEvents.RECORDING_STARTING
           ? "Starting Recording"
-          : recordingState === "recordingStopped"
+          : recordingState === Constants.recordingEvents.RECORDING_STOPPED
           ? "Start Recording"
           : "Stopping Recording"
       }
@@ -489,11 +489,11 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       Icon={ScreenRecording}
       onClick={_handleClick}
       tooltipTitle={
-        recordingState === "recordingStarted"
+        recordingState === Constants.recordingEvents.RECORDING_STARTED
           ? "Stop Recording"
-          : recordingState === "recordingStarting"
+          : recordingState === Constants.recordingEvents.RECORDING_STARTING
           ? "Starting Recording"
-          : recordingState === "recordingStopped"
+          : recordingState === Constants.recordingEvents.RECORDING_STOPPED
           ? "Start Recording"
           : "Stopping Recording"
       }
@@ -513,15 +513,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
   const stopLivestream = mMeeting?.stopLivestream;
   const livestreamState = mMeeting?.livestreamState;
 
-  console.log(livestreamState, "livestreamState");
-
   const isLiveStreaming = useIsLivestreaming();
 
   const { isRequestProcessing } = useMemo(
     () => ({
       isRequestProcessing:
-        livestreamState === "livestreamStarting" ||
-        livestreamState === "livestreamStopping",
+        livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTING ||
+        livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPING,
     }),
     [livestreamState]
   );
@@ -610,21 +608,25 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
           bgColor={"#D32F2F"}
           onClick={_handleClick}
           tooltipTitle={
-            livestreamState === "livestreamStarted"
+            livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
-              : livestreamState === "livestreamStarting"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STARTING
               ? "Starting Livestream"
-              : livestreamState === "livestreamStopped"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPED
               ? "Go Live"
               : "Stopping Livestream"
           }
           Icon={LiveIcon}
           buttonText={
-            livestreamState === "livestreamStarted"
+            livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
-              : livestreamState === "livestreamStarting"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STARTING
               ? "Starting Livestream"
-              : livestreamState === "livestreamStopped"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPED
               ? "Go Live"
               : "Stopping Livestream"
           }
@@ -638,11 +640,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
           bgColor={"#D32F2F"}
           onClick={_handleClick}
           tooltipTitle={
-            livestreamState === "livestreamStarted"
+            livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
-              : livestreamState === "livestreamStarting"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STARTING
               ? "Starting Livestream"
-              : livestreamState === "livestreamStopped"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPED
               ? "Go Live"
               : "Stopping Livestream"
           }

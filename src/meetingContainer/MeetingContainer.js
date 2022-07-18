@@ -7,7 +7,7 @@ import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
-import { usePubSub } from "@videosdk.live/react-sdk";
+import { usePubSub, Constants } from "@videosdk.live/react-sdk";
 import {
   appEvents,
   eventEmitter,
@@ -473,10 +473,11 @@ const MeetingContainer = () => {
       participantCanToggleRecording &&
       notificationAlertsEnabled &&
       meetingModeRef.current !== "viewer" &&
-      (status === "recordingStarted" || status === "recordingStopped")
+      (status === Constants.recordingEvents.RECORDING_STARTED ||
+        status === Constants.recordingEvents.RECORDING_STOPPED)
     ) {
       enqueueSnackbar(
-        status === "recordingStarted"
+        status === Constants.recordingEvents.RECORDING_STARTED
           ? "Meeting recording is started."
           : "Meeting recording is stopped."
       );
@@ -488,10 +489,11 @@ const MeetingContainer = () => {
       participantCanToggleLivestream &&
       notificationAlertsEnabled &&
       meetingModeRef.current !== "viewer" &&
-      (status === "livestreamStarted" || status === "livestreamStopped")
+      (status === Constants.livestreamEvents.LIVESTREAM_STARTED ||
+        status === Constants.livestreamEvents.LIVESTREAM_STOPPED)
     ) {
       enqueueSnackbar(
-        status === "livestreamStarted"
+        status === Constants.livestreamEvents.LIVESTREAM_STARTED
           ? "Meeting livestreaming is started."
           : "Meeting livestreaming is stopped."
       );
