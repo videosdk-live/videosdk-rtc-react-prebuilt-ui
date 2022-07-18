@@ -391,7 +391,7 @@ const App = () => {
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token, debug, region }) => {
-    const BASE_URL = "https://api.videosdk.live";
+    const BASE_URL = "https://dev-api.videosdk.live";
 
     const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
 
@@ -580,6 +580,7 @@ const App = () => {
                   : "sd",
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
+              autoConsume: false
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction

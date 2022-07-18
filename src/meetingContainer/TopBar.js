@@ -1154,6 +1154,7 @@ const TopBar = ({ topBarHeight }) => {
     canChangeLayout,
     participantCanToggleLivestream,
     liveStreamEnabled,
+    hlsEnabled,
     pollEnabled,
     whiteboardEnabled,
     participantCanToggleSelfWebcam,
@@ -1307,7 +1308,7 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (isModeConference) {
+      if (hlsEnabled && meetingMode !== "viewer") {
         utilsArr.unshift(topBarButtonTypes.HLS);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.HLS,

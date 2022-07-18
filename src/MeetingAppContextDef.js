@@ -8,6 +8,7 @@ import {
   useRef,
   useMemo,
 } from "react";
+import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
 import { validURL } from "./utils/common";
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
@@ -75,6 +76,7 @@ export const MeetingAppProvider = ({
   participantCanEndMeeting,
   poweredBy,
   liveStreamEnabled,
+  hlsEnabled,
   autoStartLiveStream,
   // liveStreamLayoutType,
   // liveStreamLayoutPriority,
@@ -133,7 +135,7 @@ export const MeetingAppProvider = ({
   });
   const [appMeetingLayout, setAppMeetingLayout] = useState({
     type: layoutType,
-    gridSize: layoutGridSize,
+    gridSize: isRecorder ? RECORDER_MAX_GRID_SIZE : layoutGridSize,
     priority: layoutPriority,
   });
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
@@ -205,6 +207,7 @@ export const MeetingAppProvider = ({
         participantCanEndMeeting,
         poweredBy,
         liveStreamEnabled,
+        hlsEnabled,
         autoStartLiveStream,
         // liveStreamLayoutType,
         // liveStreamLayoutPriority,
