@@ -262,11 +262,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     },
   };
 
-  useEffect(() => {
-    if (!presenterId) {
-      typeof webcamStream?.resume === "function" && webcamStream?.resume();
-    }
-  }, [presenterId, webcamOn, webcamStream]);
+  // useEffect(() => {
+  //   if (!presenterId) {
+  //     typeof webcamStream?.resume === "function" && webcamStream?.resume();
+  //   }
+  // }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {
     if (isRecorder) {
@@ -289,20 +289,43 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
+  useEffect(() => {
+    eventEmitter.emit(appEvents["participant-visible"], {
+      participantId,
+    });
+
+    return () => {
+      eventEmitter.emit(appEvents["participant-invisible"], {
+        participantId,
+      });
+    };
+  }, []);
+
   return (
     <VisibilitySensor
-      active={!!useVisibilitySensor}
+      active
+      // active={!!useVisibilitySensor}
       onChange={(isVisible) => {
-        if (useVisibilitySensor) {
-          if (isVisible) {
-            typeof webcamStream?.resume === "function" &&
-              webcamStream?.resume();
-          } else {
-            typeof webcamStream?.pause === "function" && webcamStream?.pause();
-          }
+        if (isVisible) {
+          eventEmitter.emit(appEvents["participant-visible"], {
+            participantId,
+          });
         } else {
-          typeof webcamStream?.resume === "function" && webcamStream?.resume();
+          eventEmitter.emit(appEvents["participant-invisible"], {
+            participantId,
+          });
         }
+        //
+        // if (useVisibilitySensor) {
+        //   if (isVisible) {
+        //     typeof webcamStream?.resume === "function" &&
+        //       webcamStream?.resume();
+        //   } else {
+        //     typeof webcamStream?.pause === "function" && webcamStream?.pause();
+        //   }
+        // } else {
+        //   typeof webcamStream?.resume === "function" && webcamStream?.resume();
+        // }
       }}
     >
       <div
