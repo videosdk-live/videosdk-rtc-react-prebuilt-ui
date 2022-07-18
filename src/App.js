@@ -72,8 +72,12 @@ const App = () => {
       participantCanLeave: "participantCanLeave",
       participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
       participantCanToggleOtherMic: "participantCanToggleOtherMic",
+      partcipantCanToogleOtherScreenShare:
+        "partcipantCanToogleOtherScreenShare",
+      participantCanToggleOtherMode: "participantCanToggleOtherMode",
       participantCanToggleLivestream: "participantCanToggleLivestream",
       participantCanEndMeeting: "participantCanEndMeeting",
+      participantCanToggleHls: "participantCanToggleHls",
       //
       recordingEnabled: "recordingEnabled",
       recordingWebhookUrl: "recordingWebhookUrl",
@@ -127,6 +131,12 @@ const App = () => {
       canChangeLayout: "canChangeLayout",
       region: "region",
       preferredProtocol: "preferredProtocol",
+      //
+      mode: "mode",
+      //
+      hlsEnabled: "hlsEnabled",
+      autoStartHls: "autoStartHls",
+      //
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
       // liveStreamLayoutGridSize: "liveStreamLayoutGridSize",
@@ -199,6 +209,9 @@ const App = () => {
     }
     if (typeof paramKeys.recordingEnabled !== "string") {
       paramKeys.recordingEnabled = "false";
+    }
+    if (typeof paramKeys.hlsEnabled !== "string") {
+      paramKeys.hlsEnabled = "false";
     }
     if (typeof paramKeys.poweredBy !== "string") {
       paramKeys.poweredBy = "true";
@@ -481,18 +494,19 @@ const App = () => {
             canChangeLayout: paramKeys.canChangeLayout === "true",
             meetingLayoutTopic: paramKeys.meetingLayoutTopic,
             recordingEnabled: paramKeys.recordingEnabled === "true",
+            hlsEnabled: paramKeys.hlsEnabled === "true",
             recordingWebhookUrl: paramKeys.recordingWebhookUrl,
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
             autoStartRecording: paramKeys.autoStartRecording === "true",
+            autoStartHls: paramKeys.autoStartHls === "true",
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
+            participantCanToggleHls:
+              paramKeys.participantCanToggleHls === "true",
             brandingEnabled: paramKeys.brandingEnabled === "true",
             poweredBy: paramKeys.poweredBy === "true",
             liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
             autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
-            // liveStreamLayoutType: paramKeys.liveStreamLayoutType,
-            // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
-            // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
             liveStreamOutputs: paramKeys.liveStreamOutputs,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0
@@ -506,11 +520,16 @@ const App = () => {
               paramKeys.participantCanToggleOtherMic === "true",
             participantCanToggleOtherWebcam:
               paramKeys.participantCanToggleOtherWebcam === "true",
+            partcipantCanToogleOtherScreenShare:
+              paramKeys.partcipantCanToogleOtherScreenShare === "true",
             participantCanToggleLivestream:
               paramKeys.participantCanToggleLivestream === "true",
+            participantCanToggleOtherMode:
+              paramKeys.participantCanToggleOtherMode === "true",
             notificationSoundEnabled:
               paramKeys.notificationSoundEnabled === "true",
             layoutType: paramKeys.layoutType,
+            mode: paramKeys.mode,
             layoutPriority: paramKeys.layoutPriority,
             canPin: paramKeys.canPin === "true",
             selectedMic,
@@ -531,14 +550,19 @@ const App = () => {
               paramKeys.notificationAlertsEnabled !== "false",
             debug: paramKeys.debug === "true",
             layoutGridSize: paramKeys.layoutGridSize,
-            // recordingLayoutType: paramKeys.recordingLayoutType,
-            // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
-            // recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
             hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
             alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
+            //
+            // recordingLayoutType: paramKeys.recordingLayoutType,
+            // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
+            // recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
+            // liveStreamLayoutType: paramKeys.liveStreamLayoutType,
+            // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
+            // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
+            //
           }}
         >
           <MeetingProvider

@@ -444,8 +444,11 @@ export default function JoinMeeting({
           style={{
             display: "flex",
             flex: 1,
-            flexDirection:
-              meetingUrl === "" || meetingTitle === "" ? "row" : "column",
+            flexDirection: isXStoSM
+              ? "column"
+              : meetingUrl === "" || meetingTitle === ""
+              ? "row"
+              : "column",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -456,7 +459,11 @@ export default function JoinMeeting({
             style={{
               display: "flex",
               flex: isSMOnly ? 0 : 1,
-              flexDirection: meetingUrl || meetingTitle ? "row" : "column",
+              flexDirection: isXStoSM
+                ? "column"
+                : meetingUrl || meetingTitle
+                ? "row"
+                : "column",
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -685,7 +692,7 @@ export default function JoinMeeting({
             <Grid
               item
               xs={12}
-              md={meetingTitle || meetingUrl ? 5 : 6}
+              md={isXStoSM ? 5 : meetingTitle || meetingUrl ? 5 : 6}
               style={{
                 width: "100%",
                 display: "flex",

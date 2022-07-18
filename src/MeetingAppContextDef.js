@@ -65,7 +65,9 @@ export const MeetingAppProvider = ({
   recordingWebhookUrl,
   recordingAWSDirPath,
   autoStartRecording,
+  autoStartHls,
   participantCanToggleRecording,
+  participantCanToggleHls,
   brandingEnabled,
   brandLogoURL,
   brandName,
@@ -73,6 +75,7 @@ export const MeetingAppProvider = ({
   participantCanEndMeeting,
   poweredBy,
   liveStreamEnabled,
+  hlsEnabled,
   autoStartLiveStream,
   // liveStreamLayoutType,
   // liveStreamLayoutPriority,
@@ -81,6 +84,8 @@ export const MeetingAppProvider = ({
   askJoin,
   participantCanToggleOtherMic,
   participantCanToggleOtherWebcam,
+  partcipantCanToogleOtherScreenShare,
+  participantCanToggleOtherMode,
   canRemoveOtherParticipant,
   notificationSoundEnabled,
   canPin,
@@ -96,6 +101,7 @@ export const MeetingAppProvider = ({
   topbarEnabled,
   notificationAlertsEnabled,
   debug,
+  mode,
   layoutType,
   layoutPriority,
   meetingLayoutTopic,
@@ -132,6 +138,7 @@ export const MeetingAppProvider = ({
     priority: layoutPriority,
   });
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
+  const [meetingMode, setMeetingMode] = useState(mode);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -189,7 +196,9 @@ export const MeetingAppProvider = ({
         recordingWebhookUrl,
         recordingAWSDirPath,
         autoStartRecording,
+        autoStartHls,
         participantCanToggleRecording,
+        participantCanToggleHls,
         brandingEnabled,
         brandLogoURL,
         brandName,
@@ -197,6 +206,7 @@ export const MeetingAppProvider = ({
         participantCanEndMeeting,
         poweredBy,
         liveStreamEnabled,
+        hlsEnabled,
         autoStartLiveStream,
         // liveStreamLayoutType,
         // liveStreamLayoutPriority,
@@ -205,6 +215,8 @@ export const MeetingAppProvider = ({
         askJoin,
         participantCanToggleOtherMic,
         participantCanToggleOtherWebcam,
+        partcipantCanToogleOtherScreenShare,
+        participantCanToggleOtherMode,
         canRemoveOtherParticipant,
         notificationSoundEnabled,
         canToggleWhiteboard,
@@ -213,6 +225,7 @@ export const MeetingAppProvider = ({
         topbarEnabled,
         notificationAlertsEnabled,
         debug,
+        mode,
         layoutPriority: appMeetingLayout.priority,
         layoutGridSize: appMeetingLayout.gridSize,
         // recordingLayoutType,
@@ -238,6 +251,7 @@ export const MeetingAppProvider = ({
         canPin,
         meetingLeft,
         liveStreamConfig,
+        meetingMode,
 
         // setters
         setSideBarMode,
@@ -250,6 +264,7 @@ export const MeetingAppProvider = ({
         setMeetingLeft,
         setLiveStreamConfig,
         setAppMeetingLayout,
+        setMeetingMode,
       }}
     >
       <SnackbarProvider
