@@ -1066,6 +1066,12 @@ const TopBar = ({ topBarHeight }) => {
         priority: 10,
       });
 
+      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+      mobileIconArr.unshift({
+        buttonType: topBarButtonTypes.ACTIVITIES,
+        // priority: 10,
+      });
+
       arr.unshift(arrSideBar);
 
       const arrMedia = [];
