@@ -7,7 +7,7 @@ import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
-import { usePubSub } from "@videosdk.live/react-sdk";
+import { usePubSub, Constants } from "@videosdk.live/react-sdk";
 import {
   appEvents,
   eventEmitter,
@@ -32,6 +32,13 @@ import ModeListner from "../components/ModeListner";
 import useIsRecording from "./useIsRecording";
 import useIsLivestreaming from "./useIsLivestreaming";
 import useIsHls from "./useIsHls";
+import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
+import {
+  RECORDER_MAX_GRID_SIZE,
+  RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
+} from "../CONSTS";
+import { Box, CircularProgress } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 
 const getPinMsg = ({
   localParticipant,
@@ -161,6 +168,7 @@ const MeetingContainer = () => {
     setLiveStreamConfig,
     liveStreamConfig,
     meetingMode,
+    isRecorder,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -205,7 +213,19 @@ const MeetingContainer = () => {
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      setAppMeetingLayout(data.message.layout);
+      setAppMeetingLayout({
+        ...data.message.layout,
+        gridSize: isRecorder
+          ? mMeetingRef.current?.presenterId
+            ? data.message.layout.gridSize >
+              RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : data.message.layout.gridSize
+            : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : data.message.layout.gridSize
+          : data.message.layout.gridSize,
+      });
     },
     onOldMessagesReceived: (messages) => {
       const latestMessage = messages.sort((a, b) => {
@@ -219,7 +239,19 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        setAppMeetingLayout(latestMessage.message.layout);
+        setAppMeetingLayout({
+          ...latestMessage.message.layout,
+          gridSize: isRecorder
+            ? mMeetingRef.current?.presenterId
+              ? latestMessage.message.layout.gridSize >
+                RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                : latestMessage.message.layout.gridSize
+              : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+                ? RECORDER_MAX_GRID_SIZE
+                : latestMessage.message.layout.gridSize
+            : latestMessage.message.layout.gridSize,
+        });
       }
     },
   });
@@ -266,8 +298,8 @@ const MeetingContainer = () => {
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
         : liveStreamOutputs?.length
-        ? liveStreamOutputs
-        : null;
+          ? liveStreamOutputs
+          : null;
 
       const type = typeRef.current;
       const priority = priorityRef.current;
@@ -386,10 +418,9 @@ const MeetingContainer = () => {
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${
-              isLocal
-                ? "You end the call"
-                : " This meeting has been ended by host"
+            `${isLocal
+              ? "You end the call"
+              : " This meeting has been ended by host"
             }`
           );
         }
@@ -420,6 +451,27 @@ const MeetingContainer = () => {
   };
 
   const _handlePresenterChanged = (presenterId) => {
+    // reduce grid size in recorder if presenter changes
+    if (isRecorder) {
+      if (presenterId) {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : s.gridSize,
+        }));
+      } else {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : s.gridSize,
+        }));
+      }
+    }
+
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
       mMeetingRef.current?.localParticipant.unpin();
       localParticipantAutoPinnedOnShare.current = false;
@@ -452,31 +504,31 @@ const MeetingContainer = () => {
 
       if (notificationAlertsEnabled && meetingModeRef.current !== "viewer") {
         enqueueSnackbar(
-          `${
-            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          `${isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
           } started presenting`
         );
       }
     }
   };
 
-  const _handleOnRecordingStarted = () => {};
+  const _handleOnRecordingStarted = () => { };
 
-  const _handleOnRecordingStopped = () => {};
+  const _handleOnRecordingStopped = () => { };
 
-  const _handleOnLiveStreamStarted = () => {};
+  const _handleOnLiveStreamStarted = () => { };
 
-  const _handleOnLiveStreamStopped = () => {};
+  const _handleOnLiveStreamStopped = () => { };
 
   const _handleOnRecordingStateChanged = ({ status }) => {
     if (
       participantCanToggleRecording &&
       notificationAlertsEnabled &&
       meetingModeRef.current !== "viewer" &&
-      (status === "recordingStarted" || status === "recordingStopped")
+      (status === Constants.recordingEvents.RECORDING_STARTED ||
+        status === Constants.recordingEvents.RECORDING_STOPPED)
     ) {
       enqueueSnackbar(
-        status === "recordingStarted"
+        status === Constants.recordingEvents.RECORDING_STARTED
           ? "Meeting recording is started."
           : "Meeting recording is stopped."
       );
@@ -488,10 +540,11 @@ const MeetingContainer = () => {
       participantCanToggleLivestream &&
       notificationAlertsEnabled &&
       meetingModeRef.current !== "viewer" &&
-      (status === "livestreamStarted" || status === "livestreamStopped")
+      (status === Constants.livestreamEvents.LIVESTREAM_STARTED ||
+        status === Constants.livestreamEvents.LIVESTREAM_STOPPED)
     ) {
       enqueueSnackbar(
-        status === "livestreamStarted"
+        status === Constants.livestreamEvents.LIVESTREAM_STARTED
           ? "Meeting livestreaming is started."
           : "Meeting livestreaming is stopped."
       );
@@ -518,7 +571,7 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnEntryRequested = () => {};
+  const _handleOnEntryRequested = () => { };
 
   const _handleOnEntryResponded = (participantId, decision) => {
     if (mMeetingRef.current?.localParticipant?.id === participantId) {
@@ -583,8 +636,8 @@ const MeetingContainer = () => {
       message: debug
         ? message
         : isJoiningError
-        ? "Unable to join meeting!"
-        : message,
+          ? "Unable to join meeting!"
+          : message,
     });
   };
 
@@ -627,7 +680,7 @@ const MeetingContainer = () => {
           document.documentElement.msRequestFullscreen();
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -650,6 +703,8 @@ const MeetingContainer = () => {
 
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
+
+  const theme = useTheme();
 
   return (
     <div
@@ -674,6 +729,7 @@ const MeetingContainer = () => {
         localParticipantAllowedJoin ? (
           meetingMode !== "viewer" ? (
             <>
+              <PauseInvisibleParticipants />
               <ParticipantsAudioPlayer />
               <div
                 style={{
@@ -691,8 +747,8 @@ const MeetingContainer = () => {
                   }}
                 >
                   {mMeeting?.pinnedParticipants.size > 0 &&
-                  (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                    meetingLayout === meetingLayouts.SIDEBAR) ? (
+                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                      meetingLayout === meetingLayouts.SIDEBAR) ? (
                     <PinnedLayoutViewContainer
                       {...{
                         height: containerHeight - topBarHeight,
@@ -701,8 +757,8 @@ const MeetingContainer = () => {
                           (isTab || isMobile
                             ? 0
                             : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
+                              ? sideBarContainerWidth
+                              : 0),
                         whiteboardToolbarWidth,
                         whiteboardSpacing,
                       }}
@@ -716,8 +772,8 @@ const MeetingContainer = () => {
                           (isTab || isMobile
                             ? 0
                             : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
+                              ? sideBarContainerWidth
+                              : 0),
                         whiteboardToolbarWidth,
                         whiteboardSpacing,
                       }}
@@ -736,41 +792,45 @@ const MeetingContainer = () => {
               <RequestedEntries />
             </>
           ) : (
-            <div
-              style={{
-                display: "flex",
-                flex: 1,
-                flexDirection: isTab || isMobile ? "column-reverse" : "column",
-              }}
-            >
-              {topbarEnabled && <TopBar {...{ topBarHeight }} />}
+            <>
+              <PauseInvisibleParticipants />
+              <ParticipantsAudioPlayer />
               <div
                 style={{
                   display: "flex",
-                  height: containerHeight - topBarHeight,
+                  flex: 1,
+                  flexDirection: isTab || isMobile ? "column-reverse" : "column",
                 }}
               >
-                <HLSPlayer
-                  {...{
-                    height: containerHeight - topBarHeight,
-                    width:
-                      containerWidth -
-                      (isTab || isMobile
-                        ? 0
-                        : typeof sideBarMode === "string"
-                        ? sideBarContainerWidth
-                        : 0),
-                  }}
-                />
-                <SideViewContainer
-                  {...{
-                    topBarHeight,
-                    width: sideBarContainerWidth,
+                {topbarEnabled && <TopBar {...{ topBarHeight }} />}
+                <div
+                  style={{
+                    display: "flex",
                     height: containerHeight - topBarHeight,
                   }}
-                />
+                >
+                  <HLSPlayer
+                    {...{
+                      height: containerHeight - topBarHeight,
+                      width:
+                        containerWidth -
+                        (isTab || isMobile
+                          ? 0
+                          : typeof sideBarMode === "string"
+                            ? sideBarContainerWidth
+                            : 0),
+                    }}
+                  />
+                  <SideViewContainer
+                    {...{
+                      topBarHeight,
+                      width: sideBarContainerWidth,
+                      height: containerHeight - topBarHeight,
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            </>
           )
         ) : (
           <ClickAnywhereToContinue title="Entry denied!" />
@@ -778,7 +838,23 @@ const MeetingContainer = () => {
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
       ) : !mMeeting.isMeetingJoined ? (
-        <WaitingToJoin />
+        isRecorder ? (
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.palette.background.default,
+            }}
+          >
+            <CircularProgress size={"4rem"} />
+          </Box>
+        ) : (
+          <WaitingToJoin />
+        )
       ) : null}
     </div>
   );

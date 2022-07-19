@@ -2,8 +2,17 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef } from "react";
 
 const ParticipantAudioPlayer = ({ participantId }) => {
-  const { micOn, micStream, isLocal } = useParticipant(participantId);
+  const { micOn, micStream, isLocal, consumeAudioStreams, stopConsumingAudioStreams } = useParticipant(participantId);
   const audioPlayer = useRef();
+
+  useEffect(() => {
+    if (!isLocal) {
+      consumeAudioStreams();
+      return () => {
+        stopConsumingAudioStreams();
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!isLocal && audioPlayer.current && micOn) {

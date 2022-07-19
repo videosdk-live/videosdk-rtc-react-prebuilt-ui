@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { Constants, useMeeting } from "@videosdk.live/react-sdk";
 
 const useIsLivestreaming = () => {
   const { livestreamState } = useMeeting();
 
   const isLiveStreaming = useMemo(
     () =>
-      livestreamState === "livestreamStarted" ||
-      livestreamState === "livestreamStopping",
+      livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED ||
+      livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPING,
     [livestreamState]
   );
 

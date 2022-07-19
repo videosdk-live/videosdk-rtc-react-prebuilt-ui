@@ -34,6 +34,8 @@ const PinnedLayoutViewContainer = ({
     whiteboardStarted,
     animationsEnabled,
     reduceEdgeSpacing,
+    isRecorder,
+    layoutGridSize,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -54,10 +56,23 @@ const PinnedLayoutViewContainer = ({
     spotlightMediaType,
     singleRow,
   } = useMemo(() => {
-    const pinnedParticipantIds = [...pinnedParticipants.keys()];
+    let pinnedParticipantIds = [...pinnedParticipants.keys()];
 
     const pinnedPresenter =
       pinnedParticipantIds.findIndex((id) => id === presenterId) !== -1;
+
+    if (isRecorder && pinnedParticipantIds.length > layoutGridSize) {
+      if (pinnedPresenter) {
+        const pinnedParticipantIndexToBeRemoved =
+          pinnedParticipantIds.findIndex((id) => id === presenterId);
+
+        pinnedParticipantIds.splice(pinnedParticipantIndexToBeRemoved, 1);
+
+        pinnedParticipantIds = [pinnedPresenter, ...pinnedParticipantIds];
+      }
+
+      pinnedParticipantIds = pinnedParticipantIds.slice(0, layoutGridSize);
+    }
 
     let obj;
 
@@ -178,6 +193,8 @@ const PinnedLayoutViewContainer = ({
     isLGDesktop,
     isPortrait,
     whiteboardStarted,
+    isRecorder,
+    layoutGridSize,
   ]);
 
   const theme = useTheme();

@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-              ? undefined
-              : "#D32F2Fcc",
+                ? undefined
+                : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -207,6 +207,14 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     isRecorder,
   } = useMeetingAppContext();
 
+  const onStreamEnabled = (stream) => {
+    console.log(participantId, stream.kind, " Stream started ");
+  }
+
+  const onStreamDisabled = (stream) => {
+    console.log(participantId, stream.kind, " Stream stopped ");
+  }
+
   const {
     displayName,
     setQuality,
@@ -219,7 +227,14 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     pinState,
     pin,
     unpin,
-  } = useParticipant(participantId, {});
+    consumeAudioStreams,
+    consumeVideoStreams,
+    stopConsumingAudioStreams,
+    stopConsumingVideoStreams,
+  } = useParticipant(participantId, {
+    onStreamDisabled,
+    onStreamEnabled
+  });
 
   const mediaStream = useMemo(() => {
     if (webcamOn) {
@@ -262,11 +277,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     },
   };
 
-  useEffect(() => {
-    if (!presenterId) {
-      typeof webcamStream?.resume === "function" && webcamStream?.resume();
-    }
-  }, [presenterId, webcamOn, webcamStream]);
+  // useEffect(() => {
+  //   if (!presenterId) {
+  //     typeof webcamStream?.resume === "function" && webcamStream?.resume();
+  //   }
+  // }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {
     if (isRecorder) {
@@ -289,20 +304,43 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
+  useEffect(() => {
+    eventEmitter.emit(appEvents["participant-visible"], {
+      participantId,
+    });
+
+    return () => {
+      eventEmitter.emit(appEvents["participant-invisible"], {
+        participantId,
+      });
+    };
+  }, []);
+
   return (
     <VisibilitySensor
-      active={!!useVisibilitySensor}
+      active
+      // active={!!useVisibilitySensor}
       onChange={(isVisible) => {
-        if (useVisibilitySensor) {
-          if (isVisible) {
-            typeof webcamStream?.resume === "function" &&
-              webcamStream?.resume();
-          } else {
-            typeof webcamStream?.pause === "function" && webcamStream?.pause();
-          }
+        if (isVisible) {
+          eventEmitter.emit(appEvents["participant-visible"], {
+            participantId,
+          });
         } else {
-          typeof webcamStream?.resume === "function" && webcamStream?.resume();
+          eventEmitter.emit(appEvents["participant-invisible"], {
+            participantId,
+          });
         }
+        //
+        // if (useVisibilitySensor) {
+        //   if (isVisible) {
+        //     typeof webcamStream?.resume === "function" &&
+        //       webcamStream?.resume();
+        //   } else {
+        //     typeof webcamStream?.pause === "function" && webcamStream?.pause();
+        //   }
+        // } else {
+        //   typeof webcamStream?.resume === "function" && webcamStream?.resume();
+        // }
       }}
     >
       <div
