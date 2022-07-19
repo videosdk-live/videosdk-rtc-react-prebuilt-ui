@@ -604,8 +604,14 @@ const App = () => {
             setUserHasInteracted(true);
           }}
           {...{
-            micEnabled: paramKeys.micEnabled === "true",
-            webcamEnabled: paramKeys.webcamEnabled === "true",
+            micEnabled:
+              paramKeys.mode === "viewer"
+                ? false
+                : paramKeys.micEnabled === "true",
+            webcamEnabled:
+              paramKeys.mode === "viewer"
+                ? false
+                : paramKeys.webcamEnabled === "true",
           }}
           name={name}
           setName={setName}
@@ -614,9 +620,16 @@ const App = () => {
           meetingUrl={paramKeys.joinScreenMeetingUrl}
           meetingTitle={paramKeys.joinScreenTitle}
           participantCanToggleSelfWebcam={
-            paramKeys.participantCanToggleSelfWebcam
+            paramKeys.mode === "viewer"
+              ? "false"
+              : paramKeys.participantCanToggleSelfWebcam
           }
-          participantCanToggleSelfMic={paramKeys.participantCanToggleSelfMic}
+          participantCanToggleSelfMic={
+            paramKeys.mode === "viewer"
+              ? "false"
+              : paramKeys.participantCanToggleSelfMic
+          }
+          mode={paramKeys.mode}
         />
       ) : (
         <ClickAnywhereToContinue

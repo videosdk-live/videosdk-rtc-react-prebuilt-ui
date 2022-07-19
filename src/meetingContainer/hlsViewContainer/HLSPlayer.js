@@ -414,8 +414,5 @@ const HLSPlayer = ({ height, width }) => {
 export default React.memo(
   HLSPlayer,
   (prevProps, nextProps) =>
-    prevProps.width === nextProps.width &&
-    prevProps.height === nextProps.height &&
-    prevProps.whiteboardToolbarWidth === nextProps.whiteboardToolbarWidth &&
-    prevProps.whiteboardSpacing === nextProps.whiteboardSpacing
+    prevProps.width === nextProps.width && prevProps.height === nextProps.height
 );

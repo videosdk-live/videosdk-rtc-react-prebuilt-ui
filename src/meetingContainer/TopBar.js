@@ -103,7 +103,7 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, meetingMode } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const participants = mMeeting?.participants;
@@ -115,6 +115,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       buttonText={"Participants"}
       Icon={Participants}
+      disabled={meetingMode === "viewer"}
       onClick={() => {
         typeof onClick === "function" && onClick();
         setSideBarMode((s) =>
@@ -128,6 +129,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       Icon={Participants}
+      disabled={meetingMode === "viewer"}
       onClick={() => {
         typeof onClick === "function" && onClick();
         setSideBarMode((s) =>

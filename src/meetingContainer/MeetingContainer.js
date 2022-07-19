@@ -672,7 +672,7 @@ const MeetingContainer = () => {
       />
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
-          meetingModeRef.current !== "viewer" ? (
+          meetingMode !== "viewer" ? (
             <>
               <ParticipantsAudioPlayer />
               <div

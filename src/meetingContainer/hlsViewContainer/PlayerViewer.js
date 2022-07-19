@@ -1,9 +1,11 @@
 import { Box, useTheme } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
-import ReactPlayer from "react-player";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
+import ReactHlsPlayer from "react-hls-player";
+import { useMeeting } from "@videosdk.live/react-sdk";
+import { appEvents, eventEmitter } from "../../utils/common";
 
 const PlayerViewer = ({ downstreamUrl }) => {
   const theme = useTheme();
@@ -17,6 +19,8 @@ const PlayerViewer = ({ downstreamUrl }) => {
     sm: 180,
     xs: 160,
   });
+
+  const mMeeting = useMeeting();
 
   const defaultOptions = {
     loop: true,
@@ -90,14 +94,14 @@ const PlayerViewer = ({ downstreamUrl }) => {
         overflow: "hidden",
         borderRadius: theme.spacing(1),
       }}
-      className={"video-contain"}
+      onDoubleClick={() => {
+        eventEmitter.emit(appEvents["toggle-full-screen"]);
+      }}
+      // className={"video-contain"}
     >
       {downstreamUrl && canPlay ? (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
             height: "100%",
             width: "100%",
           }}
@@ -115,23 +119,12 @@ const PlayerViewer = ({ downstreamUrl }) => {
               justifyContent: "center",
             }}
           >
-            <ReactPlayer
-              playsinline
-              playIcon={<></>}
-              pip={false}
-              light={false}
+            <ReactHlsPlayer
+              src={downstreamUrl}
+              autoPlay={true}
               controls={false}
-              muted={true}
-              playing={true}
-              loop={true}
-              url={downstreamUrl}
-              height={"100%"}
-              width={"100%"}
-              style={
-                {
-                  // filter: isLocal ? "blur(1rem)" : undefined,
-                }
-              }
+              width="100%"
+              height="100%"
             />
           </Box>
         </div>

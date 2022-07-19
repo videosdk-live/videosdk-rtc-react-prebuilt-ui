@@ -19,6 +19,7 @@
     "react-device-detect": "^1.17.0",
     "react-dom": "^17.0.2",
     "react-emoji-render": "^1.2.4",
+    "react-hls-player": "^3.0.7",
     "react-lines-ellipsis": "^0.15.0",
     "react-linkify": "0.2.2",
     "react-lottie": "^1.2.3",
