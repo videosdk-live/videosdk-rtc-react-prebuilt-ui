@@ -140,6 +140,7 @@ export const MeetingAppProvider = ({
   });
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
   const [meetingMode, setMeetingMode] = useState(mode);
+  const [downstreamUrl, setDownstreamUrl] = useState(null);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -253,6 +254,7 @@ export const MeetingAppProvider = ({
         meetingLeft,
         liveStreamConfig,
         meetingMode,
+        downstreamUrl,
 
         // setters
         setSideBarMode,
@@ -266,6 +268,7 @@ export const MeetingAppProvider = ({
         setLiveStreamConfig,
         setAppMeetingLayout,
         setMeetingMode,
+        setDownstreamUrl,
       }}
     >
       <SnackbarProvider

@@ -6,11 +6,14 @@ import animationData from "../../../src/animations/wait_for_HLS_animation.json";
 import ReactHlsPlayer from "react-hls-player";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { appEvents, eventEmitter } from "../../utils/common";
+import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
-const PlayerViewer = ({ downstreamUrl }) => {
+const PlayerViewer = () => {
   const theme = useTheme();
 
   const [canPlay, setCanPlay] = useState(false);
+
+  const { downstreamUrl } = useMeetingAppContext();
 
   const lottieSize = useResponsiveSize({
     xl: 240,

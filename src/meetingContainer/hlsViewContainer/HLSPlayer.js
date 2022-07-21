@@ -19,8 +19,8 @@ import { Motion as TransitionMotion, spring } from "react-motion";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import PlayerViewer from "./PlayerViewer";
 
-const MemoizedPlayer = ({ downstreamUrl }) => {
-  return <PlayerViewer downstreamUrl={downstreamUrl} />;
+const MemoizedPlayer = () => {
+  return <PlayerViewer />;
 };
 
 const MotionPlayer = ({
@@ -29,7 +29,6 @@ const MotionPlayer = ({
   relativeWidth,
   relativeTop,
   relativeLeft,
-  downstreamUrl,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -76,11 +75,7 @@ const MotionPlayer = ({
               width: `calc(100% - ${2 * gutter}px)`,
             }}
           >
-            <MemoizedPlayer
-              {...{
-                downstreamUrl,
-              }}
-            />
+            <MemoizedPlayer />
           </div>
         </div>
       )}
@@ -95,7 +90,6 @@ const MotionPlayerContainer = ({
   relativeTop: top,
   relativeLeft: left,
   useVisibilitySensor,
-  downstreamUrl,
 }) => {
   const { animationsEnabled } = useMeetingAppContext();
 
@@ -108,7 +102,6 @@ const MotionPlayerContainer = ({
         relativeTop: top,
         relativeLeft: left,
         useVisibilitySensor,
-        downstreamUrl,
       }}
     />
   ) : (
@@ -131,7 +124,7 @@ const MotionPlayerContainer = ({
           width: `calc(100% - ${2 * gutter}px)`,
         }}
       >
-        <MemoizedPlayer {...{ downstreamUrl }} />
+        <MemoizedPlayer />
       </div>
     </div>
   );
@@ -144,12 +137,11 @@ export const MemoizedMotionPlayer = React.memo(
     prevProps.relativeHeight === nextProps.relativeHeight &&
     prevProps.relativeWidth === nextProps.relativeWidth &&
     prevProps.relativeTop === nextProps.relativeTop &&
-    prevProps.relativeLeft === nextProps.relativeLeft &&
-    prevProps.downstreamUrl === nextProps.downstreamUrl
+    prevProps.relativeLeft === nextProps.relativeLeft
 );
 
 const HLSPlayer = ({ height, width }) => {
-  const [downstreamUrl, setDownstreamUrl] = useState(null);
+  const { setDownstreamUrl } = useMeetingAppContext();
   const _handleOnHlsStarted = (data) => {
     setDownstreamUrl(data);
   };
@@ -173,6 +165,7 @@ const HLSPlayer = ({ height, width }) => {
   const isTab = useIsTab();
   const isSMDesktop = useIsSMDesktop();
   const isLGDesktop = useIsLGDesktop();
+  const isHls = mMeeting?.isHls;
 
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
   const {
@@ -349,7 +342,6 @@ const HLSPlayer = ({ height, width }) => {
                   relativeWidth: 100,
                   relativeTop: 0,
                   relativeLeft: 0,
-                  downstreamUrl,
                 }}
                 key={`mainLayoutParticipantId_${mainLayoutParticipantId}`}
               />
@@ -401,7 +393,6 @@ const HLSPlayer = ({ height, width }) => {
                 relativeWidth: 100,
                 relativeTop: 0,
                 relativeLeft: 0,
-                downstreamUrl,
               }}
             />
           </div>
