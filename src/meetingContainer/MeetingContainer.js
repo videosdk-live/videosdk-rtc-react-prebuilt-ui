@@ -222,8 +222,8 @@ const MeetingContainer = () => {
               ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
               : data.message.layout.gridSize
             : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
-              ? RECORDER_MAX_GRID_SIZE
-              : data.message.layout.gridSize
+            ? RECORDER_MAX_GRID_SIZE
+            : data.message.layout.gridSize
           : data.message.layout.gridSize,
       });
     },
@@ -248,8 +248,8 @@ const MeetingContainer = () => {
                 ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
                 : latestMessage.message.layout.gridSize
               : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
-                ? RECORDER_MAX_GRID_SIZE
-                : latestMessage.message.layout.gridSize
+              ? RECORDER_MAX_GRID_SIZE
+              : latestMessage.message.layout.gridSize
             : latestMessage.message.layout.gridSize,
         });
       }
@@ -298,8 +298,8 @@ const MeetingContainer = () => {
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
         : liveStreamOutputs?.length
-          ? liveStreamOutputs
-          : null;
+        ? liveStreamOutputs
+        : null;
 
       const type = typeRef.current;
       const priority = priorityRef.current;
@@ -418,9 +418,10 @@ const MeetingContainer = () => {
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${isLocal
-              ? "You end the call"
-              : " This meeting has been ended by host"
+            `${
+              isLocal
+                ? "You end the call"
+                : " This meeting has been ended by host"
             }`
           );
         }
@@ -504,20 +505,21 @@ const MeetingContainer = () => {
 
       if (notificationAlertsEnabled && meetingModeRef.current !== "viewer") {
         enqueueSnackbar(
-          `${isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          `${
+            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
           } started presenting`
         );
       }
     }
   };
 
-  const _handleOnRecordingStarted = () => { };
+  const _handleOnRecordingStarted = () => {};
 
-  const _handleOnRecordingStopped = () => { };
+  const _handleOnRecordingStopped = () => {};
 
-  const _handleOnLiveStreamStarted = () => { };
+  const _handleOnLiveStreamStarted = () => {};
 
-  const _handleOnLiveStreamStopped = () => { };
+  const _handleOnLiveStreamStopped = () => {};
 
   const _handleOnRecordingStateChanged = ({ status }) => {
     if (
@@ -571,7 +573,7 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnEntryRequested = () => { };
+  const _handleOnEntryRequested = () => {};
 
   const _handleOnEntryResponded = (participantId, decision) => {
     if (mMeetingRef.current?.localParticipant?.id === participantId) {
@@ -636,8 +638,8 @@ const MeetingContainer = () => {
       message: debug
         ? message
         : isJoiningError
-          ? "Unable to join meeting!"
-          : message,
+        ? "Unable to join meeting!"
+        : message,
     });
   };
 
@@ -680,7 +682,7 @@ const MeetingContainer = () => {
           document.documentElement.msRequestFullscreen();
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -747,8 +749,8 @@ const MeetingContainer = () => {
                   }}
                 >
                   {mMeeting?.pinnedParticipants.size > 0 &&
-                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                      meetingLayout === meetingLayouts.SIDEBAR) ? (
+                  (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                    meetingLayout === meetingLayouts.SIDEBAR) ? (
                     <PinnedLayoutViewContainer
                       {...{
                         height: containerHeight - topBarHeight,
@@ -757,8 +759,8 @@ const MeetingContainer = () => {
                           (isTab || isMobile
                             ? 0
                             : typeof sideBarMode === "string"
-                              ? sideBarContainerWidth
-                              : 0),
+                            ? sideBarContainerWidth
+                            : 0),
                         whiteboardToolbarWidth,
                         whiteboardSpacing,
                       }}
@@ -772,8 +774,8 @@ const MeetingContainer = () => {
                           (isTab || isMobile
                             ? 0
                             : typeof sideBarMode === "string"
-                              ? sideBarContainerWidth
-                              : 0),
+                            ? sideBarContainerWidth
+                            : 0),
                         whiteboardToolbarWidth,
                         whiteboardSpacing,
                       }}
@@ -794,12 +796,13 @@ const MeetingContainer = () => {
           ) : (
             <>
               <PauseInvisibleParticipants />
-              <ParticipantsAudioPlayer />
+              {/* <ParticipantsAudioPlayer /> */}
               <div
                 style={{
                   display: "flex",
                   flex: 1,
-                  flexDirection: isTab || isMobile ? "column-reverse" : "column",
+                  flexDirection:
+                    isTab || isMobile ? "column-reverse" : "column",
                 }}
               >
                 {topbarEnabled && <TopBar {...{ topBarHeight }} />}
@@ -817,8 +820,8 @@ const MeetingContainer = () => {
                         (isTab || isMobile
                           ? 0
                           : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
+                          ? sideBarContainerWidth
+                          : 0),
                     }}
                   />
                   <SideViewContainer
