@@ -19,9 +19,7 @@ import { Motion as TransitionMotion, spring } from "react-motion";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import PlayerViewer from "./PlayerViewer";
 
-const MemoizedPlayer = () => {
-  return <PlayerViewer />;
-};
+const MemoizedPlayer = React.memo(PlayerViewer);
 
 const MotionPlayer = ({
   gutter,

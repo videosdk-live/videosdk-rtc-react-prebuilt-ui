@@ -1,19 +1,20 @@
 import { Box, useTheme } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Lottie from "react-lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
 import ReactHlsPlayer from "react-hls-player";
-import { useMeeting } from "@videosdk.live/react-sdk";
 import { appEvents, eventEmitter } from "../../utils/common";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
 const PlayerViewer = () => {
   const theme = useTheme();
+  const videoRef = useRef(null);
 
   const [canPlay, setCanPlay] = useState(false);
 
   const { downstreamUrl } = useMeetingAppContext();
+  console.log("downstreamUrl", downstreamUrl);
 
   const lottieSize = useResponsiveSize({
     xl: 240,
@@ -22,8 +23,6 @@ const PlayerViewer = () => {
     sm: 180,
     xs: 160,
   });
-
-  const mMeeting = useMeeting();
 
   const defaultOptions = {
     loop: true,
@@ -123,11 +122,20 @@ const PlayerViewer = () => {
             }}
           >
             <ReactHlsPlayer
+              playerRef={videoRef}
+              playsInline
               src={downstreamUrl}
               autoPlay={true}
               controls={false}
               width="100%"
               height="100%"
+              hlsConfig={{
+                capLevelToPlayerSize: true,
+                maxLoadingDelay: 4,
+                minAutoBitrate: 0,
+                autoStartLoad: true,
+                defaultAudioCodec: "mp4a.40.2",
+              }}
             />
           </Box>
         </div>
