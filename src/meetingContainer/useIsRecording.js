@@ -4,8 +4,6 @@ import { Constants, useMeeting } from "@videosdk.live/react-sdk";
 const useIsRecording = () => {
   const { recordingState } = useMeeting();
 
-  console.log(recordingState, "recordingState");
-
   const isRecording = useMemo(
     () =>
       recordingState === Constants.recordingEvents.RECORDING_STARTED ||

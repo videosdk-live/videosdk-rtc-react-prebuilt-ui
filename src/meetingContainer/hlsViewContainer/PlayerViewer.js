@@ -1,20 +1,18 @@
 import { Box, useTheme } from "@material-ui/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
-import ReactHlsPlayer from "react-hls-player";
 import { appEvents, eventEmitter } from "../../utils/common";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import Hls from "hls.js";
 
 const PlayerViewer = () => {
   const theme = useTheme();
-  const videoRef = useRef(null);
 
   const [canPlay, setCanPlay] = useState(false);
 
   const { downstreamUrl } = useMeetingAppContext();
-  console.log("downstreamUrl", downstreamUrl);
 
   const lottieSize = useResponsiveSize({
     xl: 240,
@@ -86,6 +84,27 @@ const PlayerViewer = () => {
     }
   }, [downstreamUrl]);
 
+  useEffect(() => {
+    let player = document.querySelector("#hlsPlayer");
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        capLevelToPlayerSize: true,
+        maxLoadingDelay: 4,
+        minAutoBitrate: 0,
+        autoStartLoad: true,
+        defaultAudioCodec: "mp4a.40.2",
+      });
+      if (downstreamUrl && canPlay) {
+        hls.loadSource(downstreamUrl);
+        hls.attachMedia(player);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {});
+        hls.on(Hls.Events.ERROR, function (err) {
+          console.log(err);
+        });
+      }
+    }
+  }, [downstreamUrl, canPlay]);
+
   return (
     <div
       style={{
@@ -121,20 +140,11 @@ const PlayerViewer = () => {
               justifyContent: "center",
             }}
           >
-            <ReactHlsPlayer
-              playerRef={videoRef}
-              playsInline
-              src={downstreamUrl}
-              autoPlay={true}
-              controls={false}
-              width="100%"
-              height="100%"
-              hlsConfig={{
-                capLevelToPlayerSize: true,
-                maxLoadingDelay: 4,
-                minAutoBitrate: 0,
-                autoStartLoad: true,
-                defaultAudioCodec: "mp4a.40.2",
+            <video
+              id="hlsPlayer"
+              style={{
+                width: "100%",
+                height: "100%",
               }}
             />
           </Box>
