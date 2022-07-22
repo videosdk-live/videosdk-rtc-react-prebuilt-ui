@@ -349,7 +349,7 @@ const HLSPlayer = ({ height, width }) => {
       </div>
 
       {/* Memorized participant mobile view */}
-      {isMobile ? null : singleRow.length <= 0 ? null : (
+      {singleRow.length <= 0 ? null : (
         <div
           style={{
             backgroundColor: theme.palette.background.default,
