@@ -142,6 +142,7 @@ const PlayerViewer = () => {
           >
             <video
               id="hlsPlayer"
+              autoPlay={true}
               style={{
                 width: "100%",
                 height: "100%",
