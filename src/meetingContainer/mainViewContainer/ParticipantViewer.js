@@ -104,8 +104,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-              ? "You"
-              : nameTructed(displayName, 26)}
+            ? "You"
+            : nameTructed(displayName, 26)}
         </Typography>
       </div>
       {canPin && (
@@ -158,8 +158,8 @@ export const CornerDisplayName = ({
             backgroundColor: isActiveSpeaker
               ? "#00000066"
               : micOn
-                ? undefined
-                : "#D32F2Fcc",
+              ? undefined
+              : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -195,6 +195,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const videoPlayer = useRef();
   const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
+  const [portrait, setPortrait] = useState(false);
 
   const mMeeting = useMeeting();
 
@@ -209,11 +210,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const onStreamEnabled = (stream) => {
     console.log(participantId, stream.kind, " Stream started ");
-  }
+  };
 
   const onStreamDisabled = (stream) => {
     console.log(participantId, stream.kind, " Stream stopped ");
-  }
+  };
 
   const {
     displayName,
@@ -233,7 +234,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     stopConsumingVideoStreams,
   } = useParticipant(participantId, {
     onStreamDisabled,
-    onStreamEnabled
+    onStreamEnabled,
   });
 
   const mediaStream = useMemo(() => {
@@ -316,6 +317,19 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     };
   }, []);
 
+  const checkAndUpdatePortrait = () => {
+    if (webcamStream) {
+      const { height, width } = webcamStream.track.getSettings();
+      if (height > width && !portrait) {
+        setPortrait(true);
+      } else if (height < width && portrait) {
+        setPortrait(false);
+      }
+    } else {
+      setPortrait(false);
+    }
+  };
+
   return (
     <VisibilitySensor
       active
@@ -365,7 +379,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        className={"video-cover"}
+        className={`${!portrait ? "video-cover" : ""}`}
       >
         {webcamOn ? (
           <>
@@ -388,6 +402,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               style={flipStyle}
               onError={(err) => {
                 console.log(err, "participant video error");
+              }}
+              onProgress={() => {
+                checkAndUpdatePortrait();
               }}
             />
           </>

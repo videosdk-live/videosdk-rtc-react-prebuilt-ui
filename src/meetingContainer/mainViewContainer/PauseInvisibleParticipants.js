@@ -3,10 +3,16 @@ import { useEffect, useState } from "react";
 import { appEvents, eventEmitter } from "../../utils/common";
 
 const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
-  const { webcamStream, webcamOn, isLocal, consumeVideoStreams, stopConsumingVideoStreams } = useParticipant(participantId);
+  const {
+    webcamStream,
+    webcamOn,
+    isLocal,
+    consumeVideoStreams,
+    stopConsumingVideoStreams,
+  } = useParticipant(participantId);
 
   useEffect(() => {
-    console.log("PauseInvisibleParticipant")
+    console.log("PauseInvisibleParticipant");
     if (!isLocal) {
       if (isVisible) {
         console.log("resuming participant stream", participantId);
@@ -29,22 +35,20 @@ const PauseInvisibleParticipants = () => {
   const mMeeting = useMeeting();
 
   const _handleParticipantVisible = ({ participantId }) => {
-    console.log("Participant Visible ", participantId)
+    console.log("Participant Visible ", participantId);
     setVisibleParticipantIds((s) => [...new Set([...s, participantId])]);
   };
 
   const _handleParticipantInvisible = ({ participantId }) => {
-    console.log("Participant NOT Visible ", participantId)
+    console.log("Participant NOT Visible ", participantId);
     setVisibleParticipantIds((s) => s.filter((s) => s !== participantId));
   };
 
   useEffect(() => {
-    eventEmitter.on(
-      appEvents["participant-visible"],({participantId})=>{
-        console.log("Evevnt Participant Visible");
-        _handleParticipantVisible({participantId})
-      }
-    );
+    eventEmitter.on(appEvents["participant-visible"], ({ participantId }) => {
+      console.log("Evevnt Participant Visible");
+      _handleParticipantVisible({ participantId });
+    });
     eventEmitter.on(
       appEvents["participant-invisible"],
       _handleParticipantInvisible
