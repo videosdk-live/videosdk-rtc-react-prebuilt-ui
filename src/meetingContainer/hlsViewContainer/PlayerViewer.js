@@ -7,6 +7,12 @@ import { appEvents, eventEmitter } from "../../utils/common";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
 
+async function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 const PlayerViewer = () => {
   const theme = useTheme();
 
@@ -31,12 +37,6 @@ const PlayerViewer = () => {
     },
   };
 
-  async function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-
   async function waitForHLSPlayable(downstreamUrl, maxRetry) {
     return new Promise(async (resolve, reject) => {
       if (maxRetry < 1) {
@@ -50,9 +50,7 @@ const PlayerViewer = () => {
           method: "GET",
         });
         status = res.status;
-      } catch (err) {
-        const mute = err;
-      }
+      } catch (err) {}
 
       if (status === 200) {
         return resolve(true);
@@ -61,9 +59,7 @@ const PlayerViewer = () => {
       await sleep(1000);
 
       return resolve(
-        await waitForHLSPlayable(downstreamUrl, maxRetry - 1).catch((err) => {
-          const mute = err;
-        })
+        await waitForHLSPlayable(downstreamUrl, maxRetry - 1).catch((err) => {})
       );
     });
   }
@@ -85,22 +81,26 @@ const PlayerViewer = () => {
   }, [downstreamUrl]);
 
   useEffect(() => {
-    let player = document.querySelector("#hlsPlayer");
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        capLevelToPlayerSize: true,
-        maxLoadingDelay: 4,
-        minAutoBitrate: 0,
-        autoStartLoad: true,
-        defaultAudioCodec: "mp4a.40.2",
-      });
-      if (downstreamUrl && canPlay) {
+    if (downstreamUrl && canPlay) {
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          capLevelToPlayerSize: true,
+          maxLoadingDelay: 4,
+          minAutoBitrate: 0,
+          autoStartLoad: true,
+          defaultAudioCodec: "mp4a.40.2",
+        });
+
+        let player = document.querySelector("#hlsPlayer");
+
         hls.loadSource(downstreamUrl);
         hls.attachMedia(player);
         hls.on(Hls.Events.MANIFEST_PARSED, function () {});
         hls.on(Hls.Events.ERROR, function (err) {
           console.log(err);
         });
+      } else {
+        console.error("HLS is not supported");
       }
     }
   }, [downstreamUrl, canPlay]);
@@ -118,38 +118,27 @@ const PlayerViewer = () => {
       onDoubleClick={() => {
         eventEmitter.emit(appEvents["toggle-full-screen"]);
       }}
-      // className={"video-contain"}
     >
       {downstreamUrl && canPlay ? (
-        <div
+        <Box
           style={{
-            height: "100%",
-            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Box
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <video
-              id="hlsPlayer"
-              autoPlay={true}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
-          </Box>
-        </div>
+          <video
+            id="hlsPlayer"
+            autoPlay={true}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Box>
       ) : (
         <div
           style={{

@@ -27,7 +27,7 @@ import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
-import HLSPlayer from "./hlsViewContainer/HLSPlayer";
+import HLSContainer from "./hlsViewContainer/HLSContainer";
 import ModeListner from "../components/ModeListner";
 import useIsRecording from "./useIsRecording";
 import useIsLivestreaming from "./useIsLivestreaming";
@@ -169,6 +169,7 @@ const MeetingContainer = () => {
     liveStreamConfig,
     meetingMode,
     isRecorder,
+    setDownstreamUrl,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -553,7 +554,7 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnHlsStarted = () => {
+  const _handleOnHlsStarted = (data) => {
     if (
       participantCanToggleHls &&
       notificationAlertsEnabled &&
@@ -561,6 +562,8 @@ const MeetingContainer = () => {
     ) {
       enqueueSnackbar("Meeting HLS is started.");
     }
+
+    setDownstreamUrl(data);
   };
 
   const _handleOnHlsStopped = () => {
@@ -711,13 +714,8 @@ const MeetingContainer = () => {
   return (
     <div
       ref={containerRef}
-      style={{
-        height: "100vh",
-        overflow: "hidden",
-        position: "relative",
-      }}
+      style={{ height: "100vh", overflow: "hidden", position: "relative" }}
     >
-      {mMeeting?.localParticipant?.id && <ModeListner />}
       <ConfirmBox
         open={meetingError}
         successText="OKAY"
@@ -727,114 +725,82 @@ const MeetingContainer = () => {
         title={`Error Code: ${meetingError.code}`}
         subTitle={meetingError.message}
       />
+
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
-          meetingMode !== "viewer" ? (
-            <>
-              <PauseInvisibleParticipants />
-              <ParticipantsAudioPlayer />
+          <>
+            <ModeListner />
+            <PauseInvisibleParticipants />
+
+            <div
+              style={{
+                display: "flex",
+                flex: 1,
+                flexDirection: isTab || isMobile ? "column-reverse" : "column",
+              }}
+            >
+              {topbarEnabled && <TopBar {...{ topBarHeight }} />}
               <div
                 style={{
                   display: "flex",
-                  flex: 1,
-                  flexDirection:
-                    isTab || isMobile ? "column-reverse" : "column",
+                  height: containerHeight - topBarHeight,
                 }}
               >
-                {topbarEnabled && <TopBar {...{ topBarHeight }} />}
-                <div
-                  style={{
-                    display: "flex",
+                {meetingMode === "conference" ? (
+                  <>
+                    {mMeeting?.pinnedParticipants.size > 0 &&
+                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                      meetingLayout === meetingLayouts.SIDEBAR) ? (
+                      <PinnedLayoutViewContainer
+                        {...{
+                          height: containerHeight - topBarHeight,
+                          width:
+                            containerWidth -
+                            (isTab || isMobile
+                              ? 0
+                              : typeof sideBarMode === "string"
+                              ? sideBarContainerWidth
+                              : 0),
+                          whiteboardToolbarWidth,
+                          whiteboardSpacing,
+                        }}
+                      />
+                    ) : (
+                      <MainViewContainer
+                        {...{
+                          height: containerHeight - topBarHeight,
+                          width:
+                            containerWidth -
+                            (isTab || isMobile
+                              ? 0
+                              : typeof sideBarMode === "string"
+                              ? sideBarContainerWidth
+                              : 0),
+                          whiteboardToolbarWidth,
+                          whiteboardSpacing,
+                        }}
+                      />
+                    )}
+                    <ParticipantsAudioPlayer />
+                    <MediaRequested />
+                    <RequestedEntries />
+                  </>
+                ) : (
+                  <>
+                    <HLSContainer />
+                  </>
+                )}
+
+                <SideViewContainer
+                  {...{
+                    topBarHeight,
+                    width: sideBarContainerWidth,
                     height: containerHeight - topBarHeight,
                   }}
-                >
-                  {mMeeting?.pinnedParticipants.size > 0 &&
-                  (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                    meetingLayout === meetingLayouts.SIDEBAR) ? (
-                    <PinnedLayoutViewContainer
-                      {...{
-                        height: containerHeight - topBarHeight,
-                        width:
-                          containerWidth -
-                          (isTab || isMobile
-                            ? 0
-                            : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
-                        whiteboardToolbarWidth,
-                        whiteboardSpacing,
-                      }}
-                    />
-                  ) : (
-                    <MainViewContainer
-                      {...{
-                        height: containerHeight - topBarHeight,
-                        width:
-                          containerWidth -
-                          (isTab || isMobile
-                            ? 0
-                            : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
-                        whiteboardToolbarWidth,
-                        whiteboardSpacing,
-                      }}
-                    />
-                  )}
-                  <SideViewContainer
-                    {...{
-                      topBarHeight,
-                      width: sideBarContainerWidth,
-                      height: containerHeight - topBarHeight,
-                    }}
-                  />
-                </div>
+                />
               </div>
-              <MediaRequested />
-              <RequestedEntries />
-            </>
-          ) : (
-            <>
-              <PauseInvisibleParticipants />
-              {/* <ParticipantsAudioPlayer /> */}
-              <div
-                style={{
-                  display: "flex",
-                  flex: 1,
-                  flexDirection:
-                    isTab || isMobile ? "column-reverse" : "column",
-                }}
-              >
-                {topbarEnabled && <TopBar {...{ topBarHeight }} />}
-                <div
-                  style={{
-                    display: "flex",
-                    height: containerHeight - topBarHeight,
-                  }}
-                >
-                  <HLSPlayer
-                    {...{
-                      height: containerHeight - topBarHeight,
-                      width:
-                        containerWidth -
-                        (isTab || isMobile
-                          ? 0
-                          : typeof sideBarMode === "string"
-                          ? sideBarContainerWidth
-                          : 0),
-                    }}
-                  />
-                  <SideViewContainer
-                    {...{
-                      topBarHeight,
-                      width: sideBarContainerWidth,
-                      height: containerHeight - topBarHeight,
-                    }}
-                  />
-                </div>
-              </div>
-            </>
-          )
+            </div>
+          </>
         ) : (
           <ClickAnywhereToContinue title="Entry denied!" />
         )
