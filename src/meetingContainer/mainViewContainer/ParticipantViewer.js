@@ -228,10 +228,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     pinState,
     pin,
     unpin,
-    consumeAudioStreams,
-    consumeVideoStreams,
-    stopConsumingAudioStreams,
-    stopConsumingVideoStreams,
   } = useParticipant(participantId, {
     onStreamDisabled,
     onStreamEnabled,

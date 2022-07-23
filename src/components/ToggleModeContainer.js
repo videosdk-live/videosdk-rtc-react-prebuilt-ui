@@ -38,9 +38,7 @@ const ToggleModeContainer = ({ participantId }) => {
     },
   });
 
-  const { publish } = usePubSub(`CHANGE_MODE_${participantId}`, {
-    onMessageReceived: (data) => {},
-  });
+  const { publish } = usePubSub(`CHANGE_MODE_${participantId}`, {});
 
   return (
     <Box

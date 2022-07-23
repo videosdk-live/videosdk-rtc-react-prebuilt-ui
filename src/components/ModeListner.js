@@ -3,27 +3,23 @@ import { useEffect, useRef, useState } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 import ConfirmBox from "./ConfirmBox";
 
+const reqInfoDefaultState = {
+  enabled: false,
+  mode: null,
+  accept: () => {},
+  reject: () => {},
+};
+
 const ModeListner = () => {
   const { setMeetingMode, meetingMode } = useMeetingAppContext();
-  const reqInfoDefaultState = {
-    enabled: false,
-    mode: null,
-    accept: () => {},
-    reject: () => {},
-  };
+
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
   const mMeeting = useMeeting();
 
   const publishRef = useRef();
 
-  const { publish } = usePubSub(
-    `CURRENT_MODE_${mMeeting.localParticipant.id}`,
-    {
-      onMessageReceived: (data) => {},
-      onOldMessagesReceived: (messages) => {},
-    }
-  );
+  const { publish } = usePubSub(`CURRENT_MODE_${mMeeting.localParticipant.id}`);
 
   useEffect(() => {
     publishRef.current = publish;

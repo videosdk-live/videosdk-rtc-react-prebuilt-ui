@@ -7,8 +7,8 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
     webcamStream,
     webcamOn,
     isLocal,
-    consumeVideoStreams,
-    stopConsumingVideoStreams,
+    consumeWebcamStreams,
+    stopConsumingWebcamStreams,
   } = useParticipant(participantId);
 
   useEffect(() => {
@@ -17,11 +17,11 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
       if (isVisible) {
         console.log("resuming participant stream", participantId);
         // typeof webcamStream?.resume === "function" && webcamStream?.resume();
-        consumeVideoStreams();
+        consumeWebcamStreams();
       } else {
         console.log("pausing participant stream", participantId);
         // typeof webcamStream?.pause === "function" && webcamStream?.pause();
-        stopConsumingVideoStreams();
+        stopConsumingWebcamStreams();
       }
     }
   }, [isLocal, isVisible]);
