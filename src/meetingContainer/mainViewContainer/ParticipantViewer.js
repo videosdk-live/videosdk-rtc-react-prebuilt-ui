@@ -195,6 +195,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const videoPlayer = useRef();
   const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
+  const [portrait, setPortrait] = useState(false);
 
   const mMeeting = useMeeting();
 
@@ -206,6 +207,14 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     animationsEnabled,
     isRecorder,
   } = useMeetingAppContext();
+
+  const onStreamEnabled = (stream) => {
+    console.log(participantId, stream.kind, " Stream started ");
+  };
+
+  const onStreamDisabled = (stream) => {
+    console.log(participantId, stream.kind, " Stream stopped ");
+  };
 
   const {
     displayName,
@@ -219,7 +228,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     pinState,
     pin,
     unpin,
-  } = useParticipant(participantId, {});
+  } = useParticipant(participantId, {
+    onStreamDisabled,
+    onStreamEnabled,
+  });
 
   const mediaStream = useMemo(() => {
     if (webcamOn) {
@@ -262,11 +274,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     },
   };
 
-  useEffect(() => {
-    if (!presenterId) {
-      typeof webcamStream?.resume === "function" && webcamStream?.resume();
-    }
-  }, [presenterId, webcamOn, webcamStream]);
+  // useEffect(() => {
+  //   if (!presenterId) {
+  //     typeof webcamStream?.resume === "function" && webcamStream?.resume();
+  //   }
+  // }, [presenterId, webcamOn, webcamStream]);
 
   useEffect(() => {
     if (isRecorder) {
@@ -289,20 +301,56 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
+  useEffect(() => {
+    eventEmitter.emit(appEvents["participant-visible"], {
+      participantId,
+    });
+
+    return () => {
+      eventEmitter.emit(appEvents["participant-invisible"], {
+        participantId,
+      });
+    };
+  }, []);
+
+  const checkAndUpdatePortrait = () => {
+    if (webcamStream) {
+      const { height, width } = webcamStream.track.getSettings();
+      if (height > width && !portrait) {
+        setPortrait(true);
+      } else if (height < width && portrait) {
+        setPortrait(false);
+      }
+    } else {
+      setPortrait(false);
+    }
+  };
+
   return (
     <VisibilitySensor
-      active={!!useVisibilitySensor}
+      active
+      // active={!!useVisibilitySensor}
       onChange={(isVisible) => {
-        if (useVisibilitySensor) {
-          if (isVisible) {
-            typeof webcamStream?.resume === "function" &&
-              webcamStream?.resume();
-          } else {
-            typeof webcamStream?.pause === "function" && webcamStream?.pause();
-          }
+        if (isVisible) {
+          eventEmitter.emit(appEvents["participant-visible"], {
+            participantId,
+          });
         } else {
-          typeof webcamStream?.resume === "function" && webcamStream?.resume();
+          eventEmitter.emit(appEvents["participant-invisible"], {
+            participantId,
+          });
         }
+        //
+        // if (useVisibilitySensor) {
+        //   if (isVisible) {
+        //     typeof webcamStream?.resume === "function" &&
+        //       webcamStream?.resume();
+        //   } else {
+        //     typeof webcamStream?.pause === "function" && webcamStream?.pause();
+        //   }
+        // } else {
+        //   typeof webcamStream?.resume === "function" && webcamStream?.resume();
+        // }
       }}
     >
       <div
@@ -327,7 +375,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        className={"video-cover"}
+        className={`${!portrait ? "video-cover" : ""}`}
       >
         {webcamOn ? (
           <>
@@ -350,6 +398,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               style={flipStyle}
               onError={(err) => {
                 console.log(err, "participant video error");
+              }}
+              onProgress={() => {
+                checkAndUpdatePortrait();
               }}
             />
           </>

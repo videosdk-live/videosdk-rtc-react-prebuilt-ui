@@ -213,6 +213,7 @@ const MainViewContainer = ({
     hideLocalParticipant,
     sideStackSize,
     reduceEdgeSpacing,
+    mode,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(

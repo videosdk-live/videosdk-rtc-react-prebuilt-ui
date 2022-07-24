@@ -10,6 +10,7 @@ import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import ConfirmBox from "../../components/ConfirmBox";
 import { extractRootDomain, getUniqueId } from "../../utils/common";
+import useIsLiveStreaming from "../useIsLivestreaming";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -41,9 +42,9 @@ const SingleLiveStreamItem = ({
   setIsEditingId,
   _handleRemove,
   publish,
-  isLiveStreaming,
   index,
 }) => {
+  const isLiveStreaming = useIsLiveStreaming();
   const rootDomain = extractRootDomain(item.url);
   const mainDomain = rootDomain?.split(".")[0];
   const domainName = mainDomain.charAt(0).toUpperCase() + mainDomain.slice(1);
@@ -451,7 +452,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   const mMeeting = useMeeting({});
   const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
 
-  const isLiveStreaming = mMeeting?.isLiveStreaming;
+  const isLiveStreaming = useIsLiveStreaming();
 
   const liveStreamConfigRef = useRef();
   const addLiveStreamBoxRef = useRef();
