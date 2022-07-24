@@ -5,43 +5,22 @@ import {
   usePubSub,
 } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useState } from "react";
+import { meetingModes } from "../CONSTS";
 import { KickoutUserIcon } from "../icons";
 import AddCohostIcon from "../icons/AddCohostIcon";
 
-const ToggleModeContainer = ({ participantId }) => {
+const ToggleModeContainer = ({ participantId, participantMode }) => {
   const mMeetingRef = useRef();
 
   const [isHoverOnCohost, setIsHoverOnCohost] = useState(false);
 
   const mMeeting = useMeeting({});
 
-  const [participantMode, setParticipantMode] = useState(null);
   const { isLocal } = useParticipant(participantId);
 
   useEffect(() => {
     mMeetingRef.current = mMeeting;
   }, [mMeeting]);
-
-  usePubSub(`CURRENT_MODE_${participantId}`, {
-    onMessageReceived: (data) => {
-      setParticipantMode(data.message);
-    },
-    onOldMessagesReceived: (messages) => {
-      const latestMessage = messages.sort((a, b) => {
-        if (a.timestamp > b.timestamp) {
-          return -1;
-        }
-        if (a.timestamp < b.timestamp) {
-          return 1;
-        }
-        return 0;
-      })[0];
-
-      if (latestMessage) {
-        setParticipantMode(latestMessage.message);
-      }
-    },
-  });
 
   const { publish } = usePubSub(`CHANGE_MODE_${participantId}`, {});
 
@@ -55,7 +34,7 @@ const ToggleModeContainer = ({ participantId }) => {
       >
         <Tooltip
           title={
-            participantMode === "conference"
+            participantMode === meetingModes.CONFERENCE
               ? "Remove from Co-host"
               : "Add as a Co-host"
           }
@@ -66,7 +45,9 @@ const ToggleModeContainer = ({ participantId }) => {
             onClick={() => {
               publish({
                 mode:
-                  participantMode === "conference" ? "viewer" : "conference",
+                  participantMode === meetingModes.CONFERENCE
+                    ? meetingModes.VIEWER
+                    : meetingModes.CONFERENCE,
               });
             }}
           >
@@ -81,7 +62,7 @@ const ToggleModeContainer = ({ participantId }) => {
             >
               <AddCohostIcon
                 fill={
-                  isHoverOnCohost || participantMode === "conference"
+                  isHoverOnCohost || participantMode === meetingModes.CONFERENCE
                     ? "#fff"
                     : "#9E9EA7"
                 }

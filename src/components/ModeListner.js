@@ -1,7 +1,12 @@
-import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import {
+  useMeeting,
+  useParticipant,
+  usePubSub,
+} from "@videosdk.live/react-sdk";
 import { useEffect, useRef, useState } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 import ConfirmBox from "./ConfirmBox";
+import { meetingModes } from "../CONSTS";
 
 const reqInfoDefaultState = {
   enabled: false,
@@ -18,10 +23,12 @@ const ModeListner = () => {
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
   const mMeeting = useMeeting();
-
-  const publishRef = useRef();
-
+  const localParticipantId = mMeeting?.localParticipant?.id;
+  const { unpin } = useParticipant(localParticipantId);
   const { publish } = usePubSub(`CURRENT_MODE_${mMeeting.localParticipant.id}`);
+
+  const unpinRef = useRef();
+  const publishRef = useRef();
 
   useEffect(() => {
     publishRef.current = publish;
@@ -31,9 +38,13 @@ const ModeListner = () => {
     mMeetingRef.current = mMeeting;
   }, [mMeeting]);
 
+  useEffect(() => {
+    unpinRef.current = unpin;
+  }, [unpin]);
+
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: (data) => {
-      if (data.message.mode === "conference") {
+      if (data.message.mode === meetingModes.CONFERENCE) {
         setReqModeInfo({
           enabled: true,
           mode: data.message.mode,
@@ -43,9 +54,16 @@ const ModeListner = () => {
       } else {
         setMeetingMode(data.message.mode);
         publishRef.current(data.message.mode, { persist: true });
-        mMeetingRef.current.disableWebcam();
-        mMeetingRef.current.diableMic();
-        mMeetingRef.current.disableScreenShare();
+
+        const muteMic = mMeetingRef.current?.muteMic;
+        const disableWebcam = mMeetingRef.current?.disableWebcam;
+        const disableScreenShare = mMeetingRef.current?.disableScreenShare;
+
+        muteMic();
+        disableWebcam();
+        disableScreenShare();
+        unpinRef.current();
+
         setSideBarMode(null);
       }
     },

@@ -23,6 +23,7 @@ import useIsSMDesktop from "./utils/useIsSMDesktop";
 import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
 import { version as prebuiltSDKVersion } from "../package.json";
+import { meetingModes } from "./CONSTS";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -350,6 +351,20 @@ const App = () => {
         break;
     }
 
+    if (typeof paramKeys.mode !== "string") {
+      paramKeys.mode = meetingModes.CONFERENCE;
+    }
+
+    switch (paramKeys.mode.toUpperCase()) {
+      case meetingModes.CONFERENCE:
+      case meetingModes.VIEWER:
+        paramKeys.mode = paramKeys.mode.toUpperCase();
+        break;
+      default:
+        paramKeys.mode = meetingModes.CONFERENCE;
+        break;
+    }
+
     return paramKeys;
   };
 
@@ -606,11 +621,11 @@ const App = () => {
           }}
           {...{
             micEnabled:
-              paramKeys.mode === "viewer"
+              paramKeys.mode === meetingModes.VIEWER
                 ? false
                 : paramKeys.micEnabled === "true",
             webcamEnabled:
-              paramKeys.mode === "viewer"
+              paramKeys.mode === meetingModes.VIEWER
                 ? false
                 : paramKeys.webcamEnabled === "true",
           }}
@@ -621,12 +636,12 @@ const App = () => {
           meetingUrl={paramKeys.joinScreenMeetingUrl}
           meetingTitle={paramKeys.joinScreenTitle}
           participantCanToggleSelfWebcam={
-            paramKeys.mode === "viewer"
+            paramKeys.mode === meetingModes.VIEWER
               ? "false"
               : paramKeys.participantCanToggleSelfWebcam
           }
           participantCanToggleSelfMic={
-            paramKeys.mode === "viewer"
+            paramKeys.mode === meetingModes.VIEWER
               ? "false"
               : paramKeys.participantCanToggleSelfMic
           }

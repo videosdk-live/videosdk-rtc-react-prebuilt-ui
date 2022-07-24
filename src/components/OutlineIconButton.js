@@ -79,7 +79,7 @@ const OutlineIconButton = ({
           justifyContent: "center",
           alignItems: "center",
           borderRadius: theme.spacing(1),
-          overflow: "hidden",
+          // overflow: "hidden",
           backgroundColor: bgColor
             ? bgColor
             : isFocused
@@ -120,7 +120,7 @@ const OutlineIconButton = ({
             p={1}
             style={{
               opacity: disabled ? 0.7 : 1,
-              overflow: "hidden",
+              // overflow: "hidden",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -131,7 +131,7 @@ const OutlineIconButton = ({
             }}
           >
             {Icon && (
-              <Badge color={"secondary"} badgeContent={badge}>
+              <Badge max={1000} color={"secondary"} badgeContent={badge}>
                 {lottieOption ? (
                   <Box
                     style={{

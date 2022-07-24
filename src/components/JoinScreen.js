@@ -17,6 +17,7 @@ import { CheckboxIcon } from "../icons";
 import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
+import { meetingModes } from "../CONSTS";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -543,7 +544,7 @@ export default function JoinMeeting({
                             {participantCanToggleSelfWebcam === "false" &&
                             !webcamOn ? (
                               <Typography variant={isXLOnly ? "h5" : "h6"}>
-                                {mode === "viewer"
+                                {mode === meetingModes.VIEWER
                                   ? "You are not permitted to use your microphone and camera."
                                   : "You are not allowed to turn on your camera"}
                               </Typography>

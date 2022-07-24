@@ -49,7 +49,7 @@ const MobileIconButton = ({
         p={1}
         style={{
           borderRadius: theme.spacing(1),
-          overflow: "hidden",
+          // overflow: "hidden",
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
         }}
@@ -81,7 +81,7 @@ const MobileIconButton = ({
             p={1}
             style={{
               opacity: disabled ? 0.7 : 1,
-              overflow: "hidden",
+              // overflow: "hidden",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -91,7 +91,7 @@ const MobileIconButton = ({
               transitionTimingFunction: "linear",
             }}
           >
-            <Badge color={"secondary"} badgeContent={badge}>
+            <Badge max={1000} color={"secondary"} badgeContent={badge}>
               {lottieOption ? (
                 <Box
                   style={{

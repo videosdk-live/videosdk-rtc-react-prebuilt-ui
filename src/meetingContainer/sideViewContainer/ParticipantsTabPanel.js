@@ -35,6 +35,7 @@ import useIsMobile from "../../utils/useIsMobile";
 import ConfirmBox from "../../components/ConfirmBox";
 import { nameTructed } from "../../utils/common";
 import ToggleModeContainer from "../../components/ToggleModeContainer";
+import { meetingModes } from "../../CONSTS";
 
 function ParticipantListItem({
   raisedHand,
@@ -79,6 +80,7 @@ function ParticipantListItem({
     useState(false);
 
   const [morePanelWidth, setMorePanelWidth] = useState(0);
+  const [participantMode, setParticipantMode] = useState(null);
 
   const theme = useTheme();
 
@@ -90,6 +92,27 @@ function ParticipantListItem({
     morePanelRef.current?.offsetWidth &&
       setMorePanelWidth(morePanelRef.current.offsetWidth);
   }, []);
+
+  usePubSub(`CURRENT_MODE_${participantId}`, {
+    onMessageReceived: (data) => {
+      setParticipantMode(data.message);
+    },
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setParticipantMode(latestMessage.message);
+      }
+    },
+  });
 
   return (
     <Box
@@ -172,13 +195,14 @@ function ParticipantListItem({
                 </Box>
               )}
 
-              {meetingMode !== "viewer" && (
+              {meetingMode === meetingModes.CONFERENCE && (
                 <Box ml={0.5} mr={0.5}>
                   <IconButton
                     disabled={
                       !participantCanToggleOtherMic ||
                       isLocal ||
-                      meetingMode === "viewer"
+                      meetingMode === meetingModes.VIEWER ||
+                      participantMode === meetingModes.VIEWER
                     }
                     style={{ padding: 0 }}
                     onClick={() => {
@@ -216,13 +240,14 @@ function ParticipantListItem({
                   </IconButton>
                 </Box>
               )}
-              {meetingMode !== "viewer" && (
+              {meetingMode === meetingModes.CONFERENCE && (
                 <Box ml={1} mr={0}>
                   <IconButton
                     disabled={
                       !participantCanToggleOtherWebcam ||
                       isLocal ||
-                      meetingMode === "viewer"
+                      meetingMode === meetingModes.VIEWER ||
+                      participantMode === meetingModes.VIEWER
                     }
                     style={{ padding: 0 }}
                     onClick={() => {
@@ -289,7 +314,11 @@ function ParticipantListItem({
                     title={pinState?.share || pinState?.cam ? "Unpin" : `Pin`}
                   >
                     <IconButton
-                      disabled={!expanded || meetingMode === "viewer"}
+                      disabled={
+                        !expanded ||
+                        meetingMode === meetingModes.VIEWER ||
+                        participantMode === meetingModes.VIEWER
+                      }
                       size="small"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -317,42 +346,51 @@ function ParticipantListItem({
                 </Box>
               )}
 
-              <Box ml={1} mr={0}>
-                <Tooltip title={`Screen share`}>
-                  <IconButton
-                    disabled={
-                      !(
-                        !isLocal &&
-                        partcipantCanToogleOtherScreenShare &&
-                        (presenterId ? isParticipantPresenting : true)
-                      ) || meetingMode === "viewer"
-                    }
-                    style={{ padding: 0 }}
-                    onClick={() => {
-                      publish({ setScreenShareOn: !isParticipantPresenting });
-                    }}
-                  >
-                    <Box
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 100,
+              {meetingMode === meetingModes.CONFERENCE && (
+                <Box ml={1} mr={0}>
+                  <Tooltip title={`Screen share`}>
+                    <IconButton
+                      disabled={
+                        !(
+                          !isLocal &&
+                          partcipantCanToogleOtherScreenShare &&
+                          (presenterId ? isParticipantPresenting : true)
+                        ) ||
+                        meetingMode === meetingModes.VIEWER ||
+                        participantMode === meetingModes.VIEWER
+                      }
+                      style={{ padding: 0 }}
+                      onClick={() => {
+                        publish({
+                          setScreenShareOn: !isParticipantPresenting,
+                        });
                       }}
-                      p={0.5}
                     >
-                      {isParticipantPresenting ? (
-                        <ScreenShare />
-                      ) : (
-                        <ScreenShareOutlined color="#ffffff80" />
-                      )}
-                    </Box>
-                  </IconButton>
-                </Tooltip>
-              </Box>
+                      <Box
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderRadius: 100,
+                        }}
+                        p={0.5}
+                      >
+                        {isParticipantPresenting ? (
+                          <ScreenShare />
+                        ) : (
+                          <ScreenShareOutlined color="#ffffff80" />
+                        )}
+                      </Box>
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )}
 
               {participantCanToggleOtherMode && (
-                <ToggleModeContainer participantId={participantId} />
+                <ToggleModeContainer
+                  participantId={participantId}
+                  participantMode={participantMode}
+                />
               )}
 
               {!isLocal && canRemoveOtherParticipant && (
@@ -394,7 +432,7 @@ function ParticipantListItem({
               )}
             </Box>
           </Box>
-          {meetingMode !== "viewer" && (
+          {meetingMode === meetingModes.CONFERENCE && (
             <Box
               style={{
                 transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -403,7 +441,7 @@ function ParticipantListItem({
             >
               <IconButton
                 style={{ padding: 0 }}
-                disabled={meetingMode === "viewer"}
+                disabled={meetingMode === meetingModes.VIEWER}
                 onClick={(e) => {
                   if (participantId === participantExpandedId) {
                     setParticipantExpandedId(null);

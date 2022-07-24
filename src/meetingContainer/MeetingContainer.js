@@ -34,6 +34,7 @@ import useIsLivestreaming from "./useIsLivestreaming";
 import useIsHls from "./useIsHls";
 import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
 import {
+  meetingModes,
   RECORDER_MAX_GRID_SIZE,
   RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
 } from "../CONSTS";
@@ -498,13 +499,19 @@ const MeetingContainer = () => {
           }
         }
       }
-      if (notificationSoundEnabled && meetingModeRef.current !== "viewer") {
+      if (
+        notificationSoundEnabled &&
+        meetingModeRef.current === meetingModes.CONFERENCE
+      ) {
         new Audio(
           `https://static.videosdk.live/prebuilt/notification.mp3`
         ).play();
       }
 
-      if (notificationAlertsEnabled && meetingModeRef.current !== "viewer") {
+      if (
+        notificationAlertsEnabled &&
+        meetingModeRef.current === meetingModes.CONFERENCE
+      ) {
         enqueueSnackbar(
           `${
             isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
@@ -526,7 +533,7 @@ const MeetingContainer = () => {
     if (
       participantCanToggleRecording &&
       notificationAlertsEnabled &&
-      meetingModeRef.current !== "viewer" &&
+      meetingModeRef.current === meetingModes.CONFERENCE &&
       (status === Constants.recordingEvents.RECORDING_STARTED ||
         status === Constants.recordingEvents.RECORDING_STOPPED)
     ) {
@@ -542,7 +549,7 @@ const MeetingContainer = () => {
     if (
       participantCanToggleLivestream &&
       notificationAlertsEnabled &&
-      meetingModeRef.current !== "viewer" &&
+      meetingModeRef.current === meetingModes.CONFERENCE &&
       (status === Constants.livestreamEvents.LIVESTREAM_STARTED ||
         status === Constants.livestreamEvents.LIVESTREAM_STOPPED)
     ) {
@@ -558,7 +565,7 @@ const MeetingContainer = () => {
     if (
       participantCanToggleHls &&
       notificationAlertsEnabled &&
-      meetingModeRef.current !== "viewer"
+      meetingModeRef.current === meetingModes.CONFERENCE
     ) {
       enqueueSnackbar("Meeting HLS is started.");
     }
@@ -570,7 +577,7 @@ const MeetingContainer = () => {
     if (
       participantCanToggleHls &&
       notificationAlertsEnabled &&
-      meetingModeRef.current !== "viewer"
+      meetingModeRef.current === meetingModes.CONFERENCE
     ) {
       enqueueSnackbar("Meeting HLS is stopped.");
     }
@@ -605,7 +612,7 @@ const MeetingContainer = () => {
     if (
       showJoinNotificationRef.current &&
       notificationAlertsEnabled &&
-      meetingModeRef.current !== "viewer"
+      meetingModeRef.current === meetingModes.CONFERENCE
     ) {
       enqueueSnackbar(
         getPinMsg({
@@ -746,7 +753,7 @@ const MeetingContainer = () => {
                   height: containerHeight - topBarHeight,
                 }}
               >
-                {meetingMode === "conference" ? (
+                {meetingMode === meetingModes.CONFERENCE ? (
                   <>
                     {mMeeting?.pinnedParticipants.size > 0 &&
                     (meetingLayout === meetingLayouts.SPOTLIGHT ||

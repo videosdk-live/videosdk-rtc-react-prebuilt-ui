@@ -55,6 +55,7 @@ import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
 import useIsLivestreaming from "./useIsLivestreaming";
 import useIsRecording from "./useIsRecording";
 import useIsHls from "./useIsHls";
+import { meetingModes } from "../CONSTS";
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -115,28 +116,28 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       buttonText={"Participants"}
       Icon={Participants}
-      disabled={meetingMode === "viewer"}
+      disabled={meetingMode === meetingModes.VIEWER}
       onClick={() => {
         typeof onClick === "function" && onClick();
         setSideBarMode((s) =>
           s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
         );
       }}
-      badge={participantsCount}
+      badge={1000}
     />
   ) : (
     <OutlineIconButton
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       Icon={Participants}
-      disabled={meetingMode === "viewer"}
+      disabled={meetingMode === meetingModes.VIEWER}
       onClick={() => {
         typeof onClick === "function" && onClick();
         setSideBarMode((s) =>
           s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
         );
       }}
-      badge={participantsCount}
+      badge={1000}
     />
   );
 };
@@ -1000,18 +1001,20 @@ const EndCallBTN = () => {
       <OutlineIconButton
         ref={endCallContainerRef}
         tooltipTitle={
-          !participantCanLeave && meetingMode !== "viewer"
+          !participantCanLeave && meetingMode === meetingModes.CONFERENCE
             ? "End Call"
-            : participantCanEndMeeting && meetingMode !== "viewer"
+            : participantCanEndMeeting &&
+              meetingMode === meetingModes.CONFERENCE
             ? "Open popup"
             : "Leave Call"
         }
         bgColor={theme.palette.error.main}
         Icon={EndCall}
         onClick={(e) => {
-          !participantCanLeave && meetingMode !== "viewer"
+          !participantCanLeave && meetingMode === meetingModes.CONFERENCE
             ? setIsEndMeeting(true)
-            : participantCanEndMeeting && meetingMode !== "viewer"
+            : participantCanEndMeeting &&
+              meetingMode === meetingModes.CONFERENCE
             ? handleClick(e)
             : leave();
         }}
@@ -1173,8 +1176,6 @@ const TopBar = ({ topBarHeight }) => {
     meetingMode,
   } = useMeetingAppContext();
 
-  const isModeConference = meetingMode === "conference";
-
   const handleClickFAB = () => {
     setOpen(true);
   };
@@ -1222,7 +1223,7 @@ const TopBar = ({ topBarHeight }) => {
 
       const arrSideBar = [];
 
-      if (canChangeLayout && meetingMode !== "viewer") {
+      if (canChangeLayout && meetingMode === meetingModes.CONFERENCE) {
         arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.CONFIGURATION,
@@ -1246,21 +1247,27 @@ const TopBar = ({ topBarHeight }) => {
 
       const arrMedia = [];
 
-      if (screenShareEnabled && meetingMode !== "viewer") {
+      if (screenShareEnabled && meetingMode === meetingModes.CONFERENCE) {
         arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.SCREEN_SHARE,
           priority: 6,
         });
       }
-      if (participantCanToggleSelfWebcam && meetingMode !== "viewer") {
+      if (
+        participantCanToggleSelfWebcam &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
         arrMedia.unshift(topBarButtonTypes.WEBCAM);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.WEBCAM,
           priority: 2,
         });
       }
-      if (participantCanToggleSelfMic && meetingMode !== "viewer") {
+      if (
+        participantCanToggleSelfMic &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
         arrMedia.unshift(topBarButtonTypes.MIC);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.MIC,
@@ -1282,7 +1289,7 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (recordingEnabled && meetingMode !== "viewer") {
+      if (recordingEnabled && meetingMode === meetingModes.CONFERENCE) {
         utilsArr.unshift(topBarButtonTypes.RECORDING);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.RECORDING,
@@ -1290,7 +1297,7 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (whiteboardEnabled && meetingMode !== "viewer") {
+      if (whiteboardEnabled && meetingMode === meetingModes.CONFERENCE) {
         utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.WHITEBOARD,
@@ -1301,7 +1308,7 @@ const TopBar = ({ topBarHeight }) => {
       if (
         liveStreamEnabled &&
         !participantCanToggleLivestream &&
-        meetingMode !== "viewer"
+        meetingMode === meetingModes.CONFERENCE
       ) {
         utilsArr.unshift(topBarButtonTypes.GO_LIVE);
         mobileIconArr.unshift({
@@ -1310,7 +1317,7 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (hlsEnabled && meetingMode !== "viewer") {
+      if (hlsEnabled && meetingMode === meetingModes.CONFERENCE) {
         utilsArr.unshift(topBarButtonTypes.HLS);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.HLS,
@@ -1321,7 +1328,7 @@ const TopBar = ({ topBarHeight }) => {
       if (
         participantCanToggleLivestream &&
         liveStreamEnabled &&
-        meetingMode !== "viewer"
+        meetingMode === meetingModes.CONFERENCE
       ) {
         //liveStreamIcon
         utilsArr.unshift(topBarButtonTypes.GO_LIVE);
@@ -1369,6 +1376,7 @@ const TopBar = ({ topBarHeight }) => {
       raiseHandEnabled,
       topBarButtonTypes,
       recordingEnabled,
+      meetingMode,
     ]);
 
   const [topBarVisible, setTopBarVisible] = useState(false);
