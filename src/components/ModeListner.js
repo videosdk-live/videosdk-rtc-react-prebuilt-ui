@@ -24,10 +24,10 @@ const ModeListner = () => {
 
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
-  const { unpin } = useParticipant(localParticipantId);
+  const participant = useParticipant(localParticipantId);
   const { publish } = usePubSub(`CURRENT_MODE_${mMeeting.localParticipant.id}`);
 
-  const unpinRef = useRef();
+  const participantRef = useRef();
   const publishRef = useRef();
 
   useEffect(() => {
@@ -39,8 +39,8 @@ const ModeListner = () => {
   }, [mMeeting]);
 
   useEffect(() => {
-    unpinRef.current = unpin;
-  }, [unpin]);
+    participantRef.current = participant;
+  }, [participant]);
 
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: (data) => {
@@ -62,7 +62,10 @@ const ModeListner = () => {
         muteMic();
         disableWebcam();
         disableScreenShare();
-        unpinRef.current();
+
+        (participantRef.current?.pinState?.share ||
+          participantRef.current?.pinState?.cam) &&
+          participantRef.current?.unpin();
 
         setSideBarMode(null);
       }
