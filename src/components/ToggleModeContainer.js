@@ -1,5 +1,9 @@
 import { Box, IconButton, Tooltip } from "@material-ui/core";
-import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import {
+  useMeeting,
+  useParticipant,
+  usePubSub,
+} from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useState } from "react";
 import { KickoutUserIcon } from "../icons";
 import AddCohostIcon from "../icons/AddCohostIcon";
@@ -12,6 +16,7 @@ const ToggleModeContainer = ({ participantId }) => {
   const mMeeting = useMeeting({});
 
   const [participantMode, setParticipantMode] = useState(null);
+  const { isLocal } = useParticipant(participantId);
 
   useEffect(() => {
     mMeetingRef.current = mMeeting;
@@ -41,46 +46,51 @@ const ToggleModeContainer = ({ participantId }) => {
   const { publish } = usePubSub(`CHANGE_MODE_${participantId}`, {});
 
   return (
-    <Box
-      ml={1}
-      mr={0}
-      onMouseEnter={() => setIsHoverOnCohost(true)}
-      onMouseLeave={() => setIsHoverOnCohost(false)}
-    >
-      <Tooltip
-        title={
-          participantMode === "conference"
-            ? "Remove from Co-host"
-            : "Add as a Co-host"
-        }
-        style={{ backgroundColor: "#fff" }}
+    !isLocal && (
+      <Box
+        ml={1}
+        mr={0}
+        onMouseEnter={() => setIsHoverOnCohost(true)}
+        onMouseLeave={() => setIsHoverOnCohost(false)}
       >
-        <IconButton
-          style={{ padding: 0 }}
-          onClick={() => {
-            publish({
-              mode: participantMode === "conference" ? "viewer" : "conference",
-            });
-          }}
+        <Tooltip
+          title={
+            participantMode === "conference"
+              ? "Remove from Co-host"
+              : "Add as a Co-host"
+          }
+          style={{ backgroundColor: "#fff" }}
         >
-          <Box
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 100,
+          <IconButton
+            style={{ padding: 0 }}
+            onClick={() => {
+              publish({
+                mode:
+                  participantMode === "conference" ? "viewer" : "conference",
+              });
             }}
-            p={0.5}
           >
-            {participantMode === "conference" ? (
-              <KickoutUserIcon height={18} width={18} />
-            ) : (
-              <AddCohostIcon fill={isHoverOnCohost ? "#fff" : "#9E9EA7"} />
-            )}
-          </Box>
-        </IconButton>
-      </Tooltip>
-    </Box>
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 100,
+              }}
+              p={0.5}
+            >
+              <AddCohostIcon
+                fill={
+                  isHoverOnCohost || participantMode === "conference"
+                    ? "#fff"
+                    : "#9E9EA7"
+                }
+              />
+            </Box>
+          </IconButton>
+        </Tooltip>
+      </Box>
+    )
   );
 };
 

@@ -11,7 +11,9 @@ const reqInfoDefaultState = {
 };
 
 const ModeListner = () => {
-  const { setMeetingMode, meetingMode } = useMeetingAppContext();
+  const mMeetingRef = useRef();
+  const { setMeetingMode, meetingMode, setSideBarMode } =
+    useMeetingAppContext();
 
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
@@ -25,23 +27,26 @@ const ModeListner = () => {
     publishRef.current = publish;
   }, [publish]);
 
+  useEffect(() => {
+    mMeetingRef.current = mMeeting;
+  }, [mMeeting]);
+
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: (data) => {
       if (data.message.mode === "conference") {
         setReqModeInfo({
           enabled: true,
           mode: data.message.mode,
-          accept: () => {
-            console.log("data", data.message);
-          },
+          accept: () => {},
           reject: () => {},
         });
       } else {
         setMeetingMode(data.message.mode);
         publishRef.current(data.message.mode, { persist: true });
-        mMeeting.disableWebcam();
-        mMeeting.diableMic();
-        mMeeting.disableScreenShare();
+        mMeetingRef.current.disableWebcam();
+        mMeetingRef.current.diableMic();
+        mMeetingRef.current.disableScreenShare();
+        setSideBarMode(null);
       }
     },
   });
