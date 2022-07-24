@@ -123,7 +123,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
           s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
         );
       }}
-      badge={1000}
+      badge={participantsCount}
     />
   ) : (
     <OutlineIconButton
@@ -137,7 +137,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
           s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
         );
       }}
-      badge={1000}
+      badge={participantsCount}
     />
   );
 };

@@ -11,8 +11,6 @@ import {
   Mic as MicIcon,
   VideocamOff as VideocamOffIcon,
   Videocam as VideocamIcon,
-  ScreenShareOutlined,
-  ScreenShare,
 } from "@material-ui/icons";
 import {
   Avatar,
@@ -36,6 +34,7 @@ import ConfirmBox from "../../components/ConfirmBox";
 import { nameTructed } from "../../utils/common";
 import ToggleModeContainer from "../../components/ToggleModeContainer";
 import { meetingModes } from "../../CONSTS";
+import ParticipantScreenShareIcon from "../../icons/ParticipantScreenShareIcon";
 
 function ParticipantListItem({
   raisedHand,
@@ -375,10 +374,15 @@ function ParticipantListItem({
                         }}
                         p={0.5}
                       >
-                        {isParticipantPresenting ? (
+                        {/* {isParticipantPresenting ? (
                           <ScreenShare />
                         ) : (
                           <ScreenShareOutlined color="#ffffff80" />
+                        )} */}
+                        {isParticipantPresenting ? (
+                          <ParticipantScreenShareIcon fillColor={"#ffffff"} />
+                        ) : (
+                          <ParticipantScreenShareIcon fillColor="#ffffff80" />
                         )}
                       </Box>
                     </IconButton>
