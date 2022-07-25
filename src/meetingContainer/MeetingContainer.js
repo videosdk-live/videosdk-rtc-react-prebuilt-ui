@@ -581,6 +581,7 @@ const MeetingContainer = () => {
     ) {
       enqueueSnackbar("Meeting HLS is stopped.");
     }
+    setDownstreamUrl(null);
   };
 
   const _handleOnEntryRequested = () => {};
