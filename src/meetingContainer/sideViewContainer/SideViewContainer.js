@@ -20,11 +20,17 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import ConfigTabPanel from "./ConfigTabPanel";
+import { ArrowBackIos } from "@material-ui/icons";
 
 const SideBarTabView = ({ width, height }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  const {
+    sideBarMode,
+    setSideBarMode,
+    isPollSelected,
+    polls,
+    isCreateNewPollClicked,
+  } = useMeetingAppContext();
   const { participants } = useMeeting();
-
   const value =
     sideBarMode === sideBarModes.PARTICIPANTS
       ? 0
@@ -98,18 +104,38 @@ const SideBarTabView = ({ width, height }) => {
                   borderBottom: "1px solid #70707033",
                 }}
               >
-                <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-                  {sideBarMode === "PARTICIPANTS"
-                    ? `${capitalize(
-                        String(sideBarMode || "").toLowerCase()
-                      )} (${new Map(participants)?.size})`
-                    : sideBarMode === "ADD_LIVE_STREAM"
-                    ? "Add Live Streams"
-                    : capitalize(String(sideBarMode || "").toLowerCase())}
-                </Typography>
-                <IconButton onClick={handleClose}>
-                  <CloseIcon fontSize={"small"} />
-                </IconButton>
+                <Box
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {isPollSelected && (
+                    <IconButton style={{ padding: 0, margin: 0 }}>
+                      <ArrowBackIos fontSize="small" />
+                    </IconButton>
+                  )}
+                  <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+                    {sideBarMode === "PARTICIPANTS"
+                      ? `${capitalize(
+                          String(sideBarMode || "").toLowerCase()
+                        )} (${new Map(participants)?.size})`
+                      : sideBarMode === "ADD_LIVE_STREAM"
+                      ? "Add Live Streams"
+                      : isPollSelected
+                      ? polls.length >= 1 && !isCreateNewPollClicked
+                        ? `Polls (${polls.length})`
+                        : "Create a poll"
+                      : capitalize(String(sideBarMode || "").toLowerCase())}
+                  </Typography>
+                </Box>
+                <Box>
+                  <IconButton onClick={handleClose}>
+                    <CloseIcon fontSize={"small"} />
+                  </IconButton>
+                </Box>
               </Box>
             )}
             {value === 0 ? (

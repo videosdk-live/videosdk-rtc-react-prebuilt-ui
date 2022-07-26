@@ -203,6 +203,8 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={Activities}
+      tooltipTitle={"Activities"}
+      buttonText={"Activities"}
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
         typeof onClick === "function" && onClick();

@@ -141,6 +141,20 @@ export const MeetingAppProvider = ({
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
   const [meetingMode, setMeetingMode] = useState(mode);
   const [downstreamUrl, setDownstreamUrl] = useState(null);
+  const [isPollSelected, setIsPollSelected] = useState(false);
+  const [polls, setPolls] = useState([]);
+  const [isCreateNewPollClicked, setIsCreateNewPollClicked] = useState(false);
+  const [isQASelected, setIsQASelected] = useState(false);
+  const [optionArr, setOptionArr] = useState([
+    // {
+    //   id: uuid(),
+    //   question: null,
+    //   options: [{ optionId: uuid(), option: null, isCorrect: false }],
+    //   createdAt: new Date(),
+    //   timeout: 0,
+    //   isActive: false,
+    // },
+  ]);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -255,6 +269,11 @@ export const MeetingAppProvider = ({
         liveStreamConfig,
         meetingMode,
         downstreamUrl,
+        isPollSelected,
+        isCreateNewPollClicked,
+        isQASelected,
+        optionArr,
+        polls,
 
         // setters
         setSideBarMode,
@@ -269,6 +288,11 @@ export const MeetingAppProvider = ({
         setAppMeetingLayout,
         setMeetingMode,
         setDownstreamUrl,
+        setIsPollSelected,
+        setIsCreateNewPollClicked,
+        setIsQASelected,
+        setOptionArr,
+        setPolls,
       }}
     >
       <SnackbarProvider

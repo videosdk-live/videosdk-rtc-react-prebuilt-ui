@@ -11,12 +11,12 @@ import {
 import QAIcon from "../../icons/QAIcon";
 import PollIcon from "../../icons/PollIcon";
 import useResponsiveSize from "../../utils/useResponsiveSize";
+import CreatePoll from "../../components/pollContainer/CreatePoll";
+import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import PollList from "../../components/pollContainer/PollList";
 
 const ActivitiesTabPanel = ({ panelHeight }) => {
   const theme = useTheme();
-
-  const [isPollSelected, setIsPollSelected] = React.useState(false);
-  const [isQASelected, setIsQASelected] = React.useState(false);
 
   const listPadding = useResponsiveSize({
     xl: 12,
@@ -26,7 +26,16 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     xs: 4,
   });
 
-  return (
+  const { setIsPollSelected, isPollSelected, polls, isCreateNewPollClicked } =
+    useMeetingAppContext();
+
+  return isPollSelected ? (
+    polls.length >= 1 && !isCreateNewPollClicked ? (
+      <PollList {...{ panelHeight }} />
+    ) : (
+      <CreatePoll {...{ panelHeight }} />
+    )
+  ) : (
     <List style={{ padding: listPadding }}>
       {[
         {
