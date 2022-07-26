@@ -87,7 +87,10 @@ const MediaRequested = () => {
                 accept();
               },
               title: `Turn on ${type}?`,
-              subTitle: `${participantName} is requesting to turn on your ${type}`,
+              subTitle:
+                type === "screenShare"
+                  ? `${participantName} is requesting you to share your screen`
+                  : `${participantName} is requesting to turn on your ${type}`,
             }}
           />
         );

@@ -8,6 +8,7 @@ import {
   useRef,
   useMemo,
 } from "react";
+import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
 import { validURL } from "./utils/common";
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
@@ -65,7 +66,9 @@ export const MeetingAppProvider = ({
   recordingWebhookUrl,
   recordingAWSDirPath,
   autoStartRecording,
+  autoStartHls,
   participantCanToggleRecording,
+  participantCanToggleHls,
   brandingEnabled,
   brandLogoURL,
   brandName,
@@ -73,6 +76,7 @@ export const MeetingAppProvider = ({
   participantCanEndMeeting,
   poweredBy,
   liveStreamEnabled,
+  hlsEnabled,
   autoStartLiveStream,
   // liveStreamLayoutType,
   // liveStreamLayoutPriority,
@@ -82,6 +86,7 @@ export const MeetingAppProvider = ({
   participantCanToggleOtherMic,
   participantCanToggleOtherWebcam,
   partcipantCanToogleOtherScreenShare,
+  participantCanToggleOtherMode,
   canRemoveOtherParticipant,
   notificationSoundEnabled,
   canPin,
@@ -97,6 +102,7 @@ export const MeetingAppProvider = ({
   topbarEnabled,
   notificationAlertsEnabled,
   debug,
+  mode,
   layoutType,
   layoutPriority,
   meetingLayoutTopic,
@@ -129,10 +135,12 @@ export const MeetingAppProvider = ({
   });
   const [appMeetingLayout, setAppMeetingLayout] = useState({
     type: layoutType,
-    gridSize: layoutGridSize,
+    gridSize: isRecorder ? RECORDER_MAX_GRID_SIZE : layoutGridSize,
     priority: layoutPriority,
   });
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
+  const [meetingMode, setMeetingMode] = useState(mode);
+  const [downstreamUrl, setDownstreamUrl] = useState(null);
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -190,7 +198,9 @@ export const MeetingAppProvider = ({
         recordingWebhookUrl,
         recordingAWSDirPath,
         autoStartRecording,
+        autoStartHls,
         participantCanToggleRecording,
+        participantCanToggleHls,
         brandingEnabled,
         brandLogoURL,
         brandName,
@@ -198,6 +208,7 @@ export const MeetingAppProvider = ({
         participantCanEndMeeting,
         poweredBy,
         liveStreamEnabled,
+        hlsEnabled,
         autoStartLiveStream,
         // liveStreamLayoutType,
         // liveStreamLayoutPriority,
@@ -207,6 +218,7 @@ export const MeetingAppProvider = ({
         participantCanToggleOtherMic,
         participantCanToggleOtherWebcam,
         partcipantCanToogleOtherScreenShare,
+        participantCanToggleOtherMode,
         canRemoveOtherParticipant,
         notificationSoundEnabled,
         canToggleWhiteboard,
@@ -215,6 +227,7 @@ export const MeetingAppProvider = ({
         topbarEnabled,
         notificationAlertsEnabled,
         debug,
+        mode,
         layoutPriority: appMeetingLayout.priority,
         layoutGridSize: appMeetingLayout.gridSize,
         // recordingLayoutType,
@@ -240,6 +253,8 @@ export const MeetingAppProvider = ({
         canPin,
         meetingLeft,
         liveStreamConfig,
+        meetingMode,
+        downstreamUrl,
 
         // setters
         setSideBarMode,
@@ -252,6 +267,8 @@ export const MeetingAppProvider = ({
         setMeetingLeft,
         setLiveStreamConfig,
         setAppMeetingLayout,
+        setMeetingMode,
+        setDownstreamUrl,
       }}
     >
       <SnackbarProvider

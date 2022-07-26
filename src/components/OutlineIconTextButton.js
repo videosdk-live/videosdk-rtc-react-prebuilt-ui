@@ -5,7 +5,7 @@ import {
   Typography,
   useTheme,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
@@ -24,10 +24,14 @@ const OutlineIconTextButton = ({
   btnID,
   buttonText,
   large,
+  isRequestProcessing,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
+  const [blinkingState, setBlinkingState] = useState(1);
+
+  const intervalRef = useRef();
 
   const { animationsEnabled } = useMeetingAppContext();
 
@@ -35,6 +39,32 @@ const OutlineIconTextButton = ({
     xl: 22 * (large ? 1 : 1),
     lg: 22 * (large ? 1 : 1),
   });
+
+  const startBlinking = () => {
+    intervalRef.current = setInterval(() => {
+      setBlinkingState((s) => (s === 1 ? 0.4 : 1));
+    }, 600);
+  };
+
+  const stopBlinking = () => {
+    clearInterval(intervalRef.current);
+
+    setBlinkingState(1);
+  };
+
+  useEffect(() => {
+    if (isRequestProcessing) {
+      startBlinking();
+    } else {
+      stopBlinking();
+    }
+  }, [isRequestProcessing]);
+
+  useEffect(() => {
+    return () => {
+      stopBlinking();
+    };
+  }, []);
 
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
@@ -78,6 +108,7 @@ const OutlineIconTextButton = ({
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
           cursor: "pointer",
+          opacity: blinkingState,
         }}
       >
         <Box

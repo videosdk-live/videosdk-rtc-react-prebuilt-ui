@@ -7,7 +7,7 @@ import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
-import { usePubSub } from "@videosdk.live/react-sdk";
+import { usePubSub, Constants } from "@videosdk.live/react-sdk";
 import {
   appEvents,
   eventEmitter,
@@ -27,6 +27,19 @@ import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
+import HLSContainer from "./hlsViewContainer/HLSContainer";
+import ModeListner from "../components/ModeListner";
+import useIsRecording from "./useIsRecording";
+import useIsLivestreaming from "./useIsLivestreaming";
+import useIsHls from "./useIsHls";
+import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
+import {
+  meetingModes,
+  RECORDER_MAX_GRID_SIZE,
+  RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
+} from "../CONSTS";
+import { Box, CircularProgress } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 
 const getPinMsg = ({
   localParticipant,
@@ -83,6 +96,13 @@ const MeetingContainer = () => {
 
   useSortActiveParticipants();
   const { participantRaisedHand } = useRaisedHandParticipants();
+  const isLiveStreaming = useIsLivestreaming();
+  const isRecording = useIsRecording();
+  const isHls = useIsHls();
+
+  const isLiveStreamingRef = useRef(isLiveStreaming);
+  const isRecordingRef = useRef(isRecording);
+  const isHlsRef = useRef(isHls);
 
   const sideBarContainerWidth = useResponsiveSize({
     xl: 400,
@@ -106,14 +126,28 @@ const MeetingContainer = () => {
     });
   }, []);
 
+  useEffect(() => {
+    isLiveStreamingRef.current = isLiveStreaming;
+  }, [isLiveStreaming]);
+
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
+
+  useEffect(() => {
+    isHlsRef.current = isHls;
+  }, [isHls]);
+
   const {
     redirectOnLeave,
     sideBarMode,
     containerRef,
     participantCanToggleRecording,
+    participantCanToggleHls,
     participantCanToggleLivestream,
     autoStartLiveStream,
     autoStartRecording,
+    autoStartHls,
     recordingWebhookUrl,
     recordingAWSDirPath,
     liveStreamOutputs,
@@ -134,6 +168,9 @@ const MeetingContainer = () => {
     meetingLayoutTopic,
     setLiveStreamConfig,
     liveStreamConfig,
+    meetingMode,
+    isRecorder,
+    setDownstreamUrl,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -154,6 +191,7 @@ const MeetingContainer = () => {
   const typeRef = useRef(type);
   const priorityRef = useRef(priority);
   const gridSizeRef = useRef(gridSize);
+  const meetingModeRef = useRef(meetingMode);
 
   useEffect(() => {
     liveStreamConfigRef.current = liveStreamConfig;
@@ -171,9 +209,25 @@ const MeetingContainer = () => {
     gridSizeRef.current = gridSize;
   }, [gridSize]);
 
+  useEffect(() => {
+    meetingModeRef.current = meetingMode;
+  }, [meetingMode]);
+
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      setAppMeetingLayout(data.message.layout);
+      setAppMeetingLayout({
+        ...data.message.layout,
+        gridSize: isRecorder
+          ? mMeetingRef.current?.presenterId
+            ? data.message.layout.gridSize >
+              RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : data.message.layout.gridSize
+            : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+            ? RECORDER_MAX_GRID_SIZE
+            : data.message.layout.gridSize
+          : data.message.layout.gridSize,
+      });
     },
     onOldMessagesReceived: (messages) => {
       const latestMessage = messages.sort((a, b) => {
@@ -187,7 +241,19 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        setAppMeetingLayout(latestMessage.message.layout);
+        setAppMeetingLayout({
+          ...latestMessage.message.layout,
+          gridSize: isRecorder
+            ? mMeetingRef.current?.presenterId
+              ? latestMessage.message.layout.gridSize >
+                RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+                : latestMessage.message.layout.gridSize
+              : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : latestMessage.message.layout.gridSize
+            : latestMessage.message.layout.gridSize,
+        });
       }
     },
   });
@@ -225,8 +291,11 @@ const MeetingContainer = () => {
       mMeetingRef.current;
 
     setTimeout(() => {
-      const { isLiveStreaming, isRecording, startLivestream, startRecording } =
-        mMeetingRef.current;
+      const { startLivestream, startRecording, startHls } = mMeetingRef.current;
+
+      const isLiveStreaming = isLiveStreamingRef.current;
+      const isRecording = isRecordingRef.current;
+      const isHls = isHlsRef.current;
 
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
@@ -261,6 +330,13 @@ const MeetingContainer = () => {
 
       if (autoStartRecording && !isRecording) {
         startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+      }
+
+      //
+      //
+
+      if (autoStartHls && !isHls) {
+        startHls({ layout });
       }
     }, 3000);
 
@@ -359,7 +435,7 @@ const MeetingContainer = () => {
     // if (showJoinNotificationRef.current) {
     //   const { displayName } = data;
     // if (notificationSoundEnabled) {
-    //   new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    //   new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     // }
     // if (notificationAlertsEnabled) {
     //   enqueueSnackbar(`${displayName} joined the meeting`, {});
@@ -370,7 +446,7 @@ const MeetingContainer = () => {
   const _handleParticipantLeft = (data) => {
     // const { displayName } = data;
     // if (notificationSoundEnabled) {
-    // new Audio(`https://static.zujonow.com/prebuilt/notification.mp3`).play();
+    // new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
     // }
     // if (notificationAlertsEnabled) {
     // enqueueSnackbar(`${displayName} left the meeting`, {});
@@ -378,6 +454,27 @@ const MeetingContainer = () => {
   };
 
   const _handlePresenterChanged = (presenterId) => {
+    // reduce grid size in recorder if presenter changes
+    if (isRecorder) {
+      if (presenterId) {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
+              : s.gridSize,
+        }));
+      } else {
+        setAppMeetingLayout((s) => ({
+          ...s,
+          gridSize:
+            s.gridSize > RECORDER_MAX_GRID_SIZE
+              ? RECORDER_MAX_GRID_SIZE
+              : s.gridSize,
+        }));
+      }
+    }
+
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
       mMeetingRef.current?.localParticipant.unpin();
       localParticipantAutoPinnedOnShare.current = false;
@@ -402,13 +499,19 @@ const MeetingContainer = () => {
           }
         }
       }
-      if (notificationSoundEnabled) {
+      if (
+        notificationSoundEnabled &&
+        meetingModeRef.current === meetingModes.CONFERENCE
+      ) {
         new Audio(
-          `https://static.zujonow.com/prebuilt/notification.mp3`
+          `https://static.videosdk.live/prebuilt/notification.mp3`
         ).play();
       }
 
-      if (notificationAlertsEnabled) {
+      if (
+        notificationAlertsEnabled &&
+        meetingModeRef.current === meetingModes.CONFERENCE
+      ) {
         enqueueSnackbar(
           `${
             isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
@@ -418,28 +521,67 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnRecordingStarted = () => {
-    if (participantCanToggleRecording && notificationAlertsEnabled) {
-      enqueueSnackbar("Meeting recording is started.");
+  const _handleOnRecordingStarted = () => {};
+
+  const _handleOnRecordingStopped = () => {};
+
+  const _handleOnLiveStreamStarted = () => {};
+
+  const _handleOnLiveStreamStopped = () => {};
+
+  const _handleOnRecordingStateChanged = ({ status }) => {
+    if (
+      participantCanToggleRecording &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current === meetingModes.CONFERENCE &&
+      (status === Constants.recordingEvents.RECORDING_STARTED ||
+        status === Constants.recordingEvents.RECORDING_STOPPED)
+    ) {
+      enqueueSnackbar(
+        status === Constants.recordingEvents.RECORDING_STARTED
+          ? "Meeting recording is started."
+          : "Meeting recording is stopped."
+      );
     }
   };
 
-  const _handleOnRecordingStopped = () => {
-    if (participantCanToggleRecording && notificationAlertsEnabled) {
-      enqueueSnackbar("Meeting recording stopped.");
+  const _handleOnLivestreamStateChanged = ({ status }) => {
+    if (
+      participantCanToggleLivestream &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current === meetingModes.CONFERENCE &&
+      (status === Constants.livestreamEvents.LIVESTREAM_STARTED ||
+        status === Constants.livestreamEvents.LIVESTREAM_STOPPED)
+    ) {
+      enqueueSnackbar(
+        status === Constants.livestreamEvents.LIVESTREAM_STARTED
+          ? "Meeting livestreaming is started."
+          : "Meeting livestreaming is stopped."
+      );
     }
   };
 
-  const _handleOnLiveStreamStarted = () => {
-    if (participantCanToggleLivestream && notificationAlertsEnabled) {
-      enqueueSnackbar("Meeting livestreaming is started.");
+  const _handleOnHlsStarted = (data) => {
+    if (
+      participantCanToggleHls &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current === meetingModes.CONFERENCE
+    ) {
+      enqueueSnackbar("Meeting HLS is started.");
     }
+
+    setDownstreamUrl(data);
   };
 
-  const _handleOnLiveStreamStopped = () => {
-    if (participantCanToggleLivestream && notificationAlertsEnabled) {
-      enqueueSnackbar("Meeting livestreaming is Stopped.");
+  const _handleOnHlsStopped = () => {
+    if (
+      participantCanToggleHls &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current === meetingModes.CONFERENCE
+    ) {
+      enqueueSnackbar("Meeting HLS is stopped.");
     }
+    setDownstreamUrl(null);
   };
 
   const _handleOnEntryRequested = () => {};
@@ -468,7 +610,11 @@ const MeetingContainer = () => {
     const partcipantDisplayName =
       mMeetingRef.current.participants.get(participantId)?.displayName || "";
 
-    if (showJoinNotificationRef.current && notificationAlertsEnabled) {
+    if (
+      showJoinNotificationRef.current &&
+      notificationAlertsEnabled &&
+      meetingModeRef.current === meetingModes.CONFERENCE
+    ) {
       enqueueSnackbar(
         getPinMsg({
           localParticipant,
@@ -523,6 +669,10 @@ const MeetingContainer = () => {
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
     onError: _handleOnError,
+    onRecordingStateChanged: _handleOnRecordingStateChanged,
+    onLivestreamStateChanged: _handleOnLivestreamStateChanged,
+    onHlsStarted: _handleOnHlsStarted,
+    onHlsStopped: _handleOnHlsStopped,
   });
 
   const _handleToggleFullScreen = () => {
@@ -567,14 +717,12 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
+  const theme = useTheme();
+
   return (
     <div
       ref={containerRef}
-      style={{
-        height: "100vh",
-        overflow: "hidden",
-        position: "relative",
-      }}
+      style={{ height: "100vh", overflow: "hidden", position: "relative" }}
     >
       <ConfirmBox
         open={meetingError}
@@ -585,10 +733,13 @@ const MeetingContainer = () => {
         title={`Error Code: ${meetingError.code}`}
         subTitle={meetingError.message}
       />
+
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
           <>
-            <ParticipantsAudioPlayer />
+            <ModeListner />
+            <PauseInvisibleParticipants />
+
             <div
               style={{
                 display: "flex",
@@ -603,39 +754,51 @@ const MeetingContainer = () => {
                   height: containerHeight - topBarHeight,
                 }}
               >
-                {mMeeting?.pinnedParticipants.size > 0 &&
-                (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                  meetingLayout === meetingLayouts.SIDEBAR) ? (
-                  <PinnedLayoutViewContainer
-                    {...{
-                      height: containerHeight - topBarHeight,
-                      width:
-                        containerWidth -
-                        (isTab || isMobile
-                          ? 0
-                          : typeof sideBarMode === "string"
-                          ? sideBarContainerWidth
-                          : 0),
-                      whiteboardToolbarWidth,
-                      whiteboardSpacing,
-                    }}
-                  />
+                {meetingMode === meetingModes.CONFERENCE ? (
+                  <>
+                    {mMeeting?.pinnedParticipants.size > 0 &&
+                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                      meetingLayout === meetingLayouts.SIDEBAR) ? (
+                      <PinnedLayoutViewContainer
+                        {...{
+                          height: containerHeight - topBarHeight,
+                          width:
+                            containerWidth -
+                            (isTab || isMobile
+                              ? 0
+                              : typeof sideBarMode === "string"
+                              ? sideBarContainerWidth
+                              : 0),
+                          whiteboardToolbarWidth,
+                          whiteboardSpacing,
+                        }}
+                      />
+                    ) : (
+                      <MainViewContainer
+                        {...{
+                          height: containerHeight - topBarHeight,
+                          width:
+                            containerWidth -
+                            (isTab || isMobile
+                              ? 0
+                              : typeof sideBarMode === "string"
+                              ? sideBarContainerWidth
+                              : 0),
+                          whiteboardToolbarWidth,
+                          whiteboardSpacing,
+                        }}
+                      />
+                    )}
+                    <ParticipantsAudioPlayer />
+                    <MediaRequested />
+                    <RequestedEntries />
+                  </>
                 ) : (
-                  <MainViewContainer
-                    {...{
-                      height: containerHeight - topBarHeight,
-                      width:
-                        containerWidth -
-                        (isTab || isMobile
-                          ? 0
-                          : typeof sideBarMode === "string"
-                          ? sideBarContainerWidth
-                          : 0),
-                      whiteboardToolbarWidth,
-                      whiteboardSpacing,
-                    }}
-                  />
+                  <>
+                    <HLSContainer />
+                  </>
                 )}
+
                 <SideViewContainer
                   {...{
                     topBarHeight,
@@ -645,8 +808,6 @@ const MeetingContainer = () => {
                 />
               </div>
             </div>
-            <MediaRequested />
-            <RequestedEntries />
           </>
         ) : (
           <ClickAnywhereToContinue title="Entry denied!" />
@@ -654,7 +815,23 @@ const MeetingContainer = () => {
       ) : askJoin ? (
         <ClickAnywhereToContinue title="Waiting to join..." />
       ) : !mMeeting.isMeetingJoined ? (
-        <WaitingToJoin />
+        isRecorder ? (
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.palette.background.default,
+            }}
+          >
+            <CircularProgress size={"4rem"} />
+          </Box>
+        ) : (
+          <WaitingToJoin />
+        )
       ) : null}
     </div>
   );

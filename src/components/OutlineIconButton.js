@@ -6,7 +6,7 @@ import {
   Typography,
   useTheme,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
@@ -26,10 +26,14 @@ const OutlineIconButton = ({
   btnID,
   buttonText,
   lottieOption,
+  isRequestProcessing,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
+  const [blinkingState, setBlinkingState] = useState(1);
+
+  const intervalRef = useRef();
 
   const iconSize = useResponsiveSize({
     xl: 24 * (large ? 1.7 : 1),
@@ -41,6 +45,32 @@ const OutlineIconButton = ({
 
   const { animationsEnabled } = useMeetingAppContext();
 
+  const startBlinking = () => {
+    intervalRef.current = setInterval(() => {
+      setBlinkingState((s) => (s === 1 ? 0.4 : 1));
+    }, 600);
+  };
+
+  const stopBlinking = () => {
+    clearInterval(intervalRef.current);
+
+    setBlinkingState(1);
+  };
+
+  useEffect(() => {
+    if (isRequestProcessing) {
+      startBlinking();
+    } else {
+      stopBlinking();
+    }
+  }, [isRequestProcessing]);
+
+  useEffect(() => {
+    return () => {
+      stopBlinking();
+    };
+  }, []);
+
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
       <Box
@@ -49,7 +79,7 @@ const OutlineIconButton = ({
           justifyContent: "center",
           alignItems: "center",
           borderRadius: theme.spacing(1),
-          overflow: "hidden",
+          // overflow: "hidden",
           backgroundColor: bgColor
             ? bgColor
             : isFocused
@@ -66,6 +96,7 @@ const OutlineIconButton = ({
           }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
+          opacity: blinkingState,
         }}
       >
         <ButtonBase
@@ -89,7 +120,7 @@ const OutlineIconButton = ({
             p={1}
             style={{
               opacity: disabled ? 0.7 : 1,
-              overflow: "hidden",
+              // overflow: "hidden",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -100,7 +131,7 @@ const OutlineIconButton = ({
             }}
           >
             {Icon && (
-              <Badge color={"secondary"} badgeContent={badge}>
+              <Badge max={1000} color={"secondary"} badgeContent={badge}>
                 {lottieOption ? (
                   <Box
                     style={{
