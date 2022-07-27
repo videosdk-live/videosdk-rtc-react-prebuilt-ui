@@ -1,6 +1,8 @@
 import { Box, Button, Typography, useTheme } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import { useEffect, useRef, useState } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { sleep } from "../../meetingContainer/hlsViewContainer/PlayerViewer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 
 // const PollList = ({ panelHeight }) => {
@@ -175,6 +177,49 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 // };
 
 // export default PollList;
+
+const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
+  const [isActive, setIsActive] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  const isActiveRef = useRef(isActive);
+
+  const createdAtRef = useRef(new Date(createdAt));
+
+  const check = async () => {
+    if (
+      createdAtRef.current.getTime() + timeout * 1000 >
+      new Date().getTime()
+    ) {
+      if (!isActiveRef.current) {
+        setIsActive(true);
+      }
+
+      setTimeLeft(
+        (createdAtRef.current.getTime() +
+          timeout * 1000 -
+          new Date().getTime()) /
+          1000
+      );
+
+      await sleep(1000);
+      return await check();
+    } else {
+      setIsActive(false);
+      setTimeLeft(0);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    isActiveRef.current = isActive;
+  }, [isActive]);
+
+  useEffect(hasTimer ? check : () => {}, []);
+
+  return { isActive, timeLeft };
+};
+
 const Poll = ({ poll, panelHeight, index }) => {
   const theme = useTheme();
 
@@ -211,12 +256,18 @@ const Poll = ({ poll, panelHeight, index }) => {
   //       }
   //     }) !== -1;
 
-  console.log("poll", poll);
-
   const { publish: EndPublish } = usePubSub(`END_POLL`);
   const { publish: RemoveFromDraftPublish } = usePubSub(
     `REMOVE_POLL_FROM_DRAFT`
   );
+
+  const { hasCorrectAnswer, hasTimer, timeout, createdAt } = poll;
+
+  const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
+    timeout,
+    createdAt,
+    hasTimer,
+  });
 
   return (
     <Box

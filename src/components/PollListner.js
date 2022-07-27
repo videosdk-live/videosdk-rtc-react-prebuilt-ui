@@ -63,9 +63,12 @@ const PollListner = ({ poll }) => {
 const PollsListner = () => {
   const { polls, setPolls, draftPolls, setDraftPolls } = useMeetingAppContext();
   usePubSub(`CREATE_POLL`, {
-    onMessageReceived: ({ message }) => {
+    onMessageReceived: ({ message, timestamp }) => {
       console.log(message, "onMessageReceived");
-      setPolls((s) => [...s, message]);
+      setPolls((s) => [
+        ...s,
+        { ...message, createdAt: timestamp, submissions: [] },
+      ]);
     },
     onOldMessagesReceived: (messages) => {
       console.log(messages, "onOldMessagesReceived");
@@ -78,8 +81,8 @@ const PollsListner = () => {
         }
         return 0;
       });
-      const newPolls = sortedMessage.map(({ message }) => {
-        return { ...message, submissions: [] };
+      const newPolls = sortedMessage.map(({ message, timestamp }) => {
+        return { ...message, createdAt: timestamp, submissions: [] };
       });
       setPolls(newPolls);
     },

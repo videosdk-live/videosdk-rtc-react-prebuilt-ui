@@ -209,6 +209,16 @@ const CreatePollPart = ({
                       <MarkCorrectCheckbox
                         value={item.isCorrect}
                         onClick={() => {
+                          // setOptions(
+                          //   options.map((option) => {
+                          //     return option.optionId === item.optionId
+                          //       ? {
+                          //           ...option,
+                          //           isCorrect: !option.isCorrect,
+                          //         }
+                          //       : { ...option, isCorrect: false };
+                          //   })
+                          // );
                           setOptions(
                             options.map((option) => {
                               if (option.optionId === item.optionId) {
@@ -400,11 +410,29 @@ const PollButtonPart = ({
           publishCreatePoll(
             {
               id: uuid(),
-              question: question,
-              options: options,
-              // createdAt: new Date(),
-              timeout: 0,
+              question: "question question question question",
+              options: [
+                {
+                  optionId: "123",
+                  option: "123",
+                  isCorrect: false,
+                },
+                {
+                  optionId: "456",
+                  option: "456",
+                  isCorrect: false,
+                },
+                {
+                  optionId: "789",
+                  option: "789",
+                  isCorrect: false,
+                },
+              ],
+              hasCorrectAnswer: false,
+              timeout: 10,
+              hasTimer: true,
               isActive: true,
+              // createdAt: new Date(),
             },
             { persist: true }
           );
