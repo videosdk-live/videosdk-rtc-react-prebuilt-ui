@@ -220,7 +220,7 @@ const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
   return { isActive, timeLeft };
 };
 
-const Poll = ({ poll, panelHeight, index }) => {
+const Poll = ({ poll, panelHeight, index, isDraft }) => {
   const theme = useTheme();
 
   const padding = useResponsiveSize({
@@ -249,17 +249,18 @@ const Poll = ({ poll, panelHeight, index }) => {
   //     },
   //   });
 
-  //   const isSubmitted =
-  //     poll?.submissions?.findIndex(({ participantId }) => {
-  //       if (participantId === localParticipantId) {
-  //         return true;
-  //       }
-  //     }) !== -1;
+  // const isSubmitted =
+  //   poll?.submissions?.findIndex(({ participantId }) => {
+  //     if (participantId === localParticipantId) {
+  //       return true;
+  //     }
+  //   }) !== -1;
 
   const { publish: EndPublish } = usePubSub(`END_POLL`);
   const { publish: RemoveFromDraftPublish } = usePubSub(
     `REMOVE_POLL_FROM_DRAFT`
   );
+  const { publish: publishCreatePoll } = usePubSub(`CREATE_POLL`);
 
   const { hasCorrectAnswer, hasTimer, timeout, createdAt } = poll;
 
@@ -287,7 +288,7 @@ const Poll = ({ poll, panelHeight, index }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: "pink",
+            // backgroundColor: "pink",
             padding: 0,
             margin: 0,
             // justifyContent: "center",
@@ -327,7 +328,7 @@ const Poll = ({ poll, panelHeight, index }) => {
               ? poll.timeout
               : poll.isActive
               ? "Live"
-              : poll.isDraft
+              : isDraft
               ? "Drafted"
               : "Ended"}
           </Typography>
@@ -364,7 +365,10 @@ const Poll = ({ poll, panelHeight, index }) => {
                       flex: 1,
                     }}
                   ></Box>
-                  <Typography style={{ marginLeft: 24 }}>{`30%`}</Typography>
+
+                  <Typography style={{ marginLeft: isDraft ? 52 : 24 }}>
+                    {!isDraft && `30%`}
+                  </Typography>
                 </Box>
               </Box>
             );
@@ -372,20 +376,30 @@ const Poll = ({ poll, panelHeight, index }) => {
 
           <Box
             style={{
-              marginTop: 24,
+              marginTop: 20,
+              marginBottom: 20,
               display: "flex",
               alignItems: "flex-end",
               justifyContent: "flex-end",
             }}
           >
-            {poll.isDraft ? (
+            {isDraft ? (
               <Button
                 variant="outlined"
                 size="small"
                 onClick={() => {
                   RemoveFromDraftPublish(
+                    { pollId: poll.id },
+                    { persist: true }
+                  );
+                  publishCreatePoll(
                     {
-                      pollId: poll.id,
+                      id: poll.id,
+                      question: poll.question,
+                      options: poll.options,
+                      // createdAt: new Date(),
+                      timeout: 0,
+                      isActive: true,
                     },
                     { persist: true }
                   );
@@ -396,20 +410,23 @@ const Poll = ({ poll, panelHeight, index }) => {
                 Launch
               </Button>
             ) : (
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => {
-                  EndPublish(
-                    {
-                      pollId: poll.id,
-                    },
-                    { persist: true }
-                  );
-                }}
-              >
-                End the Poll
-              </Button>
+              poll.timeout === 0 &&
+              poll.isActive && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    EndPublish(
+                      {
+                        pollId: poll.id,
+                      },
+                      { persist: true }
+                    );
+                  }}
+                >
+                  End the Poll
+                </Button>
+              )
             )}
           </Box>
         </Box>
@@ -486,7 +503,14 @@ const PollList = ({ panelHeight }) => {
           }}
         >
           {draftPolls.map((poll, index) => {
-            return <Poll poll={poll} panelHeight={panelHeight} index={index} />;
+            return (
+              <Poll
+                poll={poll}
+                panelHeight={panelHeight}
+                index={index}
+                isDraft={true}
+              />
+            );
           })}
           {polls.map((poll, index) => {
             return <Poll poll={poll} panelHeight={panelHeight} index={index} />;
