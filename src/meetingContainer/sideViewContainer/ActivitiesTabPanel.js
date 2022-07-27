@@ -14,6 +14,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import CreatePoll from "../../components/pollContainer/CreatePoll";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import PollList from "../../components/pollContainer/PollList";
+import SubmitPollList from "../../components/pollContainer/SubmitPollList";
 
 const ActivitiesTabPanel = ({ panelHeight }) => {
   const theme = useTheme();
@@ -26,14 +27,25 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     xs: 4,
   });
 
-  const { setIsPollSelected, isPollSelected, polls, isCreateNewPollClicked } =
-    useMeetingAppContext();
+  const {
+    setIsPollSelected,
+    isPollSelected,
+    polls,
+    draftPolls,
+    isCreateNewPollClicked,
+    canCreatePoll,
+  } = useMeetingAppContext();
 
   return isPollSelected ? (
-    polls.length >= 1 && !isCreateNewPollClicked ? (
-      <PollList {...{ panelHeight }} />
+    canCreatePoll ? (
+      (polls.length >= 1 || draftPolls.length >= 1) &&
+      !isCreateNewPollClicked ? (
+        <PollList {...{ panelHeight }} />
+      ) : (
+        <CreatePoll {...{ panelHeight }} />
+      )
     ) : (
-      <CreatePoll {...{ panelHeight }} />
+      <SubmitPollList {...{ panelHeight }} />
     )
   ) : (
     <List style={{ padding: listPadding }}>

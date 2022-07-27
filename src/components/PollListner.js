@@ -6,7 +6,7 @@ const PollListner = ({ poll }) => {
 
   usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
     onMessageReceived: ({ message, senderId: participantId, timestamp }) => {
-      console.log(message);
+      console.log(message, participantId, timestamp, "onMessageReceived");
       setPolls((s) => {
         return s.map((_poll) => {
           if (poll.id === _poll.id) {
@@ -61,7 +61,7 @@ const PollListner = ({ poll }) => {
 };
 
 const PollsListner = () => {
-  const { polls, setPolls } = useMeetingAppContext();
+  const { polls, setPolls, draftPolls, setDraftPolls } = useMeetingAppContext();
   usePubSub(`CREATE_POLL`, {
     onMessageReceived: ({ message }) => {
       console.log(message, "onMessageReceived");
@@ -86,7 +86,8 @@ const PollsListner = () => {
   });
 
   usePubSub(`END_POLL`, {
-    onMessageReceived: (message) => {
+    onMessageReceived: ({ message }) => {
+      console.log(message, "onMessageReceivedEndPOLL");
       setPolls((s) => {
         return s.map((_poll) => {
           if (message.pollId === _poll.id) {
@@ -115,27 +116,64 @@ const PollsListner = () => {
     },
   });
 
-  usePubSub(`DRAFT_POLL`, {
-    onMessageReceived: (message) => {
-      console.log(message);
+  usePubSub(`DRAFT_A_POLL`, {
+    onMessageReceived: ({ message }) => {
+      console.log(message, "DRAFT_A_POLL");
+      setDraftPolls((s) => [...s, message]);
     },
-    onOldMessagesReceived: (message) => {
-      console.log(message);
+    onOldMessagesReceived: (messages) => {
+      console.log(messages);
+      const sortedMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      });
+      const newPolls = sortedMessage.map(({ message }) => {
+        return { ...message };
+      });
+      setDraftPolls(newPolls);
     },
   });
 
-  usePubSub(`REMOVE_FROM_DRAFT`, {
-    onMessageReceived: (message) => {
-      console.log(message);
+  usePubSub(`REMOVE_POLL_FROM_DRAFT`, {
+    onMessageReceived: ({ message }) => {
+      console.log(message, "REMOVE_POLL_FROM_DRAFT");
+      setDraftPolls((s) => {
+        return s.map((_poll) => {
+          if (message.pollId === _poll.id) {
+            return { ..._poll };
+          } else {
+            return _poll;
+          }
+        });
+      });
     },
-    onOldMessagesReceived: (message) => {
-      console.log(message);
+    onOldMessagesReceived: (messages) => {
+      setDraftPolls((s) =>
+        s.filter(
+          (_poll) =>
+            messages.findIndex(({ message }) => {
+              return message.pollId === _poll.id;
+            }) === -1
+        )
+      );
     },
   });
 
-  return polls?.map((poll) => {
-    return <PollListner poll={poll} />;
-  });
+  return (
+    <>
+      {polls?.map((poll) => {
+        return <PollListner poll={poll} />;
+      })}
+      {draftPolls?.map((poll) => {
+        return <PollListner poll={poll} />;
+      })}
+    </>
+  );
 };
 
 export default PollsListner;

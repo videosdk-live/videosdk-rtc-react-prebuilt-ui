@@ -90,6 +90,7 @@ export const MeetingAppProvider = ({
   canRemoveOtherParticipant,
   notificationSoundEnabled,
   canPin,
+  canCreatePoll,
   selectedMic,
   selectedWebcam,
   joinScreenWebCam,
@@ -143,6 +144,7 @@ export const MeetingAppProvider = ({
   const [downstreamUrl, setDownstreamUrl] = useState(null);
   const [isPollSelected, setIsPollSelected] = useState(false);
   const [polls, setPolls] = useState([]);
+  const [draftPolls, setDraftPolls] = useState([]);
   const [isCreateNewPollClicked, setIsCreateNewPollClicked] = useState(false);
   const [isQASelected, setIsQASelected] = useState(false);
   const [optionArr, setOptionArr] = useState([
@@ -237,6 +239,7 @@ export const MeetingAppProvider = ({
         notificationSoundEnabled,
         canToggleWhiteboard,
         canDrawOnWhiteboard,
+        canCreatePoll,
         animationsEnabled,
         topbarEnabled,
         notificationAlertsEnabled,
@@ -274,6 +277,7 @@ export const MeetingAppProvider = ({
         isQASelected,
         optionArr,
         polls,
+        draftPolls,
 
         // setters
         setSideBarMode,
@@ -293,6 +297,7 @@ export const MeetingAppProvider = ({
         setIsQASelected,
         setOptionArr,
         setPolls,
+        setDraftPolls,
       }}
     >
       <SnackbarProvider

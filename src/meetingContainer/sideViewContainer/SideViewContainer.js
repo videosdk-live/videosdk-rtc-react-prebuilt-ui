@@ -29,6 +29,7 @@ const SideBarTabView = ({ width, height }) => {
     isPollSelected,
     polls,
     isCreateNewPollClicked,
+    canCreatePoll,
   } = useMeetingAppContext();
   const { participants } = useMeeting();
   const value =
@@ -125,7 +126,9 @@ const SideBarTabView = ({ width, height }) => {
                       : sideBarMode === "ADD_LIVE_STREAM"
                       ? "Add Live Streams"
                       : isPollSelected
-                      ? polls.length >= 1 && !isCreateNewPollClicked
+                      ? !canCreatePoll
+                        ? `Polls (${polls.length})`
+                        : polls.length >= 1 && !isCreateNewPollClicked
                         ? `Polls (${polls.length})`
                         : "Create a poll"
                       : capitalize(String(sideBarMode || "").toLowerCase())}

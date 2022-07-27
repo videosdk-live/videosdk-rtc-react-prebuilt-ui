@@ -175,8 +175,9 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 // };
 
 // export default PollList;
-const Poll = ({ poll, panelHeight }) => {
+const Poll = ({ poll, panelHeight, index }) => {
   const theme = useTheme();
+
   const padding = useResponsiveSize({
     xl: 12,
     lg: 10,
@@ -191,24 +192,223 @@ const Poll = ({ poll, panelHeight }) => {
     sm: 8,
     xs: 6,
   });
-  const { polls, setIsCreateNewPollClicked } = useMeetingAppContext();
-  const mMeeting = useMeeting();
-  const localParticipantId = mMeeting?.localParticipant?.id;
-  const { publish } = usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
-    onMessageReceived: (message) => {
-      console.log(message);
-    },
-    onOldMessagesReceived: (message) => {
-      console.log(message);
-    },
-  });
+  const { setIsCreateNewPollClicked } = useMeetingAppContext();
+  //   const mMeeting = useMeeting();
+  //   const localParticipantId = mMeeting?.localParticipant?.id;
+  //   const { publish } = usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
+  //     onMessageReceived: (message) => {
+  //       console.log(message);
+  //     },
+  //     onOldMessagesReceived: (message) => {
+  //       console.log(message);
+  //     },
+  //   });
 
-  const isSubmitted =
-    poll?.submissions?.findIndex(({ participantId }) => {
-      if (participantId === localParticipantId) {
-        return true;
-      }
-    }) !== -1;
+  //   const isSubmitted =
+  //     poll?.submissions?.findIndex(({ participantId }) => {
+  //       if (participantId === localParticipantId) {
+  //         return true;
+  //       }
+  //     }) !== -1;
+
+  console.log("poll", poll);
+
+  const { publish: EndPublish } = usePubSub(`END_POLL`);
+  const { publish: RemoveFromDraftPublish } = usePubSub(
+    `REMOVE_POLL_FROM_DRAFT`
+  );
+
+  return (
+    <Box
+      style={{
+        borderBottom: "1px solid #70707033",
+      }}
+    >
+      <Box
+        style={{
+          margin: padding,
+          marginTop: marginY,
+          marginBottom: marginY,
+          // backgroundColor: "purple",
+        }}
+      >
+        <Box
+          style={{
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "pink",
+            padding: 0,
+            margin: 0,
+            // justifyContent: "center",
+          }}
+        >
+          <Typography
+            style={{
+              fontSize: 14,
+              color: "#95959E",
+              fontWeight: 500,
+              marginTop: 0,
+              marginBottom: 0,
+            }}
+          >{`Poll ${index + 1}`}</Typography>
+          <p
+            style={{
+              marginLeft: 8,
+              marginRight: 8,
+              color: "#95959E",
+              fontWeight: 500,
+              marginTop: 0,
+              marginBottom: 0,
+            }}
+          >
+            &#x2022;
+          </p>
+          <Typography
+            style={{
+              fontSize: 14,
+              color: "#FF5D5D",
+              fontWeight: 500,
+              marginTop: 0,
+              marginBottom: 0,
+            }}
+          >
+            {poll.timeout > 0
+              ? poll.timeout
+              : poll.isActive
+              ? "Live"
+              : poll.isDraft
+              ? "Drafted"
+              : "Ended"}
+          </Typography>
+        </Box>
+        <Box style={{ marginTop: 20 }}>
+          <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
+            {poll.question}
+          </Typography>
+          {poll.options.map((item, j) => {
+            return (
+              <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
+                <Typography
+                  style={{
+                    fontSize: 16,
+                    color: "white",
+                    fontWeight: 500,
+                  }}
+                >
+                  {item.option}
+                </Typography>
+                <Box
+                  style={{
+                    marginTop: 4,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box
+                    style={{
+                      height: 6,
+                      backgroundColor: "#3D3C4E",
+                      borderRadius: 4,
+                      display: "flex",
+                      flex: 1,
+                    }}
+                  ></Box>
+                  <Typography style={{ marginLeft: 24 }}>{`30%`}</Typography>
+                </Box>
+              </Box>
+            );
+          })}
+
+          <Box
+            style={{
+              marginTop: 24,
+              display: "flex",
+              alignItems: "flex-end",
+              justifyContent: "flex-end",
+            }}
+          >
+            {poll.isDraft ? (
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  RemoveFromDraftPublish(
+                    {
+                      pollId: poll.id,
+                    },
+                    { persist: true }
+                  );
+
+                  setIsCreateNewPollClicked(false);
+                }}
+              >
+                Launch
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  EndPublish(
+                    {
+                      pollId: poll.id,
+                    },
+                    { persist: true }
+                  );
+                }}
+              >
+                End the Poll
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+
+  //   return (
+  //     <Box style={{ backgroundColor: isSubmitted ? "red" : "green" }}>
+  //       <Typography>{poll.question}</Typography>
+  //       {poll.options.map((option, i) => {
+  //         return (
+  //           <>
+  //             <Typography>{option.option}</Typography>
+  //             <Button
+  //               onClick={() => {
+  //                 publish({
+  //                   optionId: option.id,
+  //                   //   participantId: localParticipantId,
+  //                 });
+  //               }}
+  //             >
+  //               Submit
+  //             </Button>
+  //           </>
+  //         );
+  //       })}
+  //     </Box>
+  //   );
+};
+
+const PollList = ({ panelHeight }) => {
+  const { polls, draftPolls } = useMeetingAppContext();
+  const { setIsCreateNewPollClicked } = useMeetingAppContext();
+  const theme = useTheme();
+
+  const padding = useResponsiveSize({
+    xl: 12,
+    lg: 10,
+    md: 8,
+    sm: 6,
+    xs: 4,
+  });
+  const marginY = useResponsiveSize({
+    xl: 14,
+    lg: 12,
+    md: 10,
+    sm: 8,
+    xs: 6,
+  });
 
   return (
     <Box
@@ -232,117 +432,13 @@ const Poll = ({ poll, panelHeight }) => {
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
-            // backgroundColor: "purple",
-            // paddingBottom: 12,
-            // margin: padding,
           }}
         >
-          {polls.map((poll, i) => {
-            console.log("poll", poll);
-            return (
-              <Box
-                style={{
-                  borderBottom: "1px solid #70707033",
-                  //   paddingBottom: 8,
-                }}
-              >
-                <Box
-                  style={{
-                    margin: padding,
-                    marginTop: marginY,
-                    marginBottom: marginY,
-                    // backgroundColor: "purple",
-                  }}
-                >
-                  <Box
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      //   backgroundColor: "pink",
-                      padding: 0,
-                      margin: 0,
-                      // justifyContent: "center",
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        fontSize: 14,
-                        color: "#95959E",
-                        fontWeight: 500,
-                        marginTop: 0,
-                        marginBottom: 0,
-                      }}
-                    >{`Poll ${i + 1}`}</Typography>
-                    <p
-                      style={{
-                        marginLeft: 8,
-                        marginRight: 8,
-                        color: "#95959E",
-                        fontWeight: 500,
-                        marginTop: 0,
-                        marginBottom: 0,
-                      }}
-                    >
-                      &#x2022;
-                    </p>
-                    <Typography
-                      style={{
-                        fontSize: 14,
-                        color: "#FF5D5D",
-                        fontWeight: 500,
-                        marginTop: 0,
-                        marginBottom: 0,
-                      }}
-                    >
-                      {poll.timeout}
-                    </Typography>
-                  </Box>
-                  <Box style={{ marginTop: 20 }}>
-                    <Typography
-                      style={{ fontSize: 16, color: "white", fontWeight: 600 }}
-                    >
-                      {poll.question}
-                    </Typography>
-                    {poll.options.map((item, j) => {
-                      return (
-                        <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
-                          <Typography
-                            style={{
-                              fontSize: 16,
-                              color: "white",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {item.option}
-                          </Typography>
-                          <Box
-                            style={{
-                              marginTop: 4,
-                              display: "flex",
-                              alignItems: "center",
-                              // backgroundColor: "pink",
-                            }}
-                          >
-                            <Box
-                              style={{
-                                height: 6,
-                                backgroundColor: "#3D3C4E",
-                                borderRadius: 4,
-                                display: "flex",
-                                flex: 1,
-                              }}
-                            ></Box>
-                            <Typography
-                              style={{ marginLeft: 24 }}
-                            >{`30%`}</Typography>
-                          </Box>
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                </Box>
-              </Box>
-            );
+          {draftPolls.map((poll, index) => {
+            return <Poll poll={poll} panelHeight={panelHeight} index={index} />;
+          })}
+          {polls.map((poll, index) => {
+            return <Poll poll={poll} panelHeight={panelHeight} index={index} />;
           })}
         </Box>
         <Box style={{ padding: padding }}>
@@ -363,37 +459,6 @@ const Poll = ({ poll, panelHeight }) => {
       </Box>
     </Box>
   );
-
-  return (
-    <Box style={{ backgroundColor: isSubmitted ? "red" : "green" }}>
-      <Typography>{poll.question}</Typography>
-      {poll.options.map((option, i) => {
-        return (
-          <>
-            <Typography>{option.option}</Typography>
-            <Button
-              onClick={() => {
-                publish({
-                  optionId: option.id,
-                  //   participantId: localParticipantId,
-                });
-              }}
-            >
-              Submit
-            </Button>
-          </>
-        );
-      })}
-    </Box>
-  );
-};
-
-const PollList = ({ panelHeight }) => {
-  const { polls } = useMeetingAppContext();
-
-  return polls.map((poll) => {
-    return <Poll poll={poll} panelHeight={panelHeight} />;
-  });
 };
 
 export default PollList;

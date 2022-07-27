@@ -140,7 +140,7 @@ function BpCheckbox(CheckboxProps) {
   );
 }
 
-function MarkCorrectCheckbox(CheckboxProps) {
+export function MarkCorrectCheckbox(CheckboxProps) {
   return (
     <Checkbox
       disableRipple
@@ -159,7 +159,6 @@ function MarkCorrectCheckbox(CheckboxProps) {
 }
 
 const CreatePollPart = ({
-  Height,
   classes,
   isMarkAsCorrectChecked,
   setIsMarkAsCorrectChecked,
@@ -356,6 +355,7 @@ const PollButtonPart = ({
   setIsCreateNewPollClicked,
   theme,
   publishCreatePoll,
+  publishDraftPoll,
   question,
   options,
   padding,
@@ -368,6 +368,22 @@ const PollButtonPart = ({
           width: "50%",
           backgroundColor: theme.palette.common.sidePanel,
           color: theme.palette.common.white,
+        }}
+        onClick={() => {
+          publishDraftPoll(
+            {
+              id: uuid(),
+              question: question,
+              options: options,
+              // createdAt: new Date(),
+              // timeout: 0,
+              isActive: false,
+            },
+            {
+              persist: true,
+            }
+          );
+          setIsCreateNewPollClicked(false);
         }}
       >
         Save
@@ -387,7 +403,7 @@ const PollButtonPart = ({
               question: question,
               options: options,
               // createdAt: new Date(),
-              // timeout: 0,
+              timeout: 0,
               isActive: true,
             },
             { persist: true }
@@ -435,6 +451,7 @@ const CreatePoll = ({ panelHeight }) => {
   };
 
   const { publish: publishCreatePoll } = usePubSub(`CREATE_POLL`);
+  const { publish: publishDraftPoll } = usePubSub(`DRAFT_A_POLL`);
   const Height = panelHeight - 14;
 
   return (
@@ -457,7 +474,6 @@ const CreatePoll = ({ panelHeight }) => {
       >
         <CreatePollPart
           classes={classes}
-          Height={Height}
           isMarkAsCorrectChecked={isMarkAsCorrectChecked}
           setIsMarkAsCorrectChecked={setIsMarkAsCorrectChecked}
           isSetTimerChecked={isSetTimerChecked}
@@ -477,6 +493,7 @@ const CreatePoll = ({ panelHeight }) => {
           setIsCreateNewPollClicked={setIsCreateNewPollClicked}
           theme={theme}
           publishCreatePoll={publishCreatePoll}
+          publishDraftPoll={publishDraftPoll}
           question={question}
           options={options}
           padding={padding}

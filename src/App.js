@@ -105,6 +105,7 @@ const App = () => {
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
+      canCreatePoll: "canCreatePoll",
       //
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
@@ -225,6 +226,10 @@ const App = () => {
     }
     if (typeof paramKeys.participantCanToggleLivestream !== "string") {
       paramKeys.participantCanToggleLivestream = "false";
+    }
+
+    if (typeof paramKeys.canCreatePoll !== "string") {
+      paramKeys.canCreatePoll = "false";
     }
 
     if (paramKeys.autoStartLiveStream === "true") {
@@ -557,6 +562,7 @@ const App = () => {
               paramKeys.participantCanEndMeeting === "true",
             canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
             canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
+            canCreatePoll: paramKeys.canCreatePoll === "true",
             meetingLeft,
             setMeetingLeft,
             animationsEnabled: paramKeys.animationsEnabled !== "false",
