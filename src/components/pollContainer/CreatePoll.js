@@ -7,6 +7,7 @@ import {
   makeStyles,
   styled,
   TextField,
+  Typography,
   useTheme,
 } from "@material-ui/core";
 import { useState } from "react";
@@ -166,6 +167,7 @@ const CreatePollPart = ({
   setIsSetTimerChecked,
   question,
   setQuestion,
+  questionErr,
   option,
   setOption,
   options,
@@ -196,6 +198,13 @@ const CreatePollPart = ({
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
+      {questionErr && (
+        <Box style={{ marginTop: 2 }}>
+          <Typography style={{ color: "#E03B34", fontSize: 12 }}>
+            Please enter proper question.
+          </Typography>
+        </Box>
+      )}
 
       <Box style={{ marginTop: 24 }}>
         <Box>
@@ -359,7 +368,19 @@ const PollButtonPart = ({
   question,
   options,
   padding,
+  setQuestionErr,
 }) => {
+  const handleValidation = ({ question }) => {
+    let isValid = true;
+    if (question.length < 5) {
+      isValid = false;
+      setQuestionErr(true);
+      return false;
+    } else {
+      setQuestionErr(false);
+    }
+    return isValid;
+  };
   return (
     <Box style={{ display: "flex", padding: padding }}>
       <Button
@@ -397,18 +418,21 @@ const PollButtonPart = ({
           backgroundColor: theme.palette.primary.main,
         }}
         onClick={() => {
-          publishCreatePoll(
-            {
-              id: uuid(),
-              question: question,
-              options: options,
-              // createdAt: new Date(),
-              timeout: 0,
-              isActive: true,
-            },
-            { persist: true }
-          );
-          setIsCreateNewPollClicked(false);
+          const isValid = handleValidation({ question });
+          if (isValid) {
+            publishCreatePoll(
+              {
+                id: uuid(),
+                question: question,
+                options: options,
+                // createdAt: new Date(),
+                timeout: 0,
+                isActive: true,
+              },
+              { persist: true }
+            );
+            setIsCreateNewPollClicked(false);
+          }
         }}
       >
         Launch
@@ -432,6 +456,7 @@ const CreatePoll = ({ panelHeight }) => {
   const [isMarkAsCorrectChecked, setIsMarkAsCorrectChecked] = useState(false);
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
   const [question, setQuestion] = useState("");
+  const [questionErr, setQuestionErr] = useState(false);
   const [option, setOption] = useState({
     optionId: uuid(),
     option: null,
@@ -480,6 +505,7 @@ const CreatePoll = ({ panelHeight }) => {
           setIsSetTimerChecked={setIsSetTimerChecked}
           question={question}
           setQuestion={setQuestion}
+          questionErr={questionErr}
           option={option}
           setOption={setOption}
           options={options}
@@ -497,6 +523,7 @@ const CreatePoll = ({ panelHeight }) => {
           question={question}
           options={options}
           padding={padding}
+          setQuestionErr={setQuestionErr}
         />
       </Box>
     </Box>

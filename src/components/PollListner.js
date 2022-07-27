@@ -143,11 +143,17 @@ const PollsListner = () => {
     onMessageReceived: ({ message }) => {
       console.log(message, "REMOVE_POLL_FROM_DRAFT");
       setDraftPolls((s) => {
-        return s.map((_poll) => {
+        return s.filter((_poll) => {
+          console.log(
+            "REMOVE_POLL_FROM_DRAFT",
+            _poll.id,
+            message.pollId,
+            message.pollId === _poll.id
+          );
           if (message.pollId === _poll.id) {
-            return { ..._poll };
+            return false;
           } else {
-            return _poll;
+            return true;
           }
         });
       });
