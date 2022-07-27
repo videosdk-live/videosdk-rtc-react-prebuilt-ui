@@ -369,6 +369,29 @@ const MeetingContainer = () => {
     }
   };
 
+  usePubSub("CHAT", {
+    onMessageReceived: (data) => {
+      const localParticipantId = mMeetingRef.current?.localParticipant?.id;
+
+      const { senderId, senderName, message } = data;
+
+      const isLocal = senderId === localParticipantId;
+
+      if (!isLocal) {
+        if (notificationSoundEnabled) {
+          new Audio(
+            `https://static.videosdk.live/prebuilt/notification.mp3`
+          ).play();
+        }
+        if (notificationAlertsEnabled) {
+          enqueueSnackbar(
+            trimSnackBarText(`${nameTructed(senderName, 15)} says: ${message}`)
+          );
+        }
+      }
+    },
+  });
+
   const _handleChatMessage = (data) => {
     const localParticipantId = mMeetingRef.current?.localParticipant?.id;
 
@@ -378,24 +401,6 @@ const MeetingContainer = () => {
 
     if (json_verify(text)) {
       const { type } = JSON.parse(text);
-
-      if (type === "CHAT") {
-        const { data: messageData } = JSON.parse(text);
-        if (!isLocal) {
-          if (notificationSoundEnabled) {
-            new Audio(
-              `https://static.videosdk.live/prebuilt/notification.mp3`
-            ).play();
-          }
-          if (notificationAlertsEnabled) {
-            enqueueSnackbar(
-              trimSnackBarText(
-                `${nameTructed(senderName, 15)} says: ${messageData.message}`
-              )
-            );
-          }
-        }
-      }
 
       if (type === "RAISE_HAND") {
         if (notificationSoundEnabled) {
