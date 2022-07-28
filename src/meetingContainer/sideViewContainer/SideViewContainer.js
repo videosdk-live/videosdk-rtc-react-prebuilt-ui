@@ -30,6 +30,8 @@ const SideBarTabView = ({ width, height }) => {
     polls,
     isCreateNewPollClicked,
     canCreatePoll,
+    sideBarNestedMode,
+    setSideBarNestedMode,
   } = useMeetingAppContext();
   const { participants } = useMeeting();
   const value =
@@ -113,8 +115,13 @@ const SideBarTabView = ({ width, height }) => {
                     justifyContent: "center",
                   }}
                 >
-                  {isPollSelected && (
-                    <IconButton style={{ padding: 0, margin: 0 }}>
+                  {sideBarNestedMode && (
+                    <IconButton
+                      onClick={() => {
+                        setSideBarNestedMode(null);
+                      }}
+                      style={{ padding: 0, margin: 0 }}
+                    >
                       <ArrowBackIos fontSize="small" />
                     </IconButton>
                   )}

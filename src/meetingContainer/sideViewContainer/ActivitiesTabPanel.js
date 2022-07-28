@@ -12,7 +12,10 @@ import QAIcon from "../../icons/QAIcon";
 import PollIcon from "../../icons/PollIcon";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import CreatePoll from "../../components/pollContainer/CreatePoll";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import PollList from "../../components/pollContainer/PollList";
 import SubmitPollList from "../../components/pollContainer/SubmitPollList";
 
@@ -34,9 +37,11 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     draftPolls,
     isCreateNewPollClicked,
     canCreatePoll,
+    setSideBarNestedMode,
+    sideBarNestedMode,
   } = useMeetingAppContext();
 
-  return isPollSelected ? (
+  return sideBarNestedMode === sideBarNestedModes.POLLS ? (
     canCreatePoll ? (
       (polls.length >= 1 || draftPolls.length >= 1) &&
       !isCreateNewPollClicked ? (
@@ -56,7 +61,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
           secondary: "Find out participant’s opinion.",
           disabled: false,
           onClick: () => {
-            setIsPollSelected(true);
+            setSideBarNestedMode(sideBarNestedModes.POLLS);
           },
         },
         {
