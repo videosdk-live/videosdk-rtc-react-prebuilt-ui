@@ -6,7 +6,6 @@ const PollListner = ({ poll }) => {
 
   usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
     onMessageReceived: ({ message, senderId: participantId, timestamp }) => {
-      console.log(message, participantId, timestamp, "onMessageReceived");
       setPolls((s) => {
         return s.map((_poll) => {
           if (poll.id === _poll.id) {
@@ -24,7 +23,6 @@ const PollListner = ({ poll }) => {
       });
     },
     onOldMessagesReceived: (messages) => {
-      console.log(messages);
       const sortedMappedMessages = messages
         .sort((a, b) => {
           if (a.timestamp > b.timestamp) {
@@ -64,14 +62,12 @@ const PollsListner = () => {
   const { polls, setPolls, draftPolls, setDraftPolls } = useMeetingAppContext();
   usePubSub(`CREATE_POLL`, {
     onMessageReceived: ({ message, timestamp }) => {
-      console.log(message, "onMessageReceived");
       setPolls((s) => [
         ...s,
         { ...message, createdAt: timestamp, submissions: [] },
       ]);
     },
     onOldMessagesReceived: (messages) => {
-      console.log(messages, "onOldMessagesReceived");
       const sortedMessage = messages.sort((a, b) => {
         if (a.timestamp > b.timestamp) {
           return -1;
@@ -90,7 +86,6 @@ const PollsListner = () => {
 
   usePubSub(`END_POLL`, {
     onMessageReceived: ({ message }) => {
-      console.log(message, "onMessageReceivedEndPOLL");
       setPolls((s) => {
         return s.map((_poll) => {
           if (message.pollId === _poll.id) {
@@ -121,11 +116,9 @@ const PollsListner = () => {
 
   usePubSub(`DRAFT_A_POLL`, {
     onMessageReceived: ({ message }) => {
-      console.log(message, "DRAFT_A_POLL");
       setDraftPolls((s) => [...s, message]);
     },
     onOldMessagesReceived: (messages) => {
-      console.log(messages);
       const sortedMessage = messages.sort((a, b) => {
         if (a.timestamp > b.timestamp) {
           return -1;
@@ -144,15 +137,8 @@ const PollsListner = () => {
 
   usePubSub(`REMOVE_POLL_FROM_DRAFT`, {
     onMessageReceived: ({ message }) => {
-      console.log(message, "REMOVE_POLL_FROM_DRAFT");
       setDraftPolls((s) => {
         return s.filter((_poll) => {
-          console.log(
-            "REMOVE_POLL_FROM_DRAFT",
-            _poll.id,
-            message.pollId,
-            message.pollId === _poll.id
-          );
           if (message.pollId === _poll.id) {
             return false;
           } else {

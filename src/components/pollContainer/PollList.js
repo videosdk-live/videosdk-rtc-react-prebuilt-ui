@@ -5,180 +5,7 @@ import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import { sleep } from "../../meetingContainer/hlsViewContainer/PlayerViewer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 
-// const PollList = ({ panelHeight }) => {
-//   const theme = useTheme();
-//   const padding = useResponsiveSize({
-//     xl: 12,
-//     lg: 10,
-//     md: 8,
-//     sm: 6,
-//     xs: 4,
-//   });
-//   const marginY = useResponsiveSize({
-//     xl: 14,
-//     lg: 12,
-//     md: 10,
-//     sm: 8,
-//     xs: 6,
-//   });
-//   const { polls, setIsCreateNewPollClicked } = useMeetingAppContext();
-//   return (
-// <Box
-//   style={{
-//     // padding: padding,
-//     height: panelHeight - 32,
-//     // backgroundColor: "pink",
-//   }}
-// >
-//   <Box
-//     style={{
-//       display: "flex",
-//       flexDirection: "column",
-//       justifyContent: "space-between",
-//       flex: 1,
-//       height: "100%",
-//     }}
-//   >
-//     <Box
-//       style={{
-//         display: "flex",
-//         flexDirection: "column",
-//         // backgroundColor: "purple",
-//         // paddingBottom: 12,
-//         // margin: padding,
-//       }}
-//     >
-//       {polls.map((option, i) => {
-//         console.log("option", option);
-//         return (
-//           <Box
-//             style={{
-//               borderBottom: "1px solid #70707033",
-//               //   paddingBottom: 8,
-//             }}
-//           >
-//             <Box
-//               style={{
-//                 margin: padding,
-//                 marginTop: marginY,
-//                 marginBottom: marginY,
-//                 // backgroundColor: "purple",
-//               }}
-//             >
-//               <Box
-//                 style={{
-//                   display: "flex",
-//                   alignItems: "center",
-//                   //   backgroundColor: "pink",
-//                   padding: 0,
-//                   margin: 0,
-//                   // justifyContent: "center",
-//                 }}
-//               >
-//                 <Typography
-//                   style={{
-//                     fontSize: 14,
-//                     color: "#95959E",
-//                     fontWeight: 500,
-//                     marginTop: 0,
-//                     marginBottom: 0,
-//                   }}
-//                 >{`Poll ${i + 1}`}</Typography>
-//                 <p
-//                   style={{
-//                     marginLeft: 8,
-//                     marginRight: 8,
-//                     color: "#95959E",
-//                     fontWeight: 500,
-//                     marginTop: 0,
-//                     marginBottom: 0,
-//                   }}
-//                 >
-//                   &#x2022;
-//                 </p>
-//                 <Typography
-//                   style={{
-//                     fontSize: 14,
-//                     color: "#FF5D5D",
-//                     fontWeight: 500,
-//                     marginTop: 0,
-//                     marginBottom: 0,
-//                   }}
-//                 >
-//                   {option.timeout}
-//                 </Typography>
-//               </Box>
-//               <Box style={{ marginTop: 20 }}>
-//                 <Typography
-//                   style={{ fontSize: 16, color: "white", fontWeight: 600 }}
-//                 >
-//                   {option.question}
-//                 </Typography>
-//                 {option.options.map((item, j) => {
-//                   return (
-//                     <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
-//                       <Typography
-//                         style={{
-//                           fontSize: 16,
-//                           color: "white",
-//                           fontWeight: 500,
-//                         }}
-//                       >
-//                         {item.option}
-//                       </Typography>
-//                       <Box
-//                         style={{
-//                           marginTop: 4,
-//                           display: "flex",
-//                           alignItems: "center",
-//                           // backgroundColor: "pink",
-//                         }}
-//                       >
-//                         <Box
-//                           style={{
-//                             height: 6,
-//                             backgroundColor: "#3D3C4E",
-//                             borderRadius: 4,
-//                             display: "flex",
-//                             flex: 1,
-//                           }}
-//                         ></Box>
-//                         <Typography
-//                           style={{ marginLeft: 24 }}
-//                         >{`30%`}</Typography>
-//                       </Box>
-//                     </Box>
-//                   );
-//                 })}
-//               </Box>
-//             </Box>
-//           </Box>
-//         );
-//       })}
-//     </Box>
-//     <Box style={{ padding: padding }}>
-//       <Button
-//         variant="contained"
-//         style={{
-//           width: "100%",
-//           color: theme.palette.common.white,
-//           backgroundColor: theme.palette.primary.main,
-//         }}
-//         onClick={() => {
-//           setIsCreateNewPollClicked(true);
-//         }}
-//       >
-//         Create new poll
-//       </Button>
-//     </Box>
-//   </Box>
-// </Box>
-//   );
-// };
-
-// export default PollList;
-
-const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
+export const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
   const [isActive, setIsActive] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
 
@@ -218,6 +45,16 @@ const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
   useEffect(hasTimer ? check : () => {}, []);
 
   return { isActive, timeLeft };
+};
+
+export const secondsToMinutes = (time) => {
+  var minutes = Math.floor((time % 3600) / 60)
+    .toString()
+    .padStart(2, "0");
+  var seconds = Math.floor(time % 60)
+    .toString()
+    .padStart(2, "0");
+  return minutes + " : " + seconds;
 };
 
 const Poll = ({ poll, panelHeight, index, isDraft }) => {
@@ -270,6 +107,30 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     hasTimer,
   });
 
+  const groupedSubmissionCount = poll?.submissions?.reduce(
+    (group, { optionId }) => {
+      group[optionId] = group[optionId] || 0;
+
+      group[optionId] += 1;
+      return group;
+    },
+    {}
+  );
+
+  const mMeeting = useMeeting();
+  const localParticipantId = mMeeting?.localParticipant?.id;
+  const localSubmittedOption = poll?.submissions?.find(
+    ({ participantId }) => participantId === localParticipantId
+  );
+
+  const totalSubmissions = poll?.submissions?.length;
+
+  useEffect(() => {
+    if (!poll.isActive && timeLeft === 0) {
+      EndPublish({ pollId: poll.id }, { persist: true });
+    }
+  }, [poll.isActive, timeLeft]);
+
   return (
     <Box
       style={{
@@ -281,17 +142,14 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
           margin: padding,
           marginTop: marginY,
           marginBottom: marginY,
-          // backgroundColor: "purple",
         }}
       >
         <Box
           style={{
             display: "flex",
             alignItems: "center",
-            // backgroundColor: "pink",
             padding: 0,
             margin: 0,
-            // justifyContent: "center",
           }}
         >
           <Typography
@@ -324,10 +182,12 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
               marginBottom: 0,
             }}
           >
-            {poll.timeout > 0
-              ? poll.timeout
-              : poll.isActive
-              ? "Live"
+            {poll.isActive
+              ? poll.timeout === 0
+                ? "Live"
+                : timeLeft === 0
+                ? "Ended"
+                : `Ended in ${secondsToMinutes(timeLeft)}`
               : isDraft
               ? "Drafted"
               : "Ended"}
@@ -338,6 +198,10 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
             {poll.question}
           </Typography>
           {poll.options.map((item, j) => {
+            const total = groupedSubmissionCount[item.optionId];
+            const optionSubmittedByLocal =
+              localSubmittedOption?.optionId === item.optionId;
+            const percentage = (total / totalSubmissions) * 100;
             return (
               <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
                 <Typography
@@ -364,10 +228,18 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                       display: "flex",
                       flex: 1,
                     }}
-                  ></Box>
+                  >
+                    <Box
+                      style={{
+                        backgroundColor: item.isCorrect ? "#1178F8" : "#9E9DA6",
+                        width: `${percentage}%`,
+                        borderRadius: 4,
+                      }}
+                    ></Box>
+                  </Box>
 
                   <Typography style={{ marginLeft: isDraft ? 52 : 24 }}>
-                    {!isDraft && `30%`}
+                    {!isDraft && `${percentage}%`}
                   </Typography>
                 </Box>
               </Box>
@@ -392,13 +264,16 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                     { pollId: poll.id },
                     { persist: true }
                   );
+                  console.log("poll", poll);
                   publishCreatePoll(
                     {
                       id: poll.id,
                       question: poll.question,
                       options: poll.options,
                       // createdAt: new Date(),
-                      timeout: 0,
+                      timeout: poll.timeout,
+                      hasTimer: poll.hasTimer,
+                      hasCorrectAnswer: poll.hasCorrectAnswer,
                       isActive: true,
                     },
                     { persist: true }

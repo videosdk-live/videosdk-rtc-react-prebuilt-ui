@@ -42,3 +42,12 @@ body {
   font-size: 1rem !important;
   margin-top: 14px;
 }
+
+input[type="time"]::-webkit-calendar-picker-indicator{
+  display: none;
+  filter:invert(97%) sepia(100%) saturate(0%) hue-rotate(129deg) brightness(110%) contrast(102%);
+  }
+
+input[type="time"]:focus-visible{
+    outline: none;
+  }

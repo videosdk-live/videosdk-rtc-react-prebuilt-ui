@@ -1,34 +1,15 @@
-import {
-  Box,
-  makeStyles,
-  TextField,
-  Typography,
-  useTheme,
-} from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import React, { useState } from "react";
+import AnswerSubmittedIcon from "../../icons/AnswerSubmittedIcon";
+import CorrectSelectedIcon from "../../icons/CorrectSelectedIcon";
+import WrongOptionSelectedIcon from "../../icons/WrongOptionSelectedIcon";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { MarkCorrectCheckbox } from "./CreatePoll";
-
-const useStyles = makeStyles(() => ({
-  textField: {
-    borderRadius: "4px",
-    color: "white",
-    fontWeight: 500,
-  },
-
-  root: {
-    "& .MuiFilledInput-input": {
-      padding: "12px 12px 12px",
-    },
-    borderRadius: "4px",
-  },
-}));
+import { secondsToMinutes, usePollStateFromTimer } from "./PollList";
 
 const SubmitPollListItem = ({ poll, panelHeight, index }) => {
-  const theme = useTheme();
-  const classes = useStyles();
   const padding = useResponsiveSize({
     xl: 12,
     lg: 10,
@@ -52,6 +33,30 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
     if (participantId === localParticipantId) {
       return true;
     }
+  });
+
+  const groupedSubmissionCount = poll?.submissions?.reduce(
+    (group, { optionId }) => {
+      group[optionId] = group[optionId] || 0;
+
+      group[optionId] += 1;
+      return group;
+    },
+    {}
+  );
+
+  const localSubmittedOption = poll?.submissions?.find(
+    ({ participantId }) => participantId === localParticipantId
+  );
+
+  const totalSubmissions = poll?.submissions?.length;
+
+  const { hasCorrectAnswer, hasTimer, timeout, createdAt } = poll;
+
+  const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
+    timeout,
+    createdAt,
+    hasTimer,
   });
 
   console.log("poll", poll);
@@ -107,13 +112,12 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
               marginBottom: 0,
             }}
           >
-            {/* {poll.timeout} */}
             {poll.timeout > 0
-              ? poll.timeout
+              ? !isTimerPollActive
+                ? "Ended"
+                : `Ended in ${secondsToMinutes(timeLeft)}`
               : poll.isActive
               ? "Live"
-              : poll.isDraft
-              ? "Drafted"
               : "Ended"}
           </Typography>
         </Box>
@@ -138,6 +142,11 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                   }
                 }) !== -1;
 
+              const total = groupedSubmissionCount[option.optionId];
+              const optionSubmittedByLocal =
+                localSubmittedOption?.optionId === option.optionId;
+              const percentage = (total / totalSubmissions) * 100;
+
               return (
                 <Box
                   style={{
@@ -145,28 +154,43 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                     marginBottom: 12,
                   }}
                 >
-                  {isSubmitted ? (
+                  {isSubmitted || !isTimerPollActive ? (
                     <Box
                       style={{
                         marginTop: 0,
                         width: "100%",
                       }}
                     >
-                      <Typography
-                        style={{
-                          fontSize: 16,
-                          color: "white",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {option.option}
-                      </Typography>
+                      <Box style={{ display: "flex", alignItems: "center" }}>
+                        <Typography
+                          style={{
+                            fontSize: 16,
+                            color: "white",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {option.option}
+                        </Typography>
+                        {optionSubmittedByLocal && poll.isActive && (
+                          <Box style={{ marginLeft: 8 }}>
+                            <AnswerSubmittedIcon />
+                          </Box>
+                        )}
+                        {/* {optionSubmittedByLocal ? (
+                          <Box style={{ marginLeft: 8 }}>
+                            <WrongOptionSelectedIcon />
+                          </Box>
+                        ) : (
+                          <Box style={{ marginLeft: 8 }}>
+                            <CorrectSelectedIcon />
+                          </Box>
+                        )} */}
+                      </Box>
                       <Box
                         style={{
                           marginTop: 4,
                           display: "flex",
                           alignItems: "center",
-                          // backgroundColor: "pink",
                         }}
                       >
                         <Box
@@ -177,16 +201,27 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                             display: "flex",
                             flex: 1,
                           }}
-                        ></Box>
+                        >
+                          <Box
+                            style={{
+                              backgroundColor: poll.isActive
+                                ? "#9E9DA6"
+                                : option.isCorrect && !poll.isActive
+                                ? "#1178F8"
+                                : "#9E9DA6",
+                              width: `${percentage}%`,
+                              borderRadius: 4,
+                            }}
+                          ></Box>
+                        </Box>
                         <Typography
                           style={{ marginLeft: 24 }}
-                        >{`30%`}</Typography>
+                        >{`${percentage}%`}</Typography>
                       </Box>
                     </Box>
                   ) : (
                     <>
                       <MarkCorrectCheckbox
-                        // value={option.isCorrect}
                         onClick={() => {
                           publish(
                             { optionId: option.optionId },
@@ -205,28 +240,6 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                       >
                         <Typography>{option.option}</Typography>
                       </Box>
-                      {/* <TextField
-                        fullWidth
-                        variant="filled"
-                        autocomplete="off"
-                        value={option.option}
-                        readOnly
-                        // disabled
-                        className={classes.root}
-                        style={{
-                          marginLeft: 8,
-                          backgroundColor: "#3D3C4E",
-                          // backgroundColor: option.isCorrect
-                          //   ? "#1178F8"
-                          //   : "#3D3C4E",
-                        }}
-                        InputProps={{
-                          disableUnderline: true,
-                          classes: {
-                            root: classes.textField,
-                          },
-                        }}
-                      /> */}
                     </>
                   )}
                 </Box>

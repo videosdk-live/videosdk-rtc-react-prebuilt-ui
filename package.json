@@ -4,21 +4,16 @@
   "private": true,
   "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.10/",
   "dependencies": {
-    "@date-io/date-fns": "1.3.13",
-    "@date-io/moment": "^2.14.0",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
-    "@material-ui/pickers": "3.2.8",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@videosdk.live/react-sdk": "^0.1.42",
     "compressorjs": "^1.1.1",
-    "date-fns": "2.8.1",
     "emoji-mart": "^3.0.1",
     "fabric": "^4.6.0",
     "hls.js": "^1.1.5",
-    "moment": "^2.29.4",
     "notistack": "^1.0.10",
     "react": "^17.0.2",
     "react-color": "^2.19.3",
@@ -39,7 +34,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts  start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

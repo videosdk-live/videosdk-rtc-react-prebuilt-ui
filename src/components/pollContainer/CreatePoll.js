@@ -5,17 +5,14 @@ import {
   FormControlLabel,
   FormGroup,
   makeStyles,
+  Radio,
   styled,
   TextField,
   Typography,
   useTheme,
 } from "@material-ui/core";
 import { useState } from "react";
-import { TimePicker } from "@material-ui/pickers";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 import { v4 as uuid } from "uuid";
-
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { usePubSub } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -143,7 +140,7 @@ function BpCheckbox(CheckboxProps) {
 
 export function MarkCorrectCheckbox(CheckboxProps) {
   return (
-    <Checkbox
+    <Radio
       disableRipple
       disableFocusRipple
       color="default"
@@ -172,8 +169,7 @@ const CreatePollPart = ({
   setOption,
   options,
   setOptions,
-  selectedDate,
-  handleDateChange,
+  setTimer,
   _handleKeyDown,
   padding,
 }) => {
@@ -211,27 +207,19 @@ const CreatePollPart = ({
           {options.length > 0 && (
             <Box>
               {options.map((item) => {
-                // console.log("item", item);
                 return (
                   <Box style={{ display: "flex", marginBottom: 12 }}>
                     {isMarkAsCorrectChecked && (
                       <MarkCorrectCheckbox
                         value={item.isCorrect}
-                        onClick={() => {
-                          // setOptions(
-                          //   options.map((option) => {
-                          //     return option.optionId === item.optionId
-                          //       ? {
-                          //           ...option,
-                          //           isCorrect: !option.isCorrect,
-                          //         }
-                          //       : { ...option, isCorrect: false };
-                          //   })
-                          // );
+                        checked={item.isCorrect === true}
+                        onChange={() => {
                           setOptions(
                             options.map((option) => {
                               if (option.optionId === item.optionId) {
                                 option.isCorrect = !option.isCorrect;
+                              } else {
+                                option.isCorrect = false;
                               }
                               return option;
                             })
@@ -349,18 +337,21 @@ const CreatePollPart = ({
                 />
               </FormGroup>
               {isSetTimerChecked && (
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <TimePicker
-                    ampm={false}
-                    // openTo="minutes"
-                    // views={["minutes", "seconds"]}
-                    format="mm:ss"
-                    // label="Minutes and seconds"
-                    style={{ width: "50%" }}
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                  />
-                </MuiPickersUtilsProvider>
+                <input
+                  type="time"
+                  placeholder="mm:ss"
+                  style={{
+                    backgroundColor: "#333244",
+                    border: 0,
+                    color: "white",
+                    fontFamily: "Roboto",
+                    fontSize: 14,
+                    borderBottom: "1px solid #fff",
+                  }}
+                  onChange={(e) => {
+                    setTimer(e.target.value);
+                  }}
+                ></input>
               )}
             </Box>
           </Box>
@@ -378,7 +369,10 @@ const PollButtonPart = ({
   question,
   options,
   padding,
+  timer,
   setQuestionErr,
+  isMarkAsCorrectChecked,
+  isSetTimerChecked,
 }) => {
   const handleValidation = ({ question }) => {
     let isValid = true;
@@ -391,6 +385,13 @@ const PollButtonPart = ({
     }
     return isValid;
   };
+
+  const timing = timer && timer.split(":");
+  const min = timing && timing[0];
+  const sec = timing && timing[1];
+  const finalMin = min * 60;
+  const finalSec = parseInt(finalMin) + parseInt(sec);
+
   return (
     <Box style={{ display: "flex", padding: padding }}>
       <Button
@@ -407,7 +408,9 @@ const PollButtonPart = ({
               question: question,
               options: options,
               // createdAt: new Date(),
-              // timeout: 0,
+              timeout: isSetTimerChecked ? finalSec : 0,
+              hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
+              hasTimer: isSetTimerChecked ? true : false,
               isActive: false,
             },
             {
@@ -433,43 +436,16 @@ const PollButtonPart = ({
             publishCreatePoll(
               {
                 id: uuid(),
-                question: "question question question question",
-                options: [
-                  {
-                    optionId: "123",
-                    option: "123",
-                    isCorrect: false,
-                  },
-                  {
-                    optionId: "456",
-                    option: "456",
-                    isCorrect: false,
-                  },
-                  {
-                    optionId: "789",
-                    option: "789",
-                    isCorrect: false,
-                  },
-                ],
-                hasCorrectAnswer: false,
-                timeout: 10,
-                hasTimer: true,
-                isActive: true,
+                question: question,
+                options: options,
                 // createdAt: new Date(),
+                timeout: isSetTimerChecked ? finalSec : 0,
+                hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
+                hasTimer: isSetTimerChecked ? true : false,
+                isActive: true,
               },
               { persist: true }
             );
-            // publishCreatePoll(
-            //   {
-            //     id: uuid(),
-            //     question: question,
-            //     options: options,
-            //     // createdAt: new Date(),
-            //     timeout: 0,
-            //     isActive: true,
-            //   },
-            //   { persist: true }
-            // );
             setIsCreateNewPollClicked(false);
           }
         }}
@@ -502,8 +478,7 @@ const CreatePoll = ({ panelHeight }) => {
     isCorrect: false,
   });
   const [options, setOptions] = useState([]);
-
-  const [selectedDate, handleDateChange] = useState(new Date());
+  const [timer, setTimer] = useState(null);
   const _handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -549,10 +524,9 @@ const CreatePoll = ({ panelHeight }) => {
           setOption={setOption}
           options={options}
           setOptions={setOptions}
-          selectedDate={selectedDate}
-          handleDateChange={handleDateChange}
           _handleKeyDown={_handleKeyDown}
           padding={padding}
+          setTimer={setTimer}
         />
         <PollButtonPart
           setIsCreateNewPollClicked={setIsCreateNewPollClicked}
@@ -562,7 +536,10 @@ const CreatePoll = ({ panelHeight }) => {
           question={question}
           options={options}
           padding={padding}
+          timer={timer}
           setQuestionErr={setQuestionErr}
+          isMarkAsCorrectChecked={isMarkAsCorrectChecked}
+          isSetTimerChecked={isSetTimerChecked}
         />
       </Box>
     </Box>
