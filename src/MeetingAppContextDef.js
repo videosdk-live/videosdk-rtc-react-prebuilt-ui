@@ -25,6 +25,12 @@ export const sideBarModes = {
   CONFIGURATION: "CONFIGURATION",
 };
 
+export const sideBarNestedModes = {
+  POLLS: "POLLS",
+  CREATE_POLL: "CREATE_POLL",
+  QNA: "QNA",
+};
+
 const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.palette.background.default,
@@ -119,12 +125,14 @@ export const MeetingAppProvider = ({
   participantCanToggleLivestream,
   reduceEdgeSpacing,
   isRecorder,
+  hlsPlayerControlsVisible,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
 
   const classes = useStyles();
   const [sideBarMode, setSideBarMode] = useState(null);
+  const [sideBarNestedMode, setSideBarNestedMode] = useState(null);
   const [activeSortedParticipants, setActiveSortedParticipants] = useState([]);
   const [mainViewParticipants, setMainViewParticipants] = useState([]);
   const [overlaidInfoVisible, setOverlaidInfoVisible] = useState(true);
@@ -278,6 +286,8 @@ export const MeetingAppProvider = ({
         optionArr,
         polls,
         draftPolls,
+        sideBarNestedMode,
+        hlsPlayerControlsVisible,
 
         // setters
         setSideBarMode,
@@ -298,6 +308,7 @@ export const MeetingAppProvider = ({
         setOptionArr,
         setPolls,
         setDraftPolls,
+        setSideBarNestedMode,
       }}
     >
       <SnackbarProvider

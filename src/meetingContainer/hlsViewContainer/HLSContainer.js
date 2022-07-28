@@ -74,7 +74,7 @@ export const MemoizedMotionPlayer = React.memo(
     prevProps.relativeLeft === nextProps.relativeLeft
 );
 
-const HLSContainer = () => {
+const HLSContainer = ({ width }) => {
   const { animationsEnabled, reduceEdgeSpacing } = useMeetingAppContext();
 
   const rowSpacing = useResponsiveSize({
@@ -93,7 +93,7 @@ const HLSContainer = () => {
     <div
       style={{
         height: `calc(100% - ${2 * spacing}px)`,
-        width: `calc(100% - ${2 * spacing}px)`,
+        width: width - 2 * spacing,
         margin: spacing,
         transition: `all ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
         transitionTimingFunction: "ease-in-out",

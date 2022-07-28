@@ -1,7 +1,10 @@
 import { Box, Button, Typography, useTheme } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useEffect, useRef, useState } from "react";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import { sleep } from "../../meetingContainer/hlsViewContainer/PlayerViewer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 
@@ -74,7 +77,8 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     sm: 8,
     xs: 6,
   });
-  const { setIsCreateNewPollClicked } = useMeetingAppContext();
+  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
+    useMeetingAppContext();
   //   const mMeeting = useMeeting();
   //   const localParticipantId = mMeeting?.localParticipant?.id;
   //   const { publish } = usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
@@ -279,7 +283,8 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                     { persist: true }
                   );
 
-                  setIsCreateNewPollClicked(false);
+                  // setIsCreateNewPollClicked(false);
+                  setSideBarNestedMode(sideBarNestedModes.POLLS);
                 }}
               >
                 Launch
@@ -335,7 +340,8 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
 
 const PollList = ({ panelHeight }) => {
   const { polls, draftPolls } = useMeetingAppContext();
-  const { setIsCreateNewPollClicked } = useMeetingAppContext();
+  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
+    useMeetingAppContext();
   const theme = useTheme();
 
   const padding = useResponsiveSize({
@@ -400,7 +406,9 @@ const PollList = ({ panelHeight }) => {
               backgroundColor: theme.palette.primary.main,
             }}
             onClick={() => {
-              setIsCreateNewPollClicked(true);
+              // setIsCreateNewPollClicked(true);
+
+              setSideBarNestedMode(sideBarNestedModes.CREATE_POLL);
             }}
           >
             Create new poll

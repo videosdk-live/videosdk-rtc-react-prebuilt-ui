@@ -18,7 +18,7 @@ const PlayerViewer = () => {
 
   const [canPlay, setCanPlay] = useState(false);
 
-  const { downstreamUrl } = useMeetingAppContext();
+  const { downstreamUrl, hlsPlayerControlsVisible } = useMeetingAppContext();
 
   const lottieSize = useResponsiveSize({
     xl: 240,
@@ -134,6 +134,7 @@ const PlayerViewer = () => {
           }}
         >
           <video
+            controls={hlsPlayerControlsVisible}
             id="hlsPlayer"
             autoPlay={true}
             style={{ width: "100%", height: "100%" }}
