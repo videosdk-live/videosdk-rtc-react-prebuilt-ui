@@ -85,10 +85,8 @@ export const CornerDisplayName = ({
     let stats = {};
     if (webcamStream) {
       stats = await getVideoStats();
-      console.log(participantId, "Video Score = ", stats?.score);
-    } else if (micStream || (micOn && isLocal)) {
+    } else if (micStream) {
       stats = await getAudioStats();
-      console.log(participantId, "Audio Score = ", stats?.score);
     }
     setScore(stats?.score);
   };
