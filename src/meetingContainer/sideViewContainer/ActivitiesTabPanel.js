@@ -43,6 +43,71 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
 
   return sideBarNestedMode === sideBarNestedModes.POLLS ? (
     canCreatePoll ? (
+      polls.length === 0 && draftPolls.length === 0 ? (
+        <CreatePoll {...{ panelHeight }} />
+      ) : sideBarNestedMode === sideBarNestedModes.CREATE_POLL ? (
+        <CreatePoll {...{ panelHeight }} />
+      ) : (
+        <PollList {...{ panelHeight }} />
+      )
+    ) : (
+      <SubmitPollList {...{ panelHeight }} />
+    )
+  ) : (
+    <List style={{ padding: listPadding }}>
+      {[
+        {
+          Icon: PollIcon,
+          primary: "Polls",
+          secondary: "Find out participant’s opinion.",
+          disabled: false,
+          onClick: () => {
+            setSideBarNestedMode(sideBarNestedModes.POLLS);
+          },
+        },
+        {
+          Icon: QAIcon,
+          primary: "Q&A",
+          secondary: "Participants can post questions.",
+          disabled: true,
+          onClick: () => {},
+        },
+      ].map(({ Icon, primary, secondary, disabled, onClick }, i) => (
+        <ButtonBase
+          disabled={disabled}
+          onClick={onClick}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: theme.palette.common.sidePanel,
+            width: "100%",
+            marginBottom: 12,
+            borderRadius: 4,
+          }}
+        >
+          <ListItem key={`activities_panel_item_${i}`}>
+            <ListItemAvatar>
+              <Icon />
+            </ListItemAvatar>
+            {/* <h1 style={{ fontSize: 16, fontWeight: 500, color: "white" }}>
+              {primary}
+            </h1>
+            <h2 style={{ fontSize: 14, color: "#95959E", fontWeight: 400 }}>
+              {secondary}
+            </h2> */}
+            <ListItemText primary={primary} secondary={secondary} />
+          </ListItem>
+        </ButtonBase>
+      ))}
+    </List>
+  );
+
+  return canCreatePoll &&
+    sideBarNestedMode === sideBarNestedModes.CREATE_POLL ? (
+    <CreatePoll {...{ panelHeight }} />
+  ) : sideBarNestedMode === sideBarNestedModes.POLLS ? (
+    canCreatePoll ? (
       (polls.length >= 1 || draftPolls.length >= 1) &&
       !isCreateNewPollClicked ? (
         <PollList {...{ panelHeight }} />
