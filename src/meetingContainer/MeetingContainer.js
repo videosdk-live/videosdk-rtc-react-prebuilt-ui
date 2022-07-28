@@ -754,6 +754,7 @@ const MeetingContainer = () => {
                 style={{
                   display: "flex",
                   height: containerHeight - topBarHeight,
+                  position: "relative",
                 }}
               >
                 {meetingMode === meetingModes.CONFERENCE ? (
@@ -797,7 +798,17 @@ const MeetingContainer = () => {
                   </>
                 ) : (
                   <>
-                    <HLSContainer />
+                    <HLSContainer
+                      {...{
+                        width:
+                          containerWidth -
+                          (isTab || isMobile
+                            ? 0
+                            : typeof sideBarMode === "string"
+                            ? sideBarContainerWidth
+                            : 0),
+                      }}
+                    />
                   </>
                 )}
 

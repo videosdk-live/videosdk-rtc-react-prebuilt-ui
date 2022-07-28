@@ -428,8 +428,8 @@ const PollButtonPart = ({
           backgroundColor: theme.palette.primary.main,
         }}
         onClick={() => {
-          const isValid = handleValidation({ question });
-          if (isValid) {
+          // const isValid = handleValidation({ question });
+          // if (isValid) {
             publishCreatePoll(
               {
                 id: uuid(),
@@ -471,7 +471,7 @@ const PollButtonPart = ({
             //   { persist: true }
             // );
             setIsCreateNewPollClicked(false);
-          }
+          // }
         }}
       >
         Launch
