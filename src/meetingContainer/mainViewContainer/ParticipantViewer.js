@@ -21,8 +21,10 @@ import circleRipple from "../../animations/circleRipple.json";
 import { Pin } from "../../icons";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import ReactPlayer from "react-player";
+import NetworkIcon from "../../icons/NetworkIcon";
 
 export const CornerDisplayName = ({
+  participantId,
   isPresenting,
   displayName,
   isLocal,
@@ -73,6 +75,44 @@ export const CornerDisplayName = ({
     [alwaysShowOverlay, isPinned, mouseOver]
   );
 
+  const { webcamStream, micStream, getVideoStats, getAudioStats } =
+    useParticipant(participantId);
+
+  const [statsIntervalId, setStatsIntervalId] = useState(null);
+  const [score, setScore] = useState({});
+
+  const updateStats = async () => {
+    let stats = {};
+    if (webcamStream) {
+      stats = await getVideoStats();
+      console.log(participantId, "Video Score = ", stats?.score);
+    } else if (micStream || (micOn && isLocal)) {
+      stats = await getAudioStats();
+      console.log(participantId, "Audio Score = ", stats?.score);
+    }
+    setScore(stats?.score);
+  };
+
+  useEffect(() => {
+    if (webcamStream || micStream) {
+      updateStats();
+      if (statsIntervalId) {
+        clearTimeout(statsIntervalId);
+      }
+      const id = setInterval(updateStats, 10000);
+      setStatsIntervalId(id);
+    } else {
+      if (statsIntervalId) {
+        clearTimeout(statsIntervalId);
+        setStatsIntervalId(null);
+      }
+    }
+
+    return () => {
+      clearInterval(statsIntervalId);
+    };
+  }, [webcamStream, micStream]);
+
   return (
     <>
       <div
@@ -98,7 +138,24 @@ export const CornerDisplayName = ({
           transitionTimingFunction: "linear",
         }}
       >
-        <Typography variant={isLGDesktop ? "subtitle1" : "subtitle2"}>
+        {(webcamStream || micStream) && (
+          <NetworkIcon
+            color1={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
+            color2={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
+            color3={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FFDBDB"}
+            color4={score > 8 ? "#3BA55D" : score > 5 ? "#69571F" : "#FFDBDB"}
+            style={{ marginRight: analyzerSize / 4 }}
+          />
+        )}
+        <Typography
+          variant={isLGDesktop ? "subtitle1" : "subtitle2"}
+          style={{
+            justifyContent: "center",
+            display: "flex",
+            alignItems: "center",
+            lineHeight: 1,
+          }}
+        >
           {isPresenting
             ? isLocal
               ? `You are presenting`
@@ -234,7 +291,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   });
 
   const mediaStream = useMemo(() => {
-    if (webcamOn) {
+    if (webcamOn && webcamStream) {
       const mediaStream = new MediaStream();
       mediaStream.addTrack(webcamStream.track);
       return mediaStream;
