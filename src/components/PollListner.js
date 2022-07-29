@@ -1,38 +1,36 @@
 import { usePubSub } from "@videosdk.live/react-sdk";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 
-const PollListner = ({ poll }) => {
-  const { setPolls } = useMeetingAppContext();
+const PollListner = ({ pollId }) => {
+  const { setCreatedPolls } = useMeetingAppContext();
 
-  usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
+  usePubSub(`SUBMIT_A_POLL_${pollId}`, {
     onMessageReceived: ({ message, senderId: participantId, timestamp }) => {
-      setPolls((s) => {
-        return s.map((_poll) => {
-          if (poll.id === _poll.id) {
-            return {
-              ..._poll,
-              submissions: [
-                ..._poll.submissions,
-                { optionId: message.optionId, participantId, timestamp },
-              ],
-            };
-          } else {
-            return _poll;
-          }
-        });
-      });
+      setCreatedPolls((s) =>
+        s.map((_poll) =>
+          pollId === _poll.id
+            ? {
+                ..._poll,
+                submissions: [
+                  ..._poll.submissions,
+                  { optionId: message.optionId, participantId, timestamp },
+                ],
+              }
+            : _poll
+        )
+      );
     },
     onOldMessagesReceived: (messages) => {
       const sortedMappedMessages = messages
-        .sort((a, b) => {
-          if (a.timestamp > b.timestamp) {
-            return -1;
-          }
-          if (a.timestamp < b.timestamp) {
-            return 1;
-          }
-          return 0;
-        })
+        // .sort((a, b) => {
+        //   if (a.timestamp > b.timestamp) {
+        //     return -1;
+        //   }
+        //   if (a.timestamp < b.timestamp) {
+        //     return 1;
+        //   }
+        //   return 0;
+        // })
         .map(({ senderId: participantId, timestamp, message }) => {
           const { optionId } = message;
 
@@ -43,9 +41,9 @@ const PollListner = ({ poll }) => {
           };
         });
 
-      setPolls((s) => {
+      setCreatedPolls((s) => {
         return s.map((_poll) => {
-          if (poll.id === _poll.id) {
+          if (pollId === _poll.id) {
             return { ..._poll, submissions: sortedMappedMessages };
           } else {
             return _poll;
@@ -59,60 +57,96 @@ const PollListner = ({ poll }) => {
 };
 
 const PollsListner = () => {
-  const { polls, setPolls, draftPolls, setDraftPolls } = useMeetingAppContext();
+  const {
+    polls,
+    setPolls,
+    draftPolls,
+    setDraftPolls,
+    setCreatedPolls,
+    setEndedPolls,
+    setSubmissions,
+  } = useMeetingAppContext();
+
   usePubSub(`CREATE_POLL`, {
     onMessageReceived: ({ message, timestamp }) => {
-      setPolls((s) => [
-        ...s,
+      // setPolls((s) => [
+      //   ...s,
+      //   { ...message, createdAt: timestamp, submissions: [] },
+      // ]);
+
+      setCreatedPolls((s) => [
         { ...message, createdAt: timestamp, submissions: [] },
+        ...s,
       ]);
     },
     onOldMessagesReceived: (messages) => {
-      const sortedMessage = messages.sort((a, b) => {
-        if (a.timestamp > b.timestamp) {
-          return -1;
-        }
-        if (a.timestamp < b.timestamp) {
-          return 1;
-        }
-        return 0;
-      });
-      const newPolls = sortedMessage.map(({ message, timestamp }) => {
-        return { ...message, createdAt: timestamp, submissions: [] };
-      });
-      setPolls(newPolls);
+      // const sortedMessage = messages.sort((a, b) => {
+      //   if (a.timestamp > b.timestamp) {
+      //     return -1;
+      //   }
+      //   if (a.timestamp < b.timestamp) {
+      //     return 1;
+      //   }
+      //   return 0;
+      // });
+      // const newPolls =sortedMessage.map(({ message, timestamp }) => {
+      //   return { ...message, createdAt: timestamp };
+      // });
+
+      // setPolls(newPolls);
+
+      setCreatedPolls((s) => [
+        ...s,
+        ...messages
+          .sort((a, b) =>
+            a.timestamp > b.timestamp ? -1 : a.timestamp < b.timestamp ? 1 : 0
+          )
+          .map(({ message, timestamp }) => ({
+            ...message,
+            createdAt: timestamp,
+            submissions: [],
+          })),
+      ]);
     },
   });
 
   usePubSub(`END_POLL`, {
     onMessageReceived: ({ message }) => {
-      console.log("message onMessageReceived", message);
-      setPolls((s) => {
-        return s.map((_poll) => {
-          if (message.pollId === _poll.id) {
-            return { ..._poll, isActive: false };
-          } else {
-            return _poll;
-          }
-        });
-      });
+      setEndedPolls((s) => [...s, { pollId: message.pollId }]);
+
+      // console.log("END_POLL message onMessageReceived", message);
+      // setPolls((s) => {
+      //   return s.map((_poll) => {
+      //     console.log(message.pollId, _poll.id);
+      //     if (message.pollId === _poll.id) {
+      //       return { ..._poll, isActive: false };
+      //     } else {
+      //       return _poll;
+      //     }
+      //   });
+      // });
     },
     onOldMessagesReceived: (messages) => {
-      console.log("message onOldMessagesReceived", messages);
-      setPolls((s) => {
-        return s.map((_poll) => {
-          const isEnded =
-            messages.findIndex(({ message }) => {
-              return message.pollId === _poll.id;
-            }) !== -1;
+      setEndedPolls((s) => [
+        ...s,
+        ...messages.map(({ message }) => ({ pollId: message.pollId })),
+      ]);
 
-          if (isEnded) {
-            return { ..._poll, isActive: false };
-          } else {
-            return _poll;
-          }
-        });
-      });
+      // console.log("message onOldMessagesReceived", messages);
+      // setPolls((s) => {
+      //   return s.map((_poll) => {
+      //     const isEnded =
+      //       messages.findIndex(({ message }) => {
+      //         return message.pollId === _poll.id;
+      //       }) !== -1;
+
+      //     if (isEnded) {
+      //       return { ..._poll, isActive: false };
+      //     } else {
+      //       return _poll;
+      //     }
+      //   });
+      // });
     },
   });
 
@@ -163,12 +197,12 @@ const PollsListner = () => {
 
   return (
     <>
-      {polls?.map((poll) => {
+      {polls?.map((poll) => (
+        <PollListner key={`poll_listner_${poll.id}`} pollId={poll.id} />
+      ))}
+      {/* {draftPolls?.map((poll) => {
         return <PollListner poll={poll} />;
-      })}
-      {draftPolls?.map((poll) => {
-        return <PollListner poll={poll} />;
-      })}
+      })} */}
     </>
   );
 };

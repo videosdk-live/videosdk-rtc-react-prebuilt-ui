@@ -378,8 +378,15 @@ const PollButtonPart = ({
   isSetTimerChecked,
   setSideBarNestedMode,
 }) => {
-  const handleValidation = ({ question }) => {
+  const handleValidation = ({
+    question,
+    options,
+    isSetTimerChecked,
+    finalSec,
+    isMarkAsCorrectChecked,
+  }) => {
     let isValid = true;
+
     if (question.length < 5) {
       isValid = false;
       setQuestionErr(true);
@@ -387,12 +394,28 @@ const PollButtonPart = ({
     } else {
       setQuestionErr(false);
     }
+
+    // check time finalSec if `isSetTimerChecked`
+    if (isSetTimerChecked && finalSec <= 0) {
+      return false;
+    } else {
+    }
+
+    if (
+      isMarkAsCorrectChecked &&
+      options.find(({ isCorrect }) => isCorrect) === -1
+    ) {
+      // please check any one option as correct if `isMarkAsCorrectChecked`
+      return false;
+    } else {
+    }
+
     return isValid;
   };
 
   const timing = timer && timer.split(":");
-  const min = timing && timing[0];
-  const sec = timing && timing[1];
+  const min = timing ? timing[0] : 0;
+  const sec = timing ? timing[1] : 0;
   const finalMin = min * 60;
   const finalSec = parseInt(finalMin) + parseInt(sec);
 
@@ -436,7 +459,13 @@ const PollButtonPart = ({
           backgroundColor: theme.palette.primary.main,
         }}
         onClick={() => {
-          const isValid = handleValidation({ question });
+          const isValid = handleValidation({
+            question,
+            options,
+            isSetTimerChecked,
+            isMarkAsCorrectChecked,
+            finalSec,
+          });
           if (isValid) {
             publishCreatePoll(
               {

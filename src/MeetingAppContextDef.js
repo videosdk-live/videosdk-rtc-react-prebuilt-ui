@@ -151,7 +151,6 @@ export const MeetingAppProvider = ({
   const [meetingMode, setMeetingMode] = useState(mode);
   const [downstreamUrl, setDownstreamUrl] = useState(null);
   const [isPollSelected, setIsPollSelected] = useState(false);
-  const [polls, setPolls] = useState([]);
   const [draftPolls, setDraftPolls] = useState([]);
   const [isCreateNewPollClicked, setIsCreateNewPollClicked] = useState(false);
   const [isQASelected, setIsQASelected] = useState(false);
@@ -165,6 +164,22 @@ export const MeetingAppProvider = ({
     //   isActive: false,
     // },
   ]);
+
+  const [createdPolls, setCreatedPolls] = useState([]);
+  const [endedPolls, setEndedPolls] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+
+  const polls = useMemo(
+    () =>
+      createdPolls.map((poll) => ({
+        ...poll,
+        isActive:
+          endedPolls.findIndex(({ pollId }) => pollId === poll.id) === -1,
+      })),
+    [createdPolls, endedPolls]
+  );
+
+  console.log(polls, "polls useMemo polls");
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -288,6 +303,9 @@ export const MeetingAppProvider = ({
         draftPolls,
         sideBarNestedMode,
         hlsPlayerControlsVisible,
+        createdPolls,
+        endedPolls,
+        submissions,
 
         // setters
         setSideBarMode,
@@ -306,9 +324,11 @@ export const MeetingAppProvider = ({
         setIsCreateNewPollClicked,
         setIsQASelected,
         setOptionArr,
-        setPolls,
         setDraftPolls,
         setSideBarNestedMode,
+        setCreatedPolls,
+        setEndedPolls,
+        setSubmissions,
       }}
     >
       <SnackbarProvider

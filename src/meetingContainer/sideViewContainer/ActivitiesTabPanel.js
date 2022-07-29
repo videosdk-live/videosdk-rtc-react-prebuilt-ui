@@ -39,8 +39,9 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     sideBarNestedMode,
   } = useMeetingAppContext();
 
-  return sideBarNestedMode === sideBarNestedModes.POLLS ||
-    sideBarNestedMode === sideBarNestedModes.CREATE_POLL ? (
+  console.log(sideBarNestedMode);
+
+  return sideBarNestedMode === sideBarNestedModes.POLLS ? (
     canCreatePoll ? (
       polls.length === 0 && draftPolls.length === 0 ? (
         <CreatePoll {...{ panelHeight }} />

@@ -1,6 +1,6 @@
 import { Box, Button, Typography, useTheme } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   sideBarNestedModes,
   useMeetingAppContext,
@@ -77,6 +77,7 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     sm: 8,
     xs: 6,
   });
+
   const { setIsCreateNewPollClicked, setSideBarNestedMode } =
     useMeetingAppContext();
   //   const mMeeting = useMeeting();
@@ -103,7 +104,7 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
   );
   const { publish: publishCreatePoll } = usePubSub(`CREATE_POLL`);
 
-  const { hasCorrectAnswer, hasTimer, timeout, createdAt } = poll;
+  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive } = poll;
 
   const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
     timeout,
@@ -111,28 +112,74 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     hasTimer,
   });
 
-  const groupedSubmissionCount =
-    poll.isActive &&
-    poll?.submissions?.reduce((group, { optionId }) => {
-      group[optionId] = group[optionId] || 0;
-
-      group[optionId] += 1;
-      return group;
-    }, {});
-
   const mMeeting = useMeeting();
-  const localParticipantId = mMeeting?.localParticipant?.id;
-  const localSubmittedOption = poll?.submissions?.find(
-    ({ participantId }) => participantId === localParticipantId
+
+  const localParticipantId = useMemo(
+    () => mMeeting?.localParticipant?.id,
+    [mMeeting]
   );
 
-  const totalSubmissions = poll?.submissions?.length;
+  const isPollActive = useMemo(
+    () => (hasTimer ? isTimerPollActive : isActive),
+    [hasTimer, isTimerPollActive, isActive]
+  );
 
-  //   useEffect(() => {
-  //     if (!poll.isActive && timeLeft === 0) {
-  //       EndPublish({ pollId: poll.id }, { persist: true });
-  //     }
-  //   }, [poll.isActive, timeLeft]);
+  const {
+    localSubmittedOption,
+    totalSubmissions,
+    groupedSubmissionCount,
+    maxSubmittedOptions,
+  } = useMemo(() => {
+    const localSubmittedOption = poll.submissions.find(
+      ({ participantId }) => participantId === localParticipantId
+    );
+
+    const totalSubmissions = poll.submissions.length;
+
+    const groupedSubmissionCount = poll.submissions.reduce(
+      (group, { optionId }) => {
+        group[optionId] = group[optionId] || 0;
+
+        group[optionId] += 1;
+
+        return group;
+      },
+      {}
+    );
+
+    const maxSubmittedOptions = [];
+
+    const maxSubmittedOptionId = Object.keys(groupedSubmissionCount)
+      .map((optionId) => ({
+        optionId,
+        count: groupedSubmissionCount[optionId],
+      }))
+      .sort((a, b) => {
+        if (a.count > b.count) {
+          return -1;
+        }
+        if (a.count < b.count) {
+          return 1;
+        }
+        return 0;
+      })[0]?.optionId;
+
+    Object.keys(groupedSubmissionCount).forEach((optionId) => {
+      if (
+        groupedSubmissionCount[optionId] ===
+        groupedSubmissionCount[maxSubmittedOptionId]
+      ) {
+        maxSubmittedOptions.push(optionId);
+      }
+    });
+
+    return {
+      localSubmittedOption,
+      totalSubmissions,
+      groupedSubmissionCount,
+      maxSubmittedOptions,
+    };
+  }, [poll, localParticipantId]);
 
   return (
     <Box
@@ -179,20 +226,16 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: "#FF5D5D",
+              color: isPollActive ? "#FF5D5D" : "#95959E",
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
             }}
           >
-            {poll.isActive
-              ? poll.timeout === 0
-                ? "Live"
-                : timeLeft === 0
-                ? "Ended"
-                : `Ended in ${secondsToMinutes(timeLeft)}`
-              : isDraft
-              ? "Drafted"
+            {isPollActive
+              ? hasTimer
+                ? `Endes in ${secondsToMinutes(timeLeft)}`
+                : "Live"
               : "Ended"}
           </Typography>
         </Box>
@@ -200,10 +243,13 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
           <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
             {poll.question}
           </Typography>
-          {poll?.options?.map((item, j) => {
+          {poll.options.map((item, j) => {
             const total = groupedSubmissionCount[item.optionId];
-            const percentage =
-              (total == undefined ? 0 : total / totalSubmissions) * 100;
+
+            const percentage = (total ? total / totalSubmissions : 0) * 100;
+
+            const isCorrectOption = item.isCorrect;
+
             return (
               <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
                 <Typography
@@ -233,7 +279,15 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                   >
                     <Box
                       style={{
-                        backgroundColor: item.isCorrect ? "#1178F8" : "#9E9DA6",
+                        backgroundColor: hasCorrectAnswer
+                          ? isCorrectOption
+                            ? "#1178F8"
+                            : "#9E9DA6"
+                          : maxSubmittedOptions.includes(item.optionId)
+                          ? "#1178F8"
+                          : "#9E9DA6",
+
+                        // backgroundColor: item.isCorrect ? "#1178F8" : "#9E9DA6",
                         width: `${percentage}%`,
                         borderRadius: 4,
                       }}
@@ -287,25 +341,23 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
               >
                 Launch
               </Button>
-            ) : (
-              poll.timeout === 0 &&
-              poll.isActive && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => {
-                    EndPublish(
-                      {
-                        pollId: poll.id,
-                      },
-                      { persist: true }
-                    );
-                  }}
-                >
-                  End the Poll
-                </Button>
-              )
-            )}
+            ) : null}
+            {isPollActive && !hasTimer ? (
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  EndPublish(
+                    {
+                      pollId: poll.id,
+                    },
+                    { persist: true }
+                  );
+                }}
+              >
+                End the Poll
+              </Button>
+            ) : null}
           </Box>
         </Box>
       </Box>
@@ -341,6 +393,8 @@ const PollList = ({ panelHeight }) => {
   const { setIsCreateNewPollClicked, setSideBarNestedMode } =
     useMeetingAppContext();
   const theme = useTheme();
+
+  console.log(polls, "pollspollspolls");
 
   const padding = useResponsiveSize({
     xl: 12,
