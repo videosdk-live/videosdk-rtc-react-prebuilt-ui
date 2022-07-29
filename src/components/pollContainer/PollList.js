@@ -111,15 +111,14 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     hasTimer,
   });
 
-  const groupedSubmissionCount = poll?.submissions?.reduce(
-    (group, { optionId }) => {
+  const groupedSubmissionCount =
+    poll.isActive &&
+    poll?.submissions?.reduce((group, { optionId }) => {
       group[optionId] = group[optionId] || 0;
 
       group[optionId] += 1;
       return group;
-    },
-    {}
-  );
+    }, {});
 
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
@@ -129,11 +128,11 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
 
   const totalSubmissions = poll?.submissions?.length;
 
-  useEffect(() => {
-    if (!poll.isActive && timeLeft === 0) {
-      EndPublish({ pollId: poll.id }, { persist: true });
-    }
-  }, [poll.isActive, timeLeft]);
+  //   useEffect(() => {
+  //     if (!poll.isActive && timeLeft === 0) {
+  //       EndPublish({ pollId: poll.id }, { persist: true });
+  //     }
+  //   }, [poll.isActive, timeLeft]);
 
   return (
     <Box
@@ -201,11 +200,10 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
           <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
             {poll.question}
           </Typography>
-          {poll.options.map((item, j) => {
+          {poll?.options?.map((item, j) => {
             const total = groupedSubmissionCount[item.optionId];
-            const optionSubmittedByLocal =
-              localSubmittedOption?.optionId === item.optionId;
-            const percentage = (total / totalSubmissions) * 100;
+            const percentage =
+              (total == undefined ? 0 : total / totalSubmissions) * 100;
             return (
               <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
                 <Typography
@@ -243,7 +241,7 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                   </Box>
 
                   <Typography style={{ marginLeft: isDraft ? 52 : 24 }}>
-                    {!isDraft && `${percentage}%`}
+                    {!isDraft && `${Math.floor(percentage)}%`}
                   </Typography>
                 </Box>
               </Box>

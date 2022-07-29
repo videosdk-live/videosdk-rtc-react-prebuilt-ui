@@ -7,6 +7,7 @@ import {
   Typography,
   useTheme,
   Fade,
+  makeStyles,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { sideBarModes, useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -21,6 +22,14 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import ConfigTabPanel from "./ConfigTabPanel";
 import { ArrowBackIos } from "@material-ui/icons";
+
+const useStyles = makeStyles(() => ({
+  iconbutton: {
+    "&:hover ": {
+      backgroundColor: "transparent",
+    },
+  },
+}));
 
 const SideBarTabView = ({ width, height }) => {
   const {
@@ -74,6 +83,7 @@ const SideBarTabView = ({ width, height }) => {
   };
 
   const theme = useTheme();
+  const classes = useStyles();
 
   return (
     <div
@@ -120,7 +130,15 @@ const SideBarTabView = ({ width, height }) => {
                       onClick={() => {
                         setSideBarNestedMode(null);
                       }}
-                      style={{ padding: 0, margin: 0 }}
+                      disableFocusRipple
+                      disableRipple
+                      disableTouchRipple
+                      style={{
+                        padding: 0,
+                        margin: 0,
+                        cursor: "pointer",
+                      }}
+                      className={classes.iconbutton}
                     >
                       <ArrowBackIos fontSize="small" />
                     </IconButton>
@@ -132,12 +150,16 @@ const SideBarTabView = ({ width, height }) => {
                         )} (${new Map(participants)?.size})`
                       : sideBarMode === "ADD_LIVE_STREAM"
                       ? "Add Live Streams"
-                      : isPollSelected
-                      ? !canCreatePoll
+                      : sideBarNestedMode === "POLLS"
+                      ? polls.length >= 1
                         ? `Polls (${polls.length})`
-                        : polls.length >= 1 && !isCreateNewPollClicked
-                        ? `Polls (${polls.length})`
-                        : "Create a poll"
+                        : sideBarNestedMode === "CREATE_POLL"
+                        ? "Create a poll"
+                        : canCreatePoll
+                        ? "Create a poll"
+                        : `Polls (${polls.length})`
+                      : sideBarNestedMode === "CREATE_POLL"
+                      ? "Create a poll"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
                   </Typography>
                 </Box>

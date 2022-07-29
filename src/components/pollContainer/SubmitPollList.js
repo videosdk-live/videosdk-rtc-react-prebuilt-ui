@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, Tooltip, Typography } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import React, { useState } from "react";
 import AnswerSubmittedIcon from "../../icons/AnswerSubmittedIcon";
@@ -35,15 +35,14 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
     }
   });
 
-  const groupedSubmissionCount = poll?.submissions?.reduce(
-    (group, { optionId }) => {
+  const groupedSubmissionCount =
+    poll.isActive &&
+    poll?.submissions?.reduce((group, { optionId }) => {
       group[optionId] = group[optionId] || 0;
 
       group[optionId] += 1;
       return group;
-    },
-    {}
-  );
+    }, {});
 
   const localSubmittedOption = poll?.submissions?.find(
     ({ participantId }) => participantId === localParticipantId
@@ -145,7 +144,11 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
               const total = groupedSubmissionCount[option.optionId];
               const optionSubmittedByLocal =
                 localSubmittedOption?.optionId === option.optionId;
-              const percentage = (total / totalSubmissions) * 100;
+              const percentage =
+                (total == undefined ? 0 : total / totalSubmissions) * 100;
+              const optionSelectedByLocalIsCorrect =
+                localSubmittedOption?.optionId === option.optionId &&
+                option.isCorrect;
 
               return (
                 <Box
@@ -154,7 +157,7 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                     marginBottom: 12,
                   }}
                 >
-                  {isSubmitted || !isTimerPollActive ? (
+                  {isSubmitted || !poll.isActive ? (
                     <Box
                       style={{
                         marginTop: 0,
@@ -176,15 +179,35 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                             <AnswerSubmittedIcon />
                           </Box>
                         )}
-                        {/* {optionSubmittedByLocal ? (
-                          <Box style={{ marginLeft: 8 }}>
-                            <WrongOptionSelectedIcon />
+                        {!poll.isActive && (
+                          <Box>
+                            {optionSubmittedByLocal ? (
+                              optionSelectedByLocalIsCorrect ? (
+                                <Tooltip
+                                  placement="right"
+                                  title={"Correct Answer"}
+                                >
+                                  <Box
+                                    style={{ marginLeft: 8, cursor: "pointer" }}
+                                  >
+                                    <CorrectSelectedIcon />
+                                  </Box>
+                                </Tooltip>
+                              ) : (
+                                <Tooltip
+                                  placement="right"
+                                  title={"Your answer is wrong"}
+                                >
+                                  <Box
+                                    style={{ marginLeft: 8, cursor: "pointer" }}
+                                  >
+                                    <WrongOptionSelectedIcon />
+                                  </Box>
+                                </Tooltip>
+                              )
+                            ) : null}
                           </Box>
-                        ) : (
-                          <Box style={{ marginLeft: 8 }}>
-                            <CorrectSelectedIcon />
-                          </Box>
-                        )} */}
+                        )}
                       </Box>
                       <Box
                         style={{
@@ -214,9 +237,9 @@ const SubmitPollListItem = ({ poll, panelHeight, index }) => {
                             }}
                           ></Box>
                         </Box>
-                        <Typography
-                          style={{ marginLeft: 24 }}
-                        >{`${percentage}%`}</Typography>
+                        <Typography style={{ marginLeft: 24 }}>
+                          {`${Math.floor(percentage)}%`}
+                        </Typography>
                       </Box>
                     </Box>
                   ) : (

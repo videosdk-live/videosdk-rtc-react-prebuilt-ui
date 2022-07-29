@@ -86,6 +86,7 @@ const PollsListner = () => {
 
   usePubSub(`END_POLL`, {
     onMessageReceived: ({ message }) => {
+      console.log("message onMessageReceived", message);
       setPolls((s) => {
         return s.map((_poll) => {
           if (message.pollId === _poll.id) {
@@ -97,6 +98,7 @@ const PollsListner = () => {
       });
     },
     onOldMessagesReceived: (messages) => {
+      console.log("message onOldMessagesReceived", messages);
       setPolls((s) => {
         return s.map((_poll) => {
           const isEnded =
