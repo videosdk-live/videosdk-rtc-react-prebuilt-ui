@@ -15,7 +15,10 @@ import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { usePubSub } from "@videosdk.live/react-sdk";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -373,6 +376,7 @@ const PollButtonPart = ({
   setQuestionErr,
   isMarkAsCorrectChecked,
   isSetTimerChecked,
+  setSideBarNestedMode,
 }) => {
   const handleValidation = ({ question }) => {
     let isValid = true;
@@ -417,7 +421,8 @@ const PollButtonPart = ({
               persist: true,
             }
           );
-          setIsCreateNewPollClicked(false);
+          // setIsCreateNewPollClicked(false);
+          setSideBarNestedMode(sideBarNestedModes.POLLS);
         }}
       >
         Save
@@ -446,7 +451,8 @@ const PollButtonPart = ({
               },
               { persist: true }
             );
-            setIsCreateNewPollClicked(false);
+            // setIsCreateNewPollClicked(false);
+            setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}
       >
@@ -466,7 +472,8 @@ const CreatePoll = ({ panelHeight }) => {
     xs: 4,
   });
 
-  const { setIsCreateNewPollClicked } = useMeetingAppContext();
+  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
+    useMeetingAppContext();
   const classes = useStyles();
   const [isMarkAsCorrectChecked, setIsMarkAsCorrectChecked] = useState(false);
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
@@ -540,6 +547,7 @@ const CreatePoll = ({ panelHeight }) => {
           setQuestionErr={setQuestionErr}
           isMarkAsCorrectChecked={isMarkAsCorrectChecked}
           isSetTimerChecked={isSetTimerChecked}
+          setSideBarNestedMode={setSideBarNestedMode}
         />
       </Box>
     </Box>
