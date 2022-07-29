@@ -118,6 +118,7 @@ export const MeetingAppProvider = ({
   participantCanToggleLivestream,
   reduceEdgeSpacing,
   isRecorder,
+  maintainAspectRatio,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -238,6 +239,7 @@ export const MeetingAppProvider = ({
         sideStackSize,
         reduceEdgeSpacing,
         isRecorder,
+        maintainAspectRatio,
 
         // states
         sideBarMode,

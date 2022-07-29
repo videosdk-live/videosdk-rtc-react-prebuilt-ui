@@ -261,6 +261,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     whiteboardStarted,
     animationsEnabled,
     isRecorder,
+    maintainAspectRatio,
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
@@ -369,7 +370,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   }, []);
 
   const checkAndUpdatePortrait = () => {
-    if (webcamStream) {
+    if (webcamStream && maintainAspectRatio) {
       const { height, width } = webcamStream.track.getSettings();
       if (height > width && !portrait) {
         setPortrait(true);

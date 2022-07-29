@@ -144,6 +144,8 @@ const App = () => {
       // recordingLayoutType: "recordingLayoutType",
       // recordingLayoutPriority: "recordingLayoutPriority",
       // recordingLayoutGridSize: "recordingLayoutGridSize",
+
+      maintainAspectRatio: "maintainAspectRatio",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -261,6 +263,10 @@ const App = () => {
 
     if (typeof paramKeys.notificationSoundEnabled !== "string") {
       paramKeys.notificationSoundEnabled = "true";
+    }
+
+    if (typeof paramKeys.maintainAspectRatio !== "string") {
+      paramKeys.maintainAspectRatio = "false";
     }
 
     if (typeof paramKeys.canPin !== "string") {
@@ -578,6 +584,7 @@ const App = () => {
             // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
             // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
             //
+            maintainAspectRatio: paramKeys.maintainAspectRatio === "true",
           }}
         >
           <MeetingProvider
