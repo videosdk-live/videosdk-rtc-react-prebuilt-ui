@@ -137,6 +137,7 @@ const App = () => {
       //
       hlsEnabled: "hlsEnabled",
       autoStartHls: "autoStartHls",
+      hlsPlayerControlsVisible: "hlsPlayerControlsVisible",
       //
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
@@ -520,6 +521,8 @@ const App = () => {
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
             autoStartRecording: paramKeys.autoStartRecording === "true",
             autoStartHls: paramKeys.autoStartHls === "true",
+            hlsPlayerControlsVisible:
+              paramKeys.hlsPlayerControlsVisible === "true",
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
             participantCanToggleHls:

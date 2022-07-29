@@ -119,6 +119,7 @@ export const MeetingAppProvider = ({
   reduceEdgeSpacing,
   isRecorder,
   maintainVideoAspectRatio,
+  hlsPlayerControlsVisible,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -257,6 +258,7 @@ export const MeetingAppProvider = ({
         liveStreamConfig,
         meetingMode,
         downstreamUrl,
+        hlsPlayerControlsVisible,
 
         // setters
         setSideBarMode,
