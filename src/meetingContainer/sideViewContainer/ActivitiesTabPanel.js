@@ -45,14 +45,14 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     canCreatePoll ? (
       polls.length === 0 && draftPolls.length === 0 ? (
         <CreatePoll {...{ panelHeight }} />
-      ) : sideBarNestedMode === sideBarNestedModes.CREATE_POLL ? (
-        <CreatePoll {...{ panelHeight }} />
       ) : (
         <PollList {...{ panelHeight }} />
       )
     ) : (
       <SubmitPollList {...{ panelHeight }} />
     )
+  ) : sideBarNestedMode === sideBarNestedModes.CREATE_POLL ? (
+    <CreatePoll {...{ panelHeight }} />
   ) : (
     <List style={{ padding: listPadding }}>
       {[
