@@ -130,13 +130,13 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     groupedSubmissionCount,
     maxSubmittedOptions,
   } = useMemo(() => {
-    const localSubmittedOption = poll.submissions.find(
+    const localSubmittedOption = poll?.submissions?.find(
       ({ participantId }) => participantId === localParticipantId
     );
 
-    const totalSubmissions = poll.submissions.length;
+    const totalSubmissions = poll?.submissions?.length || 0;
 
-    const groupedSubmissionCount = poll.submissions.reduce(
+    const groupedSubmissionCount = poll?.submissions?.reduce(
       (group, { optionId }) => {
         group[optionId] = group[optionId] || 0;
 
@@ -149,29 +149,32 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
 
     const maxSubmittedOptions = [];
 
-    const maxSubmittedOptionId = Object.keys(groupedSubmissionCount)
-      .map((optionId) => ({
-        optionId,
-        count: groupedSubmissionCount[optionId],
-      }))
-      .sort((a, b) => {
-        if (a.count > b.count) {
-          return -1;
-        }
-        if (a.count < b.count) {
-          return 1;
-        }
-        return 0;
-      })[0]?.optionId;
+    const maxSubmittedOptionId =
+      groupedSubmissionCount &&
+      Object.keys(groupedSubmissionCount)
+        .map((optionId) => ({
+          optionId,
+          count: groupedSubmissionCount[optionId],
+        }))
+        .sort((a, b) => {
+          if (a.count > b.count) {
+            return -1;
+          }
+          if (a.count < b.count) {
+            return 1;
+          }
+          return 0;
+        })[0]?.optionId;
 
-    Object.keys(groupedSubmissionCount).forEach((optionId) => {
-      if (
-        groupedSubmissionCount[optionId] ===
-        groupedSubmissionCount[maxSubmittedOptionId]
-      ) {
-        maxSubmittedOptions.push(optionId);
-      }
-    });
+    groupedSubmissionCount &&
+      Object.keys(groupedSubmissionCount).forEach((optionId) => {
+        if (
+          groupedSubmissionCount[optionId] ===
+          groupedSubmissionCount[maxSubmittedOptionId]
+        ) {
+          maxSubmittedOptions.push(optionId);
+        }
+      });
 
     return {
       localSubmittedOption,
@@ -226,7 +229,7 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: isPollActive ? "#FF5D5D" : "#95959E",
+              color: isPollActive || isDraft ? "#FF5D5D" : "#95959E",
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -236,6 +239,8 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
               ? hasTimer
                 ? `Endes in ${secondsToMinutes(timeLeft)}`
                 : "Live"
+              : isDraft
+              ? "Draft"
               : "Ended"}
           </Typography>
         </Box>
@@ -244,7 +249,9 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
             {poll.question}
           </Typography>
           {poll.options.map((item, j) => {
-            const total = groupedSubmissionCount[item.optionId];
+            const total = groupedSubmissionCount
+              ? groupedSubmissionCount[item.optionId]
+              : 0;
 
             const percentage = (total ? total / totalSubmissions : 0) * 100;
 

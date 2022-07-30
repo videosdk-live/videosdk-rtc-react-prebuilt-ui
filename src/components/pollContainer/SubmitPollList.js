@@ -3,6 +3,7 @@ import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import React, { useMemo, useState } from "react";
 import AnswerSubmittedIcon from "../../icons/AnswerSubmittedIcon";
 import CorrectSelectedIcon from "../../icons/CorrectSelectedIcon";
+import NoPollActiveIcon from "../../icons/NoPollActiveIcon";
 import WrongOptionSelectedIcon from "../../icons/WrongOptionSelectedIcon";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
@@ -259,15 +260,16 @@ const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
                           >
                             <Box
                               style={{
-                                backgroundColor: hasCorrectAnswer
-                                  ? isCorrectOption
+                                backgroundColor:
+                                  hasCorrectAnswer && isActive
+                                    ? isCorrectOption
+                                      ? "#1178F8"
+                                      : "#9E9DA6"
+                                    : maxSubmittedOptions.includes(
+                                        option.optionId
+                                      )
                                     ? "#1178F8"
-                                    : "#9E9DA6"
-                                  : maxSubmittedOptions.includes(
-                                      option.optionId
-                                    )
-                                  ? "#1178F8"
-                                  : "#9E9DA6",
+                                    : "#9E9DA6",
                                 width: `${percentage}%`,
                                 borderRadius: 4,
                               }}
@@ -337,16 +339,36 @@ const SubmitPollList = ({ panelHeight }) => {
           height: "100%",
         }}
       >
-        {polls.map((poll, index) => {
-          return (
-            <SubmitPollListItem
-              totalPolls={polls.length}
-              poll={poll}
-              panelHeight={panelHeight}
-              index={index}
-            />
-          );
-        })}
+        {polls.length > 0 ? (
+          polls.map((poll, index) => {
+            return (
+              <SubmitPollListItem
+                totalPolls={polls.length}
+                poll={poll}
+                panelHeight={panelHeight}
+                index={index}
+              />
+            );
+          })
+        ) : (
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+              marginTop: "-50px",
+            }}
+          >
+            <NoPollActiveIcon />
+            <Typography
+              style={{ color: "white", fontSize: 16, fontWeight: 700 }}
+            >
+              No Poll has been launched yet.
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
