@@ -423,6 +423,7 @@ const PollButtonPart = ({
   };
 
   const { finalSec } = useMemo(() => {
+    console.log(timer, "timer");
     const timing = timer?.split(":");
     const min = timing ? parseInt(timing[0]) : 0;
     const sec = timing ? parseInt(timing[1]) : 0;
@@ -527,7 +528,7 @@ const CreatePoll = ({ panelHeight }) => {
     isCorrect: false,
   });
   const [options, setOptions] = useState([]);
-  const [timer, setTimer] = useState(0);
+  const [timer, setTimer] = useState(null);
   const [timerErr, setTimerErr] = useState(false);
   const [correctAnswerErr, setCorrectAnswerErr] = useState(false);
 
