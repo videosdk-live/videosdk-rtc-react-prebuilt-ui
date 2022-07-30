@@ -179,8 +179,6 @@ export const MeetingAppProvider = ({
     [createdPolls, endedPolls]
   );
 
-  console.log(polls, "polls useMemo polls");
-
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
     [whiteboardState]

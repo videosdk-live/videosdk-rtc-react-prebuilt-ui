@@ -381,6 +381,7 @@ const PollButtonPart = ({
   setSideBarNestedMode,
   setTimerErr,
   setCorrectAnswerErr,
+  setMinOptionErr,
 }) => {
   const handleValidation = ({
     question,
@@ -399,9 +400,17 @@ const PollButtonPart = ({
       setQuestionErr(false);
     }
 
+    if (options?.length < 2) {
+      isValid = false;
+      setMinOptionErr(true);
+      return false;
+    } else {
+      setMinOptionErr(false);
+    }
+
     // check time finalSec if `isSetTimerChecked`
     if (isSetTimerChecked && finalSec < 30) {
-      //
+      isValid = false;
       setTimerErr(true);
       return false;
     } else {
@@ -410,9 +419,10 @@ const PollButtonPart = ({
 
     if (
       isMarkAsCorrectChecked &&
-      options.find(({ isCorrect }) => isCorrect) === -1
+      options.findIndex(({ isCorrect }) => isCorrect) === -1
     ) {
       // please check any one option as correct if `isMarkAsCorrectChecked`
+      isValid = false;
       setCorrectAnswerErr(true);
       return false;
     } else {
@@ -423,7 +433,6 @@ const PollButtonPart = ({
   };
 
   const { finalSec } = useMemo(() => {
-    console.log(timer, "timer");
     const timing = timer?.split(":");
     const min = timing ? parseInt(timing[0]) : 0;
     const sec = timing ? parseInt(timing[1]) : 0;
@@ -480,6 +489,7 @@ const PollButtonPart = ({
             isMarkAsCorrectChecked,
             finalSec,
           });
+
           if (isValid) {
             publishCreatePoll(
               {
@@ -531,6 +541,7 @@ const CreatePoll = ({ panelHeight }) => {
   const [timer, setTimer] = useState(null);
   const [timerErr, setTimerErr] = useState(false);
   const [correctAnswerErr, setCorrectAnswerErr] = useState(false);
+  const [minOptionErr, setMinOptionErr] = useState(false);
 
   const _handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -597,6 +608,7 @@ const CreatePoll = ({ panelHeight }) => {
           setSideBarNestedMode={setSideBarNestedMode}
           setTimerErr={setTimerErr}
           setCorrectAnswerErr={setCorrectAnswerErr}
+          setMinOptionErr={setMinOptionErr}
         />
       </Box>
     </Box>
