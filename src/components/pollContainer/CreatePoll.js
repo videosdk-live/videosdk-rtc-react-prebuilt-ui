@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { usePubSub } from "@videosdk.live/react-sdk";
@@ -175,6 +175,7 @@ const CreatePollPart = ({
   setTimer,
   _handleKeyDown,
   padding,
+  timer,
 }) => {
   return (
     <Box
@@ -351,7 +352,10 @@ const CreatePollPart = ({
                     fontSize: 14,
                     borderBottom: "1px solid #fff",
                   }}
+                  value={timer}
                   onChange={(e) => {
+                    console.log(e.target.value, "e.target.value");
+
                     setTimer(e.target.value);
                   }}
                 ></input>
@@ -377,6 +381,8 @@ const PollButtonPart = ({
   isMarkAsCorrectChecked,
   isSetTimerChecked,
   setSideBarNestedMode,
+  setTimerErr,
+  setCorrectAnswerErr,
 }) => {
   const handleValidation = ({
     question,
@@ -396,9 +402,12 @@ const PollButtonPart = ({
     }
 
     // check time finalSec if `isSetTimerChecked`
-    if (isSetTimerChecked && finalSec <= 0) {
+    if (isSetTimerChecked && finalSec < 30) {
+      //
+      setTimerErr(true);
       return false;
     } else {
+      setTimerErr(false);
     }
 
     if (
@@ -406,18 +415,24 @@ const PollButtonPart = ({
       options.find(({ isCorrect }) => isCorrect) === -1
     ) {
       // please check any one option as correct if `isMarkAsCorrectChecked`
+      setCorrectAnswerErr(true);
       return false;
     } else {
+      setCorrectAnswerErr(false);
     }
 
     return isValid;
   };
 
-  const timing = timer && timer.split(":");
-  const min = timing ? timing[0] : 0;
-  const sec = timing ? timing[1] : 0;
-  const finalMin = min * 60;
-  const finalSec = parseInt(finalMin) + parseInt(sec);
+  const { finalSec } = useMemo(() => {
+    const timing = timer && timer.split(":");
+    const min = timing ? timing[0] : 0;
+    const sec = timing ? timing[1] : 0;
+    const finalMin = min * 60;
+    const finalSec = parseInt(finalMin) + parseInt(sec);
+
+    return { finalSec };
+  }, [timer]);
 
   return (
     <Box style={{ display: "flex", padding: padding }}>
@@ -514,7 +529,10 @@ const CreatePoll = ({ panelHeight }) => {
     isCorrect: false,
   });
   const [options, setOptions] = useState([]);
-  const [timer, setTimer] = useState(null);
+  const [timer, setTimer] = useState(0);
+  const [timerErr, setTimerErr] = useState(false);
+  const [correctAnswerErr, setCorrectAnswerErr] = useState(false);
+
   const _handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -563,6 +581,7 @@ const CreatePoll = ({ panelHeight }) => {
           _handleKeyDown={_handleKeyDown}
           padding={padding}
           setTimer={setTimer}
+          timer={timer}
         />
         <PollButtonPart
           setIsCreateNewPollClicked={setIsCreateNewPollClicked}
@@ -577,6 +596,8 @@ const CreatePoll = ({ panelHeight }) => {
           isMarkAsCorrectChecked={isMarkAsCorrectChecked}
           isSetTimerChecked={isSetTimerChecked}
           setSideBarNestedMode={setSideBarNestedMode}
+          setTimerErr={setTimerErr}
+          setCorrectAnswerErr={setCorrectAnswerErr}
         />
       </Box>
     </Box>
