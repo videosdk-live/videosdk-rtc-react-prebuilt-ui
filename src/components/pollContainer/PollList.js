@@ -71,32 +71,22 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
     xs: 4,
   });
   const marginY = useResponsiveSize({
-    xl: 14,
-    lg: 12,
-    md: 10,
-    sm: 8,
-    xs: 6,
+    xl: 18,
+    lg: 16,
+    md: 14,
+    sm: 12,
+    xs: 10,
   });
 
-  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
-    useMeetingAppContext();
-  //   const mMeeting = useMeeting();
-  //   const localParticipantId = mMeeting?.localParticipant?.id;
-  //   const { publish } = usePubSub(`SUBMIT_A_POLL_${poll.id}`, {
-  //     onMessageReceived: (message) => {
-  //       console.log(message);
-  //     },
-  //     onOldMessagesReceived: (message) => {
-  //       console.log(message);
-  //     },
-  //   });
+  const equalSpacing = useResponsiveSize({
+    xl: 18,
+    lg: 16,
+    md: 14,
+    sm: 12,
+    xs: 10,
+  });
 
-  // const isSubmitted =
-  //   poll?.submissions?.findIndex(({ participantId }) => {
-  //     if (participantId === localParticipantId) {
-  //       return true;
-  //     }
-  //   }) !== -1;
+  const { setSideBarNestedMode } = useMeetingAppContext();
 
   const { publish: EndPublish } = usePubSub(`END_POLL`);
   const { publish: RemoveFromDraftPublish } = usePubSub(
@@ -244,7 +234,7 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
               : "Ended"}
           </Typography>
         </Box>
-        <Box style={{ marginTop: 20 }}>
+        <Box style={{ marginTop: 18 }}>
           <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
             {poll.question}
           </Typography>
@@ -258,7 +248,9 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
             const isCorrectOption = item.isCorrect;
 
             return (
-              <Box style={{ marginTop: j === 0 ? 14 : 6 }}>
+              <Box
+                style={{ marginTop: j === 0 ? equalSpacing : equalSpacing / 2 }}
+              >
                 <Typography
                   style={{
                     fontSize: 16,
@@ -301,9 +293,21 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                     ></Box>
                   </Box>
 
-                  <Typography style={{ marginLeft: isDraft ? 52 : 24 }}>
-                    {!isDraft && `${Math.floor(percentage)}%`}
-                  </Typography>
+                  <Box
+                    style={{
+                      marginLeft: isDraft ? 52 : 24,
+                      width: 40,
+                    }}
+                  >
+                    <Typography
+                      style={{
+                        margin: 0,
+                        padding: 0,
+                      }}
+                    >
+                      {!isDraft && `${Math.floor(percentage)}%`}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             );
@@ -311,8 +315,8 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
 
           <Box
             style={{
-              marginTop: 20,
-              marginBottom: 20,
+              marginTop: equalSpacing,
+              marginBottom: equalSpacing,
               display: "flex",
               alignItems: "flex-end",
               justifyContent: "flex-end",
@@ -327,7 +331,6 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                     { pollId: poll.id },
                     { persist: true }
                   );
-                  console.log("poll", poll);
                   publishCreatePoll(
                     {
                       id: poll.id,
@@ -342,7 +345,6 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
                     { persist: true }
                   );
 
-                  // setIsCreateNewPollClicked(false);
                   setSideBarNestedMode(sideBarNestedModes.POLLS);
                 }}
               >
@@ -370,38 +372,12 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
       </Box>
     </Box>
   );
-
-  //   return (
-  //     <Box style={{ backgroundColor: isSubmitted ? "red" : "green" }}>
-  //       <Typography>{poll.question}</Typography>
-  //       {poll.options.map((option, i) => {
-  //         return (
-  //           <>
-  //             <Typography>{option.option}</Typography>
-  //             <Button
-  //               onClick={() => {
-  //                 publish({
-  //                   optionId: option.id,
-  //                   //   participantId: localParticipantId,
-  //                 });
-  //               }}
-  //             >
-  //               Submit
-  //             </Button>
-  //           </>
-  //         );
-  //       })}
-  //     </Box>
-  //   );
 };
 
 const PollList = ({ panelHeight }) => {
   const { polls, draftPolls } = useMeetingAppContext();
-  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
-    useMeetingAppContext();
+  const { setSideBarNestedMode } = useMeetingAppContext();
   const theme = useTheme();
-
-  console.log(polls, "pollspollspolls");
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -410,12 +386,13 @@ const PollList = ({ panelHeight }) => {
     sm: 6,
     xs: 4,
   });
-  const marginY = useResponsiveSize({
-    xl: 14,
-    lg: 12,
-    md: 10,
-    sm: 8,
-    xs: 6,
+
+  const equalSpacing = useResponsiveSize({
+    xl: 18,
+    lg: 16,
+    md: 14,
+    sm: 12,
+    xs: 10,
   });
 
   return (
@@ -456,17 +433,16 @@ const PollList = ({ panelHeight }) => {
             return <Poll poll={poll} panelHeight={panelHeight} index={index} />;
           })}
         </Box>
-        <Box style={{ padding: padding }}>
+        <Box style={{ padding: padding, marginTop: equalSpacing }}>
           <Button
             variant="contained"
             style={{
               width: "100%",
               color: theme.palette.common.white,
               backgroundColor: theme.palette.primary.main,
+              padding: "12px",
             }}
             onClick={() => {
-              // setIsCreateNewPollClicked(true);
-
               setSideBarNestedMode(sideBarNestedModes.CREATE_POLL);
             }}
           >

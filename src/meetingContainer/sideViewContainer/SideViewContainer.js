@@ -21,7 +21,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import ConfigTabPanel from "./ConfigTabPanel";
-import { ArrowBackIos } from "@material-ui/icons";
+import { NavigateBeforeOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
   iconbutton: {
@@ -35,9 +35,8 @@ const SideBarTabView = ({ width, height }) => {
   const {
     sideBarMode,
     setSideBarMode,
-    isPollSelected,
     polls,
-    isCreateNewPollClicked,
+    draftPolls,
     canCreatePoll,
     sideBarNestedMode,
     setSideBarNestedMode,
@@ -120,7 +119,6 @@ const SideBarTabView = ({ width, height }) => {
                 <Box
                   style={{
                     display: "flex",
-                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
@@ -130,17 +128,16 @@ const SideBarTabView = ({ width, height }) => {
                       onClick={() => {
                         setSideBarNestedMode(null);
                       }}
-                      disableFocusRipple
-                      disableRipple
-                      disableTouchRipple
+                      // disableFocusRipple
+                      // disableRipple
+                      // disableTouchRipple
                       style={{
-                        padding: 0,
-                        margin: 0,
+                        marginLeft: -10,
                         cursor: "pointer",
                       }}
-                      className={classes.iconbutton}
+                      // className={classes.iconbutton}
                     >
-                      <ArrowBackIos fontSize="small" />
+                      <NavigateBeforeOutlined fontSize="medium" />
                     </IconButton>
                   )}
                   <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
@@ -151,8 +148,8 @@ const SideBarTabView = ({ width, height }) => {
                       : sideBarMode === "ADD_LIVE_STREAM"
                       ? "Add Live Streams"
                       : sideBarNestedMode === "POLLS"
-                      ? polls.length >= 1
-                        ? `Polls (${polls.length})`
+                      ? polls.length >= 1 || draftPolls.length >= 1
+                        ? `Polls (${polls.length || draftPolls.length})`
                         : sideBarNestedMode === "CREATE_POLL"
                         ? "Create a poll"
                         : canCreatePoll

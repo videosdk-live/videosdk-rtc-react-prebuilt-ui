@@ -178,6 +178,7 @@ const CreatePollPart = ({
   timer,
   timerErr,
   correctAnswerErr,
+  minOptionErr,
 }) => {
   return (
     <Box
@@ -294,6 +295,13 @@ const CreatePollPart = ({
               }}
             />
           </Box>
+          {minOptionErr && (
+            <Typography
+              style={{ fontSize: 12, color: "#E03B34", marginTop: 4 }}
+            >
+              Please add atleast 2 options.
+            </Typography>
+          )}
           <Box style={{ marginTop: 32 }}>
             <FormGroup
               style={{
@@ -315,9 +323,11 @@ const CreatePollPart = ({
               />
             </FormGroup>
             {correctAnswerErr && (
-              <Typography style={{ fontSize: 12, color: "#E03B34" }}>
+              <Typography
+                style={{ fontSize: 12, color: "#E03B34", marginTop: 4 }}
+              >
                 {
-                  "please check any one option as correct if `isMarkAsCorrectChecked`"
+                  "Please check any one option as correct if `isMarkAsCorrectChecked`"
                 }
               </Typography>
             )}
@@ -611,6 +621,7 @@ const CreatePoll = ({ panelHeight }) => {
           timer={timer}
           timerErr={timerErr}
           correctAnswerErr={correctAnswerErr}
+          minOptionErr={minOptionErr}
         />
         <PollButtonPart
           setIsCreateNewPollClicked={setIsCreateNewPollClicked}

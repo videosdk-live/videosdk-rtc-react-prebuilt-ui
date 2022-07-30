@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import MainViewContainer from "./mainViewContainer/MainViewContainer";
 import SideViewContainer from "./sideViewContainer/SideViewContainer";
 import TopBar from "./TopBar";
-import { meetingLayouts, useMeetingAppContext } from "../MeetingAppContextDef";
+import {
+  meetingLayouts,
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
@@ -426,6 +430,20 @@ const MeetingContainer = () => {
                 ? "You end the call"
                 : " This meeting has been ended by host"
             }`
+          );
+        }
+      }
+
+      if (sideBarNestedModes === "POLLS") {
+        if (notificationSoundEnabled) {
+          new Audio(
+            `https://static.videosdk.live/prebuilt/notification.mp3`
+          ).play();
+        }
+
+        if (notificationAlertsEnabled) {
+          enqueueSnackbar(
+            `${isLocal ? "You asked a poll." : "Host is asking a poll."}`
           );
         }
       }
