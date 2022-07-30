@@ -414,8 +414,8 @@ const PollButtonPart = ({
   };
 
   const timing = timer && timer.split(":");
-  const min = timing ? timing[0] : 0;
-  const sec = timing ? timing[1] : 0;
+  const min = timing && timing[0];
+  const sec = timing && timing[1];
   const finalMin = min * 60;
   const finalSec = parseInt(finalMin) + parseInt(sec);
 

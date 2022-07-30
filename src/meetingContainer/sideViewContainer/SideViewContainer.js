@@ -157,7 +157,7 @@ const SideBarTabView = ({ width, height }) => {
                         ? "Create a poll"
                         : canCreatePoll
                         ? "Create a poll"
-                        : `Polls (${polls.length})`
+                        : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
                       : sideBarNestedMode === "CREATE_POLL"
                       ? "Create a poll"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
