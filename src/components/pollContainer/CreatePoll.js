@@ -352,10 +352,8 @@ const CreatePollPart = ({
                     fontSize: 14,
                     borderBottom: "1px solid #fff",
                   }}
-                  value={timer}
+                  // value={timer}
                   onChange={(e) => {
-                    console.log(e.target.value, "e.target.value");
-
                     setTimer(e.target.value);
                   }}
                 ></input>
@@ -425,9 +423,9 @@ const PollButtonPart = ({
   };
 
   const { finalSec } = useMemo(() => {
-    const timing = timer && timer.split(":");
-    const min = timing ? timing[0] : 0;
-    const sec = timing ? timing[1] : 0;
+    const timing = timer?.split(":");
+    const min = timing ? parseInt(timing[0]) : 0;
+    const sec = timing ? parseInt(timing[1]) : 0;
     const finalMin = min * 60;
     const finalSec = parseInt(finalMin) + parseInt(sec);
 
