@@ -176,6 +176,8 @@ const CreatePollPart = ({
   _handleKeyDown,
   padding,
   timer,
+  timerErr,
+  correctAnswerErr,
 }) => {
   return (
     <Box
@@ -312,52 +314,67 @@ const CreatePollPart = ({
                 label="Mark as a correct"
               />
             </FormGroup>
-
-            <Box
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 14,
-              }}
-            >
-              <FormGroup
+            {correctAnswerErr && (
+              <Typography style={{ fontSize: 12, color: "#E03B34" }}>
+                {
+                  "please check any one option as correct if `isMarkAsCorrectChecked`"
+                }
+              </Typography>
+            )}
+            <Box style={{ display: "flex", flexDirection: "column" }}>
+              <Box
                 style={{
                   display: "flex",
-                  paddingLeft: 6,
-                  justifyContent: "center",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 14,
                 }}
               >
-                <FormControlLabel
-                  style={{ color: "white" }}
-                  control={
-                    <BpCheckbox
-                      onClick={(e) => {
-                        setIsSetTimerChecked((s) => !s);
-                      }}
-                    />
-                  }
-                  label="Set Timer"
-                />
-              </FormGroup>
-              {isSetTimerChecked && (
-                <input
-                  type="time"
-                  placeholder="mm:ss"
+                <FormGroup
                   style={{
-                    backgroundColor: "#333244",
-                    border: 0,
-                    color: "white",
-                    fontFamily: "Roboto",
-                    fontSize: 14,
-                    borderBottom: "1px solid #fff",
+                    display: "flex",
+                    paddingLeft: 6,
+                    justifyContent: "center",
                   }}
-                  // value={timer}
-                  onChange={(e) => {
-                    setTimer(e.target.value);
-                  }}
-                ></input>
-              )}
+                >
+                  <FormControlLabel
+                    style={{ color: "white" }}
+                    control={
+                      <BpCheckbox
+                        onClick={(e) => {
+                          setIsSetTimerChecked((s) => !s);
+                        }}
+                      />
+                    }
+                    label="Set Timer (mm:ss)"
+                  />
+                </FormGroup>
+                {isSetTimerChecked && (
+                  <input
+                    type="time"
+                    placeholder="mm:ss"
+                    style={{
+                      backgroundColor: "#333244",
+                      border: 0,
+                      color: "white",
+                      fontFamily: "Roboto",
+                      fontSize: 14,
+                      borderBottom: "1px solid #fff",
+                    }}
+                    // value={timer}
+                    onChange={(e) => {
+                      setTimer(e.target.value);
+                    }}
+                  ></input>
+                )}
+              </Box>
+              <Box style={{ marginTop: 4, marginLeft: 4 }}>
+                {timerErr && (
+                  <Typography style={{ fontSize: 12, color: "#E03B34" }}>
+                    {"Timer should be more than 30 seconds."}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -402,6 +419,7 @@ const PollButtonPart = ({
     // check time finalSec if `isSetTimerChecked`
     if (isSetTimerChecked && finalSec < 30) {
       //
+      isValid = false;
       setTimerErr(true);
       return false;
     } else {
@@ -413,6 +431,7 @@ const PollButtonPart = ({
       options.find(({ isCorrect }) => isCorrect) === -1
     ) {
       // please check any one option as correct if `isMarkAsCorrectChecked`
+      isValid = false;
       setCorrectAnswerErr(true);
       return false;
     } else {
@@ -423,7 +442,7 @@ const PollButtonPart = ({
   };
 
   const { finalSec } = useMemo(() => {
-    const timing = timer?.split(":");
+    const timing = timer && timer?.split(":");
     const min = timing ? parseInt(timing[0]) : 0;
     const sec = timing ? parseInt(timing[1]) : 0;
     const finalMin = min * 60;
@@ -580,6 +599,8 @@ const CreatePoll = ({ panelHeight }) => {
           padding={padding}
           setTimer={setTimer}
           timer={timer}
+          timerErr={timerErr}
+          correctAnswerErr={correctAnswerErr}
         />
         <PollButtonPart
           setIsCreateNewPollClicked={setIsCreateNewPollClicked}
