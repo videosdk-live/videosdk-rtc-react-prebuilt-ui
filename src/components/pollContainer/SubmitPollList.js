@@ -343,6 +343,7 @@ const SubmitPollList = ({ panelHeight }) => {
           polls.map((poll, index) => {
             return (
               <SubmitPollListItem
+                key={`submit_polls_${index}`}
                 totalPolls={polls.length}
                 poll={poll}
                 panelHeight={panelHeight}

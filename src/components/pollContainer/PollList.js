@@ -8,17 +8,40 @@ import {
 import { sleep } from "../../meetingContainer/hlsViewContainer/PlayerViewer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 
-export const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
+export const usePollStateFromTimer = ({
+  timeout,
+  createdAt,
+  hasTimer,
+  isDraft,
+  id,
+}) => {
+  const timeoutRef = useRef(timeout);
+  const createdAtRef = useRef(createdAt);
+  const hasTimerRef = useRef(hasTimer);
+  const isDraftRef = useRef(isDraft);
+
   const [isActive, setIsActive] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
 
   const isActiveRef = useRef(isActive);
 
-  const createdAtRef = useRef(new Date(createdAt));
-
   const check = async () => {
+    if (!hasTimerRef.current) return;
+    if (isDraftRef.current) return;
+
+    hasTimerRef.current &&
+      console.log(
+        timeoutRef.current,
+        new Date(createdAtRef.current).getTime(),
+        new Date(createdAtRef.current).getTime() + timeoutRef.current * 1000,
+        new Date().getTime(),
+        new Date(createdAtRef.current).getTime() + timeoutRef.current * 1000 >
+          new Date().getTime(),
+        "timeoutRef.current, createdAtRef.current, usePollStateFromTimer"
+      );
+
     if (
-      createdAtRef.current.getTime() + timeout * 1000 >
+      new Date(createdAtRef.current).getTime() + timeoutRef.current * 1000 >
       new Date().getTime()
     ) {
       if (!isActiveRef.current) {
@@ -26,8 +49,8 @@ export const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
       }
 
       setTimeLeft(
-        (createdAtRef.current.getTime() +
-          timeout * 1000 -
+        (new Date(createdAtRef.current).getTime() +
+          timeoutRef.current * 1000 -
           new Date().getTime()) /
           1000
       );
@@ -45,7 +68,11 @@ export const usePollStateFromTimer = ({ timeout, createdAt, hasTimer }) => {
     isActiveRef.current = isActive;
   }, [isActive]);
 
-  useEffect(hasTimer ? check : () => {}, []);
+  useEffect(() => {
+    check();
+
+    return () => {};
+  }, [id]);
 
   return { isActive, timeLeft };
 };
@@ -60,9 +87,7 @@ export const secondsToMinutes = (time) => {
   return minutes + " : " + seconds;
 };
 
-const Poll = ({ poll, panelHeight, index, isDraft }) => {
-  const theme = useTheme();
-
+const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
   const padding = useResponsiveSize({
     xl: 12,
     lg: 10,
@@ -94,12 +119,14 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
   );
   const { publish: publishCreatePoll } = usePubSub(`CREATE_POLL`);
 
-  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive } = poll;
+  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive, id } = poll;
 
   const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
     timeout,
     createdAt,
     hasTimer,
+    isDraft,
+    id,
   });
 
   const mMeeting = useMeeting();
@@ -203,7 +230,7 @@ const Poll = ({ poll, panelHeight, index, isDraft }) => {
               marginTop: 0,
               marginBottom: 0,
             }}
-          >{`Poll ${index + 1}`}</Typography>
+          >{`Poll ${totalPolls - index}`}</Typography>
           <p
             style={{
               marginLeft: 8,
@@ -422,6 +449,7 @@ const PollList = ({ panelHeight }) => {
           {draftPolls.map((poll, index) => {
             return (
               <Poll
+                key={`draft_polls_${index}`}
                 poll={poll}
                 panelHeight={panelHeight}
                 index={index}
@@ -430,7 +458,15 @@ const PollList = ({ panelHeight }) => {
             );
           })}
           {polls.map((poll, index) => {
-            return <Poll poll={poll} panelHeight={panelHeight} index={index} />;
+            return (
+              <Poll
+                key={`creator_polls_${index}`}
+                totalPolls={polls.length}
+                poll={poll}
+                panelHeight={panelHeight}
+                index={index}
+              />
+            );
           })}
         </Box>
         <Box style={{ padding: padding, marginTop: equalSpacing }}>

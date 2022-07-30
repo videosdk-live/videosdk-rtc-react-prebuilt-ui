@@ -433,20 +433,6 @@ const MeetingContainer = () => {
           );
         }
       }
-
-      if (sideBarNestedModes === "POLLS") {
-        if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
-        }
-
-        if (notificationAlertsEnabled) {
-          enqueueSnackbar(
-            `${isLocal ? "You asked a poll." : "Host is asking a poll."}`
-          );
-        }
-      }
     }
   };
 

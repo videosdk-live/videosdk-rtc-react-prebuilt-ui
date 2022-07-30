@@ -1,4 +1,5 @@
 import { usePubSub } from "@videosdk.live/react-sdk";
+import { useSnackbar } from "notistack";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 
 const PollListner = ({ pollId }) => {
@@ -65,7 +66,11 @@ const PollsListner = () => {
     setCreatedPolls,
     setEndedPolls,
     setSubmissions,
+    notificationSoundEnabled,
+    notificationAlertsEnabled,
   } = useMeetingAppContext();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   usePubSub(`CREATE_POLL`, {
     onMessageReceived: ({ message, timestamp }) => {
@@ -78,6 +83,16 @@ const PollsListner = () => {
         { ...message, createdAt: timestamp, submissions: [] },
         ...s,
       ]);
+
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar("New Poll Asked 📊");
+      }
     },
     onOldMessagesReceived: (messages) => {
       // const sortedMessage = messages.sort((a, b) => {
