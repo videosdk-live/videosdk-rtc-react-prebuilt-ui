@@ -466,15 +466,6 @@ const PollButtonPart = ({
     const finalMin = min * 60;
     const finalSec = parseInt(finalMin) + parseInt(sec);
 
-    console.log(
-      timing,
-      min,
-      sec,
-      finalMin,
-      finalSec,
-      "timing, min, sec, finalMin, finalSec"
-    );
-
     return { finalSec };
   }, [timer]);
 
