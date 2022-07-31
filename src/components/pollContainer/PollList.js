@@ -8,55 +8,29 @@ import {
 import { sleep } from "../../meetingContainer/hlsViewContainer/PlayerViewer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 
-export const usePollStateFromTimer = ({
-  timeout,
-  createdAt,
-  hasTimer,
-  isDraft,
-  id,
-}) => {
-  const timeoutRef = useRef(timeout);
-  const createdAtRef = useRef(createdAt);
-  const hasTimerRef = useRef(hasTimer);
-  const isDraftRef = useRef(isDraft);
-
+export const usePollStateFromTimer = ({ timeout, createdAt, enabled }) => {
   const [isActive, setIsActive] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
 
   const isActiveRef = useRef(isActive);
 
-  const check = async () => {
-    if (!hasTimerRef.current) return;
-    if (isDraftRef.current) return;
+  const check = async ({ timeout, createdAt, enabled }) => {
+    if (!enabled) return;
 
-    hasTimerRef.current &&
-      console.log(
-        timeoutRef.current,
-        new Date(createdAtRef.current).getTime(),
-        new Date(createdAtRef.current).getTime() + timeoutRef.current * 1000,
-        new Date().getTime(),
-        new Date(createdAtRef.current).getTime() + timeoutRef.current * 1000 >
-          new Date().getTime(),
-        "timeoutRef.current, createdAtRef.current, usePollStateFromTimer"
-      );
-
-    if (
-      new Date(createdAtRef.current).getTime() + timeoutRef.current * 1000 >
-      new Date().getTime()
-    ) {
+    if (new Date(createdAt).getTime() + timeout * 1000 > new Date().getTime()) {
       if (!isActiveRef.current) {
         setIsActive(true);
       }
 
       setTimeLeft(
-        (new Date(createdAtRef.current).getTime() +
-          timeoutRef.current * 1000 -
+        (new Date(createdAt).getTime() +
+          timeout * 1000 -
           new Date().getTime()) /
           1000
       );
 
       await sleep(1000);
-      return await check();
+      return await check({ timeout, createdAt, enabled });
     } else {
       setIsActive(false);
       setTimeLeft(0);
@@ -69,10 +43,10 @@ export const usePollStateFromTimer = ({
   }, [isActive]);
 
   useEffect(() => {
-    check();
+    check({ timeout, createdAt, enabled });
 
     return () => {};
-  }, [id]);
+  }, [timeout, createdAt, enabled]);
 
   return { isActive, timeLeft };
 };
@@ -124,9 +98,7 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
   const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
     timeout,
     createdAt,
-    hasTimer,
-    isDraft,
-    id,
+    enabled: hasTimer && !isDraft,
   });
 
   const mMeeting = useMeeting();

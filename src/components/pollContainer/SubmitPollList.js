@@ -40,7 +40,7 @@ const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
   const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
     timeout,
     createdAt,
-    hasTimer,
+    enabled: hasTimer,
   });
 
   const isPollActive = useMemo(
