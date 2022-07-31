@@ -94,14 +94,15 @@ export const CornerDisplayName = ({
   useEffect(() => {
     if (webcamStream || micStream) {
       updateStats();
+
       if (statsIntervalIdRef.current) {
-        clearTimeout(statsIntervalIdRef.current);
+        clearInterval(statsIntervalIdRef.current);
       }
-      const id = setInterval(updateStats, 10000);
-      statsIntervalIdRef.current = id;
+
+      statsIntervalIdRef.current = setInterval(updateStats, 10000);
     } else {
       if (statsIntervalIdRef.current) {
-        clearTimeout(statsIntervalIdRef.current);
+        clearInterval(statsIntervalIdRef.current);
         statsIntervalIdRef.current = null;
       }
     }
