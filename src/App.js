@@ -105,6 +105,7 @@ const App = () => {
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
+      canCreatePoll: "canCreatePoll",
       //
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
@@ -145,6 +146,8 @@ const App = () => {
       // recordingLayoutType: "recordingLayoutType",
       // recordingLayoutPriority: "recordingLayoutPriority",
       // recordingLayoutGridSize: "recordingLayoutGridSize",
+
+      maintainVideoAspectRatio: "maintainVideoAspectRatio",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -228,6 +231,10 @@ const App = () => {
       paramKeys.participantCanToggleLivestream = "false";
     }
 
+    if (typeof paramKeys.canCreatePoll !== "string") {
+      paramKeys.canCreatePoll = "false";
+    }
+
     if (paramKeys.autoStartLiveStream === "true") {
       try {
         paramKeys.liveStreamOutputs = JSON.parse(paramKeys.liveStreamOutputs);
@@ -262,6 +269,10 @@ const App = () => {
 
     if (typeof paramKeys.notificationSoundEnabled !== "string") {
       paramKeys.notificationSoundEnabled = "true";
+    }
+
+    if (typeof paramKeys.maintainVideoAspectRatio !== "string") {
+      paramKeys.maintainVideoAspectRatio = "false";
     }
 
     if (typeof paramKeys.canPin !== "string") {
@@ -560,6 +571,7 @@ const App = () => {
               paramKeys.participantCanEndMeeting === "true",
             canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
             canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
+            canCreatePoll: paramKeys.canCreatePoll === "true",
             meetingLeft,
             setMeetingLeft,
             animationsEnabled: paramKeys.animationsEnabled !== "false",
@@ -581,6 +593,8 @@ const App = () => {
             // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
             // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
             //
+            maintainVideoAspectRatio:
+              paramKeys.maintainVideoAspectRatio === "true",
           }}
         >
           <MeetingProvider

@@ -7,7 +7,7 @@ import { appEvents, eventEmitter } from "../../utils/common";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
 
-async function sleep(ms) {
+export async function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });

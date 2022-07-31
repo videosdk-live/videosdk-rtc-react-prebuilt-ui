@@ -13,7 +13,7 @@ import {
   Grid,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { Constants, useMeeting } from "@videosdk.live/react-sdk";
+import { Constants, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
@@ -70,16 +70,15 @@ const useStyles = makeStyles({
 });
 
 const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
-  const mMeeting = useMeeting();
-  const sendChatMessage = mMeeting?.sendChatMessage;
+  const { publish } = usePubSub("RAISE_HAND");
 
   const onRaiseHand = () => {
     if (isMobile || isTab) {
       onClick();
       typeof onClick === "function" && onClick();
-      sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+      publish("Raise Hand");
     } else {
-      sendChatMessage(JSON.stringify({ type: "RAISE_HAND", data: {} }));
+      publish("Raise Hand");
     }
   };
 
@@ -203,6 +202,8 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={Activities}
+      tooltipTitle={"Activities"}
+      buttonText={"Activities"}
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
         typeof onClick === "function" && onClick();
@@ -1241,6 +1242,12 @@ const TopBar = ({ topBarHeight }) => {
       mobileIconArr.unshift({
         buttonType: topBarButtonTypes.PARTICIPANTS,
         priority: 10,
+      });
+
+      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+      mobileIconArr.unshift({
+        buttonType: topBarButtonTypes.ACTIVITIES,
+        // priority: 10,
       });
 
       arr.unshift(arrSideBar);

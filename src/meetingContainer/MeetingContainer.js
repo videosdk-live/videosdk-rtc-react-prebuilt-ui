@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import MainViewContainer from "./mainViewContainer/MainViewContainer";
 import SideViewContainer from "./sideViewContainer/SideViewContainer";
 import TopBar from "./TopBar";
-import { meetingLayouts, useMeetingAppContext } from "../MeetingAppContextDef";
+import {
+  meetingLayouts,
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
@@ -40,6 +44,7 @@ import {
 } from "../CONSTS";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
+import PollsListner from "../components/PollListner";
 
 const getPinMsg = ({
   localParticipant,
@@ -369,6 +374,50 @@ const MeetingContainer = () => {
     }
   };
 
+  usePubSub("CHAT", {
+    onMessageReceived: (data) => {
+      const localParticipantId = mMeetingRef.current?.localParticipant?.id;
+
+      const { senderId, senderName, message } = data;
+
+      const isLocal = senderId === localParticipantId;
+
+      if (!isLocal) {
+        if (notificationSoundEnabled) {
+          new Audio(
+            `https://static.videosdk.live/prebuilt/notification.mp3`
+          ).play();
+        }
+        if (notificationAlertsEnabled) {
+          enqueueSnackbar(
+            trimSnackBarText(`${nameTructed(senderName, 15)} says: ${message}`)
+          );
+        }
+      }
+    },
+  });
+
+  usePubSub("RAISE_HAND", {
+    onMessageReceived: (data) => {
+      const localParticipantId = mMeetingRef.current?.localParticipant?.id;
+
+      const { senderId, senderName } = data;
+
+      const isLocal = senderId === localParticipantId;
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar(
+          `${isLocal ? "You" : nameTructed(senderName, 15)} raised hand 🖐🏼`
+        );
+      }
+      participantRaisedHand(senderId);
+    },
+  });
+
   const _handleChatMessage = (data) => {
     const localParticipantId = mMeetingRef.current?.localParticipant?.id;
 
@@ -378,38 +427,6 @@ const MeetingContainer = () => {
 
     if (json_verify(text)) {
       const { type } = JSON.parse(text);
-
-      if (type === "CHAT") {
-        const { data: messageData } = JSON.parse(text);
-        if (!isLocal) {
-          if (notificationSoundEnabled) {
-            new Audio(
-              `https://static.videosdk.live/prebuilt/notification.mp3`
-            ).play();
-          }
-          if (notificationAlertsEnabled) {
-            enqueueSnackbar(
-              trimSnackBarText(
-                `${nameTructed(senderName, 15)} says: ${messageData.message}`
-              )
-            );
-          }
-        }
-      }
-
-      if (type === "RAISE_HAND") {
-        if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
-        }
-        if (notificationAlertsEnabled) {
-          enqueueSnackbar(
-            `${isLocal ? "You" : nameTructed(senderName, 15)} raised hand 🖐🏼`
-          );
-        }
-        participantRaisedHand(senderId);
-      }
 
       if (type === "END_CALL") {
         if (notificationSoundEnabled) {
@@ -738,6 +755,7 @@ const MeetingContainer = () => {
         localParticipantAllowedJoin ? (
           <>
             <ModeListner />
+            <PollsListner />
             <PauseInvisibleParticipants />
 
             <div

@@ -7,6 +7,7 @@ import {
   Typography,
   useTheme,
   Fade,
+  makeStyles,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { sideBarModes, useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -20,11 +21,27 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import ConfigTabPanel from "./ConfigTabPanel";
+import { NavigateBeforeOutlined } from "@material-ui/icons";
+
+const useStyles = makeStyles(() => ({
+  iconbutton: {
+    "&:hover ": {
+      backgroundColor: "transparent",
+    },
+  },
+}));
 
 const SideBarTabView = ({ width, height }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  const {
+    sideBarMode,
+    setSideBarMode,
+    polls,
+    draftPolls,
+    canCreatePoll,
+    sideBarNestedMode,
+    setSideBarNestedMode,
+  } = useMeetingAppContext();
   const { participants } = useMeeting();
-
   const value =
     sideBarMode === sideBarModes.PARTICIPANTS
       ? 0
@@ -65,6 +82,7 @@ const SideBarTabView = ({ width, height }) => {
   };
 
   const theme = useTheme();
+  const classes = useStyles();
 
   return (
     <div
@@ -98,18 +116,55 @@ const SideBarTabView = ({ width, height }) => {
                   borderBottom: "1px solid #70707033",
                 }}
               >
-                <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
-                  {sideBarMode === "PARTICIPANTS"
-                    ? `${capitalize(
-                        String(sideBarMode || "").toLowerCase()
-                      )} (${new Map(participants)?.size})`
-                    : sideBarMode === "ADD_LIVE_STREAM"
-                    ? "Add Live Streams"
-                    : capitalize(String(sideBarMode || "").toLowerCase())}
-                </Typography>
-                <IconButton onClick={handleClose}>
-                  <CloseIcon fontSize={"small"} />
-                </IconButton>
+                <Box
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {sideBarNestedMode && (
+                    <IconButton
+                      onClick={() => {
+                        setSideBarNestedMode(null);
+                      }}
+                      // disableFocusRipple
+                      // disableRipple
+                      // disableTouchRipple
+                      style={{
+                        marginLeft: -10,
+                        cursor: "pointer",
+                      }}
+                      // className={classes.iconbutton}
+                    >
+                      <NavigateBeforeOutlined fontSize="medium" />
+                    </IconButton>
+                  )}
+                  <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+                    {sideBarMode === "PARTICIPANTS"
+                      ? `${capitalize(
+                          String(sideBarMode || "").toLowerCase()
+                        )} (${new Map(participants)?.size})`
+                      : sideBarMode === "ADD_LIVE_STREAM"
+                      ? "Add Live Streams"
+                      : sideBarNestedMode === "POLLS"
+                      ? polls.length >= 1 || draftPolls.length >= 1
+                        ? `Polls (${polls.length || draftPolls.length})`
+                        : sideBarNestedMode === "CREATE_POLL"
+                        ? "Create a poll"
+                        : canCreatePoll
+                        ? "Create a poll"
+                        : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
+                      : sideBarNestedMode === "CREATE_POLL"
+                      ? "Create a poll"
+                      : capitalize(String(sideBarMode || "").toLowerCase())}
+                  </Typography>
+                </Box>
+                <Box>
+                  <IconButton onClick={handleClose}>
+                    <CloseIcon fontSize={"small"} />
+                  </IconButton>
+                </Box>
               </Box>
             )}
             {value === 0 ? (

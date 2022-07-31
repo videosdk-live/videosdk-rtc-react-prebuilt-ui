@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useRef, useState } from "react";
 import Linkify from "react-linkify";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import SendIcon from "@material-ui/icons/Send";
 import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import { Picker } from "emoji-mart";
@@ -114,39 +114,28 @@ const ChatMessages = ({ listHeight }) => {
     }
   };
 
-  const mMeeting = useMeeting({
-    onChatMessage: scrollToBottom,
-  });
-
-  const messages = mMeeting?.messages;
+  const { messages } = usePubSub("CHAT");
 
   useEffect(() => {
     scrollToBottom();
-  }, []);
+  }, [messages]);
 
   return messages ? (
     <Box ref={listRef} style={{ overflowY: "scroll", height: listHeight }}>
       <Box p={2}>
-        {messages.map((message, i) => {
-          const { senderId, senderName, text, timestamp } = message;
-          if (json_verify(text)) {
-            const { type, data } = JSON.parse(text);
-            if (type === "CHAT") {
-              return (
-                <ChatMessage
-                  key={`chat_item_${i}`}
-                  {...{ senderId, senderName, text: data.message, timestamp }}
-                />
-              );
-            }
-            return <></>;
-          }
-          return <></>;
+        {messages.map((msg, i) => {
+          const { senderId, senderName, message, timestamp } = msg;
+          return (
+            <ChatMessage
+              key={`chat_item_${i}`}
+              {...{ senderId, senderName, text: message, timestamp }}
+            />
+          );
         })}
       </Box>
     </Box>
   ) : (
-    <p>no messages</p>
+    <p>No messages</p>
   );
 };
 
@@ -157,9 +146,7 @@ const ChatMessageInput = ({ inputHeight }) => {
   const input = useRef();
   const inputContainer = useRef();
 
-  const mMeeting = useMeeting();
-
-  const sendChatMessage = mMeeting?.sendChatMessage;
+  const { publish } = usePubSub("CHAT");
   const theme = useTheme();
 
   return (
@@ -219,12 +206,7 @@ const ChatMessageInput = ({ inputHeight }) => {
             const message = messageText.trim();
 
             if (message.length > 0) {
-              sendChatMessage(
-                JSON.stringify({
-                  type: "CHAT",
-                  data: { message },
-                })
-              );
+              publish(message, { persist: true });
               setTimeout(() => {
                 setMessageText("");
               }, 100);
@@ -254,13 +236,7 @@ const ChatMessageInput = ({ inputHeight }) => {
                   onClick={() => {
                     const message = messageText.trim();
                     if (message.length > 0) {
-                      sendChatMessage(
-                        JSON.stringify({
-                          type: "CHAT",
-                          data: { message },
-                        })
-                      );
-
+                      publish(message, { persist: true });
                       setTimeout(() => {
                         setMessageText("");
                       }, 100);
