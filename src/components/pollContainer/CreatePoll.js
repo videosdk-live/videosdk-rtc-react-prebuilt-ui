@@ -410,6 +410,8 @@ const PollButtonPart = ({
   setCorrectAnswerErr,
   setMinOptionErr,
 }) => {
+  const { polls } = useMeetingAppContext();
+
   const handleValidation = ({
     question,
     options,
@@ -528,6 +530,7 @@ const PollButtonPart = ({
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
                 isActive: true,
+                index: polls.length + 1,
               },
               { persist: true }
             );

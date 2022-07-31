@@ -1,6 +1,6 @@
 import { Box, Tooltip, Typography } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import AnswerSubmittedIcon from "../../icons/AnswerSubmittedIcon";
 import CorrectSelectedIcon from "../../icons/CorrectSelectedIcon";
 import NoPollActiveIcon from "../../icons/NoPollActiveIcon";
@@ -8,9 +8,11 @@ import WrongOptionSelectedIcon from "../../icons/WrongOptionSelectedIcon";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { MarkCorrectCheckbox } from "./CreatePoll";
-import { secondsToMinutes, usePollStateFromTimer } from "./PollList";
+import { secondsToMinutes } from "./PollList";
 
-const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
+const SubmitPollListItem = ({ poll }) => {
+  const timerIntervalRef = useRef();
+
   const padding = useResponsiveSize({
     xl: 12,
     lg: 10,
@@ -35,13 +37,11 @@ const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
 
   const { publish } = usePubSub(`SUBMIT_A_POLL_${poll.id}`);
 
-  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive } = poll;
+  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive, index } =
+    poll;
 
-  const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
-    timeout,
-    createdAt,
-    enabled: hasTimer,
-  });
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isTimerPollActive, setIsTimerPollActive] = useState(false);
 
   const isPollActive = useMemo(
     () => (hasTimer ? isTimerPollActive : isActive),
@@ -105,6 +105,41 @@ const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
     };
   }, [poll, localParticipantId]);
 
+  const checkTimeOver = ({ timeout, createdAt }) =>
+    !(new Date(createdAt).getTime() + timeout * 1000 > new Date().getTime());
+
+  const updateTimer = ({ timeout, createdAt }) => {
+    if (checkTimeOver({ timeout, createdAt })) {
+      setTimeLeft(0);
+      setIsTimerPollActive(false);
+      clearInterval(timerIntervalRef.current);
+    } else {
+      setTimeLeft(
+        (new Date(createdAt).getTime() +
+          timeout * 1000 -
+          new Date().getTime()) /
+          1000
+      );
+      setIsTimerPollActive(true);
+    }
+  };
+
+  useEffect(() => {
+    if (hasTimer) {
+      updateTimer({ timeout, createdAt });
+
+      if (!checkTimeOver({ timeout, createdAt })) {
+        timerIntervalRef.current = setInterval(() => {
+          updateTimer({ timeout, createdAt });
+        }, 1000);
+      }
+    }
+
+    return () => {
+      clearInterval(timerIntervalRef.current);
+    };
+  }, []);
+
   return (
     <Box style={{ borderBottom: "1px solid #70707033" }}>
       <Box
@@ -130,7 +165,7 @@ const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
               marginTop: 0,
               marginBottom: 0,
             }}
-          >{`Poll ${totalPolls - index}`}</Typography>
+          >{`Poll ${index}`}</Typography>
           <p
             style={{
               marginLeft: 8,
@@ -275,9 +310,11 @@ const SubmitPollListItem = ({ poll, panelHeight, index, totalPolls }) => {
                               }}
                             ></Box>
                           </Box>
-                          <Typography style={{ marginLeft: 24 }}>
-                            {`${Math.floor(percentage)}%`}
-                          </Typography>
+                          <Box style={{ marginLeft: 24, width: 40 }}>
+                            <Typography style={{ margin: 0, padding: 0 }}>
+                              {`${Math.floor(percentage)}%`}
+                            </Typography>
+                          </Box>
                         </Box>
                       </Box>
                     </Box>
@@ -343,7 +380,7 @@ const SubmitPollList = ({ panelHeight }) => {
           polls.map((poll, index) => {
             return (
               <SubmitPollListItem
-                key={`submit_polls_${index}`}
+                key={`submit_polls_${poll.id}`}
                 totalPolls={polls.length}
                 poll={poll}
                 panelHeight={panelHeight}

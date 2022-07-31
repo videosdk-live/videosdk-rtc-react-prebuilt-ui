@@ -5,51 +5,8 @@ import {
   sideBarNestedModes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
-import { sleep } from "../../meetingContainer/hlsViewContainer/PlayerViewer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
-
-export const usePollStateFromTimer = ({ timeout, createdAt, enabled }) => {
-  const [isActive, setIsActive] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(0);
-
-  const isActiveRef = useRef(isActive);
-
-  const check = async ({ timeout, createdAt, enabled }) => {
-    if (!enabled) return;
-
-    if (new Date(createdAt).getTime() + timeout * 1000 > new Date().getTime()) {
-      if (!isActiveRef.current) {
-        setIsActive(true);
-      }
-
-      setTimeLeft(
-        (new Date(createdAt).getTime() +
-          timeout * 1000 -
-          new Date().getTime()) /
-          1000
-      );
-
-      await sleep(1000);
-      return await check({ timeout, createdAt, enabled });
-    } else {
-      setIsActive(false);
-      setTimeLeft(0);
-      return;
-    }
-  };
-
-  useEffect(() => {
-    isActiveRef.current = isActive;
-  }, [isActive]);
-
-  useEffect(() => {
-    check({ timeout, createdAt, enabled });
-
-    return () => {};
-  }, [timeout, createdAt, enabled]);
-
-  return { isActive, timeLeft };
-};
+import { v4 as uuid } from "uuid";
 
 export const secondsToMinutes = (time) => {
   var minutes = Math.floor((time % 3600) / 60)
@@ -61,7 +18,9 @@ export const secondsToMinutes = (time) => {
   return minutes + " : " + seconds;
 };
 
-const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
+const Poll = ({ poll, isDraft, publishDraftPoll }) => {
+  const timerIntervalRef = useRef();
+
   const padding = useResponsiveSize({
     xl: 12,
     lg: 10,
@@ -85,21 +44,13 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
     xs: 10,
   });
 
-  const { setSideBarNestedMode } = useMeetingAppContext();
-
   const { publish: EndPublish } = usePubSub(`END_POLL`);
-  const { publish: RemoveFromDraftPublish } = usePubSub(
-    `REMOVE_POLL_FROM_DRAFT`
-  );
-  const { publish: publishCreatePoll } = usePubSub(`CREATE_POLL`);
 
-  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive, id } = poll;
+  const { hasCorrectAnswer, hasTimer, timeout, createdAt, isActive, index } =
+    poll;
 
-  const { isActive: isTimerPollActive, timeLeft } = usePollStateFromTimer({
-    timeout,
-    createdAt,
-    enabled: hasTimer && !isDraft,
-  });
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isTimerPollActive, setIsTimerPollActive] = useState(false);
 
   const mMeeting = useMeeting();
 
@@ -173,6 +124,41 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
     };
   }, [poll, localParticipantId]);
 
+  const checkTimeOver = ({ timeout, createdAt }) =>
+    !(new Date(createdAt).getTime() + timeout * 1000 > new Date().getTime());
+
+  const updateTimer = ({ timeout, createdAt }) => {
+    if (checkTimeOver({ timeout, createdAt })) {
+      setTimeLeft(0);
+      setIsTimerPollActive(false);
+      clearInterval(timerIntervalRef.current);
+    } else {
+      setTimeLeft(
+        (new Date(createdAt).getTime() +
+          timeout * 1000 -
+          new Date().getTime()) /
+          1000
+      );
+      setIsTimerPollActive(true);
+    }
+  };
+
+  useEffect(() => {
+    if (hasTimer) {
+      updateTimer({ timeout, createdAt });
+
+      if (!checkTimeOver({ timeout, createdAt })) {
+        timerIntervalRef.current = setInterval(() => {
+          updateTimer({ timeout, createdAt });
+        }, 1000);
+      }
+    }
+
+    return () => {
+      clearInterval(timerIntervalRef.current);
+    };
+  }, []);
+
   return (
     <Box
       style={{
@@ -202,7 +188,7 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
               marginTop: 0,
               marginBottom: 0,
             }}
-          >{`Poll ${totalPolls - index}`}</Typography>
+          >{`Poll ${index || ""}`}</Typography>
           <p
             style={{
               marginLeft: 8,
@@ -292,21 +278,13 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
                     ></Box>
                   </Box>
 
-                  <Box
-                    style={{
-                      marginLeft: isDraft ? 52 : 24,
-                      width: 40,
-                    }}
-                  >
-                    <Typography
-                      style={{
-                        margin: 0,
-                        padding: 0,
-                      }}
-                    >
-                      {!isDraft && `${Math.floor(percentage)}%`}
-                    </Typography>
-                  </Box>
+                  {!isDraft && (
+                    <Box style={{ marginLeft: 24, width: 40 }}>
+                      <Typography style={{ margin: 0, padding: 0 }}>
+                        {`${Math.floor(percentage)}%`}
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Box>
             );
@@ -326,25 +304,27 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
                 variant="outlined"
                 size="small"
                 onClick={() => {
-                  RemoveFromDraftPublish(
-                    { pollId: poll.id },
-                    { persist: true }
-                  );
-                  publishCreatePoll(
-                    {
-                      id: poll.id,
-                      question: poll.question,
-                      options: poll.options,
-                      // createdAt: new Date(),
-                      timeout: poll.timeout,
-                      hasTimer: poll.hasTimer,
-                      hasCorrectAnswer: poll.hasCorrectAnswer,
-                      isActive: true,
-                    },
-                    { persist: true }
-                  );
+                  publishDraftPoll(poll);
 
-                  setSideBarNestedMode(sideBarNestedModes.POLLS);
+                  // RemoveFromDraftPublish(
+                  //   { pollId: poll.id },
+                  //   { persist: true }
+                  // );
+                  // publishCreatePoll(
+                  //   {
+                  //     id: uuid(),
+                  //     question: poll.question,
+                  //     options: poll.options,
+                  //     // createdAt: new Date(),
+                  //     timeout: poll.timeout,
+                  //     hasTimer: poll.hasTimer,
+                  //     hasCorrectAnswer: poll.hasCorrectAnswer,
+                  //     isActive: true,
+                  //     index: polls.length + 1,
+                  //   },
+                  //   { persist: true }
+                  // );
+                  // setSideBarNestedMode(sideBarNestedModes.POLLS);
                 }}
               >
                 Launch
@@ -374,9 +354,16 @@ const Poll = ({ poll, panelHeight, totalPolls, index, isDraft }) => {
 };
 
 const PollList = ({ panelHeight }) => {
-  const { polls, draftPolls } = useMeetingAppContext();
-  const { setSideBarNestedMode } = useMeetingAppContext();
+  const { setSideBarNestedMode, polls, draftPolls } = useMeetingAppContext();
+
   const theme = useTheme();
+
+  const { publish: RemoveFromDraftPublish } = usePubSub(
+    `REMOVE_POLL_FROM_DRAFT`
+  );
+  const { publish: publishCreatePoll } = usePubSub(`CREATE_POLL`);
+
+  const totalPolls = useMemo(() => polls?.length || 0, [polls]);
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -421,19 +408,43 @@ const PollList = ({ panelHeight }) => {
           {draftPolls.map((poll, index) => {
             return (
               <Poll
-                key={`draft_polls_${index}`}
+                key={`draft_polls_${poll.id}`}
                 poll={poll}
                 panelHeight={panelHeight}
                 index={index}
                 isDraft={true}
+                publishDraftPoll={(poll) => {
+                  //
+                  RemoveFromDraftPublish(
+                    { pollId: poll.id },
+                    { persist: true }
+                  );
+                  //
+                  publishCreatePoll(
+                    {
+                      id: uuid(),
+                      question: poll.question,
+                      options: poll.options,
+                      // createdAt: new Date(),
+                      timeout: poll.timeout,
+                      hasTimer: poll.hasTimer,
+                      hasCorrectAnswer: poll.hasCorrectAnswer,
+                      isActive: true,
+                      index: polls.length + 1,
+                    },
+                    { persist: true }
+                  );
+                  //
+                  setSideBarNestedMode(sideBarNestedModes.POLLS);
+                }}
               />
             );
           })}
           {polls.map((poll, index) => {
             return (
               <Poll
-                key={`creator_polls_${index}`}
-                totalPolls={polls.length}
+                key={`creator_polls_${poll.id}`}
+                // totalPolls={totalPolls}
                 poll={poll}
                 panelHeight={panelHeight}
                 index={index}
