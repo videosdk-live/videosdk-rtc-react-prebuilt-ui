@@ -265,11 +265,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
-    console.log(participantId, stream.kind, " Stream started ");
+    // console.log(participantId, stream.kind, " Stream started ");
   };
 
   const onStreamDisabled = (stream) => {
-    console.log(participantId, stream.kind, " Stream stopped ");
+    // console.log(participantId, stream.kind, " Stream stopped ");
   };
 
   const {

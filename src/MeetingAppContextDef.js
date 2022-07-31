@@ -25,6 +25,12 @@ export const sideBarModes = {
   CONFIGURATION: "CONFIGURATION",
 };
 
+export const sideBarNestedModes = {
+  POLLS: "POLLS",
+  CREATE_POLL: "CREATE_POLL",
+  QNA: "QNA",
+};
+
 const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.palette.background.default,
@@ -90,6 +96,7 @@ export const MeetingAppProvider = ({
   canRemoveOtherParticipant,
   notificationSoundEnabled,
   canPin,
+  canCreatePoll,
   selectedMic,
   selectedWebcam,
   joinScreenWebCam,
@@ -126,6 +133,7 @@ export const MeetingAppProvider = ({
 
   const classes = useStyles();
   const [sideBarMode, setSideBarMode] = useState(null);
+  const [sideBarNestedMode, setSideBarNestedMode] = useState(null);
   const [activeSortedParticipants, setActiveSortedParticipants] = useState([]);
   const [mainViewParticipants, setMainViewParticipants] = useState([]);
   const [overlaidInfoVisible, setOverlaidInfoVisible] = useState(true);
@@ -143,6 +151,34 @@ export const MeetingAppProvider = ({
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
   const [meetingMode, setMeetingMode] = useState(mode);
   const [downstreamUrl, setDownstreamUrl] = useState(null);
+  const [isPollSelected, setIsPollSelected] = useState(false);
+  const [draftPolls, setDraftPolls] = useState([]);
+  const [isCreateNewPollClicked, setIsCreateNewPollClicked] = useState(false);
+  const [isQASelected, setIsQASelected] = useState(false);
+  const [optionArr, setOptionArr] = useState([
+    // {
+    //   id: uuid(),
+    //   question: null,
+    //   options: [{ optionId: uuid(), option: null, isCorrect: false }],
+    //   createdAt: new Date(),
+    //   timeout: 0,
+    //   isActive: false,
+    // },
+  ]);
+
+  const [createdPolls, setCreatedPolls] = useState([]);
+  const [endedPolls, setEndedPolls] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+
+  const polls = useMemo(
+    () =>
+      createdPolls.map((poll) => ({
+        ...poll,
+        isActive:
+          endedPolls.findIndex(({ pollId }) => pollId === poll.id) === -1,
+      })),
+    [createdPolls, endedPolls]
+  );
 
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
@@ -225,6 +261,7 @@ export const MeetingAppProvider = ({
         notificationSoundEnabled,
         canToggleWhiteboard,
         canDrawOnWhiteboard,
+        canCreatePoll,
         animationsEnabled,
         topbarEnabled,
         notificationAlertsEnabled,
@@ -258,7 +295,17 @@ export const MeetingAppProvider = ({
         liveStreamConfig,
         meetingMode,
         downstreamUrl,
+        isPollSelected,
+        isCreateNewPollClicked,
+        isQASelected,
+        optionArr,
+        polls,
+        draftPolls,
+        sideBarNestedMode,
         hlsPlayerControlsVisible,
+        createdPolls,
+        endedPolls,
+        submissions,
 
         // setters
         setSideBarMode,
@@ -273,6 +320,15 @@ export const MeetingAppProvider = ({
         setAppMeetingLayout,
         setMeetingMode,
         setDownstreamUrl,
+        setIsPollSelected,
+        setIsCreateNewPollClicked,
+        setIsQASelected,
+        setOptionArr,
+        setDraftPolls,
+        setSideBarNestedMode,
+        setCreatedPolls,
+        setEndedPolls,
+        setSubmissions,
       }}
     >
       <SnackbarProvider

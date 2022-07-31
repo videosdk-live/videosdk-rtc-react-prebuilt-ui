@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import MainViewContainer from "./mainViewContainer/MainViewContainer";
 import SideViewContainer from "./sideViewContainer/SideViewContainer";
 import TopBar from "./TopBar";
-import { meetingLayouts, useMeetingAppContext } from "../MeetingAppContextDef";
+import {
+  meetingLayouts,
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
@@ -40,6 +44,7 @@ import {
 } from "../CONSTS";
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
+import PollsListner from "../components/PollListner";
 
 const getPinMsg = ({
   localParticipant,
@@ -750,6 +755,7 @@ const MeetingContainer = () => {
         localParticipantAllowedJoin ? (
           <>
             <ModeListner />
+            <PollsListner />
             <PauseInvisibleParticipants />
 
             <div

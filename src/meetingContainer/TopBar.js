@@ -202,6 +202,8 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={Activities}
+      tooltipTitle={"Activities"}
+      buttonText={"Activities"}
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
         typeof onClick === "function" && onClick();
@@ -1240,6 +1242,12 @@ const TopBar = ({ topBarHeight }) => {
       mobileIconArr.unshift({
         buttonType: topBarButtonTypes.PARTICIPANTS,
         priority: 10,
+      });
+
+      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+      mobileIconArr.unshift({
+        buttonType: topBarButtonTypes.ACTIVITIES,
+        // priority: 10,
       });
 
       arr.unshift(arrSideBar);

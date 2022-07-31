@@ -1,8 +1,8 @@
 {
   "name": "videosdk-rtc-react-prebuilt-ui",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "private": true,
-  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.11/",
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.12/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -30,6 +30,7 @@
     "react-use-clipboard": "^1.0.7",
     "react-virtualized": "^9.22.3",
     "react-visibility-sensor": "^5.1.1",
+    "uuid": "^8.3.2",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
