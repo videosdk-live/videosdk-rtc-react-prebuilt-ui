@@ -137,6 +137,7 @@ const App = () => {
       //
       hlsEnabled: "hlsEnabled",
       autoStartHls: "autoStartHls",
+      hlsPlayerControlsVisible: "hlsPlayerControlsVisible",
       //
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
@@ -144,6 +145,8 @@ const App = () => {
       // recordingLayoutType: "recordingLayoutType",
       // recordingLayoutPriority: "recordingLayoutPriority",
       // recordingLayoutGridSize: "recordingLayoutGridSize",
+
+      maintainVideoAspectRatio: "maintainVideoAspectRatio",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -261,6 +264,10 @@ const App = () => {
 
     if (typeof paramKeys.notificationSoundEnabled !== "string") {
       paramKeys.notificationSoundEnabled = "true";
+    }
+
+    if (typeof paramKeys.maintainVideoAspectRatio !== "string") {
+      paramKeys.maintainVideoAspectRatio = "false";
     }
 
     if (typeof paramKeys.canPin !== "string") {
@@ -514,6 +521,8 @@ const App = () => {
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
             autoStartRecording: paramKeys.autoStartRecording === "true",
             autoStartHls: paramKeys.autoStartHls === "true",
+            hlsPlayerControlsVisible:
+              paramKeys.hlsPlayerControlsVisible === "true",
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
             participantCanToggleHls:
@@ -578,6 +587,8 @@ const App = () => {
             // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
             // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
             //
+            maintainVideoAspectRatio:
+              paramKeys.maintainVideoAspectRatio === "true",
           }}
         >
           <MeetingProvider

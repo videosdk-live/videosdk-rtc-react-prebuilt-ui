@@ -21,7 +21,7 @@ const ParticipantAudioPlayer = ({ participantId }) => {
   }, []);
 
   useEffect(() => {
-    if (!isLocal && audioPlayer.current && micOn) {
+    if (!isLocal && audioPlayer.current && micOn && micStream) {
       const mediaStream = new MediaStream();
       mediaStream.addTrack(micStream.track);
 
