@@ -78,7 +78,7 @@ export const CornerDisplayName = ({
   const { webcamStream, micStream, getVideoStats, getAudioStats } =
     useParticipant(participantId);
 
-  const [statsIntervalId, setStatsIntervalId] = useState(null);
+  const statsIntervalIdRef = useRef();
   const [score, setScore] = useState({});
 
   const updateStats = async () => {
@@ -94,20 +94,20 @@ export const CornerDisplayName = ({
   useEffect(() => {
     if (webcamStream || micStream) {
       updateStats();
-      if (statsIntervalId) {
-        clearTimeout(statsIntervalId);
+      if (statsIntervalIdRef.current) {
+        clearTimeout(statsIntervalIdRef.current);
       }
       const id = setInterval(updateStats, 10000);
-      setStatsIntervalId(id);
+      statsIntervalIdRef.current = id;
     } else {
-      if (statsIntervalId) {
-        clearTimeout(statsIntervalId);
-        setStatsIntervalId(null);
+      if (statsIntervalIdRef.current) {
+        clearTimeout(statsIntervalIdRef.current);
+        statsIntervalIdRef.current = null;
       }
     }
 
     return () => {
-      clearInterval(statsIntervalId);
+      if (statsIntervalIdRef.current) clearInterval(statsIntervalIdRef.current);
     };
   }, [webcamStream, micStream]);
 
