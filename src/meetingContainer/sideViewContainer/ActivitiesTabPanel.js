@@ -63,13 +63,13 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           },
         },
-        {
-          Icon: QAIcon,
-          primary: "Q&A",
-          secondary: "Participants can post questions.",
-          disabled: true,
-          onClick: () => {},
-        },
+        // {
+        //   Icon: QAIcon,
+        //   primary: "Q&A",
+        //   secondary: "Participants can post questions.",
+        //   disabled: true,
+        //   onClick: () => {},
+        // },
       ].map(({ Icon, primary, secondary, disabled, onClick }, i) => (
         <ButtonBase
           disabled={disabled}
