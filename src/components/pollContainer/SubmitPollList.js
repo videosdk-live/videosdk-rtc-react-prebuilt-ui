@@ -189,16 +189,16 @@ const SubmitPollListItem = ({ poll }) => {
           >
             {isPollActive
               ? hasTimer
-                ? `Endes in ${secondsToMinutes(timeLeft)}`
+                ? `Ends in ${secondsToMinutes(timeLeft)}`
                 : "Live"
               : "Ended"}
           </Typography>
         </Box>
-        <Box style={{ marginTop: 20 }}>
+        <Box style={{ marginTop: 16 }}>
           <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
             {poll.question}
           </Typography>
-          <Box style={{ marginTop: 24 }}>
+          <Box style={{ marginTop: 16 }}>
             {localSubmittedOption || !isPollActive
               ? poll.options.map((option) => {
                   const total = groupedSubmissionCount[option.optionId];
@@ -279,7 +279,7 @@ const SubmitPollListItem = ({ poll }) => {
                         </Box>
                         <Box
                           style={{
-                            marginTop: 4,
+                            marginTop: 0,
                             display: "flex",
                             alignItems: "center",
                           }}

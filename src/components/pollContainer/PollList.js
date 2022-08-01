@@ -212,14 +212,14 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           >
             {isPollActive
               ? hasTimer
-                ? `Endes in ${secondsToMinutes(timeLeft)}`
+                ? `Ends in ${secondsToMinutes(timeLeft)}`
                 : "Live"
               : isDraft
               ? "Draft"
               : "Ended"}
           </Typography>
         </Box>
-        <Box style={{ marginTop: 18 }}>
+        <Box style={{ marginTop: 16 }}>
           <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
             {poll.question}
           </Typography>
@@ -234,7 +234,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 
             return (
               <Box
-                style={{ marginTop: j === 0 ? equalSpacing : equalSpacing / 2 }}
+                style={{
+                  marginTop: j === 0 ? equalSpacing : equalSpacing / 2,
+                }}
               >
                 <Typography
                   style={{
@@ -247,7 +249,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 </Typography>
                 <Box
                   style={{
-                    marginTop: 4,
+                    marginTop: 0,
                     display: "flex",
                     alignItems: "center",
                   }}
@@ -292,7 +294,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 
           <Box
             style={{
-              marginTop: equalSpacing,
+              // marginTop: equalSpacing,
               marginBottom: equalSpacing,
               display: "flex",
               alignItems: "flex-end",
@@ -305,27 +307,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 size="small"
                 onClick={() => {
                   publishDraftPoll(poll);
-
-                  // RemoveFromDraftPublish(
-                  //   { pollId: poll.id },
-                  //   { persist: true }
-                  // );
-                  // publishCreatePoll(
-                  //   {
-                  //     id: uuid(),
-                  //     question: poll.question,
-                  //     options: poll.options,
-                  //     // createdAt: new Date(),
-                  //     timeout: poll.timeout,
-                  //     hasTimer: poll.hasTimer,
-                  //     hasCorrectAnswer: poll.hasCorrectAnswer,
-                  //     isActive: true,
-                  //     index: polls.length + 1,
-                  //   },
-                  //   { persist: true }
-                  // );
-                  // setSideBarNestedMode(sideBarNestedModes.POLLS);
                 }}
+                style={{ marginTop: equalSpacing + 2 }}
               >
                 Launch
               </Button>
@@ -334,6 +317,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               <Button
                 variant="outlined"
                 size="small"
+                style={{ marginTop: equalSpacing + 2 }}
                 onClick={() => {
                   EndPublish(
                     {

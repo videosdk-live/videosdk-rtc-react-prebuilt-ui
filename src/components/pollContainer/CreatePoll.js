@@ -5,7 +5,9 @@ import {
   FormControlLabel,
   FormGroup,
   makeStyles,
+  MenuItem,
   Radio,
+  Select,
   styled,
   TextField,
   Typography,
@@ -180,6 +182,19 @@ const CreatePollPart = ({
   correctAnswerErr,
   minOptionErr,
 }) => {
+  const pollTimerArr = [
+    { value: "00:30", Label: "30 Secs" },
+    { value: "01:00", Label: "1 Min" },
+    { value: "02:00", Label: "2 Min" },
+    { value: "03:00", Label: "3 Min" },
+    { value: "04:00", Label: "4 Min" },
+    { value: "05:00", Label: "5 Min" },
+    { value: "06:00", Label: "6 Min" },
+    { value: "07:00", Label: "7 Min" },
+    { value: "08:00", Label: "8 Min" },
+    { value: "09:00", Label: "9 Min" },
+    { value: "10:00", Label: "10 Min" },
+  ];
   return (
     <Box
       style={{
@@ -356,26 +371,38 @@ const CreatePollPart = ({
                         }}
                       />
                     }
-                    label="Set Timer (mm:ss)"
+                    label="Set Timer"
                   />
                 </FormGroup>
                 {isSetTimerChecked && (
-                  <input
-                    type="time"
-                    placeholder="mm:ss"
-                    style={{
-                      backgroundColor: "#333244",
-                      border: 0,
-                      color: "white",
-                      fontFamily: "Roboto",
-                      fontSize: 14,
-                      borderBottom: "1px solid #fff",
-                    }}
-                    // value={timer}
+                  <Select
+                    value={timer}
                     onChange={(e) => {
                       setTimer(e.target.value);
                     }}
-                  ></input>
+                  >
+                    {pollTimerArr.map((item) => {
+                      return (
+                        <MenuItem value={item.value}>{item.Label}</MenuItem>
+                      );
+                    })}
+                  </Select>
+                  // <input
+                  //   type="time"
+                  //   placeholder="mm:ss"
+                  //   style={{
+                  //     backgroundColor: "#333244",
+                  //     border: 0,
+                  //     color: "white",
+                  //     fontFamily: "Roboto",
+                  //     fontSize: 14,
+                  //     borderBottom: "1px solid #fff",
+                  //   }}
+                  //   // value={timer}
+                  // onChange={(e) => {
+                  //   setTimer(e.target.value);
+                  // }}
+                  // ></input>
                 )}
               </Box>
               <Box style={{ marginTop: 4, marginLeft: 4 }}>
@@ -481,23 +508,33 @@ const PollButtonPart = ({
           color: theme.palette.common.white,
         }}
         onClick={() => {
-          publishDraftPoll(
-            {
-              id: uuid(),
-              question: question,
-              options: options,
-              // createdAt: new Date(),
-              timeout: isSetTimerChecked ? finalSec : 0,
-              hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
-              hasTimer: isSetTimerChecked ? true : false,
-              isActive: false,
-            },
-            {
-              persist: true,
-            }
-          );
-          // setIsCreateNewPollClicked(false);
-          setSideBarNestedMode(sideBarNestedModes.POLLS);
+          const isValid = handleValidation({
+            question,
+            options,
+            isSetTimerChecked,
+            isMarkAsCorrectChecked,
+            finalSec,
+          });
+
+          if (isValid) {
+            publishDraftPoll(
+              {
+                id: uuid(),
+                question: question,
+                options: options,
+                // createdAt: new Date(),
+                timeout: isSetTimerChecked ? finalSec : 0,
+                hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
+                hasTimer: isSetTimerChecked ? true : false,
+                isActive: false,
+              },
+              {
+                persist: true,
+              }
+            );
+            // setIsCreateNewPollClicked(false);
+            setSideBarNestedMode(sideBarNestedModes.POLLS);
+          }
         }}
       >
         Save
@@ -568,7 +605,7 @@ const CreatePoll = ({ panelHeight }) => {
     isCorrect: false,
   });
   const [options, setOptions] = useState([]);
-  const [timer, setTimer] = useState(null);
+  const [timer, setTimer] = useState("00:30");
   const [timerErr, setTimerErr] = useState(false);
   const [correctAnswerErr, setCorrectAnswerErr] = useState(false);
   const [minOptionErr, setMinOptionErr] = useState(false);

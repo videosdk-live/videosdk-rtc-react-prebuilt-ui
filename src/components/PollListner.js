@@ -1,6 +1,10 @@
 import { usePubSub } from "@videosdk.live/react-sdk";
 import { useSnackbar } from "notistack";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import {
+  sideBarModes,
+  sideBarNestedModes,
+  useMeetingAppContext,
+} from "../MeetingAppContextDef";
 
 const PollListner = ({ pollId }) => {
   const { setCreatedPolls } = useMeetingAppContext();
@@ -68,6 +72,8 @@ const PollsListner = () => {
     setSubmissions,
     notificationSoundEnabled,
     notificationAlertsEnabled,
+    setSideBarMode,
+    setSideBarNestedMode,
   } = useMeetingAppContext();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -92,6 +98,8 @@ const PollsListner = () => {
 
       if (notificationAlertsEnabled) {
         enqueueSnackbar("New Poll Asked 📊");
+        setSideBarMode(sideBarModes.ACTIVITIES);
+        setSideBarNestedMode(sideBarNestedModes.POLLS);
       }
     },
     onOldMessagesReceived: (messages) => {
