@@ -184,13 +184,17 @@ const CreatePollPart = ({
   optionErr,
 }) => {
   //for timer
-  const pollTimerArr = [{ value: 30, Label: "30 secs" }];
-  for (let i = 1; i < 11; i++) {
-    pollTimerArr.push({
-      value: i * 60,
-      Label: `${i} min${i === 1 ? "" : "s"}`,
-    });
-  }
+
+  const pollTimerArr = useMemo(() => {
+    const pollTimerArr = [{ value: 30, Label: "30 secs" }];
+    for (let i = 1; i < 11; i++) {
+      pollTimerArr.push({
+        value: i * 60,
+        Label: `${i} min${i === 1 ? "" : "s"}`,
+      });
+    }
+    return pollTimerArr;
+  }, []);
 
   return (
     <Box
