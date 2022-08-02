@@ -26,13 +26,13 @@ const useStyles = makeStyles(() => ({
   textField: {
     borderRadius: "4px",
     color: "white",
-    fontWeight: 500,
+    fontWeight: 400,
   },
 
   textFieldRoot: {
     "& .MuiInputBase-input": {
       fontSize: "16px",
-      fontWeight: 500,
+      fontWeight: 400,
     },
   },
 
@@ -183,18 +183,19 @@ const CreatePollPart = ({
   minOptionErr,
 }) => {
   const pollTimerArr = [
-    { value: "00:30", Label: "30 Secs" },
-    { value: "01:00", Label: "1 Min" },
-    { value: "02:00", Label: "2 Min" },
-    { value: "03:00", Label: "3 Min" },
-    { value: "04:00", Label: "4 Min" },
-    { value: "05:00", Label: "5 Min" },
-    { value: "06:00", Label: "6 Min" },
-    { value: "07:00", Label: "7 Min" },
-    { value: "08:00", Label: "8 Min" },
-    { value: "09:00", Label: "9 Min" },
-    { value: "10:00", Label: "10 Min" },
+    { value: "00:30", Label: "30 secs" },
+    { value: "01:00", Label: "1 min" },
+    { value: "02:00", Label: "2 mins" },
+    { value: "03:00", Label: "3 mins" },
+    { value: "04:00", Label: "4 mins" },
+    { value: "05:00", Label: "5 mins" },
+    { value: "06:00", Label: "6 mins" },
+    { value: "07:00", Label: "7 mins" },
+    { value: "08:00", Label: "8 mins" },
+    { value: "09:00", Label: "9 mins" },
+    { value: "10:00", Label: "10 mins" },
   ];
+
   return (
     <Box
       style={{
@@ -292,6 +293,7 @@ const CreatePollPart = ({
               variant="filled"
               autocomplete="off"
               value={option.option}
+              // onMouseLeave={_handleKeyDown}
               onChange={(e) =>
                 setOption({
                   optionId: uuid(),
@@ -506,6 +508,8 @@ const PollButtonPart = ({
           width: "50%",
           backgroundColor: theme.palette.common.sidePanel,
           color: theme.palette.common.white,
+          padding: "8px",
+          boxShadow: "none",
         }}
         onClick={() => {
           const isValid = handleValidation({
@@ -546,6 +550,8 @@ const PollButtonPart = ({
           marginLeft: 8,
           color: theme.palette.common.white,
           backgroundColor: theme.palette.primary.main,
+          padding: "8px",
+          boxShadow: "none",
         }}
         onClick={() => {
           const isValid = handleValidation({
@@ -612,11 +618,11 @@ const CreatePoll = ({ panelHeight }) => {
 
   const _handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault();
-      // if (option.length > 0) {
-      setOptions([...options, option]);
-      setOption({ option: "", isCorrect: false });
-      // }
+      if (option.option.length > 3) {
+        e.preventDefault();
+        setOptions([...options, option]);
+        setOption({ option: "", isCorrect: false });
+      }
     }
   };
 

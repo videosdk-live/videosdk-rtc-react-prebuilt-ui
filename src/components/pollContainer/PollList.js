@@ -23,7 +23,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 
   const padding = useResponsiveSize({
     xl: 12,
-    lg: 10,
+    lg: 16,
     md: 8,
     sm: 6,
     xs: 4,
@@ -242,7 +242,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                   style={{
                     fontSize: 16,
                     color: "white",
-                    fontWeight: 500,
+                    fontWeight: 400,
                   }}
                 >
                   {item.option}
@@ -281,7 +281,15 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                   </Box>
 
                   {!isDraft && (
-                    <Box style={{ marginLeft: 24, width: 40 }}>
+                    <Box
+                      style={{
+                        marginLeft: 24,
+                        width: 40,
+                        display: "flex",
+                        alignItems: "flex-end",
+                        justifyContent: "flex-end",
+                      }}
+                    >
                       <Typography style={{ margin: 0, padding: 0 }}>
                         {`${Math.floor(percentage)}%`}
                       </Typography>
