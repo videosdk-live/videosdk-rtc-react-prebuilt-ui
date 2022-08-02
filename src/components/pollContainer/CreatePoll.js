@@ -183,19 +183,14 @@ const CreatePollPart = ({
   minOptionErr,
   optionErr,
 }) => {
-  const pollTimerArr = [
-    { value: "00:30", Label: "30 secs" },
-    { value: "01:00", Label: "1 min" },
-    { value: "02:00", Label: "2 mins" },
-    { value: "03:00", Label: "3 mins" },
-    { value: "04:00", Label: "4 mins" },
-    { value: "05:00", Label: "5 mins" },
-    { value: "06:00", Label: "6 mins" },
-    { value: "07:00", Label: "7 mins" },
-    { value: "08:00", Label: "8 mins" },
-    { value: "09:00", Label: "9 mins" },
-    { value: "10:00", Label: "10 mins" },
-  ];
+  //for timer
+  const pollTimerArr = [{ value: 30, Label: "30 secs" }];
+  for (let i = 1; i < 11; i++) {
+    pollTimerArr.push({
+      value: i * 60,
+      Label: `${i} min${i === 1 ? "" : "s"}`,
+    });
+  }
 
   return (
     <Box
@@ -458,7 +453,7 @@ const PollButtonPart = ({
     question,
     options,
     isSetTimerChecked,
-    finalSec,
+    timer,
     isMarkAsCorrectChecked,
   }) => {
     let isValid = true;
@@ -489,8 +484,8 @@ const PollButtonPart = ({
       }
     }
 
-    // check time finalSec if `isSetTimerChecked`
-    if (isSetTimerChecked && finalSec < 30) {
+    // check time timer if `isSetTimerChecked`
+    if (isSetTimerChecked && timer < 30) {
       isValid = false;
       setTimerErr(true);
       return false;
@@ -513,16 +508,6 @@ const PollButtonPart = ({
     return isValid;
   };
 
-  const { finalSec } = useMemo(() => {
-    const timing = timer && timer?.split(":");
-    const min = timing ? parseInt(timing[0]) : 0;
-    const sec = timing ? parseInt(timing[1]) : 0;
-    const finalMin = min * 60;
-    const finalSec = parseInt(finalMin) + parseInt(sec);
-
-    return { finalSec };
-  }, [timer]);
-
   return (
     <Box style={{ display: "flex", padding: padding }}>
       <Button
@@ -540,7 +525,7 @@ const PollButtonPart = ({
             options,
             isSetTimerChecked,
             isMarkAsCorrectChecked,
-            finalSec,
+            timer,
           });
 
           if (isValid) {
@@ -550,7 +535,7 @@ const PollButtonPart = ({
                 question: question,
                 options: options,
                 // createdAt: new Date(),
-                timeout: isSetTimerChecked ? finalSec : 0,
+                timeout: isSetTimerChecked ? timer : 0,
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
                 isActive: false,
@@ -582,7 +567,7 @@ const PollButtonPart = ({
             options,
             isSetTimerChecked,
             isMarkAsCorrectChecked,
-            finalSec,
+            timer,
           });
 
           if (isValid) {
@@ -592,7 +577,7 @@ const PollButtonPart = ({
                 question: question,
                 options: options,
                 // createdAt: new Date(),
-                timeout: isSetTimerChecked ? finalSec : 0,
+                timeout: isSetTimerChecked ? timer : 0,
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
                 isActive: true,
@@ -635,7 +620,7 @@ const CreatePoll = ({ panelHeight }) => {
     isCorrect: false,
   });
   const [options, setOptions] = useState([]);
-  const [timer, setTimer] = useState("00:30");
+  const [timer, setTimer] = useState(30);
   const [timerErr, setTimerErr] = useState(false);
   const [correctAnswerErr, setCorrectAnswerErr] = useState(false);
   const [minOptionErr, setMinOptionErr] = useState(false);
