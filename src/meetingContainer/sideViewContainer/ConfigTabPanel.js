@@ -44,15 +44,15 @@ function ConfigTabPanel() {
   }, [gridSize]);
 
   const { publish: livestreamPublish } = usePubSub(
-    meetingLayoutTopics.MEETING_LAYOUT
+    meetingLayoutTopics.LIVE_STREAM_LAYOUT
   );
   const { publish: recordingPublish } = usePubSub(
     meetingLayoutTopics.RECORDING_LAYOUT
   );
-  const { publish: hlsPublish } = usePubSub(
-    meetingLayoutTopics.LIVE_STREAM_LAYOUT
+  const { publish: hlsPublish } = usePubSub(meetingLayoutTopics.HLS_LAYOUT);
+  const { publish: meetingPublish } = usePubSub(
+    meetingLayoutTopics.MEETING_LAYOUT
   );
-  const { publish: meetingPublish } = usePubSub(meetingLayoutTopics.HLS_LAYOUT);
 
   const livestreamPublishRef = useRef(livestreamPublish);
   const recordingPublishRef = useRef(recordingPublish);

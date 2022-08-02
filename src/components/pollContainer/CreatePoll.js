@@ -181,6 +181,7 @@ const CreatePollPart = ({
   timerErr,
   correctAnswerErr,
   minOptionErr,
+  optionErr,
 }) => {
   const pollTimerArr = [
     { value: "00:30", Label: "30 secs" },
@@ -293,7 +294,7 @@ const CreatePollPart = ({
               variant="filled"
               autocomplete="off"
               value={option.option}
-              // onMouseLeave={_handleKeyDown}
+              onMouseLeave={_handleKeyDown}
               onChange={(e) =>
                 setOption({
                   optionId: uuid(),
@@ -317,6 +318,13 @@ const CreatePollPart = ({
               style={{ fontSize: 12, color: "#E03B34", marginTop: 4 }}
             >
               Please add atleast 2 options.
+            </Typography>
+          )}
+          {optionErr && (
+            <Typography
+              style={{ fontSize: 12, color: "#E03B34", marginTop: 4 }}
+            >
+              Please enter valid option value.
             </Typography>
           )}
           <Box style={{ marginTop: 32 }}>
@@ -438,8 +446,13 @@ const PollButtonPart = ({
   setTimerErr,
   setCorrectAnswerErr,
   setMinOptionErr,
+  setOptionErr,
 }) => {
   const { polls } = useMeetingAppContext();
+
+  const singleOption = options?.map((option) => {
+    return option.option;
+  });
 
   const handleValidation = ({
     question,
@@ -464,6 +477,16 @@ const PollButtonPart = ({
       return false;
     } else {
       setMinOptionErr(false);
+    }
+
+    for (let i = 0; i < singleOption.length; i++) {
+      if (singleOption[i].length < 2) {
+        isValid = false;
+        setOptionErr(true);
+        return false;
+      } else {
+        setOptionErr(false);
+      }
     }
 
     // check time finalSec if `isSetTimerChecked`
@@ -605,6 +628,7 @@ const CreatePoll = ({ panelHeight }) => {
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
   const [question, setQuestion] = useState("");
   const [questionErr, setQuestionErr] = useState(false);
+  const [optionErr, setOptionErr] = useState(false);
   const [option, setOption] = useState({
     optionId: uuid(),
     option: null,
@@ -617,8 +641,8 @@ const CreatePoll = ({ panelHeight }) => {
   const [minOptionErr, setMinOptionErr] = useState(false);
 
   const _handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      if (option.option.length > 3) {
+    if (e.key === "Enter" || e.type === "mouseleave") {
+      if (option?.option?.length >= 2) {
         e.preventDefault();
         setOptions([...options, option]);
         setOption({ option: "", isCorrect: false });
@@ -668,6 +692,7 @@ const CreatePoll = ({ panelHeight }) => {
           timerErr={timerErr}
           correctAnswerErr={correctAnswerErr}
           minOptionErr={minOptionErr}
+          optionErr={optionErr}
         />
         <PollButtonPart
           setIsCreateNewPollClicked={setIsCreateNewPollClicked}
@@ -685,6 +710,7 @@ const CreatePoll = ({ panelHeight }) => {
           setTimerErr={setTimerErr}
           setCorrectAnswerErr={setCorrectAnswerErr}
           setMinOptionErr={setMinOptionErr}
+          setOptionErr={setOptionErr}
         />
       </Box>
     </Box>
