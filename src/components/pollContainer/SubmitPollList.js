@@ -15,17 +15,17 @@ const SubmitPollListItem = ({ poll }) => {
 
   const padding = useResponsiveSize({
     xl: 12,
-    lg: 10,
+    lg: 16,
     md: 8,
     sm: 6,
     xs: 4,
   });
   const marginY = useResponsiveSize({
-    xl: 14,
-    lg: 12,
-    md: 10,
-    sm: 8,
-    xs: 6,
+    xl: 18,
+    lg: 16,
+    md: 14,
+    sm: 12,
+    xs: 10,
   });
 
   const mMeeting = useMeeting();
@@ -310,7 +310,15 @@ const SubmitPollListItem = ({ poll }) => {
                               }}
                             ></Box>
                           </Box>
-                          <Box style={{ marginLeft: 24, width: 40 }}>
+                          <Box
+                            style={{
+                              marginLeft: 24,
+                              width: 40,
+                              display: "flex",
+                              alignItems: "flex-end",
+                              justifyContent: "flex-end",
+                            }}
+                          >
                             <Typography style={{ margin: 0, padding: 0 }}>
                               {`${Math.floor(percentage)}%`}
                             </Typography>

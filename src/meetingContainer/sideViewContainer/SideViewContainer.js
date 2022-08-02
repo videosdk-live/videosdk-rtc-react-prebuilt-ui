@@ -26,8 +26,18 @@ import { NavigateBeforeOutlined } from "@material-ui/icons";
 const useStyles = makeStyles(() => ({
   iconbutton: {
     "&:hover ": {
-      backgroundColor: "transparent",
+      background: "transparent",
     },
+  },
+  iconContainer: {
+    "&:hover $icon": {
+      color: "white",
+      background: "transparent",
+    },
+  },
+  icon: {
+    color: "#9FA0A7",
+    background: "transparent",
   },
 }));
 
@@ -60,8 +70,8 @@ const SideBarTabView = ({ width, height }) => {
   const paddedHeight = height - panelPadding * 2;
 
   const panelHeaderHeight = useResponsiveSize({
-    xl: 52,
-    lg: 48,
+    xl: 38,
+    lg: 34,
     md: 44,
     sm: 40,
     xs: 36,
@@ -69,8 +79,8 @@ const SideBarTabView = ({ width, height }) => {
 
   const panelHeaderPadding = useResponsiveSize({
     xl: 12,
-    lg: 10,
-    md: 8,
+    lg: 12,
+    md: 10,
     sm: 6,
     xs: 4,
   });
@@ -123,21 +133,30 @@ const SideBarTabView = ({ width, height }) => {
                     justifyContent: "center",
                   }}
                 >
-                  {sideBarNestedMode && (
+                  {(sideBarNestedMode === "POLLS" ||
+                    sideBarNestedMode === "CREATE_POLL") && (
                     <IconButton
                       onClick={() => {
                         setSideBarNestedMode(null);
                       }}
-                      // disableFocusRipple
-                      // disableRipple
-                      // disableTouchRipple
+                      disableFocusRipple
+                      disableRipple
+                      disableTouchRipple
                       style={{
-                        marginLeft: -10,
                         cursor: "pointer",
+                        margin: 0,
+                        padding: 0,
+                        marginLeft: -4,
                       }}
-                      // className={classes.iconbutton}
+                      className={classes.iconbutton}
+                      classes={{
+                        root: classes.iconContainer,
+                      }}
                     >
-                      <NavigateBeforeOutlined fontSize="medium" />
+                      <NavigateBeforeOutlined
+                        fontSize="medium"
+                        className={classes.icon}
+                      />
                     </IconButton>
                   )}
                   <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
@@ -147,22 +166,34 @@ const SideBarTabView = ({ width, height }) => {
                         )} (${new Map(participants)?.size})`
                       : sideBarMode === "ADD_LIVE_STREAM"
                       ? "Add Live Streams"
-                      : sideBarNestedMode === "POLLS"
+                      : sideBarMode === "ACTIVITIES" &&
+                        sideBarNestedMode === "POLLS"
                       ? polls.length >= 1 || draftPolls.length >= 1
                         ? `Polls (${polls.length || draftPolls.length})`
-                        : sideBarNestedMode === "CREATE_POLL"
+                        : sideBarNestedMode === "CREATE_POLL" &&
+                          sideBarMode === "ACTIVITIES"
                         ? "Create a poll"
-                        : canCreatePoll
+                        : canCreatePoll && sideBarMode === "ACTIVITIES"
                         ? "Create a poll"
                         : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
-                      : sideBarNestedMode === "CREATE_POLL"
+                      : sideBarNestedMode === "CREATE_POLL" &&
+                        sideBarMode === "ACTIVITIES"
                       ? "Create a poll"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
                   </Typography>
                 </Box>
                 <Box>
-                  <IconButton onClick={handleClose}>
-                    <CloseIcon fontSize={"small"} />
+                  <IconButton
+                    onClick={handleClose}
+                    disableFocusRipple
+                    disableRipple
+                    disableTouchRipple
+                    className={classes.iconbutton}
+                    classes={{
+                      root: classes.iconContainer,
+                    }}
+                  >
+                    <CloseIcon fontSize={"small"} className={classes.icon} />
                   </IconButton>
                 </Box>
               </Box>
