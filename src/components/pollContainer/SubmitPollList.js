@@ -233,7 +233,7 @@ const SubmitPollListItem = ({ poll }) => {
                             style={{
                               fontSize: 16,
                               color: "white",
-                              fontWeight: 500,
+                              fontWeight: 400,
                             }}
                           >
                             {option.option}
@@ -348,7 +348,7 @@ const SubmitPollListItem = ({ poll }) => {
                         style={{
                           marginLeft: 8,
                           backgroundColor: "#3D3C4E",
-                          padding: "12px 12px 12px",
+                          padding: "8px 8px 8px",
                           width: "100%",
                           borderRadius: "4px",
                         }}

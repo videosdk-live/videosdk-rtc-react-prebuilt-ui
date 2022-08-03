@@ -22,6 +22,7 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import ConfigTabPanel from "./ConfigTabPanel";
 import { NavigateBeforeOutlined } from "@material-ui/icons";
+import { meetingModes } from "../../CONSTS";
 
 const useStyles = makeStyles(() => ({
   iconbutton: {
@@ -50,6 +51,7 @@ const SideBarTabView = ({ width, height }) => {
     canCreatePoll,
     sideBarNestedMode,
     setSideBarNestedMode,
+    meetingMode,
   } = useMeetingAppContext();
   const { participants } = useMeeting();
   const value =
@@ -173,7 +175,9 @@ const SideBarTabView = ({ width, height }) => {
                         : sideBarNestedMode === "CREATE_POLL" &&
                           sideBarMode === "ACTIVITIES"
                         ? "Create a poll"
-                        : canCreatePoll && sideBarMode === "ACTIVITIES"
+                        : canCreatePoll &&
+                          sideBarMode === "ACTIVITIES" &&
+                          meetingMode !== meetingModes.VIEWER
                         ? "Create a poll"
                         : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
                       : sideBarNestedMode === "CREATE_POLL" &&
@@ -192,6 +196,7 @@ const SideBarTabView = ({ width, height }) => {
                     classes={{
                       root: classes.iconContainer,
                     }}
+                    style={{ padding: 0, margin: 0 }}
                   >
                     <CloseIcon fontSize={"small"} className={classes.icon} />
                   </IconButton>

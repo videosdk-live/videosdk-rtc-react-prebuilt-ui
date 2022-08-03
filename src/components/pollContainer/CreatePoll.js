@@ -49,6 +49,12 @@ const useStyles = makeStyles(() => ({
     },
   },
 
+  selectRoot: {
+    "& .MuiInputBase-input ": {
+      padding: "0px 24px 0px 0",
+    },
+  },
+
   checkbox: {
     "&. .MuiCheckbox-colorSecondary": {
       color: "#1178F8",
@@ -231,7 +237,7 @@ const CreatePollPart = ({
             <Box>
               {options.map((item) => {
                 return (
-                  <Box style={{ display: "flex", marginBottom: 12 }}>
+                  <Box style={{ display: "flex", marginBottom: 16 }}>
                     {isMarkAsCorrectChecked && (
                       <MarkCorrectCheckbox
                         value={item.isCorrect}
@@ -343,7 +349,7 @@ const CreatePollPart = ({
                     }}
                   />
                 }
-                label="Mark as a correct"
+                label="Mark correct option"
               />
             </FormGroup>
             {correctAnswerErr && (
@@ -380,7 +386,7 @@ const CreatePollPart = ({
                         }}
                       />
                     }
-                    label="Set Timer"
+                    label="Set timer"
                   />
                 </FormGroup>
                 {isSetTimerChecked && (
@@ -389,6 +395,7 @@ const CreatePollPart = ({
                     onChange={(e) => {
                       setTimer(e.target.value);
                     }}
+                    className={classes.selectRoot}
                   >
                     {pollTimerArr.map((item) => {
                       return (
@@ -462,12 +469,12 @@ const PollButtonPart = ({
   }) => {
     let isValid = true;
 
-    if (question.length < 5) {
+    if (question.length >= 2 && /^[^-\s][a-zA-Z0-9_\s-]+$/i.test(question)) {
+      setQuestionErr(false);
+    } else {
       isValid = false;
       setQuestionErr(true);
       return false;
-    } else {
-      setQuestionErr(false);
     }
 
     if (options?.length < 2) {
@@ -604,7 +611,7 @@ const CreatePoll = ({ panelHeight }) => {
   const theme = useTheme();
   const padding = useResponsiveSize({
     xl: 12,
-    lg: 10,
+    lg: 16,
     md: 8,
     sm: 6,
     xs: 4,
@@ -631,7 +638,10 @@ const CreatePoll = ({ panelHeight }) => {
 
   const _handleKeyDown = (e) => {
     if (e.key === "Enter" || e.type === "mouseleave") {
-      if (option?.option?.length >= 2) {
+      if (
+        option?.option?.length >= 2 &&
+        /^[^-\s][a-zA-Z0-9_\s-]+$/i.test(option?.option)
+      ) {
         e.preventDefault();
         setOptions([...options, option]);
         setOption({ option: "", isCorrect: false });
