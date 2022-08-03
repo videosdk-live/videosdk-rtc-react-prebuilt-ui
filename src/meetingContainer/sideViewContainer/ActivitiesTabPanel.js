@@ -18,6 +18,7 @@ import {
 } from "../../MeetingAppContextDef";
 import PollList from "../../components/pollContainer/PollList";
 import SubmitPollList from "../../components/pollContainer/SubmitPollList";
+import { meetingModes } from "../../CONSTS";
 
 const ActivitiesTabPanel = ({ panelHeight }) => {
   const theme = useTheme();
@@ -37,10 +38,11 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     canCreatePoll,
     setSideBarNestedMode,
     sideBarNestedMode,
+    meetingMode,
   } = useMeetingAppContext();
 
   return sideBarNestedMode === sideBarNestedModes.POLLS ? (
-    canCreatePoll ? (
+    canCreatePoll || meetingMode === meetingModes.CONFERENCE ? (
       polls.length === 0 && draftPolls.length === 0 ? (
         <CreatePoll {...{ panelHeight }} />
       ) : (
@@ -88,13 +90,37 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             <ListItemAvatar>
               <Icon />
             </ListItemAvatar>
-            {/* <h1 style={{ fontSize: 16, fontWeight: 500, color: "white" }}>
-              {primary}
-            </h1>
-            <h2 style={{ fontSize: 14, color: "#95959E", fontWeight: 400 }}>
-              {secondary}
-            </h2> */}
-            <ListItemText primary={primary} secondary={secondary} />
+            <div>
+              <h1
+                style={{
+                  fontSize: 16,
+                  fontWeight: 500,
+                  color: "white",
+                  lineHeight: 1.5,
+                  marginTop: 6,
+                  marginBottom: 0,
+                }}
+              >
+                {primary}
+              </h1>
+              <h2
+                style={{
+                  fontSize: 14,
+                  color: "#9fa0a7",
+                  fontWeight: 400,
+                  lineHeight: 1.43,
+                  marginTop: 0,
+                  marginBottom: 6,
+                }}
+              >
+                {secondary}
+              </h2>
+            </div>
+            {/* <ListItemText
+              style={{ fontWeight: primary && 500 }}
+              primary={primary}
+              secondary={secondary}
+            /> */}
           </ListItem>
         </ButtonBase>
       ))}

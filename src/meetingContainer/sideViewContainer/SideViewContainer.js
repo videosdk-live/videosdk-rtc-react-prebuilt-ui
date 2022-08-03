@@ -192,6 +192,7 @@ const SideBarTabView = ({ width, height }) => {
                     classes={{
                       root: classes.iconContainer,
                     }}
+                    style={{ padding: 0, margin: 0 }}
                   >
                     <CloseIcon fontSize={"small"} className={classes.icon} />
                   </IconButton>
