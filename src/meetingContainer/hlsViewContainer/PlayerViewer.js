@@ -18,7 +18,11 @@ const PlayerViewer = () => {
 
   const [canPlay, setCanPlay] = useState(false);
 
-  const { downstreamUrl, hlsPlayerControlsVisible } = useMeetingAppContext();
+  const {
+    downstreamUrl,
+    hlsPlayerControlsVisible,
+    afterMeetingJoinedHLSState,
+  } = useMeetingAppContext();
 
   const lottieSize = useResponsiveSize({
     xl: 240,
@@ -178,11 +182,15 @@ const PlayerViewer = () => {
                 textAlign: "center",
               }}
             >
-              Waiting for host to start live stream.
+              {afterMeetingJoinedHLSState === "STOPPED"
+                ? "Host has stopped the live streaming."
+                : "Waiting for host to start live stream."}
             </h2>
-            <h2 style={{ color: "white", marginTop: 0, textAlign: "center" }}>
-              Meanwhile, take a few deep breaths.
-            </h2>
+            {afterMeetingJoinedHLSState !== "STOPPED" && (
+              <h2 style={{ color: "white", marginTop: 0, textAlign: "center" }}>
+                Meanwhile, take a few deep breaths.
+              </h2>
+            )}
           </Box>
         </div>
       )}

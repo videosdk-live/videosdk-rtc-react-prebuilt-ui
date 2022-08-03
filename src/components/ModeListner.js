@@ -72,6 +72,14 @@ const ModeListner = () => {
     },
   });
 
+  // const { publish: invitatioAccepted } = usePubSub(
+  //   `INVITATION_ACCEPT_BY_COHOST_${mMeeting.localParticipant.id}`,
+  //   {
+  //     onMessageReceived: (data) => {
+  //     },
+  //   }
+  // );
+
   useEffect(() => {
     setTimeout(() => {
       publishRef.current(meetingMode, { persist: true });
@@ -91,6 +99,7 @@ const ModeListner = () => {
           setMeetingMode(reqModeInfo.mode);
           publishRef.current(reqModeInfo.mode, { persist: true });
           setReqModeInfo(reqInfoDefaultState);
+          // invitatioAccepted();
         }}
         title={`Toogle your Mode`}
         subTitle={`Host is requesting to toggle your mode`}
