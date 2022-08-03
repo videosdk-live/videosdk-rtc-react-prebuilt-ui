@@ -94,7 +94,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
               <h1
                 style={{
                   fontSize: 16,
-                  fontWeight: 500,
+                  fontWeight: 600,
                   color: "white",
                   lineHeight: 1.5,
                   marginTop: 6,
