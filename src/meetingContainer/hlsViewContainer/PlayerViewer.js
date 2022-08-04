@@ -17,6 +17,7 @@ const PlayerViewer = () => {
   const theme = useTheme();
 
   const [canPlay, setCanPlay] = useState(false);
+  const [hlsFetchStatus, setHlsFetchStatus] = useState(0);
 
   const {
     downstreamUrl,
@@ -56,6 +57,7 @@ const PlayerViewer = () => {
         status = res.status;
       } catch (err) {}
 
+      setHlsFetchStatus(status);
       if (status === 200) {
         return resolve(true);
       }
@@ -85,7 +87,7 @@ const PlayerViewer = () => {
   }, [downstreamUrl]);
 
   useEffect(() => {
-    if (downstreamUrl && canPlay) {
+    if (downstreamUrl && canPlay && hlsFetchStatus === 200) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           capLevelToPlayerSize: true,
@@ -107,7 +109,7 @@ const PlayerViewer = () => {
         console.error("HLS is not supported");
       }
     }
-  }, [downstreamUrl, canPlay]);
+  }, [downstreamUrl, canPlay, hlsFetchStatus]);
 
   return (
     <div
@@ -123,7 +125,7 @@ const PlayerViewer = () => {
         eventEmitter.emit(appEvents["toggle-full-screen"]);
       }}
     >
-      {downstreamUrl && canPlay ? (
+      {downstreamUrl && canPlay && hlsFetchStatus === 200 ? (
         <Box
           style={{
             display: "flex",

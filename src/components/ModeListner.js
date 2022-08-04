@@ -12,6 +12,7 @@ import { useSnackbar } from "notistack";
 const reqInfoDefaultState = {
   enabled: false,
   mode: null,
+  senderId: null,
   accept: () => {},
   reject: () => {},
 };
@@ -25,9 +26,6 @@ const ModeListner = () => {
     setSideBarMode,
     notificationSoundEnabled,
     notificationAlertsEnabled,
-    setCohostActiveState,
-    cohostActiveState,
-    hostId,
   } = useMeetingAppContext();
 
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
@@ -39,6 +37,8 @@ const ModeListner = () => {
 
   const participantRef = useRef();
   const publishRef = useRef();
+  const notificationSoundEnabledRef = useRef();
+  const notificationAlertsEnabledRef = useRef();
 
   useEffect(() => {
     publishRef.current = publish;
@@ -52,11 +52,19 @@ const ModeListner = () => {
     participantRef.current = participant;
   }, [participant]);
 
+  useEffect(() => {
+    notificationSoundEnabledRef.current = notificationSoundEnabled;
+  }, [notificationSoundEnabled]);
+  useEffect(() => {
+    notificationAlertsEnabledRef.current = notificationAlertsEnabled;
+  }, [notificationAlertsEnabled]);
+
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: (data) => {
       if (data.message.mode === meetingModes.CONFERENCE) {
         setReqModeInfo({
           enabled: true,
+          senderId: data.senderId,
           mode: data.message.mode,
           accept: () => {},
           reject: () => {},
@@ -86,12 +94,16 @@ const ModeListner = () => {
     `INVITATION_ACCEPT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
-        console.log("data", data);
-        setCohostActiveState({ accept: true, reject: false, data: data });
+        if (notificationSoundEnabledRef.current) {
+          new Audio(
+            `https://static.videosdk.live/prebuilt/notification.mp3`
+          ).play();
+        }
+        if (notificationAlertsEnabledRef.current) {
+          enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
+        }
       },
-      onOldMessagesReceived: (messages) => {
-        setCohostActiveState({ accept: false, reject: false, data: null });
-      },
+      onOldMessagesReceived: (messages) => {},
     }
   );
 
@@ -99,44 +111,23 @@ const ModeListner = () => {
     `INVITATION_REJECT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
-        setCohostActiveState({ accept: false, reject: true, data: data });
+        if (data.message.senderId === participantRef.current.participant.id) {
+          if (notificationSoundEnabledRef.current) {
+            new Audio(
+              `https://static.videosdk.live/prebuilt/notification.mp3`
+            ).play();
+          }
+
+          if (notificationAlertsEnabledRef.current) {
+            enqueueSnackbar(
+              `${data.senderName} has rejected the request to become Co-host`
+            );
+          }
+        }
       },
-      onOldMessagesReceived: (messages) => {
-        setCohostActiveState({ accept: false, reject: false, data: null });
-      },
+      onOldMessagesReceived: (messages) => {},
     }
   );
-
-  useEffect(() => {
-    if (cohostActiveState && cohostActiveState.accept) {
-      if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
-      }
-      if (notificationAlertsEnabled) {
-        enqueueSnackbar(
-          `${cohostActiveState.data.senderName} has been added as a Co-host`
-        );
-      }
-    }
-
-    if (cohostActiveState && cohostActiveState.reject) {
-      if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
-      }
-      if (
-        notificationAlertsEnabled &&
-        hostId === mMeeting.localParticipant.id
-      ) {
-        enqueueSnackbar(
-          `${cohostActiveState.data.senderName} has rejected the request to become Co-host`
-        );
-      }
-    }
-  }, [cohostActiveState]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -152,7 +143,10 @@ const ModeListner = () => {
         rejectText={"Deny"}
         onReject={() => {
           setReqModeInfo(reqInfoDefaultState);
-          invitatioRejectedPublish({}, { persist: true });
+          invitatioRejectedPublish(
+            { senderId: reqModeInfo.senderId },
+            { persist: true }
+          );
         }}
         onSuccess={() => {
           setMeetingMode(reqModeInfo.mode);

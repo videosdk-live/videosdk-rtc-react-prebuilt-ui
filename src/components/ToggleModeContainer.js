@@ -7,14 +7,12 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { meetingModes } from "../CONSTS";
 import AddCohostIcon from "../icons/AddCohostIcon";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
 
 const ToggleModeContainer = ({ participantId, participantMode }) => {
   const mMeetingRef = useRef();
 
   const [isHoverOnCohost, setIsHoverOnCohost] = useState(false);
 
-  const { setHostId } = useMeetingAppContext();
   const mMeeting = useMeeting({});
 
   const { isLocal } = useParticipant(participantId);
@@ -50,7 +48,6 @@ const ToggleModeContainer = ({ participantId, participantMode }) => {
                     ? meetingModes.VIEWER
                     : meetingModes.CONFERENCE,
               });
-              setHostId(mMeeting.localParticipant.id);
             }}
           >
             <Box
