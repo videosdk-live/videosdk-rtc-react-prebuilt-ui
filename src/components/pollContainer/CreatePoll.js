@@ -4,6 +4,7 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
+  IconButton,
   makeStyles,
   MenuItem,
   Radio,
@@ -13,7 +14,7 @@ import {
   Typography,
   useTheme,
 } from "@material-ui/core";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { usePubSub } from "@videosdk.live/react-sdk";
@@ -21,6 +22,7 @@ import {
   sideBarNestedModes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -53,6 +55,23 @@ const useStyles = makeStyles(() => ({
     "& .MuiInputBase-input ": {
       padding: "0px 24px 0px 0",
     },
+  },
+
+  iconbutton: {
+    "&:hover ": {
+      background: "transparent",
+    },
+  },
+  iconContainer: {
+    "&:hover $icon": {
+      color: "white",
+      background: "transparent",
+    },
+  },
+
+  icon: {
+    color: "#9FA0A7",
+    background: "transparent",
   },
 
   checkbox: {
@@ -189,8 +208,8 @@ const CreatePollPart = ({
   minOptionErr,
   optionErr,
 }) => {
+  const createOptionRef = useRef(null);
   //for timer
-
   const pollTimerArr = useMemo(() => {
     const pollTimerArr = [{ value: 30, Label: "30 secs" }];
     for (let i = 1; i < 11; i++) {
@@ -201,6 +220,14 @@ const CreatePollPart = ({
     }
     return pollTimerArr;
   }, []);
+
+  const focusCreateOption = () => {
+    setTimeout(() => {
+      // console.log("focus", createOptionRef.current);
+
+      createOptionRef.current.focus();
+    }, 500);
+  };
 
   return (
     <Box
@@ -232,13 +259,14 @@ const CreatePollPart = ({
       )}
 
       <Box style={{ marginTop: 24 }}>
+        {/* option list  */}
         <Box>
           {options.length > 0 && (
             <Box>
               {options.map((item) => {
                 return (
                   <Box style={{ display: "flex", marginBottom: 16 }}>
-                    {isMarkAsCorrectChecked && (
+                    {isMarkAsCorrectChecked && item.option.length != 0 && (
                       <MarkCorrectCheckbox
                         value={item.isCorrect}
                         checked={item.isCorrect === true}
@@ -267,6 +295,9 @@ const CreatePollPart = ({
                           options.map((option) => {
                             if (option.optionId === item.optionId) {
                               option.option = e.target.value;
+                              if (e.target.value === "" && item.isCorrect) {
+                                option.isCorrect = false;
+                              }
                             }
                             return option;
                           })
@@ -275,13 +306,43 @@ const CreatePollPart = ({
                       className={classes.root}
                       style={{
                         marginLeft: isMarkAsCorrectChecked ? 8 : 0,
-                        backgroundColor: item.isCorrect ? "#1178F8" : "#3D3C4E",
+                        backgroundColor:
+                          item.isCorrect && item.option !== ""
+                            ? "#1178F8"
+                            : "#3D3C4E",
                       }}
                       InputProps={{
                         disableUnderline: true,
                         classes: {
                           root: classes.textField,
                         },
+                        endAdornment: (
+                          <IconButton
+                            onClick={() => {
+                              setOptions((options) => {
+                                const newOptions = options.filter(
+                                  ({ optionId }) => {
+                                    return optionId !== item.optionId;
+                                  }
+                                );
+                                return newOptions;
+                              });
+                            }}
+                            disableFocusRipple
+                            disableRipple
+                            disableTouchRipple
+                            className={classes.iconbutton}
+                            classes={{
+                              root: classes.iconContainer,
+                            }}
+                            style={{ padding: 0, margin: 0 }}
+                          >
+                            <CloseIcon
+                              fontSize={"small"}
+                              className={classes.icon}
+                            />
+                          </IconButton>
+                        ),
                       }}
                     />
                   </Box>
@@ -290,26 +351,57 @@ const CreatePollPart = ({
             </Box>
           )}
         </Box>
+        {/* end of option list */}
 
         <Box>
+          {/* old Text */}
           <Box style={{ display: "flex" }}>
+            {isMarkAsCorrectChecked && option.option && (
+              <MarkCorrectCheckbox
+                value={option.isCorrect}
+                checked={option.isCorrect === true}
+                onChange={(e) => {
+                  setOptions((options) => {
+                    return [
+                      ...options.map((option) => {
+                        return { ...option, isCorrect: false };
+                      }),
+                      {
+                        ...option,
+                        isCorrect: e.target.checked,
+                      },
+                    ];
+                  });
+
+                  setOption({
+                    option: "",
+                    isCorrect: false,
+                  });
+                }}
+              />
+            )}
             <TextField
               placeholder="Add your options"
+              inputRef={createOptionRef}
               fullWidth
               variant="filled"
               autocomplete="off"
+              autoFocus
               value={option.option}
-              onMouseLeave={_handleKeyDown}
               onChange={(e) =>
                 setOption({
                   optionId: uuid(),
                   option: e.target.value,
-                  isCorrect: false,
+                  isCorrect: !!option.isCorrect,
                 })
               }
               onKeyDown={_handleKeyDown}
               className={classes.root}
-              style={{ marginLeft: isMarkAsCorrectChecked ? 28 : 0 }}
+              style={{
+                marginLeft: isMarkAsCorrectChecked && option.option ? 8 : 0,
+                backgroundColor:
+                  option.isCorrect && option.option ? "#1178F8" : "#3D3C4E",
+              }}
               InputProps={{
                 disableUnderline: true,
                 classes: {
@@ -318,6 +410,44 @@ const CreatePollPart = ({
               }}
             />
           </Box>
+          {/* end of old Text */}
+
+          {/* dummy Text */}
+          {option?.option?.length > 0 && (
+            <Box style={{ display: "flex" }}>
+              <TextField
+                placeholder="Add your options"
+                fullWidth
+                variant="filled"
+                autocomplete="off"
+                onChange={(e) => {}}
+                onFocus={(e) => {
+                  _handleKeyDown(e);
+                  focusCreateOption();
+                  // e.preventDefault();
+                  // setOptions([...options, option]);
+                  // setOption({ option: "", isCorrect: false });
+
+                  // setTimeout(() => {
+                  //   createOptionRef.current.focus();
+                  // }, 1000);
+                }}
+                className={classes.root}
+                style={{
+                  marginLeft: 0,
+                  marginTop: 16,
+                }}
+                InputProps={{
+                  disableUnderline: true,
+                  classes: {
+                    root: classes.textField,
+                  },
+                }}
+              />
+            </Box>
+          )}
+          {/* end of dummy Text */}
+
           {minOptionErr && (
             <Typography
               style={{ fontSize: 12, color: "#E03B34", marginTop: 4 }}
@@ -403,22 +533,6 @@ const CreatePollPart = ({
                       );
                     })}
                   </Select>
-                  // <input
-                  //   type="time"
-                  //   placeholder="mm:ss"
-                  //   style={{
-                  //     backgroundColor: "#333244",
-                  //     border: 0,
-                  //     color: "white",
-                  //     fontFamily: "Roboto",
-                  //     fontSize: 14,
-                  //     borderBottom: "1px solid #fff",
-                  //   }}
-                  //   // value={timer}
-                  // onChange={(e) => {
-                  //   setTimer(e.target.value);
-                  // }}
-                  // ></input>
                 )}
               </Box>
               <Box style={{ marginTop: 4, marginLeft: 4 }}>
@@ -642,7 +756,7 @@ const CreatePoll = ({ panelHeight }) => {
   const [minOptionErr, setMinOptionErr] = useState(false);
 
   const _handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.type === "mouseleave") {
+    if (e.key === "Enter" || e.type === "mouseleave" || e.type === "focus") {
       if (
         option?.option?.length >= 2 &&
         /^[^-\s][a-zA-Z0-9_!@#$%^&*()`~.,<>{}[\]<>?_=+\-|;:\\'\"\/\s-]+$/i.test(
