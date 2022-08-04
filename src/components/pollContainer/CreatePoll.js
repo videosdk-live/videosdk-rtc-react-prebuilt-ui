@@ -469,7 +469,12 @@ const PollButtonPart = ({
   }) => {
     let isValid = true;
 
-    if (question.length >= 2 && /^[^-\s][a-zA-Z0-9_\s-]+$/i.test(question)) {
+    if (
+      question.length >= 2 &&
+      /^[^-\s][a-zA-Z0-9_!@#$%^&*()`~.,<>{}[\]<>?_=+\-|;:\\'\"\/\s-]+$/i.test(
+        question
+      )
+    ) {
       setQuestionErr(false);
     } else {
       isValid = false;
@@ -640,7 +645,9 @@ const CreatePoll = ({ panelHeight }) => {
     if (e.key === "Enter" || e.type === "mouseleave") {
       if (
         option?.option?.length >= 2 &&
-        /^[^-\s][a-zA-Z0-9_\s-]+$/i.test(option?.option)
+        /^[^-\s][a-zA-Z0-9_!@#$%^&*()`~.,<>{}[\]<>?_=+\-|;:\\'\"\/\s-]+$/i.test(
+          option?.option
+        )
       ) {
         e.preventDefault();
         setOptions([...options, option]);
