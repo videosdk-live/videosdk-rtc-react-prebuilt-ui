@@ -7,18 +7,26 @@ import { useEffect, useRef, useState } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 import ConfirmBox from "./ConfirmBox";
 import { meetingModes } from "../CONSTS";
+import { useSnackbar } from "notistack";
 
 const reqInfoDefaultState = {
   enabled: false,
   mode: null,
+  senderId: null,
   accept: () => {},
   reject: () => {},
 };
 
 const ModeListner = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const mMeetingRef = useRef();
-  const { setMeetingMode, meetingMode, setSideBarMode } =
-    useMeetingAppContext();
+  const {
+    setMeetingMode,
+    meetingMode,
+    setSideBarMode,
+    notificationSoundEnabled,
+    notificationAlertsEnabled,
+  } = useMeetingAppContext();
 
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
@@ -29,6 +37,8 @@ const ModeListner = () => {
 
   const participantRef = useRef();
   const publishRef = useRef();
+  const notificationSoundEnabledRef = useRef();
+  const notificationAlertsEnabledRef = useRef();
 
   useEffect(() => {
     publishRef.current = publish;
@@ -42,11 +52,19 @@ const ModeListner = () => {
     participantRef.current = participant;
   }, [participant]);
 
+  useEffect(() => {
+    notificationSoundEnabledRef.current = notificationSoundEnabled;
+  }, [notificationSoundEnabled]);
+  useEffect(() => {
+    notificationAlertsEnabledRef.current = notificationAlertsEnabled;
+  }, [notificationAlertsEnabled]);
+
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: (data) => {
       if (data.message.mode === meetingModes.CONFERENCE) {
         setReqModeInfo({
           enabled: true,
+          senderId: data.senderId,
           mode: data.message.mode,
           accept: () => {},
           reject: () => {},
@@ -72,6 +90,45 @@ const ModeListner = () => {
     },
   });
 
+  const { publish: invitatioAcceptedPublish } = usePubSub(
+    `INVITATION_ACCEPT_BY_COHOST`,
+    {
+      onMessageReceived: (data) => {
+        if (notificationSoundEnabledRef.current) {
+          new Audio(
+            `https://static.videosdk.live/prebuilt/notification.mp3`
+          ).play();
+        }
+        if (notificationAlertsEnabledRef.current) {
+          enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
+        }
+      },
+      onOldMessagesReceived: (messages) => {},
+    }
+  );
+
+  const { publish: invitatioRejectedPublish } = usePubSub(
+    `INVITATION_REJECT_BY_COHOST`,
+    {
+      onMessageReceived: (data) => {
+        if (data.message.senderId === participantRef.current.participant.id) {
+          if (notificationSoundEnabledRef.current) {
+            new Audio(
+              `https://static.videosdk.live/prebuilt/notification.mp3`
+            ).play();
+          }
+
+          if (notificationAlertsEnabledRef.current) {
+            enqueueSnackbar(
+              `${data.senderName} has rejected the request to become Co-host`
+            );
+          }
+        }
+      },
+      onOldMessagesReceived: (messages) => {},
+    }
+  );
+
   useEffect(() => {
     setTimeout(() => {
       publishRef.current(meetingMode, { persist: true });
@@ -86,14 +143,19 @@ const ModeListner = () => {
         rejectText={"Deny"}
         onReject={() => {
           setReqModeInfo(reqInfoDefaultState);
+          invitatioRejectedPublish(
+            { senderId: reqModeInfo.senderId },
+            { persist: true }
+          );
         }}
         onSuccess={() => {
           setMeetingMode(reqModeInfo.mode);
           publishRef.current(reqModeInfo.mode, { persist: true });
           setReqModeInfo(reqInfoDefaultState);
+          invitatioAcceptedPublish({}, { persist: true });
         }}
-        title={`Toogle your Mode`}
-        subTitle={`Host is requesting to toggle your mode`}
+        title={`Request to become a Co-host`}
+        subTitle={`Host has requested you to become a Co-host`}
       />
     </>
   );

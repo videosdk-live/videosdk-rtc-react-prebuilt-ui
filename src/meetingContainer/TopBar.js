@@ -684,6 +684,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
   const startHls = mMeeting?.startHls;
   const stopHls = mMeeting?.stopHls;
+  const [isHlsStop, setIsHlsStop] = useState(false);
 
   const isHls = useIsHls();
 
@@ -745,6 +746,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
     if (isHls) {
       stopHls();
+      setIsHlsStop(true);
     } else {
       _handleStartHLS();
     }
@@ -753,19 +755,27 @@ const HlsBTN = ({ isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       onClick={_handleClick}
-      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
+      tooltipTitle={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
       Icon={LiveIcon}
-      buttonText={isHls ? "Stop HLS" : "Start HLS"}
+      buttonText={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
       isFocused={isHls}
-      lottieOption={isHls ? defaultOptions : null}
+      lottieOption={isHls ? (isHlsStop ? null : defaultOptions) : null}
       disabled={!participantCanToggleHls}
     />
   ) : (
     <OutlineIconTextButton
       onClick={_handleClick}
-      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
-      buttonText={isHls ? "Stop HLS" : "Start HLS"}
-      lottieOption={isHls ? defaultOptions : null}
+      tooltipTitle={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
+      buttonText={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
+      lottieOption={isHls ? (isHlsStop ? null : defaultOptions) : null}
       disabled={!participantCanToggleHls}
     />
   );
