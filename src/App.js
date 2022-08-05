@@ -148,6 +148,7 @@ const App = () => {
       // recordingLayoutGridSize: "recordingLayoutGridSize",
 
       maintainVideoAspectRatio: "maintainVideoAspectRatio",
+      networkBarEnabled: "networkBarEnabled",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -273,6 +274,10 @@ const App = () => {
 
     if (typeof paramKeys.maintainVideoAspectRatio !== "string") {
       paramKeys.maintainVideoAspectRatio = "false";
+    }
+
+    if (typeof paramKeys.networkBarEnabled !== "string") {
+      paramKeys.networkBarEnabled = "true";
     }
 
     if (typeof paramKeys.canPin !== "string") {
@@ -595,6 +600,7 @@ const App = () => {
             //
             maintainVideoAspectRatio:
               paramKeys.maintainVideoAspectRatio === "true",
+            networkBarEnabled: paramKeys.networkBarEnabled === "true",
           }}
         >
           <MeetingProvider
