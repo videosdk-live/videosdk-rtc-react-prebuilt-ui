@@ -242,6 +242,7 @@ const CreatePollPart = ({
         variant="standard"
         style={{ width: "100%", borderBottom: "1px solid #3D3C4E" }}
         placeholder="What you want to ask ?"
+        autoFocus
         InputProps={{
           classes: {
             root: classes.textFieldRoot,
@@ -386,7 +387,6 @@ const CreatePollPart = ({
               fullWidth
               variant="filled"
               autocomplete="off"
-              autoFocus
               value={option.option}
               onChange={(e) =>
                 setOption({

@@ -473,7 +473,9 @@ const RecordingBTN = ({ isMobile, isTab }) => {
           ? "Starting Recording"
           : recordingState === Constants.recordingEvents.RECORDING_STOPPED
           ? "Start Recording"
-          : "Stopping Recording"
+          : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+          ? "Stopping Recording"
+          : "Start Recording"
       }
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
@@ -485,7 +487,9 @@ const RecordingBTN = ({ isMobile, isTab }) => {
           ? "Starting Recording"
           : recordingState === Constants.recordingEvents.RECORDING_STOPPED
           ? "Start Recording"
-          : "Stopping Recording"
+          : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+          ? "Stopping Recording"
+          : "Start Recording"
       }
       isRequestProcessing={isRequestProcessing}
     />
@@ -500,7 +504,9 @@ const RecordingBTN = ({ isMobile, isTab }) => {
           ? "Starting Recording"
           : recordingState === Constants.recordingEvents.RECORDING_STOPPED
           ? "Start Recording"
-          : "Stopping Recording"
+          : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+          ? "Stopping Recording"
+          : "Start Recording"
       }
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
@@ -621,7 +627,10 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               : livestreamState ===
                 Constants.livestreamEvents.LIVESTREAM_STOPPED
               ? "Go Live"
-              : "Stopping Livestream"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPING
+              ? "Stopping Livestream"
+              : "Go Live"
           }
           Icon={LiveIcon}
           buttonText={
@@ -633,7 +642,10 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               : livestreamState ===
                 Constants.livestreamEvents.LIVESTREAM_STOPPED
               ? "Go Live"
-              : "Stopping Livestream"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPING
+              ? "Stopping Livestream"
+              : "Go Live"
           }
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
@@ -653,7 +665,10 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               : livestreamState ===
                 Constants.livestreamEvents.LIVESTREAM_STOPPED
               ? "Go Live"
-              : "Stopping Livestream"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPING
+              ? "Stopping Livestream"
+              : "Go Live"
           }
           buttonText="Go Live"
           lottieOption={isLiveStreaming ? defaultOptions : null}
