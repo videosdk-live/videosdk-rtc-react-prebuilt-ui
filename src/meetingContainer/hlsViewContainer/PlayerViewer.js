@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
+import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animation.json";
 import { appEvents, eventEmitter } from "../../utils/common";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
@@ -35,6 +36,15 @@ const PlayerViewer = () => {
     loop: true,
     autoplay: true,
     animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
+  const defaultOptionsStoppedHls = {
+    loop: false,
+    autoplay: true,
+    animationData: stoppedHLSSnimationData,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
@@ -170,7 +180,11 @@ const PlayerViewer = () => {
             }}
           >
             <Lottie
-              options={defaultOptions}
+              options={
+                afterMeetingJoinedHLSState === "STOPPED"
+                  ? defaultOptionsStoppedHls
+                  : defaultOptions
+              }
               eventListeners={[{ eventName: "done" }]}
               height={lottieSize}
               width={lottieSize}

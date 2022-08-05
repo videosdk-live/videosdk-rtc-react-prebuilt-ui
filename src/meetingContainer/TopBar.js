@@ -20,6 +20,7 @@ import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import liveBlink from "../animations/live-blink.json";
 import liveHLS from "../animations/live-hls.json";
+import stoppingHLS from "../animations/hls_stop_blink.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import LiveIcon from "../icons/LiveIcon";
 import RaiseHand from "../icons/RaiseHand";
@@ -724,6 +725,17 @@ const HlsBTN = ({ isMobile, isTab }) => {
     loop: true,
     autoplay: true,
     animationData: liveHLS,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 170,
+  };
+
+  const defaultOptionsStoppingHls = {
+    loop: true,
+    autoplay: true,
+    animationData: stoppingHLS,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
