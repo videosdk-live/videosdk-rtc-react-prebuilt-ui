@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Lottie from "react-lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
+import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animation.json";
 import { appEvents, eventEmitter } from "../../utils/common";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
@@ -15,10 +16,13 @@ export async function sleep(ms) {
 
 const PlayerViewer = () => {
   const theme = useTheme();
-
   const [canPlay, setCanPlay] = useState(false);
 
-  const { downstreamUrl, hlsPlayerControlsVisible } = useMeetingAppContext();
+  const {
+    downstreamUrl,
+    hlsPlayerControlsVisible,
+    afterMeetingJoinedHLSState,
+  } = useMeetingAppContext();
 
   const lottieSize = useResponsiveSize({
     xl: 240,
@@ -32,6 +36,15 @@ const PlayerViewer = () => {
     loop: true,
     autoplay: true,
     animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
+  const defaultOptionsStoppedHls = {
+    loop: false,
+    autoplay: true,
+    animationData: stoppedHLSSnimationData,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
@@ -77,6 +90,8 @@ const PlayerViewer = () => {
   useEffect(async () => {
     if (downstreamUrl) {
       checkHLSPlayable(downstreamUrl);
+    } else {
+      setCanPlay(false);
     }
   }, [downstreamUrl]);
 
@@ -165,7 +180,11 @@ const PlayerViewer = () => {
             }}
           >
             <Lottie
-              options={defaultOptions}
+              options={
+                afterMeetingJoinedHLSState === "STOPPED"
+                  ? defaultOptionsStoppedHls
+                  : defaultOptions
+              }
               eventListeners={[{ eventName: "done" }]}
               height={lottieSize}
               width={lottieSize}
@@ -178,11 +197,15 @@ const PlayerViewer = () => {
                 textAlign: "center",
               }}
             >
-              Waiting for host to start live stream.
+              {afterMeetingJoinedHLSState === "STOPPED"
+                ? "Host has stopped the live streaming."
+                : "Waiting for host to start live stream."}
             </h2>
-            <h2 style={{ color: "white", marginTop: 0, textAlign: "center" }}>
-              Meanwhile, take a few deep breaths.
-            </h2>
+            {afterMeetingJoinedHLSState !== "STOPPED" && (
+              <h2 style={{ color: "white", marginTop: 0, textAlign: "center" }}>
+                Meanwhile, take a few deep breaths.
+              </h2>
+            )}
           </Box>
         </div>
       )}

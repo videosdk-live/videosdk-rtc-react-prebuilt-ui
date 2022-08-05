@@ -20,6 +20,7 @@ import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import liveBlink from "../animations/live-blink.json";
 import liveHLS from "../animations/live-hls.json";
+import stoppingHLS from "../animations/hls_stop_blink.json";
 import SettingsOutlinedIcon from "@material-ui/icons/SettingsOutlined";
 import LiveIcon from "../icons/LiveIcon";
 import RaiseHand from "../icons/RaiseHand";
@@ -684,6 +685,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
   const startHls = mMeeting?.startHls;
   const stopHls = mMeeting?.stopHls;
+  const [isHlsStop, setIsHlsStop] = useState(false);
 
   const isHls = useIsHls();
 
@@ -730,6 +732,17 @@ const HlsBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
+  const defaultOptionsStoppingHls = {
+    loop: true,
+    autoplay: true,
+    animationData: stoppingHLS,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    height: 64,
+    width: 170,
+  };
+
   const _handleStartHLS = () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
@@ -745,6 +758,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
     if (isHls) {
       stopHls();
+      setIsHlsStop(true);
     } else {
       _handleStartHLS();
     }
@@ -753,19 +767,27 @@ const HlsBTN = ({ isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       onClick={_handleClick}
-      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
+      tooltipTitle={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
       Icon={LiveIcon}
-      buttonText={isHls ? "Stop HLS" : "Start HLS"}
+      buttonText={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
       isFocused={isHls}
-      lottieOption={isHls ? defaultOptions : null}
+      lottieOption={isHls ? (isHlsStop ? null : defaultOptions) : null}
       disabled={!participantCanToggleHls}
     />
   ) : (
     <OutlineIconTextButton
       onClick={_handleClick}
-      tooltipTitle={isHls ? "Stop HLS" : "Start HLS"}
-      buttonText={isHls ? "Stop HLS" : "Start HLS"}
-      lottieOption={isHls ? defaultOptions : null}
+      tooltipTitle={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
+      buttonText={
+        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+      }
+      lottieOption={isHls ? (isHlsStop ? null : defaultOptions) : null}
       disabled={!participantCanToggleHls}
     />
   );

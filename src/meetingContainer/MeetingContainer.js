@@ -176,6 +176,7 @@ const MeetingContainer = () => {
     meetingMode,
     isRecorder,
     setDownstreamUrl,
+    setAfterMeetingJoinedHLSState,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -588,6 +589,7 @@ const MeetingContainer = () => {
     }
 
     setDownstreamUrl(data);
+    setAfterMeetingJoinedHLSState("STARTED");
   };
 
   const _handleOnHlsStopped = () => {
@@ -599,6 +601,7 @@ const MeetingContainer = () => {
       enqueueSnackbar("Meeting HLS is stopped.");
     }
     setDownstreamUrl(null);
+    setAfterMeetingJoinedHLSState("STOPPED");
   };
 
   const _handleOnEntryRequested = () => {};

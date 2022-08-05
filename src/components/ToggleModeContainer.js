@@ -6,7 +6,6 @@ import {
 } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useState } from "react";
 import { meetingModes } from "../CONSTS";
-import { KickoutUserIcon } from "../icons";
 import AddCohostIcon from "../icons/AddCohostIcon";
 
 const ToggleModeContainer = ({ participantId, participantMode }) => {
