@@ -662,8 +662,10 @@ const PollButtonPart = ({
               {
                 id: uuid(),
                 question: question.trim(),
-                options: options,
-                // createdAt: new Date(),
+                options: options.map((option) => ({
+                  ...option,
+                  option: option.option.trim(),
+                })),
                 timeout: isSetTimerChecked ? timer : 0,
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
@@ -703,8 +705,10 @@ const PollButtonPart = ({
               {
                 id: uuid(),
                 question: question.trim(),
-                options: options,
-                // createdAt: new Date(),
+                options: options.map((option) => ({
+                  ...option,
+                  option: option.option.trim(),
+                })),
                 timeout: isSetTimerChecked ? timer : 0,
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
