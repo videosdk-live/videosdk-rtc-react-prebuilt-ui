@@ -223,8 +223,6 @@ const CreatePollPart = ({
 
   const focusCreateOption = () => {
     setTimeout(() => {
-      // console.log("focus", createOptionRef.current);
-
       createOptionRef.current.focus();
     }, 500);
   };
@@ -291,6 +289,7 @@ const CreatePollPart = ({
                       variant="filled"
                       autocomplete="off"
                       value={item.option}
+                      onBlur={_handleKeyDown}
                       onChange={(e) => {
                         setOptions(
                           options.map((option) => {
@@ -396,6 +395,7 @@ const CreatePollPart = ({
                 })
               }
               onKeyDown={_handleKeyDown}
+              onBlur={_handleKeyDown}
               className={classes.root}
               style={{
                 marginLeft: isMarkAsCorrectChecked && option.option ? 8 : 0,
@@ -551,7 +551,6 @@ const CreatePollPart = ({
 };
 
 const PollButtonPart = ({
-  setIsCreateNewPollClicked,
   theme,
   publishCreatePoll,
   publishDraftPoll,
@@ -586,7 +585,7 @@ const PollButtonPart = ({
     if (
       question.length >= 2 &&
       /^[^-\s][a-zA-Z0-9_!@#$%^&*()`~.,<>{}[\]<>?_=+\-|;:\\'\"\/\s-]+$/i.test(
-        question
+        question.trim()
       )
     ) {
       setQuestionErr(false);
@@ -662,9 +661,11 @@ const PollButtonPart = ({
             publishDraftPoll(
               {
                 id: uuid(),
-                question: question,
-                options: options,
-                // createdAt: new Date(),
+                question: question.trim(),
+                options: options.map((option) => ({
+                  ...option,
+                  option: option.option.trim(),
+                })),
                 timeout: isSetTimerChecked ? timer : 0,
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
@@ -674,7 +675,6 @@ const PollButtonPart = ({
                 persist: true,
               }
             );
-            // setIsCreateNewPollClicked(false);
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}
@@ -704,9 +704,11 @@ const PollButtonPart = ({
             publishCreatePoll(
               {
                 id: uuid(),
-                question: question,
-                options: options,
-                // createdAt: new Date(),
+                question: question.trim(),
+                options: options.map((option) => ({
+                  ...option,
+                  option: option.option.trim(),
+                })),
                 timeout: isSetTimerChecked ? timer : 0,
                 hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                 hasTimer: isSetTimerChecked ? true : false,
@@ -715,7 +717,6 @@ const PollButtonPart = ({
               },
               { persist: true }
             );
-            // setIsCreateNewPollClicked(false);
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}
@@ -736,8 +737,7 @@ const CreatePoll = ({ panelHeight }) => {
     xs: 4,
   });
 
-  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
-    useMeetingAppContext();
+  const { setSideBarNestedMode } = useMeetingAppContext();
   const classes = useStyles();
   const [isMarkAsCorrectChecked, setIsMarkAsCorrectChecked] = useState(false);
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
@@ -756,11 +756,16 @@ const CreatePoll = ({ panelHeight }) => {
   const [minOptionErr, setMinOptionErr] = useState(false);
 
   const _handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.type === "mouseleave" || e.type === "focus") {
+    if (
+      e.key === "Enter" ||
+      e.type === "mouseleave" ||
+      e.type === "focus" ||
+      e.type === "blur"
+    ) {
       if (
         option?.option?.length >= 2 &&
         /^[^-\s][a-zA-Z0-9_!@#$%^&*()`~.,<>{}[\]<>?_=+\-|;:\\'\"\/\s-]+$/i.test(
-          option?.option
+          option?.option.trim()
         )
       ) {
         e.preventDefault();
@@ -815,7 +820,6 @@ const CreatePoll = ({ panelHeight }) => {
           optionErr={optionErr}
         />
         <PollButtonPart
-          setIsCreateNewPollClicked={setIsCreateNewPollClicked}
           theme={theme}
           publishCreatePoll={publishCreatePoll}
           publishDraftPoll={publishDraftPoll}

@@ -151,12 +151,10 @@ export const MeetingAppProvider = ({
   const [liveStreamConfig, setLiveStreamConfig] = useState([]);
   const [meetingMode, setMeetingMode] = useState(mode);
   const [downstreamUrl, setDownstreamUrl] = useState(null);
-  const [isPollSelected, setIsPollSelected] = useState(false);
   const [afterMeetingJoinedHLSState, setAfterMeetingJoinedHLSState] =
     useState(null);
+
   const [draftPolls, setDraftPolls] = useState([]);
-  const [isCreateNewPollClicked, setIsCreateNewPollClicked] = useState(false);
-  const [isQASelected, setIsQASelected] = useState(false);
   const [optionArr, setOptionArr] = useState([
     // {
     //   id: uuid(),
@@ -297,9 +295,6 @@ export const MeetingAppProvider = ({
         liveStreamConfig,
         meetingMode,
         downstreamUrl,
-        isPollSelected,
-        isCreateNewPollClicked,
-        isQASelected,
         optionArr,
         polls,
         draftPolls,
@@ -323,9 +318,6 @@ export const MeetingAppProvider = ({
         setAppMeetingLayout,
         setMeetingMode,
         setDownstreamUrl,
-        setIsPollSelected,
-        setIsCreateNewPollClicked,
-        setIsQASelected,
         setOptionArr,
         setDraftPolls,
         setSideBarNestedMode,
