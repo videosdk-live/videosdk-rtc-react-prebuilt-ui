@@ -776,6 +776,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       setIsHlsStop(true);
     } else {
       _handleStartHLS();
+      setIsHlsStop(false);
     }
   };
 
