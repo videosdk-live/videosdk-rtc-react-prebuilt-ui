@@ -551,7 +551,6 @@ const CreatePollPart = ({
 };
 
 const PollButtonPart = ({
-  setIsCreateNewPollClicked,
   theme,
   publishCreatePoll,
   publishDraftPoll,
@@ -674,7 +673,6 @@ const PollButtonPart = ({
                 persist: true,
               }
             );
-            // setIsCreateNewPollClicked(false);
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}
@@ -715,7 +713,6 @@ const PollButtonPart = ({
               },
               { persist: true }
             );
-            // setIsCreateNewPollClicked(false);
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}
@@ -736,8 +733,7 @@ const CreatePoll = ({ panelHeight }) => {
     xs: 4,
   });
 
-  const { setIsCreateNewPollClicked, setSideBarNestedMode } =
-    useMeetingAppContext();
+  const { setSideBarNestedMode } = useMeetingAppContext();
   const classes = useStyles();
   const [isMarkAsCorrectChecked, setIsMarkAsCorrectChecked] = useState(false);
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
@@ -820,7 +816,6 @@ const CreatePoll = ({ panelHeight }) => {
           optionErr={optionErr}
         />
         <PollButtonPart
-          setIsCreateNewPollClicked={setIsCreateNewPollClicked}
           theme={theme}
           publishCreatePoll={publishCreatePoll}
           publishDraftPoll={publishDraftPoll}

@@ -7,11 +7,14 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { meetingModes } from "../CONSTS";
 import AddCohostIcon from "../icons/AddCohostIcon";
+import { useMeetingAppContext } from "../MeetingAppContextDef";
 
 const ToggleModeContainer = ({ participantId, participantMode }) => {
   const mMeetingRef = useRef();
 
   const [isHoverOnCohost, setIsHoverOnCohost] = useState(false);
+  const { setAfterCohostRequestState, afterCohostRequestState } =
+    useMeetingAppContext();
 
   const mMeeting = useMeeting({});
 
@@ -20,6 +23,12 @@ const ToggleModeContainer = ({ participantId, participantMode }) => {
   useEffect(() => {
     mMeetingRef.current = mMeeting;
   }, [mMeeting]);
+
+  const afterCohostRequestStateRef = useRef();
+
+  useEffect(() => {
+    afterCohostRequestStateRef.current = afterCohostRequestState;
+  }, [afterCohostRequestState]);
 
   const { publish } = usePubSub(`CHANGE_MODE_${participantId}`, {});
 
@@ -35,6 +44,9 @@ const ToggleModeContainer = ({ participantId, participantMode }) => {
           title={
             participantMode === meetingModes.CONFERENCE
               ? "Remove from Co-host"
+              : afterCohostRequestStateRef?.current?.participantId ===
+                  participantId && afterCohostRequestStateRef?.current?.visible
+              ? "Request Pending"
               : "Add as a Co-host"
           }
           style={{ backgroundColor: "#fff" }}
@@ -47,6 +59,11 @@ const ToggleModeContainer = ({ participantId, participantMode }) => {
                   participantMode === meetingModes.CONFERENCE
                     ? meetingModes.VIEWER
                     : meetingModes.CONFERENCE,
+              });
+              setAfterCohostRequestState({
+                participantId: participantId,
+                visible:
+                  participantMode === meetingModes.CONFERENCE ? false : true,
               });
             }}
           >
