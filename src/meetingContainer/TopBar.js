@@ -198,7 +198,8 @@ const ChatBTN = ({ isMobile, isTab }) => {
   );
 };
 const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, setSideBarNestedMode } =
+    useMeetingAppContext();
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -212,6 +213,8 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
         setSideBarMode((s) =>
           s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
         );
+
+        setSideBarNestedMode(null);
       }}
     />
   ) : (
@@ -225,6 +228,8 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
         setSideBarMode((s) =>
           s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
         );
+
+        setSideBarNestedMode(null);
       }}
     />
   );
