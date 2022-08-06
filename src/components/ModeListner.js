@@ -26,7 +26,6 @@ const ModeListner = () => {
     setSideBarMode,
     notificationSoundEnabled,
     notificationAlertsEnabled,
-    setAfterCohostRequestState,
   } = useMeetingAppContext();
 
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
@@ -103,10 +102,6 @@ const ModeListner = () => {
         if (notificationAlertsEnabledRef.current) {
           enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
         }
-        setAfterCohostRequestState({
-          participantId: data.senderId,
-          visible: false,
-        });
       },
       onOldMessagesReceived: (messages) => {},
     }
@@ -128,10 +123,6 @@ const ModeListner = () => {
               `${data.senderName} has rejected the request to become Co-host`
             );
           }
-          setAfterCohostRequestState({
-            participantId: data.message.senderId,
-            visible: false,
-          });
         }
       },
       onOldMessagesReceived: (messages) => {},

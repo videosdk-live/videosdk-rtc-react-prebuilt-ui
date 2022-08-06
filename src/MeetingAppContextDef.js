@@ -153,7 +153,7 @@ export const MeetingAppProvider = ({
   const [downstreamUrl, setDownstreamUrl] = useState(null);
   const [afterMeetingJoinedHLSState, setAfterMeetingJoinedHLSState] =
     useState(null);
-  const [afterCohostRequestState, setAfterCohostRequestState] = useState(null);
+
   const [draftPolls, setDraftPolls] = useState([]);
   const [optionArr, setOptionArr] = useState([
     // {
@@ -304,7 +304,6 @@ export const MeetingAppProvider = ({
         endedPolls,
         submissions,
         afterMeetingJoinedHLSState,
-        afterCohostRequestState,
 
         // setters
         setSideBarMode,
@@ -326,7 +325,6 @@ export const MeetingAppProvider = ({
         setEndedPolls,
         setSubmissions,
         setAfterMeetingJoinedHLSState,
-        setAfterCohostRequestState,
       }}
     >
       <SnackbarProvider
