@@ -42,8 +42,13 @@ export const CornerDisplayName = ({
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
 
-  const { overlaidInfoVisible, canPin, animationsEnabled, alwaysShowOverlay } =
-    useMeetingAppContext();
+  const {
+    overlaidInfoVisible,
+    canPin,
+    animationsEnabled,
+    alwaysShowOverlay,
+    networkBarEnabled,
+  } = useMeetingAppContext();
 
   const defaultOptions = {
     loop: true,
@@ -92,25 +97,28 @@ export const CornerDisplayName = ({
   };
 
   useEffect(() => {
-    if (webcamStream || micStream) {
-      updateStats();
+    if (networkBarEnabled) {
+      if (webcamStream || micStream) {
+        updateStats();
 
-      if (statsIntervalIdRef.current) {
-        clearInterval(statsIntervalIdRef.current);
+        if (statsIntervalIdRef.current) {
+          clearInterval(statsIntervalIdRef.current);
+        }
+
+        statsIntervalIdRef.current = setInterval(updateStats, 10000);
+      } else {
+        if (statsIntervalIdRef.current) {
+          clearInterval(statsIntervalIdRef.current);
+          statsIntervalIdRef.current = null;
+        }
       }
 
-      statsIntervalIdRef.current = setInterval(updateStats, 10000);
-    } else {
-      if (statsIntervalIdRef.current) {
-        clearInterval(statsIntervalIdRef.current);
-        statsIntervalIdRef.current = null;
-      }
+      return () => {
+        if (statsIntervalIdRef.current)
+          clearInterval(statsIntervalIdRef.current);
+      };
     }
-
-    return () => {
-      if (statsIntervalIdRef.current) clearInterval(statsIntervalIdRef.current);
-    };
-  }, [webcamStream, micStream]);
+  }, [webcamStream, micStream, networkBarEnabled]);
 
   return (
     <>
@@ -137,7 +145,7 @@ export const CornerDisplayName = ({
           transitionTimingFunction: "linear",
         }}
       >
-        {(webcamStream || micStream) && (
+        {(webcamStream || micStream) && networkBarEnabled && (
           <NetworkIcon
             color1={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
             color2={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
