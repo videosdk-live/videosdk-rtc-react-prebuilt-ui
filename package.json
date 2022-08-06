@@ -2,7 +2,7 @@
   "name": "videosdk-rtc-react-prebuilt-ui",
   "version": "0.3.14",
   "private": true,
-  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.14/",
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.13/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts --openssl-legacy-provider build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
