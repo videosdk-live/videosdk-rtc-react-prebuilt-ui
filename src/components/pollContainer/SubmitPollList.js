@@ -231,7 +231,7 @@ const SubmitPollListItem = ({ poll }) => {
                         <Box style={{ display: "flex", alignItems: "center" }}>
                           <Typography
                             style={{
-                              fontSize: 16,
+                              fontSize: 15,
                               color: "white",
                               fontWeight: 400,
                             }}

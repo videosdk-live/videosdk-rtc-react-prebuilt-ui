@@ -240,7 +240,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               >
                 <Typography
                   style={{
-                    fontSize: 16,
+                    fontSize: 15,
                     color: "white",
                     fontWeight: 400,
                   }}
