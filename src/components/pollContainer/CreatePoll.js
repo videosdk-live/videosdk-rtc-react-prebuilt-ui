@@ -604,7 +604,7 @@ const PollButtonPart = ({
     }
 
     for (let i = 0; i < singleOption.length; i++) {
-      if (singleOption[i].length < 2) {
+      if (singleOption[i].length < 1) {
         isValid = false;
         setOptionErr(true);
         return false;
@@ -762,12 +762,7 @@ const CreatePoll = ({ panelHeight }) => {
       e.type === "focus" ||
       e.type === "blur"
     ) {
-      if (
-        option?.option?.length >= 2 &&
-        /^[^-\s][a-zA-Z0-9_!@#$%^&*()`~.,<>{}[\]<>?_=+\-|;:\\'\"\/\s-]+$/i.test(
-          option?.option.trim()
-        )
-      ) {
+      if (option?.option?.length >= 1 && option?.option.trim()) {
         e.preventDefault();
         setOptions([...options, option]);
         setOption({ option: "", isCorrect: false });
