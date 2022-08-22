@@ -12,15 +12,17 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
   } = useParticipant(participantId);
 
   useEffect(() => {
-    if (!isLocal) {
-      if (isVisible) {
-        // console.log("resuming participant stream", participantId);
-        // typeof webcamStream?.resume === "function" && webcamStream?.resume();
-        consumeWebcamStreams();
-      } else {
-        // console.log("pausing participant stream", participantId);
-        // typeof webcamStream?.pause === "function" && webcamStream?.pause();
-        stopConsumingWebcamStreams();
+    if (typeof isVisible === "string") {
+      if (!isLocal) {
+        if (isVisible) {
+          // console.log("resuming participant stream", participantId);
+          // typeof webcamStream?.resume === "function" && webcamStream?.resume();
+          consumeWebcamStreams();
+        } else {
+          // console.log("pausing participant stream", participantId);
+          // typeof webcamStream?.pause === "function" && webcamStream?.pause();
+          stopConsumingWebcamStreams();
+        }
       }
     }
   }, [isLocal, isVisible]);
@@ -67,13 +69,19 @@ const PauseInvisibleParticipants = () => {
 
   return (
     <>
-      {[...mMeeting.participants.keys()].map((participantId) => (
-        <PauseInvisibleParticipant
-          key={`PauseInvisibleParticipant_${participantId}`}
-          participantId={participantId}
-          isVisible={visibleParticipantIds.find((pId) => pId === participantId)}
-        />
-      ))}
+      {[...mMeeting.participants.keys()].map((participantId) => {
+        return (
+          visibleParticipantIds.length > 0 && (
+            <PauseInvisibleParticipant
+              key={`PauseInvisibleParticipant_${participantId}`}
+              participantId={participantId}
+              isVisible={visibleParticipantIds.find(
+                (pId) => pId === participantId
+              )}
+            />
+          )
+        );
+      })}
     </>
   );
 };
