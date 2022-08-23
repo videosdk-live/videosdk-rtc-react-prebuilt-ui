@@ -69,6 +69,7 @@ const App = () => {
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
+      participantTabPanelEnabled: "participantTabPanelEnabled",
       participantCanToggleRecording: "participantCanToggleRecording",
       participantCanLeave: "participantCanLeave",
       participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
@@ -106,6 +107,7 @@ const App = () => {
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
       canCreatePoll: "canCreatePoll",
+      canToggleParticipantTab: "canToggleParticipantTab",
       //
       leftScreenActionButtonLabel: "leftScreenActionButtonLabel",
       leftScreenActionButtonHref: "leftScreenActionButtonHref",
@@ -210,6 +212,9 @@ const App = () => {
     if (typeof paramKeys.participantCanToggleSelfMic !== "string") {
       paramKeys.participantCanToggleSelfMic = "true";
     }
+    if (typeof paramKeys.participantTabPanelEnabled !== "string") {
+      paramKeys.participantTabPanelEnabled = "true";
+    }
     if (typeof paramKeys.raiseHandEnabled !== "string") {
       paramKeys.raiseHandEnabled = "true";
     }
@@ -234,6 +239,10 @@ const App = () => {
 
     if (typeof paramKeys.canCreatePoll !== "string") {
       paramKeys.canCreatePoll = "false";
+    }
+
+    if (typeof paramKeys.canToggleParticipantTab !== "string") {
+      paramKeys.canToggleParticipantTab = "true";
     }
 
     if (paramKeys.autoStartLiveStream === "true") {
@@ -522,6 +531,8 @@ const App = () => {
               paramKeys.participantCanToggleSelfWebcam === "true",
             participantCanToggleSelfMic:
               paramKeys.participantCanToggleSelfMic === "true",
+            participantTabPanelEnabled:
+              paramKeys.participantTabPanelEnabled === "true",
             raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
             canChangeLayout: paramKeys.canChangeLayout === "true",
             meetingLayoutTopic: paramKeys.meetingLayoutTopic,
@@ -577,6 +588,8 @@ const App = () => {
             canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
             canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
             canCreatePoll: paramKeys.canCreatePoll === "true",
+            canToggleParticipantTab:
+              paramKeys.canToggleParticipantTab === "true",
             meetingLeft,
             setMeetingLeft,
             animationsEnabled: paramKeys.animationsEnabled !== "false",
