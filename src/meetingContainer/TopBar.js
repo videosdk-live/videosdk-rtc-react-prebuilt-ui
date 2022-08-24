@@ -104,7 +104,8 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, meetingMode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, meetingMode, canToggleParticipantTab } =
+    useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const participants = mMeeting?.participants;
@@ -116,7 +117,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       buttonText={"Participants"}
       Icon={Participants}
-      disabled={meetingMode === meetingModes.VIEWER}
+      disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
         typeof onClick === "function" && onClick();
         setSideBarMode((s) =>
@@ -130,7 +131,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       Icon={Participants}
-      disabled={meetingMode === meetingModes.VIEWER}
+      disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
         typeof onClick === "function" && onClick();
         setSideBarMode((s) =>
@@ -1218,6 +1219,7 @@ const TopBar = ({ topBarHeight }) => {
     participantCanEndMeeting,
     animationsEnabled,
     meetingMode,
+    participantTabPanelEnabled,
   } = useMeetingAppContext();
 
   const handleClickFAB = () => {
@@ -1281,11 +1283,13 @@ const TopBar = ({ topBarHeight }) => {
           priority: 5,
         });
       }
-      arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.PARTICIPANTS,
-        priority: 10,
-      });
+      if (participantTabPanelEnabled) {
+        arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.PARTICIPANTS,
+          priority: 10,
+        });
+      }
 
       arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
       mobileIconArr.unshift({
