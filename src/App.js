@@ -96,6 +96,9 @@ const App = () => {
       //
       askJoin: "askJoin",
       //
+      waitingScreenImageUrl: "waitingScreenImageUrl",
+      waitingScreenText: "waitingScreenText",
+      //
       joinScreenEnabled: "joinScreenEnabled",
       joinScreenMeetingUrl: "joinScreenMeetingUrl",
       joinScreenTitle: "joinScreenTitle",
@@ -548,6 +551,14 @@ const App = () => {
                 : null,
             brandName:
               paramKeys.brandName?.length > 0 ? paramKeys.brandName : null,
+            waitingScreenImageUrl:
+              paramKeys.waitingScreenImageUrl?.length > 0
+                ? paramKeys.waitingScreenImageUrl
+                : null,
+            waitingScreenText:
+              paramKeys.waitingScreenText?.length > 0
+                ? paramKeys.waitingScreenText
+                : null,
             participantCanLeave: paramKeys.participantCanLeave !== "false",
             askJoin: paramKeys.askJoin === "true",
             participantCanToggleOtherMic:

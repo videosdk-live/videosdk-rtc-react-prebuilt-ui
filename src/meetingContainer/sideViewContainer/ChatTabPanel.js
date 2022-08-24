@@ -84,7 +84,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
             variant={"caption"}
             style={{ color: "#ffffff80", fontStyle: "italic" }}
           >
-            {formatAMPM(new Date(parseInt(timestamp)))}
+            {formatAMPM(new Date(timestamp))}
           </Typography>
         </Box>
       </Box>
