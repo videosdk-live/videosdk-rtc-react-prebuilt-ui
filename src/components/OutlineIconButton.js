@@ -19,6 +19,7 @@ const OutlineIconButton = ({
   bgColor,
   focusBGColor,
   focusIconColor,
+  disabledOpacity,
   disabled,
   large,
   renderRightComponent,
@@ -119,7 +120,7 @@ const OutlineIconButton = ({
           <Box
             p={1}
             style={{
-              opacity: disabled ? 0.7 : 1,
+              opacity: disabled ? disabledOpacity || 0.7 : 1,
               // overflow: "hidden",
               display: "flex",
               justifyContent: "center",

@@ -18,6 +18,7 @@ const MobileIconButton = ({
   isFocused,
   bgColor,
   focusBGColor,
+  disabledOpacity,
   focusIconColor,
   disabled,
   large,
@@ -80,7 +81,7 @@ const MobileIconButton = ({
           <Box
             p={1}
             style={{
-              opacity: disabled ? 0.7 : 1,
+              opacity: disabled ? disabledOpacity || 0.7 : 1,
               // overflow: "hidden",
               display: "flex",
               justifyContent: "center",

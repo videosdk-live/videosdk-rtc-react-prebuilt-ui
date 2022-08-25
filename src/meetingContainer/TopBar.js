@@ -116,6 +116,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       buttonText={"Participants"}
+      disabledOpacity={1}
       Icon={Participants}
       disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
@@ -131,6 +132,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       Icon={Participants}
+      disabledOpacity={1}
       disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
         typeof onClick === "function" && onClick();
