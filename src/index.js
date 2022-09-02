@@ -5,11 +5,18 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import generateMuiTheme from "./mui/theme";
 import { ThemeProvider } from "@material-ui/styles";
+import { RoomProvider } from "./liveblocks.config";
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={generateMuiTheme()}>
+      {/* <RoomProvider
+        id="prebuilt-room"
+        initialPresence={() => ({ cursor: null })}
+        // defaultPresence={() => ({ cardId: null, cursor: null })}
+      > */}
       <App />
+      {/* </RoomProvider> */}
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")

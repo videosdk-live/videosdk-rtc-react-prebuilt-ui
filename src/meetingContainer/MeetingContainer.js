@@ -177,6 +177,7 @@ const MeetingContainer = () => {
     isRecorder,
     setDownstreamUrl,
     setAfterMeetingJoinedHLSState,
+    setInteractionState,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -416,6 +417,63 @@ const MeetingContainer = () => {
         );
       }
       participantRaisedHand(senderId);
+    },
+  });
+
+  usePubSub("INTERACTION_STATE_CHANGED", {
+    onMessageReceived: ({ message }) => {
+      setInteractionState({ started: message.enabled });
+
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar(
+          message.enabled ? "Interaction started" : "Interaction stopped"
+        );
+      }
+    },
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setInteractionState({ started: latestMessage.message.enabled });
+      }
+    },
+  });
+
+  usePubSub("INTERACTION_BACKGROUND_CHANGED", {
+    onMessageReceived: ({ message }) => {
+      setInteractionState({ started: true, url: message.url });
+    },
+    onOldMessagesReceived: (messages) => {
+      const latestMessage = messages.sort((a, b) => {
+        if (a.timestamp > b.timestamp) {
+          return -1;
+        }
+        if (a.timestamp < b.timestamp) {
+          return 1;
+        }
+        return 0;
+      })[0];
+
+      if (latestMessage) {
+        setInteractionState({
+          started: true,
+          url: latestMessage.message.url,
+        });
+      }
     },
   });
 

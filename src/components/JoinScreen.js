@@ -726,6 +726,7 @@ export default function JoinMeeting({
                   isXStoSM={isXStoSM}
                   startMeeting={() => {
                     onClick({ name, webcamOn, micOn });
+                    // localStorage.setItem("name", name);
                   }}
                   isXLOnly={isXLOnly}
                 />

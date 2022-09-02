@@ -63,6 +63,7 @@ export const MeetingAppProvider = ({
   redirectOnLeave,
   chatEnabled,
   screenShareEnabled,
+  interactionEnabled,
   pollEnabled,
   whiteboardEnabled,
   participantCanToggleSelfWebcam,
@@ -148,6 +149,10 @@ export const MeetingAppProvider = ({
     started: false,
     state: null,
   });
+  const [interactionState, setInteractionState] = useState({
+    started: false,
+    url: null,
+  });
   const [appMeetingLayout, setAppMeetingLayout] = useState({
     type: layoutType,
     gridSize: isRecorder ? RECORDER_MAX_GRID_SIZE : layoutGridSize,
@@ -188,6 +193,11 @@ export const MeetingAppProvider = ({
   const whiteboardStarted = useMemo(
     () => whiteboardState.started,
     [whiteboardState]
+  );
+
+  const interactionStarted = useMemo(
+    () => interactionState.started,
+    [interactionState]
   );
 
   useEffect(() => {
@@ -231,6 +241,7 @@ export const MeetingAppProvider = ({
         redirectOnLeave,
         chatEnabled,
         screenShareEnabled,
+        interactionEnabled,
         pollEnabled,
         whiteboardEnabled,
         participantCanToggleSelfWebcam,
@@ -297,6 +308,7 @@ export const MeetingAppProvider = ({
         raisedHandsParticipants,
         userHasInteracted,
         whiteboardStarted,
+        interactionStarted,
         whiteboardState,
         meetingLayout,
         appMeetingLayout,
@@ -314,7 +326,7 @@ export const MeetingAppProvider = ({
         endedPolls,
         submissions,
         afterMeetingJoinedHLSState,
-
+        interactionState,
         // setters
         setSideBarMode,
         setActiveSortedParticipants,
@@ -335,6 +347,7 @@ export const MeetingAppProvider = ({
         setEndedPolls,
         setSubmissions,
         setAfterMeetingJoinedHLSState,
+        setInteractionState,
       }}
     >
       <SnackbarProvider

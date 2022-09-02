@@ -236,8 +236,12 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
-  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
-    useMeetingAppContext();
+  const {
+    whiteboardStarted,
+    whiteboardEnabled,
+    canToggleWhiteboard,
+    interactionStarted,
+  } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
 
@@ -248,7 +252,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
       {whiteboardEnabled &&
         (isMobile || isTab ? (
           <MobileIconButton
-            disabled={presenterId || !canToggleWhiteboard}
+            disabled={presenterId || !canToggleWhiteboard || interactionStarted}
             tooltipTitle={"Whiteboard"}
             buttonText={"Whiteboard"}
             Icon={Gesture}
@@ -263,7 +267,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
           />
         ) : (
           <OutlineIconButton
-            disabled={presenterId || !canToggleWhiteboard}
+            disabled={presenterId || !canToggleWhiteboard || interactionStarted}
             tooltipTitle={"Whiteboard"}
             Icon={Gesture}
             isFocused={whiteboardStarted}
@@ -281,7 +285,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
 };
 const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const { whiteboardStarted } = useMeetingAppContext();
+  const { whiteboardStarted, interactionStarted } = useMeetingAppContext();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const toggleScreenShare = mMeeting?.toggleScreenShare;
@@ -312,7 +316,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       disabled={
         RDDIsMobile || RDDIsTablet
           ? true
-          : whiteboardStarted
+          : whiteboardStarted || interactionStarted
           ? true
           : presenterId
           ? localScreenShareOn
@@ -339,7 +343,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       disabled={
         RDDIsMobile || RDDIsTablet
           ? true
-          : whiteboardStarted
+          : whiteboardStarted || interactionStarted
           ? true
           : presenterId
           ? localScreenShareOn
@@ -814,6 +818,38 @@ const HlsBTN = ({ isMobile, isTab }) => {
     />
   );
 };
+
+const InteractionBTN = ({ isMobile, isTab }) => {
+  const { interactionStarted } = useMeetingAppContext();
+  const { publish } = usePubSub("INTERACTION_STATE_CHANGED");
+
+  const onInteractionStarted = () => {
+    if (interactionStarted) {
+      publish({ enabled: false }, { persist: true });
+    } else {
+      publish({ enabled: true }, { persist: true });
+    }
+  };
+
+  return (
+    <>
+      {isMobile || isTab ? (
+        <MobileIconButton
+          tooltipTitle={"Interaction"}
+          // Icon={AddLiveStreamIcon}
+          buttonText={"Start Interaction"}
+          onClick={onInteractionStarted}
+        />
+      ) : (
+        <OutlineIconTextButton
+          tooltipTitle={"Interaction"}
+          buttonText="Start Interaction"
+          onClick={onInteractionStarted}
+        />
+      )}
+    </>
+  );
+};
 const WebcamBTN = () => {
   const theme = useTheme();
   const mMeeting = useMeeting({});
@@ -1220,6 +1256,7 @@ const TopBar = ({ topBarHeight }) => {
     animationsEnabled,
     meetingMode,
     participantTabPanelEnabled,
+    interactionEnabled,
   } = useMeetingAppContext();
 
   const handleClickFAB = () => {
@@ -1250,6 +1287,7 @@ const TopBar = ({ topBarHeight }) => {
       ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
       CONFIGURATION: "CONFIGURATION",
       GO_LIVE: "GO_LIVE",
+      INTERACTION: "INTERACTION",
     }),
     []
   );
@@ -1398,6 +1436,14 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
+      if (interactionEnabled && meetingMode === meetingModes.CONFERENCE) {
+        utilsArr.unshift(topBarButtonTypes.INTERACTION);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.INTERACTION,
+          priority: 8,
+        });
+      }
+
       if (participantCanToggleLivestream && !liveStreamEnabled) {
       }
 
@@ -1482,6 +1528,8 @@ const TopBar = ({ topBarHeight }) => {
               <AddLiveStreamBTN />
             ) : icon.buttonType === topBarButtonTypes.CONFIGURATION ? (
               <ConfigBTN />
+            ) : icon.buttonType === topBarButtonTypes.INTERACTION ? (
+              <InteractionBTN />
             ) : null}
           </Box>
         );
@@ -1602,6 +1650,8 @@ const TopBar = ({ topBarHeight }) => {
                     isMobile={isMobile}
                     isTab={isTab}
                   />
+                ) : icon.buttonType === topBarButtonTypes.INTERACTION ? (
+                  <InteractionBTN />
                 ) : null}
               </Grid>
             );
@@ -1751,6 +1801,8 @@ const TopBar = ({ topBarHeight }) => {
                         <AddLiveStreamBTN />
                       ) : buttonType === topBarButtonTypes.CONFIGURATION ? (
                         <ConfigBTN />
+                      ) : buttonType === topBarButtonTypes.INTERACTION ? (
+                        <InteractionBTN />
                       ) : null}
                     </Box>
                   );

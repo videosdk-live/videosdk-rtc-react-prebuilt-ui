@@ -23,6 +23,7 @@ import { useMediaQuery } from "react-responsive";
 import WhiteboardContainer, {
   convertHWAspectRatio,
 } from "../../components/whiteboard/WhiteboardContainer";
+import InteractionContainer from "../../components/interaction/InteractionContainer";
 
 const MemoizedParticipant = React.memo(
   ParticipantViewer,
@@ -214,6 +215,7 @@ const MainViewContainer = ({
     sideStackSize,
     reduceEdgeSpacing,
     mode,
+    interactionStarted,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -225,9 +227,10 @@ const MainViewContainer = ({
     () =>
       presenterId ||
       whiteboardStarted ||
+      interactionStarted ||
       meetingLayout === meetingLayouts.UNPINNED_SIDEBAR ||
       meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT,
-    [presenterId, whiteboardStarted, meetingLayout]
+    [presenterId, whiteboardStarted, meetingLayout, interactionStarted]
   );
 
   const { singleRow, mainLayoutParticipantId } = useMemo(() => {
@@ -237,7 +240,7 @@ const MainViewContainer = ({
 
     let mainParticipants = [...mainViewParticipants];
 
-    if (presenterId || whiteboardStarted) {
+    if (presenterId || whiteboardStarted || interactionStarted) {
       const remainingParticipants = [...participants.keys()].filter(
         (pId) => mainParticipants.findIndex((id) => id === pId) === -1
       );
@@ -255,7 +258,7 @@ const MainViewContainer = ({
     }
 
     if (meetingLayout === meetingLayouts.UNPINNED_SIDEBAR) {
-      if (!(!!presenterId || !!whiteboardStarted)) {
+      if (!(!!presenterId || !!whiteboardStarted || !!interactionStarted)) {
         if (_pinnedParticipants.size === 0) {
           if (activeSpeakerId) {
             mainParticipants = mainParticipants.filter(
@@ -356,7 +359,7 @@ const MainViewContainer = ({
         }
       }
     } else if (meetingLayout === meetingLayouts.UNPINNED_SPOTLIGHT) {
-      if (!!presenterId || !!whiteboardStarted) {
+      if (!!presenterId || !!whiteboardStarted || !!interactionStarted) {
         mainParticipants = [];
       } else {
         mainParticipants = [];
@@ -431,6 +434,7 @@ const MainViewContainer = ({
     isLGDesktop,
     presenterId,
     whiteboardStarted,
+    interactionStarted,
     localParticipantId,
     pinnedParticipants,
     activeSpeakerId,
@@ -458,6 +462,7 @@ const MainViewContainer = ({
     () =>
       presenterId ||
       whiteboardStarted ||
+      interactionStarted ||
       (mainLayoutParticipantId && singleRow.length !== 0)
         ? 0
         : typeof sideBarMode === "string"
@@ -485,6 +490,7 @@ const MainViewContainer = ({
       isTab,
       isPortrait,
       whiteboardStarted,
+      interactionStarted,
       presenterId,
       mainLayoutParticipantId,
       meetingLayout,
@@ -503,6 +509,8 @@ const MainViewContainer = ({
     () => (singleRow.length ? presentingSideBarWidth : 0),
     [singleRow, presentingSideBarWidth]
   );
+
+  console.log("mainLayoutParticipantId", mainLayoutParticipantId);
 
   return participants ? (
     <>
@@ -538,7 +546,7 @@ const MainViewContainer = ({
                   2 * spacing
                 : 0,
               backgroundColor:
-                presenterId || whiteboardStarted
+                presenterId || whiteboardStarted || interactionStarted
                   ? theme.palette.background.paper
                   : undefined,
               transition: `width ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -568,6 +576,30 @@ const MainViewContainer = ({
                   whiteboardSpacing,
                   originalHeight: height - 2 * spacing,
                   originalWidth: whiteboardStarted
+                    ? width -
+                      (isMobile ? 0 : actualPresentingSideBarWidth) -
+                      2 * spacing
+                    : 0,
+                }}
+              />
+            )}
+
+            {interactionStarted && (
+              <InteractionContainer
+                {...{
+                  ...convertHWAspectRatio({
+                    height: height - 2 * spacing - 0,
+
+                    width: interactionStarted
+                      ? width -
+                        (isMobile ? 0 : presentingSideBarWidth) -
+                        2 * spacing -
+                        0
+                      : 0,
+                  }),
+                  originalHeight: height - 2 * spacing,
+                  participantId: mMeeting?.localParticipant.id,
+                  originalWidth: interactionStarted
                     ? width -
                       (isMobile ? 0 : actualPresentingSideBarWidth) -
                       2 * spacing

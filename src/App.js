@@ -24,6 +24,8 @@ import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
 import { version as prebuiltSDKVersion } from "../package.json";
 import { meetingModes } from "./CONSTS";
+import { RoomProvider } from "./liveblocks.config";
+import { LiveObject } from "@liveblocks/client";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -63,6 +65,7 @@ const App = () => {
       redirectOnLeave: "redirectOnLeave",
       chatEnabled: "chatEnabled",
       screenShareEnabled: "screenShareEnabled",
+      interactionEnabled: "interactionEnabled",
       pollEnabled: "pollEnabled",
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
@@ -202,6 +205,9 @@ const App = () => {
     }
     if (typeof paramKeys.screenShareEnabled !== "string") {
       paramKeys.screenShareEnabled = "true";
+    }
+    if (typeof paramKeys.interactionEnabled !== "string") {
+      paramKeys.interactionEnabled = "true";
     }
     if (typeof paramKeys.pollEnabled !== "string") {
       paramKeys.pollEnabled = "true";
@@ -528,6 +534,7 @@ const App = () => {
             redirectOnLeave: paramKeys.redirectOnLeave,
             chatEnabled: paramKeys.chatEnabled === "true",
             screenShareEnabled: paramKeys.screenShareEnabled === "true",
+            interactionEnabled: paramKeys.interactionEnabled === "true",
             pollEnabled: paramKeys.pollEnabled === "true",
             whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
             participantCanToggleSelfWebcam:
@@ -655,7 +662,17 @@ const App = () => {
                   : null,
             }}
           >
-            <MeetingContainer />
+            <RoomProvider
+              id="prebuilt-room"
+              initialPresence={() => ({ cursor: null })}
+              initialStorage={() => ({
+                userInfo: new LiveObject({
+                  name: name,
+                }),
+              })}
+            >
+              <MeetingContainer />
+            </RoomProvider>
           </MeetingProvider>
         </MeetingAppProvider>
       ) : paramKeys.joinScreenEnabled === "true" ? (
