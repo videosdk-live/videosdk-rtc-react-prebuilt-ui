@@ -17,7 +17,7 @@ const client = createClient({
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiJhZWE5NzM1My1iOTI2LTQ2ZjEtYWI1Yy03YTljNzNmNDZhZGMiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTY2MDgxMDE3MywiZXhwIjoxNjYwODk2NTczfQ.VNAxmZe9I2hXjVy1MV8hmPYxEaJs3dexqPW6lBTNSaQ",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ room, name: name }),
+      body: JSON.stringify({ room: "prebuilt-room", name: name }),
     });
     return await response.json();
   },
