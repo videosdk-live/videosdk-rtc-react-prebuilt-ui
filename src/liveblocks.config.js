@@ -10,7 +10,7 @@ const name = urlParams.get("name");
 
 const client = createClient({
   authEndpoint: async (room) => {
-    const response = await fetch("http://localhost:4545/api/auth", {
+    const response = await fetch("http://139.177.187.60:4548/api/auth", {
       method: "POST",
       headers: {
         Authentication:
