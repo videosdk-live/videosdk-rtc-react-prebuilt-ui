@@ -5,6 +5,7 @@ import TopBar from "./TopBar";
 import {
   meetingLayouts,
   sideBarNestedModes,
+  themeColorType,
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
@@ -177,6 +178,7 @@ const MeetingContainer = () => {
     isRecorder,
     setDownstreamUrl,
     setAfterMeetingJoinedHLSState,
+    themeColor,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -742,7 +744,17 @@ const MeetingContainer = () => {
   return (
     <div
       ref={containerRef}
-      style={{ height: "100vh", overflow: "hidden", position: "relative" }}
+      style={{
+        height: "100vh",
+        overflow: "hidden",
+        position: "relative",
+        backgroundColor:
+          themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.main
+            : themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.main
+            : theme.palette.background.default,
+      }}
     >
       <ConfirmBox
         open={meetingError}
@@ -856,7 +868,12 @@ const MeetingContainer = () => {
               height: "100vh",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: theme.palette.background.default,
+              backgroundColor:
+                themeColor === themeColorType.DARK
+                  ? theme.palette.darkTheme.slightLighter
+                  : themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.two
+                  : theme.palette.background.default,
             }}
           >
             <CircularProgress size={"4rem"} />

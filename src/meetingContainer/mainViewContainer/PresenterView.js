@@ -13,6 +13,7 @@ import {
 } from "../../utils/common";
 import {
   meetingLayouts,
+  themeColorType,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { useMediaQuery } from "react-responsive";
@@ -43,6 +44,7 @@ const PresenterView = ({ presenterId }) => {
     mainViewParticipants,
     meetingLayout,
     animationsEnabled,
+    themeColor,
   } = useMeetingAppContext();
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
@@ -197,12 +199,20 @@ const PresenterView = ({ presenterId }) => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%,-50%)",
-              backgroundColor: "#333244",
+              backgroundColor:
+                themeColor === themeColorType.DARK
+                  ? theme.palette.darkTheme.slightLighter
+                  : themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.two
+                  : "#333244",
             }}
           >
             <ScreenShare
               style={{
-                color: theme.palette.common.white,
+                color:
+                  themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : theme.palette.common.white,
                 height: theme.spacing(6),
                 width: theme.spacing(6),
               }}
@@ -212,7 +222,10 @@ const PresenterView = ({ presenterId }) => {
                 variant="h6"
                 style={{
                   fontWeight: "bold",
-                  color: theme.palette.common.white,
+                  color:
+                    themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : theme.palette.common.white,
                 }}
               >
                 You are presenting to everyone

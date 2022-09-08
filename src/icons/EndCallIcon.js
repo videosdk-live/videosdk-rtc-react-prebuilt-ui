@@ -3,7 +3,7 @@ import * as React from "react";
 const EndCallIcon = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={24} height={21.361} {...props}>
     <defs>
-      <style>{".a{fill:#fff}"}</style>
+      <style>{`.a{fill:${props.fill ? props.fill : "#fff"}}`}</style>
     </defs>
     <path
       className="a"

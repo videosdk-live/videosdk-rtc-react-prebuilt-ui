@@ -6,6 +6,7 @@ import {
   meetingLayoutPriorities,
   meetingLayouts,
   meetingLayoutTopics,
+  themeColorType,
 } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
@@ -66,6 +67,7 @@ const App = () => {
       pollEnabled: "pollEnabled",
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
+      themeColor: "themeColor",
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
@@ -365,6 +367,9 @@ const App = () => {
     if (!paramKeys.region || typeof paramKeys.region !== "string") {
       paramKeys.region = "sg001";
     }
+    if (!paramKeys.themeColor || typeof paramKeys.themeColor !== "string") {
+      paramKeys.themeColor = "DEFAULT";
+    }
 
     if (typeof paramKeys.preferredProtocol !== "string") {
       paramKeys.preferredProtocol = "UDP_ONLY";
@@ -510,7 +515,12 @@ const App = () => {
             height: "100vh",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: theme.palette.background.default,
+            backgroundColor:
+              paramKeys.themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.main
+                : paramKeys.themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
           }}
         >
           <CircularProgress size={"4rem"} />
@@ -614,6 +624,7 @@ const App = () => {
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
+            themeColor: paramKeys.themeColor,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
@@ -693,6 +704,7 @@ const App = () => {
               : paramKeys.participantCanToggleSelfMic
           }
           mode={paramKeys.mode}
+          themeColor={paramKeys.themeColor}
         />
       ) : (
         <ClickAnywhereToContinue

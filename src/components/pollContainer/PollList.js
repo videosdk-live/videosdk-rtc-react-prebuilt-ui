@@ -1,8 +1,15 @@
-import { Box, Button, Typography, useTheme } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  makeStyles,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   sideBarNestedModes,
+  themeColorType,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
@@ -18,8 +25,19 @@ export const secondsToMinutes = (time) => {
   return minutes + " : " + seconds;
 };
 
+const useStyles = makeStyles(() => ({
+  button: {
+    "&:hover": {
+      backgroundColor: "#EEF0F2",
+    },
+  },
+}));
+
 const Poll = ({ poll, isDraft, publishDraftPoll }) => {
   const timerIntervalRef = useRef();
+  const { themeColor } = useMeetingAppContext();
+  const theme = useTheme();
+  const classes = useStyles();
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -220,7 +238,16 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           </Typography>
         </Box>
         <Box style={{ marginTop: 16 }}>
-          <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
+          <Typography
+            style={{
+              fontSize: 16,
+              color:
+                themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
+              fontWeight: 600,
+            }}
+          >
             {poll.question}
           </Typography>
           {poll.options.map((item, j) => {
@@ -241,7 +268,10 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 <Typography
                   style={{
                     fontSize: 15,
-                    color: "white",
+                    color:
+                      themeColor === themeColorType.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "white",
                     fontWeight: 400,
                   }}
                 >
@@ -257,7 +287,12 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                   <Box
                     style={{
                       height: 6,
-                      backgroundColor: "#3D3C4E",
+                      backgroundColor:
+                        themeColor === themeColorType.DARK
+                          ? theme.palette.darkTheme.seven
+                          : themeColor === themeColorType.LIGHT
+                          ? theme.palette.lightTheme.three
+                          : theme.palette.common.sidePanel,
                       borderRadius: 4,
                       display: "flex",
                       flex: 1,
@@ -290,7 +325,15 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                         justifyContent: "flex-end",
                       }}
                     >
-                      <Typography style={{ margin: 0, padding: 0 }}>
+                      <Typography
+                        style={{
+                          margin: 0,
+                          padding: 0,
+                          color:
+                            themeColor === themeColorType.LIGHT &&
+                            theme.palette.lightTheme.contrastText,
+                        }}
+                      >
                         {`${Math.floor(percentage)}%`}
                       </Typography>
                     </Box>
@@ -316,7 +359,20 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 onClick={() => {
                   publishDraftPoll(poll);
                 }}
-                style={{ marginTop: equalSpacing + 2 }}
+                style={{
+                  marginTop: equalSpacing + 2,
+                  color:
+                    themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                  borderColor:
+                    themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                }}
+                classes={{
+                  root: themeColor === themeColorType.LIGHT && classes.button,
+                }}
               >
                 Launch
               </Button>
@@ -325,7 +381,20 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               <Button
                 variant="outlined"
                 size="small"
-                style={{ marginTop: equalSpacing + 2 }}
+                classes={{
+                  root: themeColor === themeColorType.LIGHT && classes.button,
+                }}
+                style={{
+                  marginTop: equalSpacing + 2,
+                  color:
+                    themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                  borderColor:
+                    themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                }}
                 onClick={() => {
                   EndPublish(
                     {

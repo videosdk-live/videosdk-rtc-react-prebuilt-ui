@@ -22,9 +22,13 @@ import {
   useTheme,
   Fade,
   Tooltip,
+  makeStyles,
 } from "@material-ui/core";
 import React, { useEffect, useRef, useMemo, useState } from "react";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  themeColorType,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import { Pin, RaiseHand, KickoutUserIcon } from "../../icons";
 import { List } from "react-virtualized";
 import useWindowSize from "../../utils/useWindowSize";
@@ -35,6 +39,20 @@ import { nameTructed } from "../../utils/common";
 import ToggleModeContainer from "../../components/ToggleModeContainer";
 import { meetingModes } from "../../CONSTS";
 import ParticipantScreenShareIcon from "../../icons/ParticipantScreenShareIcon";
+
+const useStyles = makeStyles(() => ({
+  textField: {
+    "&:hover": {
+      border: "1px solid #70707033",
+      borderRadius: "4px",
+    },
+    "& .MuiInputBase-input": {
+      color: "#404B53",
+    },
+    border: "1px solid #70707033",
+    borderRadius: "4px",
+  },
+}));
 
 function ParticipantListItem({
   raisedHand,
@@ -67,6 +85,7 @@ function ParticipantListItem({
     canPin,
     animationsEnabled,
     meetingMode,
+    themeColor,
   } = useMeetingAppContext();
 
   const isParticipantPresenting = useMemo(() => {
@@ -118,7 +137,12 @@ function ParticipantListItem({
       mt={1}
       p={1}
       style={{
-        backgroundColor: theme.palette.common.sidePanel,
+        backgroundColor:
+          themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.seven
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.three
+            : theme.palette.common.sidePanel,
         borderRadius: 6,
       }}
     >
@@ -131,7 +155,20 @@ function ParticipantListItem({
           position: "relative",
         }}
       >
-        <Avatar variant={"rounded"}>{displayName?.charAt(0)}</Avatar>
+        <Avatar
+          variant={"rounded"}
+          style={{
+            color: themeColor === themeColorType.LIGHT && "white",
+            backgroundColor:
+              themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.five
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.five
+                : "",
+          }}
+        >
+          {displayName?.charAt(0)}
+        </Avatar>
         <Fade in={!expanded}>
           <Box ml={1} mr={0.5} style={{ flex: 1, display: "flex" }}>
             <Typography
@@ -139,6 +176,9 @@ function ParticipantListItem({
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "pre-wrap",
+                color:
+                  themeColor === themeColorType.LIGHT &&
+                  theme.palette.lightTheme.contrastText,
               }}
               variant="body1"
               noWrap
@@ -333,6 +373,8 @@ function ParticipantListItem({
                         fill={
                           pinState?.share || pinState?.cam
                             ? "white"
+                            : themeColor === themeColorType.LIGHT
+                            ? theme.palette.lightTheme.contrastText
                             : "#ffffff80"
                         }
                         style={{
@@ -382,7 +424,13 @@ function ParticipantListItem({
                         {isParticipantPresenting ? (
                           <ParticipantScreenShareIcon fillColor={"#ffffff"} />
                         ) : (
-                          <ParticipantScreenShareIcon fillColor="#ffffff80" />
+                          <ParticipantScreenShareIcon
+                            fillColor={
+                              themeColor === themeColorType.LIGHT
+                                ? theme.palette.lightTheme.contrastText
+                                : "#ffffff80"
+                            }
+                          />
                         )}
                       </Box>
                     </IconButton>
@@ -470,9 +518,23 @@ function ParticipantListItem({
                   p={0.5}
                 >
                   {expanded ? (
-                    <Close fontSize="small" />
+                    <Close
+                      fontSize="small"
+                      style={{
+                        color:
+                          themeColor === themeColorType.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
+                      }}
+                    />
                   ) : (
-                    <MoreVert fontSize="small" />
+                    <MoreVert
+                      fontSize="small"
+                      style={{
+                        color:
+                          themeColor === themeColorType.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
+                      }}
+                    />
                   )}
                 </Box>
               </IconButton>
@@ -489,7 +551,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   const [participantExpandedId, setParticipantExpandedId] = useState(null);
 
   const { participants } = useMeeting();
-  const { raisedHandsParticipants } = useMeetingAppContext();
+  const { raisedHandsParticipants, themeColor } = useMeetingAppContext();
 
   const sortedRaisedHandsParticipants = useMemo(() => {
     const participantIds = [...participants.keys()];
@@ -569,7 +631,12 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
             mt={1}
             style={{
               height: 56,
-              backgroundColor: theme.palette.common.sidePanel,
+              backgroundColor:
+                themeColor === themeColorType.DARK
+                  ? theme.palette.darkTheme.seven
+                  : themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.three
+                  : theme.palette.common.sidePanel,
               borderRadius: 6,
             }}
           ></Box>
@@ -580,6 +647,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   const { width } = useWindowSize();
   const isTab = useIsTab();
   const isMobile = useIsMobile();
+  const classes = useStyles();
 
   return (
     <Box
@@ -595,11 +663,25 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
           variant="outlined"
           fullWidth
           placeholder="Search Participants"
+          classes={{
+            root: themeColor === themeColorType.LIGHT && classes.textField,
+          }}
+          style={{
+            color:
+              themeColor === themeColorType.LIGHT &&
+              theme.palette.lightTheme.contrastText,
+          }}
           onChange={(e) => setFilterQuery(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchOutlined />
+                <SearchOutlined
+                  style={{
+                    color:
+                      themeColor === themeColorType.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                />
               </InputAdornment>
             ),
           }}

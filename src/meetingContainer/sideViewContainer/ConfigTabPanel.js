@@ -1,7 +1,15 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Box, Typography, Slider, ButtonBase } from "@material-ui/core";
+import {
+  Box,
+  Typography,
+  Slider,
+  ButtonBase,
+  useTheme,
+  makeStyles,
+} from "@material-ui/core";
 import {
   meetingLayoutTopics,
+  themeColorType,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import SpotlightIcon from "../../icons/SpotlightIcon";
@@ -12,11 +20,37 @@ import PinParticipantIcon from "../../icons/PinParticipantIcon";
 import { usePubSub } from "@videosdk.live/react-sdk";
 import useIsMobile from "../../utils/useIsMobile";
 import { debounce } from "../../utils/common";
+import SpeakerLightIcon from "../../icons/SpeakerLightIcon";
+import PinParticipantLightIcon from "../../icons/PinParticipantLightIcon";
+import GridLightIcon from "../../icons/GridLightIcon";
+import SideBarLightIcon from "../../icons/SideBarLightIcon";
+import SpotlightLightIcon from "../../icons/SpotlightLightIcon";
+
+const useStyles = makeStyles(() => ({
+  root: {
+    "& .MuiSlider-valueLabel": {
+      "& *": {
+        background: "transparent",
+        color: "#fff",
+      },
+    },
+  },
+  rootLight: {
+    "& .MuiSlider-valueLabel": {
+      "& *": {
+        background: "transparent",
+        color: "#404B53",
+      },
+    },
+  },
+}));
 
 function ConfigTabPanel() {
   const isMobile = useIsMobile(375);
+  const theme = useTheme();
+  const classes = useStyles();
 
-  const { appMeetingLayout } = useMeetingAppContext();
+  const { appMeetingLayout, themeColor } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
     () => ({
@@ -77,26 +111,34 @@ function ConfigTabPanel() {
   const layoutArr = [
     {
       type: "Spotlight",
-      Icon: SpotlightIcon,
+      Icon:
+        themeColor === themeColorType.LIGHT
+          ? SpotlightLightIcon
+          : SpotlightIcon,
     },
     {
       type: "Sidebar",
-      Icon: SideBarIcon,
+      Icon:
+        themeColor === themeColorType.LIGHT ? SideBarLightIcon : SideBarIcon,
     },
     {
       type: "Grid",
-      Icon: GridIcon,
+      Icon: themeColor === themeColorType.LIGHT ? GridLightIcon : GridIcon,
     },
   ];
 
   const priorityArr = [
     {
       type: "Pin",
-      Icon: PinParticipantIcon,
+      Icon:
+        themeColor === themeColorType.LIGHT
+          ? PinParticipantLightIcon
+          : PinParticipantIcon,
     },
     {
       type: "Speaker",
-      Icon: SpeakerIcon,
+      Icon:
+        themeColor === themeColorType.LIGHT ? SpeakerLightIcon : SpeakerIcon,
     },
   ];
 
@@ -164,14 +206,33 @@ function ConfigTabPanel() {
           id="card"
           ref={ref}
         >
-          <Icon fillColor="white" strokeColor="#fff" />
+          <Icon
+            fillColor={
+              themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "white"
+            }
+            strokeColor={
+              themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "white"
+            }
+            pathColor={
+              themeColor === themeColorType.LIGHT
+                ? theme.palette.common.white
+                : "white"
+            }
+          />
         </ButtonBase>
         <Typography
           style={{
             marginTop: 12,
             fontSize: "14px",
             fontWeight: "400",
-            color: "white",
+            color:
+              themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "white",
           }}
         >
           {title}
@@ -194,7 +255,18 @@ function ConfigTabPanel() {
           id="card"
           ref={ref}
         >
-          <Icon fillColor="#95959E" strokeColor="#474657" />
+          <Icon
+            // fillColor={"#959595"}
+            // strokeColor={"#474657"}
+            fillColor={
+              themeColor === themeColorType.LIGHT
+                ? ""
+                : themeColor === themeColorType.DARK
+                ? "#95959E"
+                : "#95959E"
+            }
+            strokeColor={themeColor === themeColorType.LIGHT ? "" : "#474657"}
+          />
         </ButtonBase>
         <Typography
           style={{
@@ -224,6 +296,9 @@ function ConfigTabPanel() {
             lineHeight: "16px",
             fontSize: "16px",
             marginTop: 24,
+            color:
+              themeColor === themeColorType.LIGHT &&
+              theme.palette.lightTheme.contrastText,
           }}
           variant="body1"
         >
@@ -281,7 +356,16 @@ function ConfigTabPanel() {
           )}
         </Box>
         <Box
-          style={{ borderBottom: "2px solid #3A3F4B", marginLeft: -12 }}
+          style={{
+            borderBottom: `2px solid ${
+              themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.seven
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.three
+                : "#3A3F4B"
+            }`,
+            marginLeft: -12,
+          }}
         ></Box>
       </Box>
     );
@@ -312,11 +396,15 @@ function ConfigTabPanel() {
               lineHeight: "16px",
               fontSize: "16px",
               marginTop: 24,
+              color:
+                themeColor === themeColorType.LIGHT &&
+                theme.palette.lightTheme.contrastText,
             }}
             variant="body1"
           >
             Participants On Screen
           </Typography>
+
           <Slider
             getAriaValueText={valuetext}
             min={1}
@@ -325,11 +413,19 @@ function ConfigTabPanel() {
             onChange={(_, newValue) => {
               _handleGridSize(newValue);
             }}
+            className={
+              themeColor === themeColorType.LIGHT
+                ? classes.rootLight
+                : classes.root
+            }
             valueLabelDisplay="on"
             step={1}
             style={{
-              marginTop: 48,
-              color: "#ffffff",
+              marginTop: 32,
+              color:
+                themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "#ffffff",
             }}
             area-label="default"
             marks={marks}

@@ -13,7 +13,7 @@ const LeaveMeetingIcon = (props) => (
     xmlSpace="preserve"
     {...props}
   >
-    <style>{".st0{fill:#fff}"}</style>
+    <style>{`.st0{fill:${props.fill ? props.fill : "#fff"}}`}</style>
     <path
       className="st0"
       d="M3 0h11c1.7 0 3 1.3 3 3v6H8c-1.7 0-3 1.3-3 3s1.3 3 3 3h9v6c0 1.7-1.3 3-3 3H3c-1.7 0-3-1.3-3-3V3c0-1.7 1.4-3 3-3z"

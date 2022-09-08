@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useEffect, useState, useRef } from "react";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
@@ -28,6 +28,7 @@ const OutlineIconButton = ({
   buttonText,
   lottieOption,
   isRequestProcessing,
+  color,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
@@ -44,7 +45,7 @@ const OutlineIconButton = ({
     xs: 24 * (large ? 1.7 : 1),
   });
 
-  const { animationsEnabled } = useMeetingAppContext();
+  const { animationsEnabled, themeColor } = useMeetingAppContext();
 
   const startBlinking = () => {
     intervalRef.current = setInterval(() => {
@@ -84,7 +85,13 @@ const OutlineIconButton = ({
           backgroundColor: bgColor
             ? bgColor
             : isFocused
-            ? focusBGColor || "#fff"
+            ? focusBGColor || themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.contrastText
+              : "#fff"
+            : themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.main
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.main
             : theme.palette.background.default,
           border: `${2}px solid ${
             mouseOver || mouseDown
@@ -93,6 +100,8 @@ const OutlineIconButton = ({
               ? bgColor
               : focusBGColor
               ? focusBGColor
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"
           }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -155,11 +164,29 @@ const OutlineIconButton = ({
                 ) : (
                   <Icon
                     style={{
-                      color: isFocused ? focusIconColor || "#1C1F2E" : "#fff",
+                      color: isFocused
+                        ? focusIconColor || themeColor === themeColorType.LIGHT
+                          ? theme.palette.common.white
+                          : "#1C1F2E"
+                        : color
+                        ? color
+                        : themeColor === themeColorType.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "#fff",
                       height: iconSize,
                       width: iconSize,
                     }}
-                    fillColor={isFocused ? focusIconColor || "#1C1F2E" : "#fff"}
+                    fillColor={
+                      isFocused
+                        ? focusIconColor || themeColor === themeColorType.LIGHT
+                          ? theme.palette.common.white
+                          : "#1C1F2E"
+                        : color
+                        ? color
+                        : themeColor === themeColorType.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "#fff"
+                    }
                   />
                 )}
               </Badge>

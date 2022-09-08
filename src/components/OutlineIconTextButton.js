@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useState, useRef, useEffect } from "react";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
@@ -25,6 +25,7 @@ const OutlineIconTextButton = ({
   buttonText,
   large,
   isRequestProcessing,
+  textColor,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
@@ -33,7 +34,7 @@ const OutlineIconTextButton = ({
 
   const intervalRef = useRef();
 
-  const { animationsEnabled } = useMeetingAppContext();
+  const { animationsEnabled, themeColor } = useMeetingAppContext();
 
   const iconSize = useResponsiveSize({
     xl: 22 * (large ? 1 : 1),
@@ -94,7 +95,13 @@ const OutlineIconTextButton = ({
           backgroundColor: bgColor
             ? bgColor
             : isFocused
-            ? focusBGColor || "#fff"
+            ? focusBGColor || themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.contrastText
+              : "#fff"
+            : themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.main
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.main
             : theme.palette.background.default,
           border: `${2}px solid ${
             mouseOver || mouseDown
@@ -103,6 +110,8 @@ const OutlineIconTextButton = ({
               ? bgColor
               : focusBGColor
               ? focusBGColor
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"
           }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -149,7 +158,15 @@ const OutlineIconTextButton = ({
                 variant="subtitle2"
                 style={{
                   fontWeight: "bold",
-                  color: isFocused ? "#1C1F2E" : "#fff",
+                  color: isFocused
+                    ? themeColor === themeColorType.LIGHT
+                      ? theme.palette.common.white
+                      : "#1C1F2E"
+                    : textColor
+                    ? textColor
+                    : themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "#fff",
                 }}
               >
                 {buttonText}

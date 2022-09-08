@@ -14,6 +14,7 @@ import useIsSMDesktop from "../../utils/useIsSMDesktop";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import {
   meetingLayouts,
+  themeColorType,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { Motion as TransitionMotion, spring } from "react-motion";
@@ -214,6 +215,7 @@ const MainViewContainer = ({
     sideStackSize,
     reduceEdgeSpacing,
     mode,
+    themeColor,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -509,7 +511,12 @@ const MainViewContainer = ({
       <div
         style={{
           width,
-          backgroundColor: theme.palette.background.default,
+          backgroundColor:
+            themeColor === themeColorType.DARK
+              ? theme.palette.darkTheme.main
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
           overflow: "hidden",
           transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "ease-in-out",
@@ -539,7 +546,11 @@ const MainViewContainer = ({
                 : 0,
               backgroundColor:
                 presenterId || whiteboardStarted
-                  ? theme.palette.background.paper
+                  ? themeColor === themeColorType.DARK
+                    ? theme.palette.darkTheme.slightLighter
+                    : themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.two
+                    : theme.palette.background.paper
                   : undefined,
               transition: `width ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
               transitionTimingFunction: "ease-in-out",
@@ -610,7 +621,12 @@ const MainViewContainer = ({
           0 ? null : (
           <div
             style={{
-              backgroundColor: theme.palette.background.default,
+              backgroundColor:
+                themeColor === themeColorType.DARK
+                  ? theme.palette.darkTheme.main
+                  : themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
               overflowX: "hidden",
               overflowY: mainScreenViewActive ? "scroll" : "hidden",
               width: mainScreenViewActive

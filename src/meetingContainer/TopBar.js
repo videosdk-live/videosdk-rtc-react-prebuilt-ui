@@ -14,7 +14,11 @@ import {
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
 import { Constants, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
-import { sideBarModes, useMeetingAppContext } from "../MeetingAppContextDef";
+import {
+  sideBarModes,
+  themeColorType,
+  useMeetingAppContext,
+} from "../MeetingAppContextDef";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
@@ -68,11 +72,21 @@ const useStyles = makeStyles({
     marginTop: 8,
     width: 300,
   },
+  popoverHover: {
+    "&:hover": {
+      backgroundColor: "#CCD2D899",
+    },
+  },
+  popoverHoverDark: {
+    "&:hover": {
+      backgroundColor: "#2B303499",
+    },
+  },
 });
 
 const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const { publish } = usePubSub("RAISE_HAND");
-
+  const classes = useStyles();
   const onRaiseHand = () => {
     if (isMobile || isTab) {
       onClick();
@@ -407,6 +421,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     recordingAWSDirPath,
     participantCanToggleRecording,
     appMeetingLayout,
+    themeColor,
   } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
@@ -488,6 +503,12 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       isFocused={isRecording}
       disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
+      bgColor={
+        themeColor === themeColorType.LIGHT &&
+        (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
+          recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
+        "#EEF0F2"
+      }
       buttonText={
         recordingState === Constants.recordingEvents.RECORDING_STARTED
           ? "Stop Recording"
@@ -517,6 +538,12 @@ const RecordingBTN = ({ isMobile, isTab }) => {
           : "Start Recording"
       }
       isFocused={isRecording}
+      bgColor={
+        themeColor === themeColorType.LIGHT &&
+        (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
+          recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
+        "#EEF0F2"
+      }
       disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
       isRequestProcessing={isRequestProcessing}
@@ -679,6 +706,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               : "Go Live"
           }
           buttonText="Go Live"
+          textColor="#fff"
           lottieOption={isLiveStreaming ? defaultOptions : null}
           disabled={!participantCanToggleLivestream}
           isRequestProcessing={isRequestProcessing}
@@ -818,8 +846,9 @@ const HlsBTN = ({ isMobile, isTab }) => {
 };
 const WebcamBTN = () => {
   const theme = useTheme();
+  const classes = useStyles();
   const mMeeting = useMeeting({});
-  const { selectedWebcam } = useMeetingAppContext();
+  const { selectedWebcam, themeColor } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
@@ -859,7 +888,11 @@ const WebcamBTN = () => {
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? VideocamIcon : VideocamOffIcon}
         onClick={toggleWebcam}
-        focusBGColor={"#ffffff33"}
+        focusBGColor={
+          themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.outlineColor
+            : "#ffffff33"
+        }
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
@@ -871,7 +904,14 @@ const WebcamBTN = () => {
                 }}
                 size={"small"}
               >
-                <ArrowDropDownIcon fontSize={"small"} />
+                <ArrowDropDownIcon
+                  fontSize={"small"}
+                  style={{
+                    color:
+                      themeColor === themeColorType.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                />
               </IconButton>
             </Tooltip>
           );
@@ -891,7 +931,22 @@ const WebcamBTN = () => {
         open={Boolean(downArrow)}
         onClose={handleClose}
       >
-        <MenuList>
+        <MenuList
+          style={{
+            backgroundColor:
+              themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.slightLighter
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.two
+                : "",
+            color:
+              themeColor === themeColorType.DARK
+                ? theme.palette.common.white
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "",
+          }}
+        >
           {webcams.map(({ deviceId, label }, index) => (
             <MenuItem
               key={`output_webcams_${deviceId}`}
@@ -900,6 +955,14 @@ const WebcamBTN = () => {
                 handleClose();
                 setSelectedDeviceId(deviceId);
                 changeWebcam(deviceId);
+              }}
+              classes={{
+                root:
+                  themeColor === themeColorType.LIGHT
+                    ? classes.popoverHover
+                    : themeColor === themeColorType.DARK
+                    ? classes.popoverHoverDark
+                    : "",
               }}
             >
               {label || `Webcam ${index + 1}`}
@@ -911,12 +974,13 @@ const WebcamBTN = () => {
   );
 };
 const MicBTN = () => {
-  const { selectedMic } = useMeetingAppContext();
+  const { selectedMic, themeColor } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
   const mMeeting = useMeeting({});
   const theme = useTheme();
+  const classes = useStyles();
 
   const handleClick = (event) => {
     setDownArrow(event.currentTarget);
@@ -953,7 +1017,11 @@ const MicBTN = () => {
         isFocused={localMicOn}
         Icon={localMicOn ? MicIcon : MicOffIcon}
         onClick={toggleMic}
-        focusBGColor={"#ffffff33"}
+        focusBGColor={
+          themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.outlineColor
+            : "#ffffff33"
+        }
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
@@ -965,7 +1033,14 @@ const MicBTN = () => {
                 }}
                 size={"small"}
               >
-                <ArrowDropDownIcon fontSize={"small"} />
+                <ArrowDropDownIcon
+                  fontSize={"small"}
+                  style={{
+                    color:
+                      themeColor === themeColorType.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                />
               </IconButton>
             </Tooltip>
           );
@@ -986,7 +1061,22 @@ const MicBTN = () => {
         open={Boolean(downArrow)}
         onClose={handleClose}
       >
-        <MenuList>
+        <MenuList
+          style={{
+            backgroundColor:
+              themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.slightLighter
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.two
+                : "",
+            color:
+              themeColor === themeColorType.DARK
+                ? theme.palette.common.white
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "",
+          }}
+        >
           {mics.map(({ deviceId, label }, index) => (
             <MenuItem
               key={`output_mics_${deviceId}`}
@@ -995,6 +1085,14 @@ const MicBTN = () => {
                 handleClose();
                 setSelectedDeviceId(deviceId);
                 changeMic(deviceId);
+              }}
+              classes={{
+                root:
+                  themeColor === themeColorType.LIGHT
+                    ? classes.popoverHover
+                    : themeColor === themeColorType.DARK
+                    ? classes.popoverHoverDark
+                    : "",
               }}
             >
               {label || `Mic ${index + 1}`}
@@ -1015,6 +1113,7 @@ const EndCallBTN = () => {
     participantCanEndMeeting,
     participantCanLeave,
     meetingMode,
+    themeColor,
   } = useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -1056,6 +1155,7 @@ const EndCallBTN = () => {
             : "Leave Call"
         }
         bgColor={theme.palette.error.main}
+        color={theme.palette.common.white}
         Icon={EndCall}
         onClick={(e) => {
           !participantCanLeave && meetingMode === meetingModes.CONFERENCE
@@ -1085,17 +1185,45 @@ const EndCallBTN = () => {
               paper: classes.popoverBorder,
             }}
           >
-            <MenuList>
+            <MenuList
+              style={{
+                backgroundColor:
+                  themeColor === themeColorType.DARK
+                    ? theme.palette.darkTheme.slightLighter
+                    : themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.two
+                    : "",
+                color:
+                  themeColor === themeColorType.DARK
+                    ? theme.palette.common.white
+                    : themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "",
+              }}
+            >
               <MenuItem
                 key={`leave`}
                 onClick={() => {
                   leave();
                 }}
+                classes={{
+                  root:
+                    themeColor === themeColorType.LIGHT
+                      ? classes.popoverHover
+                      : themeColor === themeColorType.DARK
+                      ? classes.popoverHoverDark
+                      : "",
+                }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
                     style={{
-                      backgroundColor: theme.palette.common.sidePanel,
+                      backgroundColor:
+                        themeColor === themeColorType.DARK
+                          ? theme.palette.darkTheme.seven
+                          : themeColor === themeColorType.LIGHT
+                          ? theme.palette.lightTheme.three
+                          : theme.palette.common.sidePanel,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1104,7 +1232,14 @@ const EndCallBTN = () => {
                       borderRadius: 4,
                     }}
                   >
-                    <LeaveMeetingIcon height={22} width={22} />
+                    <LeaveMeetingIcon
+                      height={22}
+                      width={22}
+                      fill={
+                        themeColor === themeColorType.LIGHT &&
+                        theme.palette.lightTheme.contrastText
+                      }
+                    />
                   </Box>
                   <Box
                     style={{
@@ -1115,10 +1250,27 @@ const EndCallBTN = () => {
                       justifyContent: "center",
                     }}
                   >
-                    <Typography style={{ fontSize: 14 }}>Leave</Typography>
+                    <Typography
+                      style={{
+                        fontSize: 14,
+                        color:
+                          themeColor === themeColorType.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
+                      }}
+                    >
+                      Leave
+                    </Typography>
                     <Typography
                       color={"textSecondary"}
-                      style={{ fontSize: "0.9rem" }}
+                      style={{
+                        fontSize: "0.9rem",
+                        color:
+                          themeColor === themeColorType.DARK
+                            ? theme.palette.darkTheme.four
+                            : themeColor === themeColorType.LIGHT
+                            ? theme.palette.lightTheme.five
+                            : "",
+                      }}
                     >
                       Only you will leave the call.
                     </Typography>
@@ -1131,11 +1283,24 @@ const EndCallBTN = () => {
                 onClick={() => {
                   setIsEndMeeting(true);
                 }}
+                classes={{
+                  root:
+                    themeColor === themeColorType.LIGHT
+                      ? classes.popoverHover
+                      : themeColor === themeColorType.DARK
+                      ? classes.popoverHoverDark
+                      : "",
+                }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
                     style={{
-                      backgroundColor: theme.palette.common.sidePanel,
+                      backgroundColor:
+                        themeColor === themeColorType.DARK
+                          ? theme.palette.darkTheme.seven
+                          : themeColor === themeColorType.LIGHT
+                          ? theme.palette.lightTheme.three
+                          : theme.palette.common.sidePanel,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1144,7 +1309,12 @@ const EndCallBTN = () => {
                       borderRadius: 4,
                     }}
                   >
-                    <EndCallIcon />
+                    <EndCallIcon
+                      fill={
+                        themeColor === themeColorType.LIGHT &&
+                        theme.palette.lightTheme.contrastText
+                      }
+                    />
                   </Box>
                   <Box
                     style={{
@@ -1154,12 +1324,26 @@ const EndCallBTN = () => {
                       justifyContent: "center",
                     }}
                   >
-                    <Typography style={{ fontSize: 14, lineHeight: 1.5 }}>
+                    <Typography
+                      style={{
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                        color:
+                          themeColor === themeColorType.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
+                      }}
+                    >
                       End
                     </Typography>
                     <Typography
                       style={{
                         fontSize: "0.9rem",
+                        color:
+                          themeColor === themeColorType.DARK
+                            ? theme.palette.darkTheme.four
+                            : themeColor === themeColorType.LIGHT
+                            ? theme.palette.lightTheme.five
+                            : "",
                       }}
                       color={"textSecondary"}
                     >
@@ -1222,6 +1406,7 @@ const TopBar = ({ topBarHeight }) => {
     animationsEnabled,
     meetingMode,
     participantTabPanelEnabled,
+    themeColor,
   } = useMeetingAppContext();
 
   const handleClickFAB = () => {
@@ -1450,7 +1635,12 @@ const TopBar = ({ topBarHeight }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.main
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.main
+            : theme.palette.background.default,
       }}
     >
       {firstFourElements.map((icon, i) => {
@@ -1507,7 +1697,17 @@ const TopBar = ({ topBarHeight }) => {
         onOpen={handleClickFAB}
         style={{ paddingBottom: "100px" }}
       >
-        <Grid container>
+        <Grid
+          container
+          style={{
+            backgroundColor:
+              themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.main
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
+          }}
+        >
           {excludeFirstFourElements.map((icon, i) => {
             return (
               <Grid
@@ -1618,8 +1818,17 @@ const TopBar = ({ topBarHeight }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: theme.palette.background.default,
-        borderBottom: "1px solid #ffffff33",
+        backgroundColor:
+          themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.main
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.main
+            : theme.palette.background.default,
+        borderBottom: `1px solid ${
+          themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.outlineColor
+            : "#ffffff33"
+        }`,
         position: "relative",
         top: topBarVisible ? 0 : -topBarHeight,
         transition: `all ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -1666,6 +1875,9 @@ const TopBar = ({ topBarHeight }) => {
                 style={{
                   fontSize: "1.2rem",
                   fontWeight: "600",
+                  color:
+                    themeColor === themeColorType.LIGHT &&
+                    theme.palette.lightTheme.contrastText,
                 }}
               >
                 {brandName}
@@ -1677,6 +1889,9 @@ const TopBar = ({ topBarHeight }) => {
                     wordBreak: "break-all",
                     display: "flex",
                     alignItems: "center",
+                    color:
+                      themeColor === themeColorType.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
                   }}
                   color={"textSecondary"}
                 >
@@ -1710,7 +1925,10 @@ const TopBar = ({ topBarHeight }) => {
               {i !== 0 && (
                 <Box
                   style={{
-                    backgroundColor: "#ffffff33",
+                    backgroundColor:
+                      themeColor === themeColorType.LIGHT
+                        ? theme.palette.lightTheme.outlineColor
+                        : "#ffffff33",
                     width: 1,
                     height: topBarHeight - theme.spacing(1.5),
                     flex: 1,

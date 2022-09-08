@@ -18,6 +18,7 @@ import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
+import { themeColorType } from "../MeetingAppContextDef";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -126,6 +127,7 @@ export default function JoinMeeting({
   setSelectedMic,
   setSelectedWebcam,
   mode,
+  themeColor,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -438,7 +440,12 @@ export default function JoinMeeting({
           flex: 1,
           flexDirection: "column",
           height: "100vh",
-          backgroundColor: theme.palette.background.default,
+          backgroundColor:
+            themeColor === themeColorType.DARK
+              ? theme.palette.darkTheme.main
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
         }}
       >
         <Box
@@ -561,7 +568,12 @@ export default function JoinMeeting({
                                 position: "absolute",
                                 top: 0,
                                 right: 0,
-                                backgroundColor: "#1C1F2E80",
+                                backgroundColor:
+                                  themeColor === themeColorType.DARK
+                                    ? theme.palette.darkTheme.seven
+                                    : themeColor === themeColorType.LIGHT
+                                    ? theme.palette.lightTheme.three
+                                    : "#1C1F2E80",
                                 borderRadius: 4,
                                 cursor: "pointer",
                               }}
@@ -579,12 +591,28 @@ export default function JoinMeeting({
                                 }}
                                 m={0.5}
                               >
-                                <IconButton style={{ margin: 0, padding: 0 }}>
-                                  <CheckboxIcon />
+                                <IconButton
+                                  style={{
+                                    margin: 0,
+                                    padding: 0,
+                                  }}
+                                >
+                                  <CheckboxIcon
+                                    fill={
+                                      themeColor === themeColorType.LIGHT
+                                        ? theme.palette.lightTheme.contrastText
+                                        : "#fff"
+                                    }
+                                  />
                                 </IconButton>
                                 <Typography
                                   variant="subtitle1"
-                                  style={{ marginLeft: 4 }}
+                                  style={{
+                                    marginLeft: 4,
+                                    color:
+                                      themeColor === themeColorType.LIGHT &&
+                                      theme.palette.lightTheme.contrastText,
+                                  }}
                                 >
                                   Check your audio and video
                                 </Typography>
@@ -616,6 +644,7 @@ export default function JoinMeeting({
                           participantCanToggleSelfWebcam={
                             participantCanToggleSelfWebcam
                           }
+                          themeColor={themeColor}
                         />
                       ) : null}
 
@@ -728,6 +757,7 @@ export default function JoinMeeting({
                     onClick({ name, webcamOn, micOn });
                   }}
                   isXLOnly={isXLOnly}
+                  themeColor={themeColor}
                 />
               </Box>
             </Grid>

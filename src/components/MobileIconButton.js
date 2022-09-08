@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
@@ -30,6 +30,7 @@ const MobileIconButton = ({
   buttonText,
   lottieOption,
 }) => {
+  const { themeColor } = useMeetingAppContext();
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
@@ -118,11 +119,21 @@ const MobileIconButton = ({
               ) : (
                 <Icon
                   style={{
-                    color: isFocused ? focusIconColor || "#fff" : "#95959E",
+                    color: isFocused
+                      ? focusIconColor || "#fff"
+                      : themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "#95959E",
                     height: iconSize,
                     width: iconSize,
                   }}
-                  fillColor={isFocused ? "#fff" : "#95959E"}
+                  fillColor={
+                    isFocused
+                      ? "#fff"
+                      : themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "#95959E"
+                  }
                 />
               )}
             </Badge>
@@ -133,7 +144,11 @@ const MobileIconButton = ({
                 variant="subtitle2"
                 style={{
                   fontWeight: "bold",
-                  color: isFocused ? "#fff" : "#95959E",
+                  color: isFocused
+                    ? "#fff"
+                    : themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "#95959E",
                 }}
               >
                 {buttonText}

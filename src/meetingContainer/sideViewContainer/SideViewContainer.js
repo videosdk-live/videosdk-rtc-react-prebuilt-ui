@@ -10,7 +10,11 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
-import { sideBarModes, useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  sideBarModes,
+  themeColorType,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import ChatTabPanel from "./ChatTabPanel";
 import ParticipantsTabPanel from "./ParticipantsTabPanel";
 import CloseIcon from "@material-ui/icons/Close";
@@ -52,6 +56,7 @@ const SideBarTabView = ({ width, height }) => {
     sideBarNestedMode,
     setSideBarNestedMode,
     meetingMode,
+    themeColor,
   } = useMeetingAppContext();
   const { participants } = useMeeting();
   const value =
@@ -104,13 +109,23 @@ const SideBarTabView = ({ width, height }) => {
         paddingLeft: panelPadding,
         paddingRight: panelPadding,
         paddingBottom: panelPadding,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.main
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.main
+            : theme.palette.background.default,
       }}
     >
       <Fade in={sideBarMode}>
         <div
           style={{
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor:
+              themeColor === themeColorType.DARK
+                ? theme.palette.darkTheme.slightLighter
+                : themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.two
+                : theme.palette.background.paper,
             height: paddedHeight,
             borderRadius: 10,
             overflow: "hidden",
@@ -161,7 +176,15 @@ const SideBarTabView = ({ width, height }) => {
                       />
                     </IconButton>
                   )}
-                  <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+                  <Typography
+                    variant={"body1"}
+                    style={{
+                      fontWeight: "bold",
+                      color:
+                        themeColor === themeColorType.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
+                    }}
+                  >
                     {sideBarMode === "PARTICIPANTS"
                       ? `${capitalize(
                           String(sideBarMode || "").toLowerCase()
@@ -231,6 +254,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
     setSideBarMode,
     endCallContainerRef,
     animationsEnabled,
+    themeColor,
   } = useMeetingAppContext();
   const isTab = useIsTab();
   const isMobile = useIsMobile();
@@ -271,7 +295,12 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
           width,
           top: 0,
           left: 0,
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor:
+            themeColor === themeColorType.DARK
+              ? theme.palette.darkTheme.slightLighter
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.two
+              : theme.palette.background.paper,
           flex: 1,
           flexDirection: "column",
           display: "flex",

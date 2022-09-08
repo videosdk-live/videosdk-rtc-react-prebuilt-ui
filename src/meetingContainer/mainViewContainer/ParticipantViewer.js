@@ -3,7 +3,10 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@material-ui/core";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  themeColorType,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import {
   invertColor,
   getRandomColor,
@@ -271,6 +274,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     animationsEnabled,
     isRecorder,
     maintainVideoAspectRatio,
+    themeColor,
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
@@ -435,7 +439,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
         style={{
           height: "100%",
           width: "100%",
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor:
+            themeColor === themeColorType.DARK
+              ? theme.palette.darkTheme.slightLighter
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.two
+              : theme.palette.background.paper,
           position: "relative",
           overflow: "hidden",
           borderRadius: theme.spacing(1),

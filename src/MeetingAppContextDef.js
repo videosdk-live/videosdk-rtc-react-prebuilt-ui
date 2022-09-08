@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 import {
   useContext,
@@ -56,6 +56,11 @@ export const meetingLayoutTopics = {
   RECORDING_LAYOUT: "RECORDING_LAYOUT",
   LIVE_STREAM_LAYOUT: "LIVE_STREAM_LAYOUT",
   HLS_LAYOUT: "HLS_LAYOUT",
+};
+
+export const themeColorType = {
+  DARK: "DARK",
+  LIGHT: "LIGHT",
 };
 
 export const MeetingAppProvider = ({
@@ -132,9 +137,11 @@ export const MeetingAppProvider = ({
   maintainVideoAspectRatio,
   networkBarEnabled,
   hlsPlayerControlsVisible,
+  themeColor,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
+  const theme = useTheme();
 
   const classes = useStyles();
   const [sideBarMode, setSideBarMode] = useState(null);
@@ -288,6 +295,7 @@ export const MeetingAppProvider = ({
         isRecorder,
         maintainVideoAspectRatio,
         networkBarEnabled,
+        themeColor,
 
         // states
         sideBarMode,
@@ -340,6 +348,17 @@ export const MeetingAppProvider = ({
       <SnackbarProvider
         className={classes.container}
         autoHideDuration={5000}
+        style={{
+          backgroundColor:
+            themeColor === themeColorType.DARK
+              ? theme.palette.darkTheme.seven
+              : themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.main
+              : "",
+          color:
+            themeColor === themeColorType.LIGHT &&
+            theme.palette.lightTheme.contrastText,
+        }}
         maxSnack={3}
         anchorOrigin={{
           vertical: isTab || isMobile ? "top" : "bottom",
