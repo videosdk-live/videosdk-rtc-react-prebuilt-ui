@@ -136,7 +136,12 @@ const PresenterView = ({ presenterId }) => {
         position: "relative",
         height: "100%",
         width: "100%",
-        backgroundColor: "black",
+        backgroundColor:
+          themeColor === themeColorType.DARK
+            ? theme.palette.darkTheme.slightLighter
+            : themeColor === themeColorType.LIGHT
+            ? theme.palette.lightTheme.two
+            : "black",
         alignItems:
           mobilePortrait && meetingLayout !== meetingLayouts.SPOTLIGHT
             ? undefined

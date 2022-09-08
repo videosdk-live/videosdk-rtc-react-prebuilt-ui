@@ -85,9 +85,7 @@ const OutlineIconButton = ({
           backgroundColor: bgColor
             ? bgColor
             : isFocused
-            ? focusBGColor || themeColor === themeColorType.LIGHT
-              ? theme.palette.lightTheme.contrastText
-              : "#fff"
+            ? focusBGColor || "#fff"
             : themeColor === themeColorType.DARK
             ? theme.palette.darkTheme.main
             : themeColor === themeColorType.LIGHT
@@ -99,7 +97,9 @@ const OutlineIconButton = ({
               : bgColor
               ? bgColor
               : focusBGColor
-              ? focusBGColor
+              ? themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.outlineColor
+                : focusBGColor
               : themeColor === themeColorType.LIGHT
               ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"

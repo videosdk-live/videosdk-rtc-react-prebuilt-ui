@@ -51,6 +51,7 @@ export const CornerDisplayName = ({
     animationsEnabled,
     alwaysShowOverlay,
     networkBarEnabled,
+    themeColor,
   } = useMeetingAppContext();
 
   const defaultOptions = {
@@ -139,7 +140,10 @@ export const CornerDisplayName = ({
           paddingLeft: isMobile ? 4 : isTab ? 6 : 8,
           paddingRight: isMobile ? 4 : isTab ? 6 : 8,
           transform: `scale(${show ? 1 : 0})`,
-          backgroundColor: "#00000066",
+          backgroundColor:
+            themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.three
+              : "#00000066",
           borderRadius: 6,
           display: "flex",
           alignItems: "center",
@@ -164,6 +168,9 @@ export const CornerDisplayName = ({
             display: "flex",
             alignItems: "center",
             lineHeight: 1,
+            color:
+              themeColor === themeColorType.LIGHT &&
+              theme.palette.lightTheme.contrastText,
           }}
         >
           {isPresenting

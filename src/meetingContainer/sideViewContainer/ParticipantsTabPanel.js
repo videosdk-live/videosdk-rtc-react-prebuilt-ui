@@ -267,7 +267,12 @@ function ParticipantListItem({
                       {micOn ? (
                         <MicIcon
                           fontSize="small"
-                          style={{ color: theme.palette.common.white }}
+                          style={{
+                            color:
+                              themeColor === themeColorType.LIGHT
+                                ? theme.palette.lightTheme.four
+                                : theme.palette.common.white,
+                          }}
                         />
                       ) : (
                         <MicOffIcon
@@ -312,7 +317,12 @@ function ParticipantListItem({
                       {webcamOn ? (
                         <VideocamIcon
                           fontSize="small"
-                          style={{ color: theme.palette.common.white }}
+                          style={{
+                            color:
+                              themeColor === themeColorType.LIGHT
+                                ? theme.palette.lightTheme.four
+                                : theme.palette.common.white,
+                          }}
                         />
                       ) : (
                         <VideocamOffIcon
@@ -372,7 +382,9 @@ function ParticipantListItem({
                       <Pin
                         fill={
                           pinState?.share || pinState?.cam
-                            ? "white"
+                            ? themeColor === themeColorType.LIGHT
+                              ? theme.palette.lightTheme.four
+                              : "white"
                             : themeColor === themeColorType.LIGHT
                             ? theme.palette.lightTheme.contrastText
                             : "#ffffff80"
@@ -422,7 +434,13 @@ function ParticipantListItem({
                           <ScreenShareOutlined color="#ffffff80" />
                         )} */}
                         {isParticipantPresenting ? (
-                          <ParticipantScreenShareIcon fillColor={"#ffffff"} />
+                          <ParticipantScreenShareIcon
+                            fillColor={
+                              themeColor === themeColorType.LIGHT
+                                ? theme.palette.lightTheme.four
+                                : "#ffffff"
+                            }
+                          />
                         ) : (
                           <ParticipantScreenShareIcon
                             fillColor={
@@ -518,14 +536,7 @@ function ParticipantListItem({
                   p={0.5}
                 >
                   {expanded ? (
-                    <Close
-                      fontSize="small"
-                      style={{
-                        color:
-                          themeColor === themeColorType.LIGHT &&
-                          theme.palette.lightTheme.contrastText,
-                      }}
-                    />
+                    <Close fontSize="small" />
                   ) : (
                     <MoreVert
                       fontSize="small"

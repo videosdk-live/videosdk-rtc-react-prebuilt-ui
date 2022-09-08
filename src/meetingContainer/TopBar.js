@@ -118,10 +118,16 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, meetingMode, canToggleParticipantTab } =
-    useMeetingAppContext();
+  const {
+    sideBarMode,
+    setSideBarMode,
+    meetingMode,
+    canToggleParticipantTab,
+    themeColor,
+  } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
+  const theme = useTheme();
   const participants = mMeeting?.participants;
   const participantsCount = participants ? new Map(participants).size : 0;
 
@@ -147,6 +153,10 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       Icon={Participants}
       disabledOpacity={1}
+      focusBGColor={
+        themeColor === themeColorType.LIGHT &&
+        theme.palette.lightTheme.contrastText
+      }
       disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
         typeof onClick === "function" && onClick();
@@ -159,7 +169,8 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const ConfigBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, themeColor } = useMeetingAppContext();
+  const theme = useTheme();
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -177,6 +188,10 @@ const ConfigBTN = ({ isMobile, isTab }) => {
     <OutlineIconButton
       tooltipTitle={"Configuration"}
       Icon={SettingsOutlinedIcon}
+      focusBGColor={
+        themeColor === themeColorType.LIGHT &&
+        theme.palette.lightTheme.contrastText
+      }
       isFocused={sideBarMode === sideBarModes.CONFIGURATION}
       onClick={() => {
         setSideBarMode((s) =>
@@ -187,7 +202,8 @@ const ConfigBTN = ({ isMobile, isTab }) => {
   );
 };
 const ChatBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, themeColor } = useMeetingAppContext();
+  const theme = useTheme();
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -205,6 +221,10 @@ const ChatBTN = ({ isMobile, isTab }) => {
     <OutlineIconButton
       tooltipTitle={"Chat"}
       Icon={Chat}
+      focusBGColor={
+        themeColor === themeColorType.LIGHT &&
+        theme.palette.lightTheme.contrastText
+      }
       isFocused={sideBarMode === sideBarModes.CHAT}
       onClick={() => {
         setSideBarMode((s) =>
@@ -215,8 +235,9 @@ const ChatBTN = ({ isMobile, isTab }) => {
   );
 };
 const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, setSideBarNestedMode } =
+  const { sideBarMode, setSideBarMode, setSideBarNestedMode, themeColor } =
     useMeetingAppContext();
+  const theme = useTheme();
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -238,6 +259,10 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
     <OutlineIconButton
       tooltipTitle={"Activities"}
       Icon={Activities}
+      focusBGColor={
+        themeColor === themeColorType.LIGHT &&
+        theme.palette.lightTheme.contrastText
+      }
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
         typeof onClick === "function" && onClick();
@@ -252,8 +277,13 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
-  const { whiteboardStarted, whiteboardEnabled, canToggleWhiteboard } =
-    useMeetingAppContext();
+  const {
+    whiteboardStarted,
+    whiteboardEnabled,
+    canToggleWhiteboard,
+    themeColor,
+  } = useMeetingAppContext();
+  const theme = useTheme();
 
   const mMeeting = useMeeting({});
 
@@ -283,6 +313,10 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
             tooltipTitle={"Whiteboard"}
             Icon={Gesture}
             isFocused={whiteboardStarted}
+            focusBGColor={
+              themeColor === themeColorType.LIGHT &&
+              theme.palette.lightTheme.contrastText
+            }
             onClick={() => {
               typeof onClick === "function" && onClick();
 
@@ -297,7 +331,8 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
 };
 const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const { whiteboardStarted } = useMeetingAppContext();
+  const { whiteboardStarted, themeColor } = useMeetingAppContext();
+  const theme = useTheme();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const toggleScreenShare = mMeeting?.toggleScreenShare;
@@ -347,6 +382,10 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
           : "Present Screen"
       }
       isFocused={localScreenShareOn}
+      focusBGColor={
+        themeColor === themeColorType.LIGHT &&
+        theme.palette.lightTheme.contrastText
+      }
       Icon={ScreenShare}
       onClick={() => {
         typeof onClick === "function" && onClick();
@@ -400,6 +439,7 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
 };
 const RecordingBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
+  const theme = useTheme();
 
   const startRecording = mMeeting?.startRecording;
   const stopRecording = mMeeting?.stopRecording;
@@ -526,6 +566,10 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     <OutlineIconButton
       Icon={ScreenRecording}
       onClick={_handleClick}
+      focusBGColor={
+        themeColor === themeColorType.LIGHT &&
+        theme.palette.lightTheme.contrastText
+      }
       tooltipTitle={
         recordingState === Constants.recordingEvents.RECORDING_STARTED
           ? "Stop Recording"
@@ -890,7 +934,7 @@ const WebcamBTN = () => {
         onClick={toggleWebcam}
         focusBGColor={
           themeColor === themeColorType.LIGHT
-            ? theme.palette.lightTheme.outlineColor
+            ? theme.palette.lightTheme.contrastText
             : "#ffffff33"
         }
         focusIconColor={theme.palette.common.white}
@@ -1020,7 +1064,7 @@ const MicBTN = () => {
         onClick={toggleMic}
         focusBGColor={
           themeColor === themeColorType.LIGHT
-            ? theme.palette.lightTheme.outlineColor
+            ? theme.palette.lightTheme.contrastText
             : "#ffffff33"
         }
         focusIconColor={theme.palette.common.white}
