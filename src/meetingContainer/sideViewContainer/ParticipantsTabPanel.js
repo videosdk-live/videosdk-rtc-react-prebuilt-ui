@@ -270,7 +270,7 @@ function ParticipantListItem({
                           style={{
                             color:
                               themeColor === themeColorType.LIGHT
-                                ? theme.palette.lightTheme.four
+                                ? theme.palette.lightTheme.contrastText
                                 : theme.palette.common.white,
                           }}
                         />
@@ -320,7 +320,7 @@ function ParticipantListItem({
                           style={{
                             color:
                               themeColor === themeColorType.LIGHT
-                                ? theme.palette.lightTheme.four
+                                ? theme.palette.lightTheme.contrastText
                                 : theme.palette.common.white,
                           }}
                         />
@@ -383,10 +383,10 @@ function ParticipantListItem({
                         fill={
                           pinState?.share || pinState?.cam
                             ? themeColor === themeColorType.LIGHT
-                              ? theme.palette.lightTheme.four
+                              ? theme.palette.lightTheme.contrastText
                               : "white"
                             : themeColor === themeColorType.LIGHT
-                            ? theme.palette.lightTheme.contrastText
+                            ? theme.palette.lightTheme.four
                             : "#ffffff80"
                         }
                         style={{
@@ -437,7 +437,7 @@ function ParticipantListItem({
                           <ParticipantScreenShareIcon
                             fillColor={
                               themeColor === themeColorType.LIGHT
-                                ? theme.palette.lightTheme.four
+                                ? theme.palette.lightTheme.contrastText
                                 : "#ffffff"
                             }
                           />
@@ -445,7 +445,7 @@ function ParticipantListItem({
                           <ParticipantScreenShareIcon
                             fillColor={
                               themeColor === themeColorType.LIGHT
-                                ? theme.palette.lightTheme.contrastText
+                                ? theme.palette.lightTheme.four
                                 : "#ffffff80"
                             }
                           />

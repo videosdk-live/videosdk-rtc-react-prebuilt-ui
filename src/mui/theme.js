@@ -44,6 +44,7 @@ export default function generateMuiTheme(type, primary, secondary) {
           nine: "#050A0E",
           outlineColor: "#EFEFEF",
           contrastText: "#404B53",
+          primaryMain: "#596BFF",
         },
         secondary: {
           main: "#000",

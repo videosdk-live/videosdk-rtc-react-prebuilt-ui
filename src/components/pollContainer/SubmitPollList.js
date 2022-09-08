@@ -320,12 +320,16 @@ const SubmitPollListItem = ({ poll }) => {
                                 backgroundColor:
                                   hasCorrectAnswer && isActive
                                     ? isCorrectOption
-                                      ? "#1178F8"
+                                      ? themeColor === themeColorType.LIGHT
+                                        ? theme.palette.lightTheme.primaryMain
+                                        : theme.palette.primary.main
                                       : "#9E9DA6"
                                     : maxSubmittedOptions.includes(
                                         option.optionId
                                       )
-                                    ? "#1178F8"
+                                    ? themeColor === themeColorType.LIGHT
+                                      ? theme.palette.lightTheme.primaryMain
+                                      : theme.palette.primary.main
                                     : "#9E9DA6",
                                 width: `${percentage}%`,
                                 borderRadius: 4,

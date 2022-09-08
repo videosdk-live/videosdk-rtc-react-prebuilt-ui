@@ -302,10 +302,14 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       style={{
                         backgroundColor: hasCorrectAnswer
                           ? isCorrectOption
-                            ? "#1178F8"
+                            ? themeColor === themeColorType.LIGHT
+                              ? theme.palette.lightTheme.primaryMain
+                              : theme.palette.primary.main
                             : "#9E9DA6"
                           : maxSubmittedOptions.includes(item.optionId)
-                          ? "#1178F8"
+                          ? themeColor === themeColorType.LIGHT
+                            ? theme.palette.lightTheme.primaryMain
+                            : theme.palette.primary.main
                           : "#9E9DA6",
 
                         // backgroundColor: item.isCorrect ? "#1178F8" : "#9E9DA6",
@@ -415,7 +419,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 };
 
 const PollList = ({ panelHeight }) => {
-  const { setSideBarNestedMode, polls, draftPolls } = useMeetingAppContext();
+  const { setSideBarNestedMode, polls, draftPolls, themeColor } =
+    useMeetingAppContext();
 
   const theme = useTheme();
 
@@ -519,7 +524,10 @@ const PollList = ({ panelHeight }) => {
             style={{
               width: "100%",
               color: theme.palette.common.white,
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor:
+                themeColor === themeColorType.LIGHT
+                  ? theme.palette.lightTheme.primaryMain
+                  : theme.palette.primary.main,
               padding: "12px",
             }}
             onClick={() => {

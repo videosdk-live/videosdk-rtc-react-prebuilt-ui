@@ -23,7 +23,10 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from "../../icons";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  themeColorType,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
 import UploadImageIcon from "../../icons/UploadImageIcon";
 
@@ -54,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const { themeColor } = useMeetingAppContext();
 
   return (
     <Tooltip title={title} arrow placement="right">
@@ -61,12 +65,26 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         className={classes.btnTool}
         color="inherit"
         style={{
-          backgroundColor: isSelected ? "#D5E8FF" : "",
+          backgroundColor: isSelected
+            ? themeColor === themeColorType.LIGHT
+              ? "#596BFF33"
+              : themeColor === themeColorType.LIGHT
+              ? "#596BFF33"
+              : "#D5E8FF"
+            : "",
           borderRadius: 6,
         }}
         onClick={onClick}
       >
-        <Icon fill={isSelected ? theme.palette.primary.main : "black"} />
+        <Icon
+          fill={
+            isSelected
+              ? themeColor === themeColorType.LIGHT
+                ? theme.palette.lightTheme.primaryMain
+                : theme.palette.primary.main
+              : "black"
+          }
+        />
       </ButtonBase>
     </Tooltip>
   );
@@ -85,6 +103,7 @@ const CustomColorPicker = ({
   Icon,
 }) => {
   const classes = useStyles();
+  const { themeColor } = useMeetingAppContext();
 
   return (
     <>
@@ -97,7 +116,8 @@ const CustomColorPicker = ({
             setColorPicker(e.currentTarget);
           }}
           style={{
-            backgroundColor: `#D5E8FF`,
+            backgroundColor:
+              themeColor === themeColorType.LIGHT ? "#596BFF33" : `#D5E8FF`,
             borderRadius: 6,
           }}
         >
@@ -262,7 +282,7 @@ const WBToolbar = ({
 
   const open = Boolean(anchorEl);
 
-  const { canDrawOnWhiteboard } = useMeetingAppContext();
+  const { canDrawOnWhiteboard, themeColor } = useMeetingAppContext();
 
   useEffect(() => {
     setColor(parentColor);
@@ -323,19 +343,45 @@ const WBToolbar = ({
                 tool === "squareFilled" ||
                 tool === "circle" ||
                 tool === "circleFilled"
-                  ? "#D5E8FF"
+                  ? themeColor === themeColorType.LIGHT
+                    ? "#596BFF33"
+                    : "#D5E8FF"
                   : "",
               borderRadius: 6,
             }}
           >
             {tool === "square" ? (
-              <SquareIcon fill={theme.palette.primary.main} />
+              <SquareIcon
+                fill={
+                  themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : tool === "squareFilled" ? (
-              <ShapeIcon fill={theme.palette.primary.main} />
+              <ShapeIcon
+                fill={
+                  themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : tool === "circle" ? (
-              <CircleIcon fill={theme.palette.primary.main} />
+              <CircleIcon
+                fill={
+                  themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : tool === "circleFilled" ? (
-              <CircleFilledIcon fill={theme.palette.primary.main} />
+              <CircleFilledIcon
+                fill={
+                  themeColor === themeColorType.LIGHT
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : (
               <ShapeIcon fill={"#000"} />
             )}

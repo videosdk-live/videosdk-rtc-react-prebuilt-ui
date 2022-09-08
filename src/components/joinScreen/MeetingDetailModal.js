@@ -281,6 +281,12 @@ export default function MeetingDetailModal({
               <InputAdornment position="end">
                 <Button
                   color="primary"
+                  style={{
+                    backgroundColor:
+                      themeColor === themeColorType.LIGHT
+                        ? theme.palette.lightTheme.primaryMain
+                        : theme.palette.primary.main,
+                  }}
                   variant="contained"
                   onClick={(e) => {
                     const isValid = handleValidation();

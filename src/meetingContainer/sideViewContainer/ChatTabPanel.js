@@ -101,7 +101,10 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                     properties={{
                       target: "_blank",
                       style: {
-                        color: theme.palette.primary.main,
+                        color:
+                          themeColor === themeColorType.LIGHT
+                            ? theme.palette.lightTheme.primaryMain
+                            : theme.palette.primary.main,
                       },
                     }}
                   >
@@ -236,7 +239,11 @@ const ChatMessageInput = ({ inputHeight }) => {
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
           }}
-          color={theme.palette.primary.main}
+          color={
+            themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.primaryMain
+              : theme.palette.primary.main
+          }
           onSelect={(e) => {
             setMessageText((s) => `${s}${e.native}`);
           }}

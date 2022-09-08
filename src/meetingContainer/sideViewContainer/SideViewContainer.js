@@ -40,6 +40,12 @@ const useStyles = makeStyles(() => ({
       background: "transparent",
     },
   },
+  iconContainerLight: {
+    "&:hover $icon": {
+      color: "#404B53",
+      background: "transparent",
+    },
+  },
   icon: {
     color: "#9FA0A7",
     background: "transparent",
@@ -217,7 +223,10 @@ const SideBarTabView = ({ width, height }) => {
                     disableTouchRipple
                     className={classes.iconbutton}
                     classes={{
-                      root: classes.iconContainer,
+                      root:
+                        themeColor === themeColorType.LIGHT
+                          ? classes.iconContainerLight
+                          : classes.iconContainer,
                     }}
                     style={{ padding: 0, margin: 0 }}
                   >

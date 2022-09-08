@@ -81,24 +81,35 @@ const useStyles = makeStyles(() => ({
     borderRadius: "4px",
   },
 
-  checkbox1: {
-    "&$checked": {
-      color: "#1178F8",
-    },
-  },
+  // checkbox1: {
+  //   "&$checked": {
+  //     color: "#1178F8",
+  //   },
+  // },
 
   selectRoot: {
     "& .MuiInputBase-input ": {
       padding: "0px 24px 0px 0",
-      color: "#fff",
+      // color: "#fff",
       borderBottom: "1px solid #404B53",
     },
     "&:hover": {
       borderBottom: "1px solid #404B53",
     },
   },
+  textFieldBorder: {
+    "&:hover:not(.Mui-disabled):after": {
+      borderBottom: "none",
+    },
+    "&:hover:not(.Mui-disabled):before": {
+      borderBottom: "none", // String should be terminated
+    },
+  },
   selectIcon: {
     color: "#fff",
+  },
+  selectIconLight: {
+    color: "#404B53",
   },
 
   iconbutton: {
@@ -122,22 +133,22 @@ const useStyles = makeStyles(() => ({
     background: "transparent",
   },
 
-  checkbox: {
-    "&. .MuiCheckbox-colorSecondary": {
-      color: "#1178F8",
-    },
-    "& .MuiCheckbox-colorSecondary.Mui-checked ": {
-      backgroundColor: "#1178F8",
-      color: "#1178F8",
-    },
-    "& .Mui-checked": {
-      backgroundColor: "#1178F8",
-      color: "#1178F8",
-    },
-    "& .MuiCheckbox-root": {
-      color: "#fff",
-    },
-  },
+  // checkbox: {
+  //   "&. .MuiCheckbox-colorSecondary": {
+  //     color: "#1178F8",
+  //   },
+  //   "& .MuiCheckbox-colorSecondary.Mui-checked ": {
+  //     backgroundColor: "#1178F8",
+  //     color: "#1178F8",
+  //   },
+  //   "& .Mui-checked": {
+  //     backgroundColor: "#1178F8",
+  //     color: "#1178F8",
+  //   },
+  //   "& .MuiCheckbox-root": {
+  //     color: "#fff",
+  //   },
+  // },
 }));
 
 const BpIcon = styled("span")(({ theme }) => ({
@@ -181,6 +192,36 @@ const BpCheckedIcon = styled(BpIcon)({
   },
 });
 
+const BpCheckedLightIcon = styled(BpIcon)({
+  backgroundColor: "#596BFF",
+  border: "2px solid #596BFF",
+  "&:before": {
+    display: "block",
+    width: 16,
+    height: 16,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+});
+
+const MarkCorrectCheckedLightIcon = styled(MarkCorrectIcon)({
+  backgroundColor: "#596BFF",
+  border: "2px solid #596BFF",
+  "&:before": {
+    display: "block",
+    width: 16,
+    height: 16,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+});
+
 const MarkCorrectCheckedIcon = styled(MarkCorrectIcon)({
   backgroundColor: "#1178F8",
   border: "2px solid #1178F8",
@@ -197,12 +238,19 @@ const MarkCorrectCheckedIcon = styled(MarkCorrectIcon)({
 });
 
 function BpCheckbox(CheckboxProps) {
+  const { themeColor } = useMeetingAppContext();
   return (
     <Checkbox
       disableRipple
       disableFocusRipple
       color="default"
-      checkedIcon={<BpCheckedIcon />}
+      checkedIcon={
+        themeColor === themeColorType.LIGHT ? (
+          <BpCheckedLightIcon />
+        ) : (
+          <BpCheckedIcon />
+        )
+      }
       icon={<BpIcon />}
       style={{
         paddingTop: 0,
@@ -217,12 +265,19 @@ function BpCheckbox(CheckboxProps) {
 }
 
 export function MarkCorrectCheckbox(CheckboxProps) {
+  const { themeColor } = useMeetingAppContext();
   return (
     <Radio
       disableRipple
       disableFocusRipple
       color="default"
-      checkedIcon={<MarkCorrectCheckedIcon />}
+      checkedIcon={
+        themeColor === themeColorType.LIGHT ? (
+          <MarkCorrectCheckedLightIcon />
+        ) : (
+          <MarkCorrectCheckedIcon />
+        )
+      }
       icon={<MarkCorrectIcon />}
       style={{
         padding: 0,
@@ -302,6 +357,7 @@ const CreatePollPart = ({
         autoFocus
         InputProps={{
           classes: {
+            underline: classes.textFieldBorder,
             root:
               themeColor === themeColorType.LIGHT
                 ? classes.textFieldRootLight
@@ -374,7 +430,9 @@ const CreatePollPart = ({
                             : "#404B53",
                         backgroundColor:
                           item.isCorrect && item.option !== ""
-                            ? "#1178F8"
+                            ? themeColor === themeColorType.LIGHT
+                              ? theme.palette.lightTheme.primaryMain
+                              : theme.palette.primary.main
                             : themeColor === themeColorType.DARK
                             ? theme.palette.darkTheme.seven
                             : themeColor === themeColorType.LIGHT
@@ -481,7 +539,9 @@ const CreatePollPart = ({
                 color: option.isCorrect && option.option ? "#fff" : "#404B53",
                 backgroundColor:
                   option.isCorrect && option.option
-                    ? "#1178F8"
+                    ? themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.primaryMain
+                      : theme.palette.primary.main
                     : themeColor === themeColorType.DARK
                     ? theme.palette.darkTheme.seven
                     : themeColor === themeColorType.LIGHT
@@ -669,7 +729,16 @@ const CreatePollPart = ({
                     }}
                     className={classes.selectRoot}
                     classes={{
-                      icon: classes.selectIcon,
+                      icon:
+                        themeColor === themeColorType.LIGHT
+                          ? classes.selectIconLight
+                          : classes.selectIcon,
+                    }}
+                    style={{
+                      color:
+                        themeColor === themeColorType.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
                     }}
                     MenuProps={{
                       classes: {
@@ -858,7 +927,10 @@ const PollButtonPart = ({
           width: "50%",
           marginLeft: 8,
           color: theme.palette.common.white,
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor:
+            themeColor === themeColorType.LIGHT
+              ? theme.palette.lightTheme.primaryMain
+              : theme.palette.primary.main,
           padding: "8px",
           boxShadow: "none",
         }}

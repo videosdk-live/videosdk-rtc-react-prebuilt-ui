@@ -163,10 +163,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  toggleSelected: {
-    backgroundColor: "#1178F8",
-    color: "#fff",
-  },
+  // toggleSelected: {
+  //   backgroundColor: "#1178F8",
+  //   color: "#fff",
+  // },
   video: {
     borderRadius: "6px",
     backgroundColor: "#1c1c1c",
@@ -181,6 +181,11 @@ const useStyles = makeStyles((theme) => ({
   button: {
     "&:hover": {
       backgroundColor: "#1178F8",
+    },
+  },
+  buttonLight: {
+    "&:hover": {
+      backgroundColor: "#596BFF",
     },
   },
 }));
@@ -316,7 +321,11 @@ export default function SettingDialogueBox({
                         <Button
                           classes={{
                             root:
-                              setting === value ? classes.button : undefined,
+                              setting === value
+                                ? themeColor === themeColorType.LIGHT
+                                  ? classes.buttonLight
+                                  : classes.button
+                                : undefined,
                           }}
                           style={{
                             borderRadius: 0,
