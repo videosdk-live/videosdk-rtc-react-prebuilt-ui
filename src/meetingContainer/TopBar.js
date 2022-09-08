@@ -907,9 +907,9 @@ const WebcamBTN = () => {
                 <ArrowDropDownIcon
                   fontSize={"small"}
                   style={{
-                    color:
-                      themeColor === themeColorType.LIGHT &&
-                      theme.palette.lightTheme.contrastText,
+                    color: "white",
+                    // themeColor === themeColorType.LIGHT &&
+                    // theme.palette.lightTheme.contrastText,
                   }}
                 />
               </IconButton>
@@ -1036,9 +1036,9 @@ const MicBTN = () => {
                 <ArrowDropDownIcon
                   fontSize={"small"}
                   style={{
-                    color:
-                      themeColor === themeColorType.LIGHT &&
-                      theme.palette.lightTheme.contrastText,
+                    color: "white",
+                    // themeColor === themeColorType.LIGHT &&
+                    // theme.palette.lightTheme.contrastText,
                   }}
                 />
               </IconButton>
