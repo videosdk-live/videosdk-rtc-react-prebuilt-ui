@@ -42,7 +42,7 @@ export default function generateMuiTheme(type, primary, secondary) {
           seven: "#2B3034",
           eight: "#1A1C22",
           nine: "#050A0E",
-          outlineColor: "#EFEFEF",
+          outlineColor: "#D3D7DA",
           contrastText: "#404B53",
           primaryMain: "#596BFF",
         },
