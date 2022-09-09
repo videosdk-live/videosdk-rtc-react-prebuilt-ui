@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
   },
   textFieldDisabled: {
     "&:disabled": {
-      color: "white",
+      color: "#8A9197",
       backgroundColor: "#CCD2DB",
     },
   },

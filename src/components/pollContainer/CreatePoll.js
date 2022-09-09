@@ -117,13 +117,18 @@ const useStyles = makeStyles(() => ({
       background: "transparent",
     },
   },
+  iconContainerLight: {
+    "&:hover $icon": {
+      color: "#404B53",
+      background: "transparent",
+    },
+  },
   iconContainer: {
     "&:hover $icon": {
       color: "white",
       background: "transparent",
     },
   },
-
   icon: {
     color: "#9FA0A7",
     background: "transparent",
@@ -466,12 +471,16 @@ const CreatePollPart = ({
                             disableTouchRipple
                             className={classes.iconbutton}
                             classes={{
-                              root: classes.iconContainer,
+                              root:
+                                themeColor === themeColorType.LIGHT
+                                  ? classes.iconContainerLight
+                                  : classes.iconContainer,
                             }}
                             style={{ padding: 0, margin: 0 }}
                           >
                             <CloseIcon
                               fontSize={"small"}
+                              // className={classes.icon}
                               className={
                                 item.isCorrect && item.option !== ""
                                   ? classes.iconSelected

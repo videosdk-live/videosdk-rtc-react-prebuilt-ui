@@ -247,6 +247,10 @@ const PresenterView = ({ presenterId }) => {
                 style={{
                   transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                   transitionTimingFunction: "linear",
+                  backgroundColor:
+                    themeColor === themeColorType.LIGHT
+                      ? theme.palette.lightTheme.primaryMain
+                      : theme.palette.primary.main,
                 }}
               >
                 Stop presenting

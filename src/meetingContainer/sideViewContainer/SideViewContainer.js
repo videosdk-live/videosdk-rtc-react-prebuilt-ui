@@ -156,32 +156,36 @@ const SideBarTabView = ({ width, height }) => {
                     justifyContent: "center",
                   }}
                 >
-                  {(sideBarNestedMode === "POLLS" ||
-                    sideBarNestedMode === "CREATE_POLL") && (
-                    <IconButton
-                      onClick={() => {
-                        setSideBarNestedMode(null);
-                      }}
-                      disableFocusRipple
-                      disableRipple
-                      disableTouchRipple
-                      style={{
-                        cursor: "pointer",
-                        margin: 0,
-                        padding: 0,
-                        marginLeft: -4,
-                      }}
-                      className={classes.iconbutton}
-                      classes={{
-                        root: classes.iconContainer,
-                      }}
-                    >
-                      <NavigateBeforeOutlined
-                        fontSize="medium"
-                        className={classes.icon}
-                      />
-                    </IconButton>
-                  )}
+                  {sideBarMode === sideBarModes.ACTIVITIES &&
+                    (sideBarNestedMode === "POLLS" ||
+                      sideBarNestedMode === "CREATE_POLL") && (
+                      <IconButton
+                        onClick={() => {
+                          setSideBarNestedMode(null);
+                        }}
+                        disableFocusRipple
+                        disableRipple
+                        disableTouchRipple
+                        style={{
+                          cursor: "pointer",
+                          margin: 0,
+                          padding: 0,
+                          marginLeft: -4,
+                        }}
+                        className={classes.iconbutton}
+                        classes={{
+                          root:
+                            themeColor === themeColorType.LIGHT
+                              ? classes.iconContainerLight
+                              : classes.iconContainer,
+                        }}
+                      >
+                        <NavigateBeforeOutlined
+                          fontSize="medium"
+                          className={classes.icon}
+                        />
+                      </IconButton>
+                    )}
                   <Typography
                     variant={"body1"}
                     style={{

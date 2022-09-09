@@ -764,6 +764,7 @@ export default function JoinMeeting({
           </Grid>
 
           <ConfirmBox
+            themeColor={themeColor}
             open={dlgMuted}
             successText="OKAY"
             onSuccess={() => {
@@ -775,6 +776,7 @@ export default function JoinMeeting({
           />
 
           <ConfirmBox
+            themeColor={themeColor}
             open={dlgDevices}
             successText="DISMISS"
             onSuccess={() => {
