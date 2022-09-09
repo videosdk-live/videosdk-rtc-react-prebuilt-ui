@@ -339,6 +339,10 @@ export default function SettingDialogueBox({
                               themeColor === themeColorType.LIGHT
                                 ? theme.palette.lightTheme.three
                                 : "white",
+                            backgroundColor:
+                              setting === value &&
+                              themeColor === themeColorType.LIGHT &&
+                              theme.palette.lightTheme.primaryMain,
                           }}
                           variant={setting === value ? "contained" : "outlined"}
                           disableElevation
