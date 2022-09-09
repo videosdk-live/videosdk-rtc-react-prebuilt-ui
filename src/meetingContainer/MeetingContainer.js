@@ -5,7 +5,7 @@ import TopBar from "./TopBar";
 import {
   meetingLayouts,
   sideBarNestedModes,
-  themeColorType,
+  appThemes,
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
@@ -749,9 +749,9 @@ const MeetingContainer = () => {
         overflow: "hidden",
         position: "relative",
         backgroundColor:
-          themeColor === themeColorType.LIGHT
+          themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.main
-            : themeColor === themeColorType.DARK
+            : themeColor === appThemes.DARK
             ? theme.palette.darkTheme.main
             : theme.palette.background.default,
       }}
@@ -869,9 +869,9 @@ const MeetingContainer = () => {
               justifyContent: "center",
               alignItems: "center",
               backgroundColor:
-                themeColor === themeColorType.DARK
+                themeColor === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
-                  : themeColor === themeColorType.LIGHT
+                  : themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.two
                   : theme.palette.background.default,
             }}

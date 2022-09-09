@@ -58,7 +58,7 @@ export const meetingLayoutTopics = {
   HLS_LAYOUT: "HLS_LAYOUT",
 };
 
-export const themeColorType = {
+export const appThemes = {
   DARK: "DARK",
   LIGHT: "LIGHT",
 };
@@ -350,13 +350,13 @@ export const MeetingAppProvider = ({
         autoHideDuration={5000}
         style={{
           backgroundColor:
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : "",
           color:
-            themeColor === themeColorType.LIGHT &&
+            themeColor === appThemes.LIGHT &&
             theme.palette.lightTheme.contrastText,
         }}
         maxSnack={3}

@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useState, useRef, useEffect } from "react";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
@@ -95,12 +95,12 @@ const OutlineIconTextButton = ({
           backgroundColor: bgColor
             ? bgColor
             : isFocused
-            ? focusBGColor || themeColor === themeColorType.LIGHT
+            ? focusBGColor || themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.contrastText
               : "#fff"
-            : themeColor === themeColorType.DARK
+            : themeColor === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
           border: `${2}px solid ${
@@ -110,7 +110,7 @@ const OutlineIconTextButton = ({
               ? bgColor
               : focusBGColor
               ? focusBGColor
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"
           }`,
@@ -159,12 +159,12 @@ const OutlineIconTextButton = ({
                 style={{
                   fontWeight: "bold",
                   color: isFocused
-                    ? themeColor === themeColorType.LIGHT
+                    ? themeColor === appThemes.LIGHT
                       ? theme.palette.common.white
                       : "#1C1F2E"
                     : textColor
                     ? textColor
-                    : themeColor === themeColorType.LIGHT
+                    : themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "#fff",
                 }}

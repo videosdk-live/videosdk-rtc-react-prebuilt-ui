@@ -14,7 +14,7 @@ import useIsSMDesktop from "../../utils/useIsSMDesktop";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import {
   meetingLayouts,
-  themeColorType,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { Motion as TransitionMotion, spring } from "react-motion";
@@ -512,9 +512,9 @@ const MainViewContainer = ({
         style={{
           width,
           backgroundColor:
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.main
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
           overflow: "hidden",
@@ -546,9 +546,9 @@ const MainViewContainer = ({
                 : 0,
               backgroundColor:
                 presenterId || whiteboardStarted
-                  ? themeColor === themeColorType.DARK
+                  ? themeColor === appThemes.DARK
                     ? theme.palette.darkTheme.slightLighter
-                    : themeColor === themeColorType.LIGHT
+                    : themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
                     : theme.palette.background.paper
                   : undefined,
@@ -622,9 +622,9 @@ const MainViewContainer = ({
           <div
             style={{
               backgroundColor:
-                themeColor === themeColorType.DARK
+                themeColor === appThemes.DARK
                   ? theme.palette.darkTheme.main
-                  : themeColor === themeColorType.LIGHT
+                  : themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.main
                   : theme.palette.background.default,
               overflowX: "hidden",

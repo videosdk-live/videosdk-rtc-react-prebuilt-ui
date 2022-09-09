@@ -2,10 +2,7 @@ import { useTheme } from "@material-ui/core";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import React, { useMemo } from "react";
 import { useMediaQuery } from "react-responsive";
-import {
-  themeColorType,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import { meetingLayouts } from "../../MeetingAppContextDef";
 import {
   calcQuality,
@@ -274,9 +271,9 @@ const PinnedLayoutViewContainer = ({
         height,
         width,
         backgroundColor:
-          themeColor === themeColorType.DARK
+          themeColor === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.two
             : theme.palette.background.default,
         overflow: "hidden",
@@ -433,9 +430,9 @@ const PinnedLayoutViewContainer = ({
         <div
           style={{
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : theme.palette.background.default,
             overflowX: "hidden",

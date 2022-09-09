@@ -12,7 +12,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import CreatePoll from "../../components/pollContainer/CreatePoll";
 import {
   sideBarNestedModes,
-  themeColorType,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import PollList from "../../components/pollContainer/PollList";
@@ -80,9 +80,9 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             alignItems: "center",
             justifyContent: "center",
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : theme.palette.common.sidePanel,
             width: "100%",
@@ -100,7 +100,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                   fontSize: 16,
                   fontWeight: 600,
                   color:
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                   lineHeight: 1.5,
@@ -114,9 +114,9 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                 style={{
                   fontSize: 14,
                   color:
-                    themeColor === themeColorType.DARK
+                    themeColor === appThemes.DARK
                       ? theme.palette.darkTheme.four
-                      : themeColor === themeColorType.LIGHT
+                      : themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.five
                       : "#9fa0a7",
                   fontWeight: 500,

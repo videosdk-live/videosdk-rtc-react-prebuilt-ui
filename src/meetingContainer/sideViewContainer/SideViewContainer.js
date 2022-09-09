@@ -12,7 +12,7 @@ import {
 import React, { useMemo } from "react";
 import {
   sideBarModes,
-  themeColorType,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import ChatTabPanel from "./ChatTabPanel";
@@ -116,9 +116,9 @@ const SideBarTabView = ({ width, height }) => {
         paddingRight: panelPadding,
         paddingBottom: panelPadding,
         backgroundColor:
-          themeColor === themeColorType.DARK
+          themeColor === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
       }}
@@ -127,9 +127,9 @@ const SideBarTabView = ({ width, height }) => {
         <div
           style={{
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : theme.palette.background.paper,
             height: paddedHeight,
@@ -175,7 +175,7 @@ const SideBarTabView = ({ width, height }) => {
                         className={classes.iconbutton}
                         classes={{
                           root:
-                            themeColor === themeColorType.LIGHT
+                            themeColor === appThemes.LIGHT
                               ? classes.iconContainerLight
                               : classes.iconContainer,
                         }}
@@ -191,7 +191,7 @@ const SideBarTabView = ({ width, height }) => {
                     style={{
                       fontWeight: "bold",
                       color:
-                        themeColor === themeColorType.LIGHT &&
+                        themeColor === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                   >
@@ -228,7 +228,7 @@ const SideBarTabView = ({ width, height }) => {
                     className={classes.iconbutton}
                     classes={{
                       root:
-                        themeColor === themeColorType.LIGHT
+                        themeColor === appThemes.LIGHT
                           ? classes.iconContainerLight
                           : classes.iconContainer,
                     }}
@@ -309,9 +309,9 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
           top: 0,
           left: 0,
           backgroundColor:
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.two
               : theme.palette.background.paper,
           flex: 1,

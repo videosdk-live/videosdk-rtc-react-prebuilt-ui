@@ -17,10 +17,7 @@ import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
 import { formatAMPM, json_verify, nameTructed } from "../../utils/common";
 import { toArray } from "react-emoji-render";
-import {
-  themeColorType,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -61,9 +58,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
           paddingRight: theme.spacing(1),
           borderRadius: 6,
           backgroundColor:
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : theme.palette.common.sidePanel,
           display: "flex",
@@ -74,9 +71,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
         <Typography
           style={{
             color:
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.five
-                : themeColor === themeColorType.DARK
+                : themeColor === appThemes.DARK
                 ? theme.palette.lightTheme.four
                 : "#ffffff80",
           }}
@@ -90,7 +87,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
               color:
-                themeColor === themeColorType.LIGHT &&
+                themeColor === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
           >
@@ -102,8 +99,8 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                       target: "_blank",
                       style: {
                         color:
-                          themeColor === themeColorType.LIGHT ||
-                          themeColor === themeColorType.DARK
+                          themeColor === appThemes.LIGHT ||
+                          themeColor === appThemes.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main,
                       },
@@ -123,9 +120,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
             variant={"caption"}
             style={{
               color:
-                themeColor === themeColorType.LIGHT
+                themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.four
-                  : themeColor === themeColorType.DARK
+                  : themeColor === appThemes.DARK
                   ? theme.palette.lightTheme.five
                   : "#ffffff80",
               fontStyle: "italic",
@@ -231,18 +228,17 @@ const ChatMessageInput = ({ inputHeight }) => {
           set={"google"}
           showPreview={false}
           showSkinTones={false}
-          theme={themeColor === themeColorType.LIGHT ? "light" : "dark"}
+          theme={themeColor === appThemes.LIGHT ? "light" : "dark"}
           style={{
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.main
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
           }}
           color={
-            themeColor === themeColorType.LIGHT ||
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
               ? theme.palette.lightTheme.primaryMain
               : theme.palette.primary.main
           }
@@ -259,7 +255,7 @@ const ChatMessageInput = ({ inputHeight }) => {
         multiline
         ref={input}
         classes={{
-          root: themeColor === themeColorType.LIGHT && classes.textField,
+          root: themeColor === appThemes.LIGHT && classes.textField,
         }}
         placeholder="Write your message"
         fullWidth
@@ -294,7 +290,7 @@ const ChatMessageInput = ({ inputHeight }) => {
                     fontSize={"small"}
                     style={{
                       color:
-                        themeColor === themeColorType.LIGHT &&
+                        themeColor === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                   />
@@ -318,7 +314,7 @@ const ChatMessageInput = ({ inputHeight }) => {
                     fontSize={"small"}
                     style={{
                       color:
-                        themeColor === themeColorType.LIGHT &&
+                        themeColor === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                   />

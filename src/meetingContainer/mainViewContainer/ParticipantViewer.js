@@ -3,10 +3,7 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@material-ui/core";
-import {
-  themeColorType,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import {
   invertColor,
   getRandomColor,
@@ -141,7 +138,7 @@ export const CornerDisplayName = ({
           paddingRight: isMobile ? 4 : isTab ? 6 : 8,
           transform: `scale(${show ? 1 : 0})`,
           backgroundColor:
-            themeColor === themeColorType.LIGHT
+            themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : "#00000066",
           borderRadius: 6,
@@ -169,7 +166,7 @@ export const CornerDisplayName = ({
             alignItems: "center",
             lineHeight: 1,
             color:
-              themeColor === themeColorType.LIGHT &&
+              themeColor === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText,
           }}
         >
@@ -447,9 +444,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           height: "100%",
           width: "100%",
           backgroundColor:
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.two
               : theme.palette.background.paper,
           position: "relative",

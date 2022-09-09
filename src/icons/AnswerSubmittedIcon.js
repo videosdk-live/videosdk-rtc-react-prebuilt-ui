@@ -1,6 +1,6 @@
 import { useTheme } from "@material-ui/styles";
 import React from "react";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 function AnswerSubmittedIcon() {
   const { themeColor } = useMeetingAppContext();
@@ -19,8 +19,7 @@ function AnswerSubmittedIcon() {
       ></path>
       <path
         fill={
-          themeColor === themeColorType.LIGHT ||
-          themeColor === themeColorType.DARK
+          themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
             ? theme.palette.lightTheme.primaryMain
             : theme.palette.primary.main
         }

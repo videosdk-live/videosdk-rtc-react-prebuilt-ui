@@ -1,6 +1,6 @@
 import { SvgIcon, useTheme } from "@material-ui/core";
 import React from "react";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 const ScreenRecording = (props) => {
   const { themeColor } = useMeetingAppContext();
@@ -13,7 +13,7 @@ const ScreenRecording = (props) => {
         height="24"
         viewBox="0 0 24 24"
         fill={
-          themeColor === themeColorType.LIGHT
+          themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.contrastText
             : "#fff"
         }
@@ -23,7 +23,7 @@ const ScreenRecording = (props) => {
             id="Path_6017"
             data-name="Path 6017"
             fill={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "#fff"
             }
@@ -37,7 +37,7 @@ const ScreenRecording = (props) => {
             r="6"
             transform="translate(8 8)"
             fill={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "#fff"
             }

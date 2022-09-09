@@ -3,7 +3,7 @@ import useResponsiveSize from "../utils/useResponsiveSize";
 import animationData from "../../src/animations/join_meeting.json";
 import Lottie from "react-lottie";
 import { Box, useTheme } from "@material-ui/core";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 const WaitingToJoin = () => {
   const { waitingScreenImageUrl, waitingScreenText, themeColor } =
@@ -70,9 +70,9 @@ const WaitingToJoin = () => {
         justifyContent: "center",
         height: "100vh",
         backgroundColor:
-          themeColor === themeColorType.DARK
+          themeColor === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
       }}
@@ -113,7 +113,7 @@ const WaitingToJoin = () => {
             <h2
               style={{
                 color:
-                  themeColor === themeColorType.LIGHT
+                  themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
                 marginTop: 4,
@@ -135,7 +135,7 @@ const WaitingToJoin = () => {
           <h2
             style={{
               color:
-                themeColor === themeColorType.LIGHT
+                themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.contrastText
                   : "white",
               marginTop: 4,

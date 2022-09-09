@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import {
   meetingLayoutTopics,
-  themeColorType,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import SpotlightIcon from "../../icons/SpotlightIcon";
@@ -111,19 +111,15 @@ function ConfigTabPanel() {
   const layoutArr = [
     {
       type: "Spotlight",
-      Icon:
-        themeColor === themeColorType.LIGHT
-          ? SpotlightLightIcon
-          : SpotlightIcon,
+      Icon: themeColor === appThemes.LIGHT ? SpotlightLightIcon : SpotlightIcon,
     },
     {
       type: "Sidebar",
-      Icon:
-        themeColor === themeColorType.LIGHT ? SideBarLightIcon : SideBarIcon,
+      Icon: themeColor === appThemes.LIGHT ? SideBarLightIcon : SideBarIcon,
     },
     {
       type: "Grid",
-      Icon: themeColor === themeColorType.LIGHT ? GridLightIcon : GridIcon,
+      Icon: themeColor === appThemes.LIGHT ? GridLightIcon : GridIcon,
     },
   ];
 
@@ -131,14 +127,13 @@ function ConfigTabPanel() {
     {
       type: "Pin",
       Icon:
-        themeColor === themeColorType.LIGHT
+        themeColor === appThemes.LIGHT
           ? PinParticipantLightIcon
           : PinParticipantIcon,
     },
     {
       type: "Speaker",
-      Icon:
-        themeColor === themeColorType.LIGHT ? SpeakerLightIcon : SpeakerIcon,
+      Icon: themeColor === appThemes.LIGHT ? SpeakerLightIcon : SpeakerIcon,
     },
   ];
 
@@ -208,17 +203,17 @@ function ConfigTabPanel() {
         >
           <Icon
             fillColor={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "white"
             }
             strokeColor={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "white"
             }
             pathColor={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.common.white
                 : "white"
             }
@@ -230,7 +225,7 @@ function ConfigTabPanel() {
             fontSize: "14px",
             fontWeight: "400",
             color:
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "white",
           }}
@@ -259,13 +254,13 @@ function ConfigTabPanel() {
             // fillColor={"#959595"}
             // strokeColor={"#474657"}
             fillColor={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? ""
-                : themeColor === themeColorType.DARK
+                : themeColor === appThemes.DARK
                 ? "#95959E"
                 : "#95959E"
             }
-            strokeColor={themeColor === themeColorType.LIGHT ? "" : "#474657"}
+            strokeColor={themeColor === appThemes.LIGHT ? "" : "#474657"}
           />
         </ButtonBase>
         <Typography
@@ -297,7 +292,7 @@ function ConfigTabPanel() {
             fontSize: "16px",
             marginTop: 24,
             color:
-              themeColor === themeColorType.LIGHT &&
+              themeColor === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText,
           }}
           variant="body1"
@@ -358,9 +353,9 @@ function ConfigTabPanel() {
         <Box
           style={{
             borderBottom: `2px solid ${
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : "#3A3F4B"
             }`,
@@ -397,7 +392,7 @@ function ConfigTabPanel() {
               fontSize: "16px",
               marginTop: 24,
               color:
-                themeColor === themeColorType.LIGHT &&
+                themeColor === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
             variant="body1"
@@ -414,16 +409,14 @@ function ConfigTabPanel() {
               _handleGridSize(newValue);
             }}
             className={
-              themeColor === themeColorType.LIGHT
-                ? classes.rootLight
-                : classes.root
+              themeColor === appThemes.LIGHT ? classes.rootLight : classes.root
             }
             valueLabelDisplay="on"
             step={1}
             style={{
               marginTop: 32,
               color:
-                themeColor === themeColorType.LIGHT
+                themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.contrastText
                   : "#ffffff",
             }}

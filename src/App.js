@@ -6,7 +6,7 @@ import {
   meetingLayoutPriorities,
   meetingLayouts,
   meetingLayoutTopics,
-  themeColorType,
+  appThemes,
 } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
@@ -67,7 +67,7 @@ const App = () => {
       pollEnabled: "pollEnabled",
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
-      themeColor: "themeColor",
+      theme: "theme",
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
@@ -367,8 +367,8 @@ const App = () => {
     if (!paramKeys.region || typeof paramKeys.region !== "string") {
       paramKeys.region = "sg001";
     }
-    if (!paramKeys.themeColor || typeof paramKeys.themeColor !== "string") {
-      paramKeys.themeColor = "DEFAULT";
+    if (!paramKeys.theme || typeof paramKeys.theme !== "string") {
+      paramKeys.theme = "DEFAULT";
     }
 
     if (typeof paramKeys.preferredProtocol !== "string") {
@@ -516,9 +516,9 @@ const App = () => {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor:
-              paramKeys.themeColor === themeColorType.DARK
+              paramKeys.theme === appThemes.DARK
                 ? theme.palette.darkTheme.main
-                : paramKeys.themeColor === themeColorType.LIGHT
+                : paramKeys.theme === appThemes.LIGHT
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
           }}
@@ -624,7 +624,7 @@ const App = () => {
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
-            themeColor: paramKeys.themeColor,
+            themeColor: paramKeys.theme,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
@@ -704,7 +704,7 @@ const App = () => {
               : paramKeys.participantCanToggleSelfMic
           }
           mode={paramKeys.mode}
-          themeColor={paramKeys.themeColor}
+          themeColor={paramKeys.theme}
         />
       ) : (
         <ClickAnywhereToContinue

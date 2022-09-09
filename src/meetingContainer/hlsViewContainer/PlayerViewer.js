@@ -5,10 +5,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
 import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animation.json";
 import { appEvents, eventEmitter } from "../../utils/common";
-import {
-  themeColorType,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
 
 export async function sleep(ms) {
@@ -130,9 +127,9 @@ const PlayerViewer = () => {
         height: "100%",
         width: "100%",
         backgroundColor:
-          themeColor === themeColorType.DARK
+          themeColor === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.two
             : theme.palette.background.default,
         position: "relative",
@@ -201,7 +198,7 @@ const PlayerViewer = () => {
             <h2
               style={{
                 color:
-                  themeColor === themeColorType.LIGHT
+                  themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
                 marginTop: 0,
@@ -217,7 +214,7 @@ const PlayerViewer = () => {
               <h2
                 style={{
                   color:
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                   marginTop: 0,

@@ -23,10 +23,7 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from "../../icons";
-import {
-  themeColorType,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
 import UploadImageIcon from "../../icons/UploadImageIcon";
 
@@ -66,11 +63,9 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         color="inherit"
         style={{
           backgroundColor: isSelected
-            ? themeColor === themeColorType.LIGHT ||
-              themeColor === themeColorType.DARK
+            ? themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
               ? "#596BFF33"
-              : themeColor === themeColorType.LIGHT ||
-                themeColor === themeColorType.DARK
+              : themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
               ? "#596BFF33"
               : "#D5E8FF"
             : "",
@@ -81,8 +76,7 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         <Icon
           fill={
             isSelected
-              ? themeColor === themeColorType.LIGHT ||
-                themeColor === themeColorType.DARK
+              ? themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
                 ? theme.palette.lightTheme.primaryMain
                 : theme.palette.primary.main
               : "black"
@@ -120,7 +114,7 @@ const CustomColorPicker = ({
           }}
           style={{
             backgroundColor:
-              themeColor === themeColorType.LIGHT ? "#596BFF33" : `#D5E8FF`,
+              themeColor === appThemes.LIGHT ? "#596BFF33" : `#D5E8FF`,
             borderRadius: 6,
           }}
         >
@@ -346,8 +340,8 @@ const WBToolbar = ({
                 tool === "squareFilled" ||
                 tool === "circle" ||
                 tool === "circleFilled"
-                  ? themeColor === themeColorType.LIGHT ||
-                    themeColor === themeColorType.DARK
+                  ? themeColor === appThemes.LIGHT ||
+                    themeColor === appThemes.DARK
                     ? "#596BFF33"
                     : "#D5E8FF"
                   : "",
@@ -357,8 +351,8 @@ const WBToolbar = ({
             {tool === "square" ? (
               <SquareIcon
                 fill={
-                  themeColor === themeColorType.LIGHT ||
-                  themeColor === themeColorType.DARK
+                  themeColor === appThemes.LIGHT ||
+                  themeColor === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -366,8 +360,8 @@ const WBToolbar = ({
             ) : tool === "squareFilled" ? (
               <ShapeIcon
                 fill={
-                  themeColor === themeColorType.LIGHT ||
-                  themeColor === themeColorType.DARK
+                  themeColor === appThemes.LIGHT ||
+                  themeColor === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -375,8 +369,8 @@ const WBToolbar = ({
             ) : tool === "circle" ? (
               <CircleIcon
                 fill={
-                  themeColor === themeColorType.LIGHT ||
-                  themeColor === themeColorType.DARK
+                  themeColor === appThemes.LIGHT ||
+                  themeColor === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -384,8 +378,8 @@ const WBToolbar = ({
             ) : tool === "circleFilled" ? (
               <CircleFilledIcon
                 fill={
-                  themeColor === themeColorType.LIGHT ||
-                  themeColor === themeColorType.DARK
+                  themeColor === appThemes.LIGHT ||
+                  themeColor === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }

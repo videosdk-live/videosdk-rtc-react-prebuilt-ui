@@ -1,6 +1,6 @@
 import { useTheme } from "@material-ui/core";
 import React from "react";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 function PollIcon() {
   const { themeColor } = useMeetingAppContext();
@@ -15,7 +15,7 @@ function PollIcon() {
     >
       <path
         fill={
-          themeColor === themeColorType.LIGHT
+          themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.contrastText
             : "#fff"
         }

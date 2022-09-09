@@ -8,10 +8,7 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
-import {
-  themeColorType,
-  useMeetingAppContext,
-} from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import ConfirmBox from "../../components/ConfirmBox";
 import { extractRootDomain, getUniqueId } from "../../utils/common";
 import useIsLiveStreaming from "../useIsLivestreaming";
@@ -165,9 +162,9 @@ const SingleLiveStreamItem = ({
               ? ""
               : `3px solid 
                   ${
-                    themeColor === themeColorType.DARK
+                    themeColor === appThemes.DARK
                       ? theme.palette.darkTheme.seven
-                      : themeColor === themeColorType.LIGHT
+                      : themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.three
                       : "#3A3F4B"
                   }`,
@@ -190,7 +187,7 @@ const SingleLiveStreamItem = ({
               style={{
                 fontWeight: "bold",
                 color:
-                  themeColor === themeColorType.LIGHT &&
+                  themeColor === appThemes.LIGHT &&
                   theme.palette.lightTheme.contrastText,
               }}
             >
@@ -223,11 +220,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === themeColorType.LIGHT &&
+                      themeColor === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -241,11 +238,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === themeColorType.LIGHT &&
+                      themeColor === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -263,11 +260,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === themeColorType.LIGHT &&
+                      themeColor === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -286,11 +283,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === themeColorType.LIGHT &&
+                      themeColor === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -311,16 +308,16 @@ const SingleLiveStreamItem = ({
             autocomplete="off"
             style={{
               backgroundColor:
-                themeColor === themeColorType.DARK
+                themeColor === appThemes.DARK
                   ? theme.palette.darkTheme.seven
-                  : themeColor === themeColorType.LIGHT
+                  : themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.three
                   : "",
             }}
             className={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? classes.rootLight
-                : themeColor === themeColorType.DARK
+                : themeColor === appThemes.DARK
                 ? classes.rootDark
                 : classes.root
             }
@@ -330,10 +327,9 @@ const SingleLiveStreamItem = ({
               disableUnderline: true,
               classes: {
                 disabled:
-                  themeColor === themeColorType.LIGHT &&
-                  classes.textFieldDisabled,
+                  themeColor === appThemes.LIGHT && classes.textFieldDisabled,
                 root:
-                  themeColor === themeColorType.LIGHT
+                  themeColor === appThemes.LIGHT
                     ? classes.textFieldLight
                     : classes.textField,
               },
@@ -356,16 +352,16 @@ const SingleLiveStreamItem = ({
             style={{
               marginTop: "8px",
               backgroundColor:
-                themeColor === themeColorType.DARK
+                themeColor === appThemes.DARK
                   ? theme.palette.darkTheme.seven
-                  : themeColor === themeColorType.LIGHT
+                  : themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.three
                   : "",
             }}
             className={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? classes.rootLight
-                : themeColor === themeColorType.DARK
+                : themeColor === appThemes.DARK
                 ? classes.rootDark
                 : classes.root
             }
@@ -375,10 +371,9 @@ const SingleLiveStreamItem = ({
               disableUnderline: true,
               classes: {
                 disabled:
-                  themeColor === themeColorType.LIGHT &&
-                  classes.textFieldDisabled,
+                  themeColor === appThemes.LIGHT && classes.textFieldDisabled,
                 root:
-                  themeColor === themeColorType.LIGHT
+                  themeColor === appThemes.LIGHT
                     ? classes.textFieldLight
                     : classes.textField,
               },
@@ -490,9 +485,9 @@ const AddLiveStream = ({
         borderTop:
           liveStreamConfig?.length > 0 &&
           `3px solid ${
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : "#3A3F4B"
           }`,
@@ -511,7 +506,7 @@ const AddLiveStream = ({
             style={{
               fontWeight: "bold",
               color:
-                themeColor === themeColorType.LIGHT &&
+                themeColor === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
           >
@@ -542,11 +537,11 @@ const AddLiveStream = ({
             }}
             style={{
               color:
-                themeColor === themeColorType.LIGHT &&
+                themeColor === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
             className={
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? classes.buttonLight
                 : classes.button
             }
@@ -564,16 +559,16 @@ const AddLiveStream = ({
           autocomplete="off"
           style={{
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : "",
           }}
           className={
-            themeColor === themeColorType.LIGHT
+            themeColor === appThemes.LIGHT
               ? classes.rootLight
-              : themeColor === themeColorType.DARK
+              : themeColor === appThemes.DARK
               ? classes.rootDark
               : classes.root
           }
@@ -582,7 +577,7 @@ const AddLiveStream = ({
             disableUnderline: true,
             classes: {
               root:
-                themeColor === themeColorType.LIGHT
+                themeColor === appThemes.LIGHT
                   ? classes.textFieldLight
                   : classes.textField,
             },
@@ -603,17 +598,17 @@ const AddLiveStream = ({
           style={{
             marginTop: "8px",
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : "",
           }}
           autocomplete="off"
           className={
-            themeColor === themeColorType.LIGHT
+            themeColor === appThemes.LIGHT
               ? classes.rootLight
-              : themeColor === themeColorType.DARK
+              : themeColor === appThemes.DARK
               ? classes.rootDark
               : classes.root
           }
@@ -622,7 +617,7 @@ const AddLiveStream = ({
             disableUnderline: true,
             classes: {
               root:
-                themeColor === themeColorType.LIGHT
+                themeColor === appThemes.LIGHT
                   ? classes.textFieldLight
                   : classes.textField,
             },

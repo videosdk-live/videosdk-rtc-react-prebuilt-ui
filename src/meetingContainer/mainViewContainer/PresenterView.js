@@ -13,7 +13,7 @@ import {
 } from "../../utils/common";
 import {
   meetingLayouts,
-  themeColorType,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { useMediaQuery } from "react-responsive";
@@ -137,9 +137,9 @@ const PresenterView = ({ presenterId }) => {
         height: "100%",
         width: "100%",
         backgroundColor:
-          themeColor === themeColorType.DARK
+          themeColor === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.two
             : "black",
         alignItems:
@@ -205,9 +205,9 @@ const PresenterView = ({ presenterId }) => {
               left: "50%",
               transform: "translate(-50%,-50%)",
               backgroundColor:
-                themeColor === themeColorType.DARK
+                themeColor === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
-                  : themeColor === themeColorType.LIGHT
+                  : themeColor === appThemes.LIGHT
                   ? theme.palette.lightTheme.two
                   : "#333244",
             }}
@@ -215,7 +215,7 @@ const PresenterView = ({ presenterId }) => {
             <ScreenShare
               style={{
                 color:
-                  themeColor === themeColorType.LIGHT
+                  themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : theme.palette.common.white,
                 height: theme.spacing(6),
@@ -228,7 +228,7 @@ const PresenterView = ({ presenterId }) => {
                 style={{
                   fontWeight: "bold",
                   color:
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : theme.palette.common.white,
                 }}
@@ -248,8 +248,8 @@ const PresenterView = ({ presenterId }) => {
                   transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                   transitionTimingFunction: "linear",
                   backgroundColor:
-                    themeColor === themeColorType.LIGHT ||
-                    themeColor === themeColorType.DARK
+                    themeColor === appThemes.LIGHT ||
+                    themeColor === appThemes.DARK
                       ? theme.palette.lightTheme.primaryMain
                       : theme.palette.primary.main,
                 }}

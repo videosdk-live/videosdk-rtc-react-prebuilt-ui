@@ -16,7 +16,7 @@ import useCopyClipboard from "react-use-clipboard";
 import { Keyboard } from "@material-ui/icons";
 import { CopyIcon } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
-import { themeColorType } from "../../MeetingAppContextDef";
+import { appThemes } from "../../MeetingAppContextDef";
 
 const useStyles = makeStyles(() => ({
   textFieldLight: {
@@ -104,12 +104,12 @@ export default function MeetingDetailModal({
             borderRadius: 10,
             color: theme.palette.primary.contrastText,
             backgroundColor:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === themeColorType.LIGHT
+                : themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : "",
-            boxShadow: themeColor === themeColorType.LIGHT && "none",
+            boxShadow: themeColor === appThemes.LIGHT && "none",
           }}
         >
           <Box p={internalPadding}>
@@ -118,7 +118,7 @@ export default function MeetingDetailModal({
                 style={{
                   fontFamily: "Roboto, sans-serif",
                   color:
-                    themeColor === themeColorType.LIGHT
+                    themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : theme.palette.primary.contrastText,
                 }}
@@ -150,9 +150,9 @@ export default function MeetingDetailModal({
                   flexDirection: "row",
                   flex: 1,
                   backgroundColor:
-                    themeColor === themeColorType.DARK
+                    themeColor === appThemes.DARK
                       ? theme.palette.darkTheme.seven
-                      : themeColor === themeColorType.LIGHT
+                      : themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.three
                       : "#1C1F2E80",
                   borderRadius: 4,
@@ -174,7 +174,7 @@ export default function MeetingDetailModal({
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       color:
-                        themeColor === themeColorType.LIGHT &&
+                        themeColor === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                     variant="subtitle1"
@@ -202,7 +202,7 @@ export default function MeetingDetailModal({
                     >
                       <CopyIcon
                         fill={
-                          themeColor === themeColorType.LIGHT
+                          themeColor === appThemes.LIGHT
                             ? theme.palette.lightTheme.contrastText
                             : "#fff"
                         }
@@ -222,7 +222,7 @@ export default function MeetingDetailModal({
           style={{
             fontFamily: "Roboto, sans-serif",
             color:
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : theme.palette.primary.contrastText,
           }}
@@ -250,7 +250,7 @@ export default function MeetingDetailModal({
           error={nameErr}
           classes={{
             root:
-              themeColor === themeColorType.LIGHT
+              themeColor === appThemes.LIGHT
                 ? classes.textFieldLight
                 : classes.textField,
           }}
@@ -269,7 +269,7 @@ export default function MeetingDetailModal({
                   <Keyboard
                     style={{
                       color:
-                        themeColor === themeColorType.LIGHT
+                        themeColor === appThemes.LIGHT
                           ? theme.palette.lightTheme.contrastText
                           : theme.palette.primary.contrastText,
                     }}
@@ -283,8 +283,8 @@ export default function MeetingDetailModal({
                   color="primary"
                   style={{
                     backgroundColor:
-                      themeColor === themeColorType.LIGHT ||
-                      themeColor === themeColorType.DARK
+                      themeColor === appThemes.LIGHT ||
+                      themeColor === appThemes.DARK
                         ? theme.palette.lightTheme.primaryMain
                         : theme.palette.primary.main,
                   }}
@@ -310,7 +310,7 @@ export default function MeetingDetailModal({
             fontSize: 12,
             marginLeft: 14,
             color:
-              themeColor === themeColorType.DARK
+              themeColor === appThemes.DARK
                 ? theme.palette.darkTheme.four
                 : "#8F927A",
           }}

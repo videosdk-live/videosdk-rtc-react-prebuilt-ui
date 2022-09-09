@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
@@ -121,7 +121,7 @@ const MobileIconButton = ({
                   style={{
                     color: isFocused
                       ? focusIconColor || "#fff"
-                      : themeColor === themeColorType.LIGHT
+                      : themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#95959E",
                     height: iconSize,
@@ -130,7 +130,7 @@ const MobileIconButton = ({
                   fillColor={
                     isFocused
                       ? "#fff"
-                      : themeColor === themeColorType.LIGHT
+                      : themeColor === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#95959E"
                   }
@@ -146,7 +146,7 @@ const MobileIconButton = ({
                   fontWeight: "bold",
                   color: isFocused
                     ? "#fff"
-                    : themeColor === themeColorType.LIGHT
+                    : themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "#95959E",
                 }}

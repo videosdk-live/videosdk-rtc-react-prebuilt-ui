@@ -18,7 +18,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import useWindowSize from "../../utils/useWindowSize";
 import ConfirmBox from "../ConfirmBox";
-import { themeColorType } from "../../MeetingAppContextDef";
+import { appThemes } from "../../MeetingAppContextDef";
 
 const AudioAnalyser = ({ audioTrack }) => {
   const theme = useTheme();
@@ -258,9 +258,9 @@ export default function SettingDialogueBox({
                 overflow: "hidden",
                 borderRadius: "4px",
                 backgroundColor:
-                  themeColor === themeColorType.LIGHT
+                  themeColor === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
-                    : themeColor === themeColorType.DARK
+                    : themeColor === appThemes.DARK
                     ? theme.palette.darkTheme.slightLighter
                     : "",
               }}
@@ -281,7 +281,7 @@ export default function SettingDialogueBox({
                     <CloseIcon
                       style={{
                         color:
-                          themeColor === themeColorType.LIGHT &&
+                          themeColor === appThemes.LIGHT &&
                           theme.palette.lightTheme.contrastText,
                       }}
                     ></CloseIcon>
@@ -292,7 +292,7 @@ export default function SettingDialogueBox({
                   style={{
                     fontWeight: "bold",
                     color:
-                      themeColor === themeColorType.LIGHT &&
+                      themeColor === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                 >
@@ -322,8 +322,8 @@ export default function SettingDialogueBox({
                           classes={{
                             root:
                               setting === value
-                                ? themeColor === themeColorType.LIGHT ||
-                                  themeColor === themeColorType.DARK
+                                ? themeColor === appThemes.LIGHT ||
+                                  themeColor === appThemes.DARK
                                   ? classes.buttonLight
                                   : classes.button
                                 : undefined,
@@ -331,19 +331,19 @@ export default function SettingDialogueBox({
                           style={{
                             borderRadius: 0,
                             color:
-                              themeColor === themeColorType.LIGHT
+                              themeColor === appThemes.LIGHT
                                 ? setting === value
                                   ? "white"
                                   : theme.palette.lightTheme.contrastText
                                 : "white",
                             borderColor:
-                              themeColor === themeColorType.LIGHT
+                              themeColor === appThemes.LIGHT
                                 ? theme.palette.lightTheme.three
                                 : "white",
                             backgroundColor:
                               setting === value &&
-                              (themeColor === themeColorType.LIGHT ||
-                                themeColor === themeColorType.DARK) &&
+                              (themeColor === appThemes.LIGHT ||
+                                themeColor === appThemes.DARK) &&
                               theme.palette.lightTheme.primaryMain,
                           }}
                           variant={setting === value ? "contained" : "outlined"}
@@ -352,7 +352,7 @@ export default function SettingDialogueBox({
                           color={
                             setting === value
                               ? "primary"
-                              : themeColor === themeColorType.LIGHT
+                              : themeColor === appThemes.LIGHT
                               ? theme.palette.lightTheme.contrastText
                               : "white"
                           }
@@ -391,7 +391,7 @@ export default function SettingDialogueBox({
                                 style={{
                                   fontWeight: "bold",
                                   color:
-                                    themeColor === themeColorType.LIGHT &&
+                                    themeColor === appThemes.LIGHT &&
                                     theme.palette.lightTheme.contrastText,
                                 }}
                               >
@@ -409,9 +409,9 @@ export default function SettingDialogueBox({
                                 MenuProps={{
                                   classes: {
                                     paper:
-                                      themeColor === themeColorType.LIGHT
+                                      themeColor === appThemes.LIGHT
                                         ? classes.paperLight
-                                        : themeColor === themeColorType.DARK
+                                        : themeColor === appThemes.DARK
                                         ? classes.paperDark
                                         : "",
                                   },
@@ -421,12 +421,12 @@ export default function SettingDialogueBox({
                                 }}
                                 style={{
                                   border: `1px solid ${
-                                    themeColor === themeColorType.LIGHT
+                                    themeColor === appThemes.LIGHT
                                       ? theme.palette.lightTheme.three
                                       : "white"
                                   }`,
                                   color:
-                                    themeColor === themeColorType.LIGHT &&
+                                    themeColor === appThemes.LIGHT &&
                                     theme.palette.lightTheme.contrastText,
                                 }}
                                 onChange={(e) => {
@@ -437,7 +437,7 @@ export default function SettingDialogueBox({
                                   return item?.kind === "audioinput" ? (
                                     <MenuItem
                                       className={
-                                        themeColor === themeColorType.LIGHT &&
+                                        themeColor === appThemes.LIGHT &&
                                         classes.listItem
                                       }
                                       value={item?.deviceId}
@@ -521,7 +521,7 @@ export default function SettingDialogueBox({
                                 style={{
                                   fontWeight: "bold",
                                   color:
-                                    themeColor === themeColorType.LIGHT &&
+                                    themeColor === appThemes.LIGHT &&
                                     theme.palette.lightTheme.contrastText,
                                 }}
                               >
@@ -541,9 +541,9 @@ export default function SettingDialogueBox({
                                 MenuProps={{
                                   classes: {
                                     paper:
-                                      themeColor === themeColorType.LIGHT
+                                      themeColor === appThemes.LIGHT
                                         ? classes.paperLight
-                                        : themeColor === themeColorType.DARK
+                                        : themeColor === appThemes.DARK
                                         ? classes.paperDark
                                         : "",
                                   },
@@ -553,12 +553,12 @@ export default function SettingDialogueBox({
                                 }}
                                 style={{
                                   border: `1px solid ${
-                                    themeColor === themeColorType.LIGHT
+                                    themeColor === appThemes.LIGHT
                                       ? theme.palette.lightTheme.three
                                       : "white"
                                   }`,
                                   color:
-                                    themeColor === themeColorType.LIGHT &&
+                                    themeColor === appThemes.LIGHT &&
                                     theme.palette.lightTheme.contrastText,
                                 }}
                               >
@@ -566,7 +566,7 @@ export default function SettingDialogueBox({
                                   return item?.kind === "videoinput" ? (
                                     <MenuItem
                                       className={
-                                        themeColor === themeColorType.LIGHT &&
+                                        themeColor === appThemes.LIGHT &&
                                         classes.listItem
                                       }
                                       value={item?.deviceId}

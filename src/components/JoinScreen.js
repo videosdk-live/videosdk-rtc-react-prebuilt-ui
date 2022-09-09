@@ -18,7 +18,7 @@ import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
-import { themeColorType } from "../MeetingAppContextDef";
+import { appThemes } from "../MeetingAppContextDef";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -441,9 +441,9 @@ export default function JoinMeeting({
           flexDirection: "column",
           height: "100vh",
           backgroundColor:
-            themeColor === themeColorType.DARK
+            themeColor === appThemes.DARK
               ? theme.palette.darkTheme.main
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
         }}
@@ -569,9 +569,9 @@ export default function JoinMeeting({
                                 top: 0,
                                 right: 0,
                                 backgroundColor:
-                                  themeColor === themeColorType.DARK
+                                  themeColor === appThemes.DARK
                                     ? theme.palette.darkTheme.seven
-                                    : themeColor === themeColorType.LIGHT
+                                    : themeColor === appThemes.LIGHT
                                     ? theme.palette.lightTheme.three
                                     : "#1C1F2E80",
                                 borderRadius: 4,
@@ -599,7 +599,7 @@ export default function JoinMeeting({
                                 >
                                   <CheckboxIcon
                                     fill={
-                                      themeColor === themeColorType.LIGHT
+                                      themeColor === appThemes.LIGHT
                                         ? theme.palette.lightTheme.contrastText
                                         : "#fff"
                                     }
@@ -610,7 +610,7 @@ export default function JoinMeeting({
                                   style={{
                                     marginLeft: 4,
                                     color:
-                                      themeColor === themeColorType.LIGHT &&
+                                      themeColor === appThemes.LIGHT &&
                                       theme.palette.lightTheme.contrastText,
                                   }}
                                 >

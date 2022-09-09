@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useEffect, useState, useRef } from "react";
-import { themeColorType, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import Lottie from "react-lottie";
 
@@ -86,9 +86,9 @@ const OutlineIconButton = ({
             ? bgColor
             : isFocused
             ? focusBGColor || "#fff"
-            : themeColor === themeColorType.DARK
+            : themeColor === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === themeColorType.LIGHT
+            : themeColor === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
           border: `${2}px solid ${
@@ -97,10 +97,10 @@ const OutlineIconButton = ({
               : bgColor
               ? bgColor
               : focusBGColor
-              ? themeColor === themeColorType.LIGHT
+              ? themeColor === appThemes.LIGHT
                 ? theme.palette.lightTheme.outlineColor
                 : focusBGColor
-              : themeColor === themeColorType.LIGHT
+              : themeColor === appThemes.LIGHT
               ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"
           }`,
@@ -165,12 +165,12 @@ const OutlineIconButton = ({
                   <Icon
                     style={{
                       color: isFocused
-                        ? focusIconColor || themeColor === themeColorType.LIGHT
+                        ? focusIconColor || themeColor === appThemes.LIGHT
                           ? theme.palette.common.white
                           : "#1C1F2E"
                         : color
                         ? color
-                        : themeColor === themeColorType.LIGHT
+                        : themeColor === appThemes.LIGHT
                         ? theme.palette.lightTheme.contrastText
                         : "#fff",
                       height: iconSize,
@@ -178,12 +178,12 @@ const OutlineIconButton = ({
                     }}
                     fillColor={
                       isFocused
-                        ? focusIconColor || themeColor === themeColorType.LIGHT
+                        ? focusIconColor || themeColor === appThemes.LIGHT
                           ? theme.palette.common.white
                           : "#1C1F2E"
                         : color
                         ? color
-                        : themeColor === themeColorType.LIGHT
+                        : themeColor === appThemes.LIGHT
                         ? theme.palette.lightTheme.contrastText
                         : "#fff"
                     }
