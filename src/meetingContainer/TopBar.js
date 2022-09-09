@@ -123,7 +123,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
     setSideBarMode,
     meetingMode,
     canToggleParticipantTab,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -154,7 +154,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
       Icon={Participants}
       disabledOpacity={1}
       focusBGColor={
-        themeColor === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
@@ -168,7 +168,7 @@ const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
   );
 };
 const ConfigBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, themeColor } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, appTheme } = useMeetingAppContext();
   const theme = useTheme();
 
   return isMobile || isTab ? (
@@ -188,7 +188,7 @@ const ConfigBTN = ({ isMobile, isTab }) => {
       tooltipTitle={"Configuration"}
       Icon={SettingsOutlinedIcon}
       focusBGColor={
-        themeColor === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       isFocused={sideBarMode === sideBarModes.CONFIGURATION}
       onClick={() => {
@@ -200,7 +200,7 @@ const ConfigBTN = ({ isMobile, isTab }) => {
   );
 };
 const ChatBTN = ({ isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, themeColor } = useMeetingAppContext();
+  const { sideBarMode, setSideBarMode, appTheme } = useMeetingAppContext();
   const theme = useTheme();
 
   return isMobile || isTab ? (
@@ -220,7 +220,7 @@ const ChatBTN = ({ isMobile, isTab }) => {
       tooltipTitle={"Chat"}
       Icon={Chat}
       focusBGColor={
-        themeColor === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       isFocused={sideBarMode === sideBarModes.CHAT}
       onClick={() => {
@@ -232,7 +232,7 @@ const ChatBTN = ({ isMobile, isTab }) => {
   );
 };
 const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
-  const { sideBarMode, setSideBarMode, setSideBarNestedMode, themeColor } =
+  const { sideBarMode, setSideBarMode, setSideBarNestedMode, appTheme } =
     useMeetingAppContext();
   const theme = useTheme();
 
@@ -257,7 +257,7 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
       tooltipTitle={"Activities"}
       Icon={Activities}
       focusBGColor={
-        themeColor === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
@@ -277,7 +277,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
     whiteboardStarted,
     whiteboardEnabled,
     canToggleWhiteboard,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
   const theme = useTheme();
 
@@ -310,7 +310,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
             Icon={Gesture}
             isFocused={whiteboardStarted}
             focusBGColor={
-              themeColor === appThemes.LIGHT &&
+              appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
             onClick={() => {
@@ -327,7 +327,7 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
 };
 const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const { whiteboardStarted, themeColor } = useMeetingAppContext();
+  const { whiteboardStarted, appTheme } = useMeetingAppContext();
   const theme = useTheme();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
@@ -379,7 +379,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       }
       isFocused={localScreenShareOn}
       focusBGColor={
-        themeColor === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       Icon={ScreenShare}
       onClick={() => {
@@ -456,7 +456,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     recordingAWSDirPath,
     participantCanToggleRecording,
     appMeetingLayout,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
@@ -539,7 +539,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       disabled={!participantCanToggleRecording}
       lottieOption={isRecording ? defaultOptions : null}
       bgColor={
-        themeColor === appThemes.LIGHT &&
+        appTheme === appThemes.LIGHT &&
         (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
           recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
         "#EEF0F2"
@@ -562,7 +562,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       Icon={ScreenRecording}
       onClick={_handleClick}
       focusBGColor={
-        themeColor === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       tooltipTitle={
         recordingState === Constants.recordingEvents.RECORDING_STARTED
@@ -577,7 +577,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
       }
       isFocused={isRecording}
       bgColor={
-        themeColor === appThemes.LIGHT &&
+        appTheme === appThemes.LIGHT &&
         (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
           recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
         "#EEF0F2"
@@ -886,7 +886,7 @@ const WebcamBTN = () => {
   const theme = useTheme();
   const classes = useStyles();
   const mMeeting = useMeeting({});
-  const { selectedWebcam, themeColor } = useMeetingAppContext();
+  const { selectedWebcam, appTheme } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
@@ -927,7 +927,7 @@ const WebcamBTN = () => {
         Icon={localWebcamOn ? VideocamIcon : VideocamOffIcon}
         onClick={toggleWebcam}
         focusBGColor={
-          themeColor === appThemes.LIGHT
+          appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.contrastText
             : "#ffffff33"
         }
@@ -947,7 +947,7 @@ const WebcamBTN = () => {
                   style={{
                     color: localWebcamOn
                       ? "white"
-                      : themeColor === appThemes.LIGHT &&
+                      : appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                   }}
                 />
@@ -973,15 +973,15 @@ const WebcamBTN = () => {
         <MenuList
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : "",
             color:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.common.white
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "",
           }}
@@ -997,9 +997,9 @@ const WebcamBTN = () => {
               }}
               classes={{
                 root:
-                  themeColor === appThemes.LIGHT
+                  appTheme === appThemes.LIGHT
                     ? classes.popoverHover
-                    : themeColor === appThemes.DARK
+                    : appTheme === appThemes.DARK
                     ? classes.popoverHoverDark
                     : "",
               }}
@@ -1013,7 +1013,7 @@ const WebcamBTN = () => {
   );
 };
 const MicBTN = () => {
-  const { selectedMic, themeColor } = useMeetingAppContext();
+  const { selectedMic, appTheme } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
@@ -1057,7 +1057,7 @@ const MicBTN = () => {
         Icon={localMicOn ? MicIcon : MicOffIcon}
         onClick={toggleMic}
         focusBGColor={
-          themeColor === appThemes.LIGHT
+          appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.contrastText
             : "#ffffff33"
         }
@@ -1077,7 +1077,7 @@ const MicBTN = () => {
                   style={{
                     color: localMicOn
                       ? "white"
-                      : themeColor === appThemes.LIGHT &&
+                      : appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                   }}
                 />
@@ -1104,15 +1104,15 @@ const MicBTN = () => {
         <MenuList
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : "",
             color:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.common.white
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
                 : "",
           }}
@@ -1128,9 +1128,9 @@ const MicBTN = () => {
               }}
               classes={{
                 root:
-                  themeColor === appThemes.LIGHT
+                  appTheme === appThemes.LIGHT
                     ? classes.popoverHover
-                    : themeColor === appThemes.DARK
+                    : appTheme === appThemes.DARK
                     ? classes.popoverHoverDark
                     : "",
               }}
@@ -1153,7 +1153,7 @@ const EndCallBTN = () => {
     participantCanEndMeeting,
     participantCanLeave,
     meetingMode,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
@@ -1228,15 +1228,15 @@ const EndCallBTN = () => {
             <MenuList
               style={{
                 backgroundColor:
-                  themeColor === appThemes.DARK
+                  appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.slightLighter
-                    : themeColor === appThemes.LIGHT
+                    : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
                     : "",
                 color:
-                  themeColor === appThemes.DARK
+                  appTheme === appThemes.DARK
                     ? theme.palette.common.white
-                    : themeColor === appThemes.LIGHT
+                    : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "",
               }}
@@ -1248,9 +1248,9 @@ const EndCallBTN = () => {
                 }}
                 classes={{
                   root:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? classes.popoverHover
-                      : themeColor === appThemes.DARK
+                      : appTheme === appThemes.DARK
                       ? classes.popoverHoverDark
                       : "",
                 }}
@@ -1259,9 +1259,9 @@ const EndCallBTN = () => {
                   <Box
                     style={{
                       backgroundColor:
-                        themeColor === appThemes.DARK
+                        appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.seven
-                          : themeColor === appThemes.LIGHT
+                          : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.three
                           : theme.palette.common.sidePanel,
                       display: "flex",
@@ -1276,7 +1276,7 @@ const EndCallBTN = () => {
                       height={22}
                       width={22}
                       fill={
-                        themeColor === appThemes.LIGHT &&
+                        appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText
                       }
                     />
@@ -1294,7 +1294,7 @@ const EndCallBTN = () => {
                       style={{
                         fontSize: 14,
                         color:
-                          themeColor === appThemes.LIGHT &&
+                          appTheme === appThemes.LIGHT &&
                           theme.palette.lightTheme.contrastText,
                       }}
                     >
@@ -1305,9 +1305,9 @@ const EndCallBTN = () => {
                       style={{
                         fontSize: "0.9rem",
                         color:
-                          themeColor === appThemes.DARK
+                          appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.four
-                            : themeColor === appThemes.LIGHT
+                            : appTheme === appThemes.LIGHT
                             ? theme.palette.lightTheme.five
                             : "",
                       }}
@@ -1325,9 +1325,9 @@ const EndCallBTN = () => {
                 }}
                 classes={{
                   root:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? classes.popoverHover
-                      : themeColor === appThemes.DARK
+                      : appTheme === appThemes.DARK
                       ? classes.popoverHoverDark
                       : "",
                 }}
@@ -1336,9 +1336,9 @@ const EndCallBTN = () => {
                   <Box
                     style={{
                       backgroundColor:
-                        themeColor === appThemes.DARK
+                        appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.seven
-                          : themeColor === appThemes.LIGHT
+                          : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.three
                           : theme.palette.common.sidePanel,
                       display: "flex",
@@ -1351,7 +1351,7 @@ const EndCallBTN = () => {
                   >
                     <EndCallIcon
                       fill={
-                        themeColor === appThemes.LIGHT &&
+                        appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText
                       }
                     />
@@ -1369,7 +1369,7 @@ const EndCallBTN = () => {
                         fontSize: 14,
                         lineHeight: 1.5,
                         color:
-                          themeColor === appThemes.LIGHT &&
+                          appTheme === appThemes.LIGHT &&
                           theme.palette.lightTheme.contrastText,
                       }}
                     >
@@ -1379,9 +1379,9 @@ const EndCallBTN = () => {
                       style={{
                         fontSize: "0.9rem",
                         color:
-                          themeColor === appThemes.DARK
+                          appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.four
-                            : themeColor === appThemes.LIGHT
+                            : appTheme === appThemes.LIGHT
                             ? theme.palette.lightTheme.five
                             : "",
                       }}
@@ -1446,7 +1446,7 @@ const TopBar = ({ topBarHeight }) => {
     animationsEnabled,
     meetingMode,
     participantTabPanelEnabled,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const handleClickFAB = () => {
@@ -1678,9 +1678,9 @@ const TopBar = ({ topBarHeight }) => {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
       }}
@@ -1743,9 +1743,9 @@ const TopBar = ({ topBarHeight }) => {
           container
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.main
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
           }}
@@ -1861,13 +1861,13 @@ const TopBar = ({ topBarHeight }) => {
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
         borderBottom: `1px solid ${
-          themeColor === appThemes.LIGHT
+          appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.outlineColor
             : "#ffffff33"
         }`,
@@ -1918,7 +1918,7 @@ const TopBar = ({ topBarHeight }) => {
                   fontSize: "1.2rem",
                   fontWeight: "600",
                   color:
-                    themeColor === appThemes.LIGHT &&
+                    appTheme === appThemes.LIGHT &&
                     theme.palette.lightTheme.contrastText,
                 }}
               >
@@ -1932,7 +1932,7 @@ const TopBar = ({ topBarHeight }) => {
                     display: "flex",
                     alignItems: "center",
                     color:
-                      themeColor === appThemes.LIGHT &&
+                      appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   color={"textSecondary"}
@@ -1968,7 +1968,7 @@ const TopBar = ({ topBarHeight }) => {
                 <Box
                   style={{
                     backgroundColor:
-                      themeColor === appThemes.LIGHT
+                      appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.outlineColor
                         : "#ffffff33",
                     width: 1,

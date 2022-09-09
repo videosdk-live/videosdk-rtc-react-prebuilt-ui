@@ -3,7 +3,7 @@ import React from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 function PollIcon() {
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
   return (
     <svg
@@ -15,7 +15,7 @@ function PollIcon() {
     >
       <path
         fill={
-          themeColor === appThemes.LIGHT
+          appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.contrastText
             : "#fff"
         }

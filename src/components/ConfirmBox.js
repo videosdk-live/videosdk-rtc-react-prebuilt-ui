@@ -27,7 +27,7 @@ const ConfirmBox = ({
   title,
   subTitle,
   subTitleColor,
-  themeColor,
+  appTheme,
 }) => {
   const v = useMeetingAppContext();
   const classes = useStyles();
@@ -46,8 +46,7 @@ const ConfirmBox = ({
       onClose={() => {}}
       style={{
         backgroundColor:
-          ((v && v?.themeColor) || themeColor) === appThemes.DARK &&
-          "#FFFFFF30",
+          ((v && v?.appTheme) || appTheme) === appThemes.DARK && "#FFFFFF30",
       }}
       aria-labelledby="responsive-dialog-title"
     >
@@ -55,9 +54,9 @@ const ConfirmBox = ({
         style={{
           padding: 8,
           backgroundColor:
-            ((v && v?.themeColor) || themeColor) === appThemes.DARK
+            ((v && v?.appTheme) || appTheme) === appThemes.DARK
               ? theme.palette.darkTheme.main
-              : ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+              : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
         }}
@@ -82,7 +81,7 @@ const ConfirmBox = ({
                 padding: 8,
                 margin: 0,
                 color:
-                  ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "#fff",
               }}
@@ -93,7 +92,7 @@ const ConfirmBox = ({
                 style={{
                   fontWeight: "bold",
                   color:
-                    ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+                    ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#fff",
                 }}
@@ -107,7 +106,7 @@ const ConfirmBox = ({
                   marginTop: 3,
                   color: subTitleColor
                     ? subTitleColor
-                    : ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+                    : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.four
                     : "#9FA0A7",
                 }}
@@ -125,12 +124,12 @@ const ConfirmBox = ({
               color={"white"}
               classes={{
                 root:
-                  ((v && v?.themeColor) || themeColor) === appThemes.LIGHT &&
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT &&
                   classes.button,
               }}
               style={{
                 color:
-                  ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
               }}
@@ -147,16 +146,16 @@ const ConfirmBox = ({
               variant="outlined"
               classes={{
                 root:
-                  ((v && v?.themeColor) || themeColor) === appThemes.LIGHT &&
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT &&
                   classes.button,
               }}
               style={{
                 color:
-                  ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
                 borderColor:
-                  ((v && v?.themeColor) || themeColor) === appThemes.LIGHT
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
               }}

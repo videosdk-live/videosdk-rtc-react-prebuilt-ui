@@ -215,7 +215,7 @@ const MainViewContainer = ({
     sideStackSize,
     reduceEdgeSpacing,
     mode,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -512,9 +512,9 @@ const MainViewContainer = ({
         style={{
           width,
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.main
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
           overflow: "hidden",
@@ -546,9 +546,9 @@ const MainViewContainer = ({
                 : 0,
               backgroundColor:
                 presenterId || whiteboardStarted
-                  ? themeColor === appThemes.DARK
+                  ? appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.slightLighter
-                    : themeColor === appThemes.LIGHT
+                    : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
                     : theme.palette.background.paper
                   : undefined,
@@ -622,9 +622,9 @@ const MainViewContainer = ({
           <div
             style={{
               backgroundColor:
-                themeColor === appThemes.DARK
+                appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.main
-                  : themeColor === appThemes.LIGHT
+                  : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.main
                   : theme.palette.background.default,
               overflowX: "hidden",

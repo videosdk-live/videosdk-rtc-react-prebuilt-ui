@@ -34,7 +34,7 @@ const OutlineIconTextButton = ({
 
   const intervalRef = useRef();
 
-  const { animationsEnabled, themeColor } = useMeetingAppContext();
+  const { animationsEnabled, appTheme } = useMeetingAppContext();
 
   const iconSize = useResponsiveSize({
     xl: 22 * (large ? 1 : 1),
@@ -95,12 +95,12 @@ const OutlineIconTextButton = ({
           backgroundColor: bgColor
             ? bgColor
             : isFocused
-            ? focusBGColor || themeColor === appThemes.LIGHT
+            ? focusBGColor || appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.contrastText
               : "#fff"
-            : themeColor === appThemes.DARK
+            : appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
           border: `${2}px solid ${
@@ -110,7 +110,7 @@ const OutlineIconTextButton = ({
               ? bgColor
               : focusBGColor
               ? focusBGColor
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"
           }`,
@@ -159,12 +159,12 @@ const OutlineIconTextButton = ({
                 style={{
                   fontWeight: "bold",
                   color: isFocused
-                    ? themeColor === appThemes.LIGHT
+                    ? appTheme === appThemes.LIGHT
                       ? theme.palette.common.white
                       : "#1C1F2E"
                     : textColor
                     ? textColor
-                    : themeColor === appThemes.LIGHT
+                    : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "#fff",
                 }}

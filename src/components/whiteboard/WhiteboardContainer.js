@@ -57,7 +57,7 @@ function WhiteboardContainer({
     animationsEnabled,
     notificationAlertsEnabled,
     notificationSoundEnabled,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -66,7 +66,7 @@ function WhiteboardContainer({
   const [pages, setpages] = useState(0);
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [color, setColor] = useState(
-    themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+    appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
       ? theme.palette.lightTheme.primaryMain
       : theme.palette.primary.main
   );
@@ -935,11 +935,11 @@ function WhiteboardContainer({
             size="medium"
             style={{
               color:
-                themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                   ? theme.palette.lightTheme.primaryMain
                   : theme.palette.primary.main,
               backgroundColor:
-                themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                   ? "#596BFF33"
                   : "#D5E8FF",
               fontSize: 18,

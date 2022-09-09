@@ -137,7 +137,7 @@ export const MeetingAppProvider = ({
   maintainVideoAspectRatio,
   networkBarEnabled,
   hlsPlayerControlsVisible,
-  themeColor,
+  appTheme,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -295,7 +295,7 @@ export const MeetingAppProvider = ({
         isRecorder,
         maintainVideoAspectRatio,
         networkBarEnabled,
-        themeColor,
+        appTheme,
 
         // states
         sideBarMode,
@@ -350,13 +350,13 @@ export const MeetingAppProvider = ({
         autoHideDuration={5000}
         style={{
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : "",
           color:
-            themeColor === appThemes.LIGHT &&
+            appTheme === appThemes.LIGHT &&
             theme.palette.lightTheme.contrastText,
         }}
         maxSnack={3}

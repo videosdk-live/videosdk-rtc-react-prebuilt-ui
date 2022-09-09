@@ -3,7 +3,7 @@ import React from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 function AnswerSubmittedIcon() {
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
   return (
     <svg
@@ -19,7 +19,7 @@ function AnswerSubmittedIcon() {
       ></path>
       <path
         fill={
-          themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+          appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
             ? theme.palette.lightTheme.primaryMain
             : theme.palette.primary.main
         }

@@ -82,7 +82,7 @@ function ParticipantListItem({
     canPin,
     animationsEnabled,
     meetingMode,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const isParticipantPresenting = useMemo(() => {
@@ -135,9 +135,9 @@ function ParticipantListItem({
       p={1}
       style={{
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.seven
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.three
             : theme.palette.common.sidePanel,
         borderRadius: 6,
@@ -155,11 +155,11 @@ function ParticipantListItem({
         <Avatar
           variant={"rounded"}
           style={{
-            color: themeColor === appThemes.LIGHT && "white",
+            color: appTheme === appThemes.LIGHT && "white",
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.five
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.five
                 : "",
           }}
@@ -174,7 +174,7 @@ function ParticipantListItem({
                 overflow: "hidden",
                 whiteSpace: "pre-wrap",
                 color:
-                  themeColor === appThemes.LIGHT &&
+                  appTheme === appThemes.LIGHT &&
                   theme.palette.lightTheme.contrastText,
               }}
               variant="body1"
@@ -266,7 +266,7 @@ function ParticipantListItem({
                           fontSize="small"
                           style={{
                             color:
-                              themeColor === appThemes.LIGHT
+                              appTheme === appThemes.LIGHT
                                 ? theme.palette.lightTheme.contrastText
                                 : theme.palette.common.white,
                           }}
@@ -316,7 +316,7 @@ function ParticipantListItem({
                           fontSize="small"
                           style={{
                             color:
-                              themeColor === appThemes.LIGHT
+                              appTheme === appThemes.LIGHT
                                 ? theme.palette.lightTheme.contrastText
                                 : theme.palette.common.white,
                           }}
@@ -379,10 +379,10 @@ function ParticipantListItem({
                       <Pin
                         fill={
                           pinState?.share || pinState?.cam
-                            ? themeColor === appThemes.LIGHT
+                            ? appTheme === appThemes.LIGHT
                               ? theme.palette.lightTheme.contrastText
                               : "white"
-                            : themeColor === appThemes.LIGHT
+                            : appTheme === appThemes.LIGHT
                             ? theme.palette.lightTheme.four
                             : "#ffffff80"
                         }
@@ -433,7 +433,7 @@ function ParticipantListItem({
                         {isParticipantPresenting ? (
                           <ParticipantScreenShareIcon
                             fillColor={
-                              themeColor === appThemes.LIGHT
+                              appTheme === appThemes.LIGHT
                                 ? theme.palette.lightTheme.contrastText
                                 : "#ffffff"
                             }
@@ -441,7 +441,7 @@ function ParticipantListItem({
                         ) : (
                           <ParticipantScreenShareIcon
                             fillColor={
-                              themeColor === appThemes.LIGHT
+                              appTheme === appThemes.LIGHT
                                 ? theme.palette.lightTheme.four
                                 : "#ffffff80"
                             }
@@ -539,7 +539,7 @@ function ParticipantListItem({
                       fontSize="small"
                       style={{
                         color:
-                          themeColor === appThemes.LIGHT &&
+                          appTheme === appThemes.LIGHT &&
                           theme.palette.lightTheme.contrastText,
                       }}
                     />
@@ -559,7 +559,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   const [participantExpandedId, setParticipantExpandedId] = useState(null);
 
   const { participants } = useMeeting();
-  const { raisedHandsParticipants, themeColor } = useMeetingAppContext();
+  const { raisedHandsParticipants, appTheme } = useMeetingAppContext();
 
   const sortedRaisedHandsParticipants = useMemo(() => {
     const participantIds = [...participants.keys()];
@@ -640,9 +640,9 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
             style={{
               height: 56,
               backgroundColor:
-                themeColor === appThemes.DARK
+                appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.seven
-                  : themeColor === appThemes.LIGHT
+                  : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.three
                   : theme.palette.common.sidePanel,
               borderRadius: 6,
@@ -672,11 +672,11 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
           fullWidth
           placeholder="Search Participants"
           classes={{
-            root: themeColor === appThemes.LIGHT && classes.textField,
+            root: appTheme === appThemes.LIGHT && classes.textField,
           }}
           style={{
             color:
-              themeColor === appThemes.LIGHT &&
+              appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText,
           }}
           onChange={(e) => setFilterQuery(e.target.value)}
@@ -686,7 +686,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
                 <SearchOutlined
                   style={{
                     color:
-                      themeColor === appThemes.LIGHT &&
+                      appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                 />

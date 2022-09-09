@@ -48,7 +48,7 @@ export const CornerDisplayName = ({
     animationsEnabled,
     alwaysShowOverlay,
     networkBarEnabled,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const defaultOptions = {
@@ -138,7 +138,7 @@ export const CornerDisplayName = ({
           paddingRight: isMobile ? 4 : isTab ? 6 : 8,
           transform: `scale(${show ? 1 : 0})`,
           backgroundColor:
-            themeColor === appThemes.LIGHT
+            appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : "#00000066",
           borderRadius: 6,
@@ -166,7 +166,7 @@ export const CornerDisplayName = ({
             alignItems: "center",
             lineHeight: 1,
             color:
-              themeColor === appThemes.LIGHT &&
+              appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText,
           }}
         >
@@ -278,7 +278,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     animationsEnabled,
     isRecorder,
     maintainVideoAspectRatio,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
@@ -314,7 +314,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [webcamStream, webcamOn]);
 
-  const participantAccentColor = useMemo(() => getRandomColor("light"), []);
+  const participantAccentColor = useMemo(
+    () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
+    []
+  );
 
   const theme = useTheme();
 
@@ -444,9 +447,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           height: "100%",
           width: "100%",
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.two
               : theme.palette.background.paper,
           position: "relative",

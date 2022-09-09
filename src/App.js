@@ -624,7 +624,7 @@ const App = () => {
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
-            themeColor: paramKeys.theme,
+            appTheme: paramKeys.theme,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
@@ -704,7 +704,7 @@ const App = () => {
               : paramKeys.participantCanToggleSelfMic
           }
           mode={paramKeys.mode}
-          themeColor={paramKeys.theme}
+          appTheme={paramKeys.theme}
         />
       ) : (
         <ClickAnywhereToContinue

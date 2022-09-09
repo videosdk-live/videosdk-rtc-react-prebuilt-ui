@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
 
 const Poll = ({ poll, isDraft, publishDraftPoll }) => {
   const timerIntervalRef = useRef();
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
   const classes = useStyles();
 
@@ -242,7 +242,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
             style={{
               fontSize: 16,
               color:
-                themeColor === appThemes.LIGHT
+                appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.contrastText
                   : "white",
               fontWeight: 600,
@@ -269,7 +269,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                   style={{
                     fontSize: 15,
                     color:
-                      themeColor === appThemes.LIGHT
+                      appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.contrastText
                         : "white",
                     fontWeight: 400,
@@ -288,9 +288,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                     style={{
                       height: 6,
                       backgroundColor:
-                        themeColor === appThemes.DARK
+                        appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.seven
-                          : themeColor === appThemes.LIGHT
+                          : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.three
                           : theme.palette.common.sidePanel,
                       borderRadius: 4,
@@ -302,14 +302,14 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       style={{
                         backgroundColor: hasCorrectAnswer
                           ? isCorrectOption
-                            ? themeColor === appThemes.LIGHT ||
-                              themeColor === appThemes.DARK
+                            ? appTheme === appThemes.LIGHT ||
+                              appTheme === appThemes.DARK
                               ? theme.palette.lightTheme.primaryMain
                               : theme.palette.primary.main
                             : "#9E9DA6"
                           : maxSubmittedOptions.includes(item.optionId)
-                          ? themeColor === appThemes.LIGHT ||
-                            themeColor === appThemes.DARK
+                          ? appTheme === appThemes.LIGHT ||
+                            appTheme === appThemes.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main
                           : "#9E9DA6",
@@ -336,7 +336,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                           margin: 0,
                           padding: 0,
                           color:
-                            themeColor === appThemes.LIGHT &&
+                            appTheme === appThemes.LIGHT &&
                             theme.palette.lightTheme.contrastText,
                         }}
                       >
@@ -368,16 +368,16 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 style={{
                   marginTop: equalSpacing + 2,
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                   borderColor:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                 }}
                 classes={{
-                  root: themeColor === appThemes.LIGHT && classes.button,
+                  root: appTheme === appThemes.LIGHT && classes.button,
                 }}
               >
                 Launch
@@ -388,16 +388,16 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 variant="outlined"
                 size="small"
                 classes={{
-                  root: themeColor === appThemes.LIGHT && classes.button,
+                  root: appTheme === appThemes.LIGHT && classes.button,
                 }}
                 style={{
                   marginTop: equalSpacing + 2,
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                   borderColor:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                 }}
@@ -421,7 +421,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 };
 
 const PollList = ({ panelHeight }) => {
-  const { setSideBarNestedMode, polls, draftPolls, themeColor } =
+  const { setSideBarNestedMode, polls, draftPolls, appTheme } =
     useMeetingAppContext();
 
   const theme = useTheme();
@@ -527,7 +527,7 @@ const PollList = ({ panelHeight }) => {
               width: "100%",
               color: theme.palette.common.white,
               backgroundColor:
-                themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                   ? theme.palette.lightTheme.primaryMain
                   : theme.palette.primary.main,
               padding: "12px",

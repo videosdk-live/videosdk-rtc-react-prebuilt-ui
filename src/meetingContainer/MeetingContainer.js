@@ -178,7 +178,7 @@ const MeetingContainer = () => {
     isRecorder,
     setDownstreamUrl,
     setAfterMeetingJoinedHLSState,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -749,9 +749,9 @@ const MeetingContainer = () => {
         overflow: "hidden",
         position: "relative",
         backgroundColor:
-          themeColor === appThemes.LIGHT
+          appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
-            : themeColor === appThemes.DARK
+            : appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : theme.palette.background.default,
       }}
@@ -869,9 +869,9 @@ const MeetingContainer = () => {
               justifyContent: "center",
               alignItems: "center",
               backgroundColor:
-                themeColor === appThemes.DARK
+                appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
-                  : themeColor === appThemes.LIGHT
+                  : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.two
                   : theme.palette.background.default,
             }}

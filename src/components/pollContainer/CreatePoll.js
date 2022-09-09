@@ -243,14 +243,14 @@ const MarkCorrectCheckedIcon = styled(MarkCorrectIcon)({
 });
 
 function BpCheckbox(CheckboxProps) {
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   return (
     <Checkbox
       disableRipple
       disableFocusRipple
       color="default"
       checkedIcon={
-        themeColor === appThemes.LIGHT || themeColor === appThemes.DARK ? (
+        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? (
           <BpCheckedLightIcon />
         ) : (
           <BpCheckedIcon />
@@ -270,14 +270,14 @@ function BpCheckbox(CheckboxProps) {
 }
 
 export function MarkCorrectCheckbox(CheckboxProps) {
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   return (
     <Radio
       disableRipple
       disableFocusRipple
       color="default"
       checkedIcon={
-        themeColor === appThemes.LIGHT || themeColor === appThemes.DARK ? (
+        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? (
           <MarkCorrectCheckedLightIcon />
         ) : (
           <MarkCorrectCheckedIcon />
@@ -315,7 +315,7 @@ const CreatePollPart = ({
   correctAnswerErr,
   minOptionErr,
   optionErr,
-  themeColor,
+  appTheme,
 }) => {
   const theme = useTheme();
   const createOptionRef = useRef(null);
@@ -351,9 +351,9 @@ const CreatePollPart = ({
         style={{
           width: "100%",
           borderBottom: `1px solid ${
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : theme.palette.common.sidePanel
           }`,
@@ -364,7 +364,7 @@ const CreatePollPart = ({
           classes: {
             underline: classes.textFieldBorder,
             root:
-              themeColor === appThemes.LIGHT
+              appTheme === appThemes.LIGHT
                 ? classes.textFieldRootLight
                 : classes.textFieldRoot,
           },
@@ -435,13 +435,13 @@ const CreatePollPart = ({
                             : "#404B53",
                         backgroundColor:
                           item.isCorrect && item.option !== ""
-                            ? themeColor === appThemes.LIGHT ||
-                              themeColor === appThemes.DARK
+                            ? appTheme === appThemes.LIGHT ||
+                              appTheme === appThemes.DARK
                               ? theme.palette.lightTheme.primaryMain
                               : theme.palette.primary.main
-                            : themeColor === appThemes.DARK
+                            : appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.seven
-                            : themeColor === appThemes.LIGHT
+                            : appTheme === appThemes.LIGHT
                             ? theme.palette.lightTheme.three
                             : theme.palette.common.sidePanel,
                       }}
@@ -451,7 +451,7 @@ const CreatePollPart = ({
                           root:
                             item.isCorrect && item.option !== ""
                               ? classes.textFieldSelected
-                              : themeColor === appThemes.LIGHT
+                              : appTheme === appThemes.LIGHT
                               ? classes.textFieldRootLight
                               : classes.textField,
                         },
@@ -473,7 +473,7 @@ const CreatePollPart = ({
                             className={classes.iconbutton}
                             classes={{
                               root:
-                                themeColor === appThemes.LIGHT
+                                appTheme === appThemes.LIGHT
                                   ? classes.iconContainerLight
                                   : classes.iconContainer,
                             }}
@@ -549,13 +549,13 @@ const CreatePollPart = ({
                 color: option.isCorrect && option.option ? "#fff" : "#404B53",
                 backgroundColor:
                   option.isCorrect && option.option
-                    ? themeColor === appThemes.LIGHT ||
-                      themeColor === appThemes.DARK
+                    ? appTheme === appThemes.LIGHT ||
+                      appTheme === appThemes.DARK
                       ? theme.palette.lightTheme.primaryMain
                       : theme.palette.primary.main
-                    : themeColor === appThemes.DARK
+                    : appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.seven
-                    : themeColor === appThemes.LIGHT
+                    : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.three
                     : theme.palette.common.sidePanel,
               }}
@@ -565,7 +565,7 @@ const CreatePollPart = ({
                   root:
                     option.isCorrect && option.option
                       ? classes.textFieldSelected
-                      : themeColor === appThemes.LIGHT
+                      : appTheme === appThemes.LIGHT
                       ? classes.textFieldRootLight
                       : classes.textField,
                 },
@@ -599,9 +599,9 @@ const CreatePollPart = ({
                   marginLeft: 0,
                   marginTop: 16,
                   backgroundColor:
-                    themeColor === appThemes.DARK
+                    appTheme === appThemes.DARK
                       ? theme.palette.darkTheme.seven
-                      : themeColor === appThemes.LIGHT
+                      : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.three
                       : theme.palette.common.sidePanel,
                 }}
@@ -609,7 +609,7 @@ const CreatePollPart = ({
                   disableUnderline: true,
                   classes: {
                     root:
-                      themeColor === appThemes.LIGHT
+                      appTheme === appThemes.LIGHT
                         ? classes.textFieldLight
                         : classes.textField,
                   },
@@ -644,7 +644,7 @@ const CreatePollPart = ({
               <FormControlLabel
                 style={{
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                 }}
@@ -660,7 +660,7 @@ const CreatePollPart = ({
                     variant="body1"
                     style={{
                       color:
-                        themeColor === appThemes.LIGHT
+                        appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.contrastText
                           : "white",
                     }}
@@ -687,7 +687,7 @@ const CreatePollPart = ({
                   alignItems: "center",
                   marginTop: 14,
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                 }}
@@ -698,7 +698,7 @@ const CreatePollPart = ({
                     paddingLeft: 6,
                     justifyContent: "center",
                     color:
-                      themeColor === appThemes.LIGHT
+                      appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.contrastText
                         : "white",
                   }}
@@ -706,7 +706,7 @@ const CreatePollPart = ({
                   <FormControlLabel
                     style={{
                       color:
-                        themeColor === appThemes.LIGHT
+                        appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.contrastText
                           : "white",
                     }}
@@ -722,7 +722,7 @@ const CreatePollPart = ({
                         variant="body1"
                         style={{
                           color:
-                            themeColor === appThemes.LIGHT
+                            appTheme === appThemes.LIGHT
                               ? theme.palette.lightTheme.contrastText
                               : "white",
                         }}
@@ -741,22 +741,22 @@ const CreatePollPart = ({
                     className={classes.selectRoot}
                     classes={{
                       icon:
-                        themeColor === appThemes.LIGHT
+                        appTheme === appThemes.LIGHT
                           ? classes.selectIconLight
                           : classes.selectIcon,
                     }}
                     style={{
                       color:
-                        themeColor === appThemes.LIGHT
+                        appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.contrastText
                           : "white",
                     }}
                     MenuProps={{
                       classes: {
                         paper:
-                          themeColor === appThemes.LIGHT
+                          appTheme === appThemes.LIGHT
                             ? classes.paperLight
-                            : themeColor === appThemes.DARK
+                            : appTheme === appThemes.DARK
                             ? classes.paperDark
                             : "",
                       },
@@ -766,7 +766,7 @@ const CreatePollPart = ({
                       return (
                         <MenuItem
                           className={
-                            themeColor === appThemes.LIGHT && classes.listItem
+                            appTheme === appThemes.LIGHT && classes.listItem
                           }
                           value={item.value}
                         >
@@ -809,7 +809,7 @@ const PollButtonPart = ({
   setMinOptionErr,
   setOptionErr,
 }) => {
-  const { polls, themeColor } = useMeetingAppContext();
+  const { polls, appTheme } = useMeetingAppContext();
 
   const singleOption = options?.map((option) => {
     return option.option;
@@ -886,13 +886,13 @@ const PollButtonPart = ({
         style={{
           width: "50%",
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : theme.palette.common.sidePanel,
           color:
-            themeColor === appThemes.LIGHT
+            appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.contrastText
               : theme.palette.common.white,
           padding: "8px",
@@ -938,7 +938,7 @@ const PollButtonPart = ({
           marginLeft: 8,
           color: theme.palette.common.white,
           backgroundColor:
-            themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+            appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
               ? theme.palette.lightTheme.primaryMain
               : theme.palette.primary.main,
           padding: "8px",
@@ -990,7 +990,7 @@ const CreatePoll = ({ panelHeight }) => {
     xs: 4,
   });
 
-  const { setSideBarNestedMode, themeColor } = useMeetingAppContext();
+  const { setSideBarNestedMode, appTheme } = useMeetingAppContext();
   const classes = useStyles();
   const [isMarkAsCorrectChecked, setIsMarkAsCorrectChecked] = useState(false);
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
@@ -1066,7 +1066,7 @@ const CreatePoll = ({ panelHeight }) => {
           correctAnswerErr={correctAnswerErr}
           minOptionErr={minOptionErr}
           optionErr={optionErr}
-          themeColor={themeColor}
+          appTheme={appTheme}
         />
         <PollButtonPart
           theme={theme}

@@ -30,7 +30,7 @@ const MobileIconButton = ({
   buttonText,
   lottieOption,
 }) => {
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
@@ -121,7 +121,7 @@ const MobileIconButton = ({
                   style={{
                     color: isFocused
                       ? focusIconColor || "#fff"
-                      : themeColor === appThemes.LIGHT
+                      : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#95959E",
                     height: iconSize,
@@ -130,7 +130,7 @@ const MobileIconButton = ({
                   fillColor={
                     isFocused
                       ? "#fff"
-                      : themeColor === appThemes.LIGHT
+                      : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#95959E"
                   }
@@ -146,7 +146,7 @@ const MobileIconButton = ({
                   fontWeight: "bold",
                   color: isFocused
                     ? "#fff"
-                    : themeColor === appThemes.LIGHT
+                    : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "#95959E",
                 }}

@@ -77,7 +77,7 @@ const SingleLiveStreamItem = ({
   _handleRemove,
   publish,
   index,
-  themeColor,
+  appTheme,
 }) => {
   const theme = useTheme();
   const isLiveStreaming = useIsLiveStreaming();
@@ -162,9 +162,9 @@ const SingleLiveStreamItem = ({
               ? ""
               : `3px solid 
                   ${
-                    themeColor === appThemes.DARK
+                    appTheme === appThemes.DARK
                       ? theme.palette.darkTheme.seven
-                      : themeColor === appThemes.LIGHT
+                      : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.three
                       : "#3A3F4B"
                   }`,
@@ -187,7 +187,7 @@ const SingleLiveStreamItem = ({
               style={{
                 fontWeight: "bold",
                 color:
-                  themeColor === appThemes.LIGHT &&
+                  appTheme === appThemes.LIGHT &&
                   theme.palette.lightTheme.contrastText,
               }}
             >
@@ -220,11 +220,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === appThemes.LIGHT &&
+                      appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -238,11 +238,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === appThemes.LIGHT &&
+                      appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -260,11 +260,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === appThemes.LIGHT &&
+                      appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -283,11 +283,11 @@ const SingleLiveStreamItem = ({
                   }}
                   style={{
                     color:
-                      themeColor === appThemes.LIGHT &&
+                      appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
                   className={
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? classes.buttonLight
                       : classes.button
                   }
@@ -308,16 +308,16 @@ const SingleLiveStreamItem = ({
             autocomplete="off"
             style={{
               backgroundColor:
-                themeColor === appThemes.DARK
+                appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.seven
-                  : themeColor === appThemes.LIGHT
+                  : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.three
                   : "",
             }}
             className={
-              themeColor === appThemes.LIGHT
+              appTheme === appThemes.LIGHT
                 ? classes.rootLight
-                : themeColor === appThemes.DARK
+                : appTheme === appThemes.DARK
                 ? classes.rootDark
                 : classes.root
             }
@@ -327,9 +327,9 @@ const SingleLiveStreamItem = ({
               disableUnderline: true,
               classes: {
                 disabled:
-                  themeColor === appThemes.LIGHT && classes.textFieldDisabled,
+                  appTheme === appThemes.LIGHT && classes.textFieldDisabled,
                 root:
-                  themeColor === appThemes.LIGHT
+                  appTheme === appThemes.LIGHT
                     ? classes.textFieldLight
                     : classes.textField,
               },
@@ -352,16 +352,16 @@ const SingleLiveStreamItem = ({
             style={{
               marginTop: "8px",
               backgroundColor:
-                themeColor === appThemes.DARK
+                appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.seven
-                  : themeColor === appThemes.LIGHT
+                  : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.three
                   : "",
             }}
             className={
-              themeColor === appThemes.LIGHT
+              appTheme === appThemes.LIGHT
                 ? classes.rootLight
-                : themeColor === appThemes.DARK
+                : appTheme === appThemes.DARK
                 ? classes.rootDark
                 : classes.root
             }
@@ -371,9 +371,9 @@ const SingleLiveStreamItem = ({
               disableUnderline: true,
               classes: {
                 disabled:
-                  themeColor === appThemes.LIGHT && classes.textFieldDisabled,
+                  appTheme === appThemes.LIGHT && classes.textFieldDisabled,
                 root:
-                  themeColor === appThemes.LIGHT
+                  appTheme === appThemes.LIGHT
                     ? classes.textFieldLight
                     : classes.textField,
               },
@@ -427,7 +427,7 @@ const SingleLiveStreamItem = ({
 const AddLiveStream = ({
   _handleSave,
   renderCallback,
-  themeColor,
+  appTheme,
   liveStreamConfig,
 }) => {
   const theme = useTheme();
@@ -485,9 +485,9 @@ const AddLiveStream = ({
         borderTop:
           liveStreamConfig?.length > 0 &&
           `3px solid ${
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : "#3A3F4B"
           }`,
@@ -506,7 +506,7 @@ const AddLiveStream = ({
             style={{
               fontWeight: "bold",
               color:
-                themeColor === appThemes.LIGHT &&
+                appTheme === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
           >
@@ -537,11 +537,11 @@ const AddLiveStream = ({
             }}
             style={{
               color:
-                themeColor === appThemes.LIGHT &&
+                appTheme === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
             className={
-              themeColor === appThemes.LIGHT
+              appTheme === appThemes.LIGHT
                 ? classes.buttonLight
                 : classes.button
             }
@@ -559,16 +559,16 @@ const AddLiveStream = ({
           autocomplete="off"
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : "",
           }}
           className={
-            themeColor === appThemes.LIGHT
+            appTheme === appThemes.LIGHT
               ? classes.rootLight
-              : themeColor === appThemes.DARK
+              : appTheme === appThemes.DARK
               ? classes.rootDark
               : classes.root
           }
@@ -577,7 +577,7 @@ const AddLiveStream = ({
             disableUnderline: true,
             classes: {
               root:
-                themeColor === appThemes.LIGHT
+                appTheme === appThemes.LIGHT
                   ? classes.textFieldLight
                   : classes.textField,
             },
@@ -598,17 +598,17 @@ const AddLiveStream = ({
           style={{
             marginTop: "8px",
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : "",
           }}
           autocomplete="off"
           className={
-            themeColor === appThemes.LIGHT
+            appTheme === appThemes.LIGHT
               ? classes.rootLight
-              : themeColor === appThemes.DARK
+              : appTheme === appThemes.DARK
               ? classes.rootDark
               : classes.root
           }
@@ -617,7 +617,7 @@ const AddLiveStream = ({
             disableUnderline: true,
             classes: {
               root:
-                themeColor === appThemes.LIGHT
+                appTheme === appThemes.LIGHT
                   ? classes.textFieldLight
                   : classes.textField,
             },
@@ -643,7 +643,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   const [isEditingId, setIsEditingId] = useState(null);
 
   const mMeeting = useMeeting({});
-  const { liveStreamConfig, setLiveStreamConfig, themeColor } =
+  const { liveStreamConfig, setLiveStreamConfig, appTheme } =
     useMeetingAppContext();
 
   const isLiveStreaming = useIsLiveStreaming();
@@ -700,7 +700,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
             <SingleLiveStreamItem
               key={`live_stream_op_item${i}`}
               item={item}
-              themeColor={themeColor}
+              appTheme={appTheme}
               liveStreamConfig={liveStreamConfig}
               setLiveStreamConfig={setLiveStreamConfig}
               liveStreamConfigRef={liveStreamConfigRef}
@@ -720,7 +720,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
         <AddLiveStream
           {...{
             _handleSave,
-            themeColor,
+            appTheme,
             liveStreamConfig,
             renderCallback: (el) => {
               addLiveStreamBoxRef.current = el;

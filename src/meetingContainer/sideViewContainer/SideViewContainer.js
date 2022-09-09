@@ -62,7 +62,7 @@ const SideBarTabView = ({ width, height }) => {
     sideBarNestedMode,
     setSideBarNestedMode,
     meetingMode,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
   const { participants } = useMeeting();
   const value =
@@ -116,9 +116,9 @@ const SideBarTabView = ({ width, height }) => {
         paddingRight: panelPadding,
         paddingBottom: panelPadding,
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
       }}
@@ -127,9 +127,9 @@ const SideBarTabView = ({ width, height }) => {
         <div
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : theme.palette.background.paper,
             height: paddedHeight,
@@ -175,7 +175,7 @@ const SideBarTabView = ({ width, height }) => {
                         className={classes.iconbutton}
                         classes={{
                           root:
-                            themeColor === appThemes.LIGHT
+                            appTheme === appThemes.LIGHT
                               ? classes.iconContainerLight
                               : classes.iconContainer,
                         }}
@@ -191,7 +191,7 @@ const SideBarTabView = ({ width, height }) => {
                     style={{
                       fontWeight: "bold",
                       color:
-                        themeColor === appThemes.LIGHT &&
+                        appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                   >
@@ -228,7 +228,7 @@ const SideBarTabView = ({ width, height }) => {
                     className={classes.iconbutton}
                     classes={{
                       root:
-                        themeColor === appThemes.LIGHT
+                        appTheme === appThemes.LIGHT
                           ? classes.iconContainerLight
                           : classes.iconContainer,
                     }}
@@ -267,7 +267,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
     setSideBarMode,
     endCallContainerRef,
     animationsEnabled,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
   const isTab = useIsTab();
   const isMobile = useIsMobile();
@@ -309,9 +309,9 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
           top: 0,
           left: 0,
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.two
               : theme.palette.background.paper,
           flex: 1,

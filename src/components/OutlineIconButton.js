@@ -45,7 +45,7 @@ const OutlineIconButton = ({
     xs: 24 * (large ? 1.7 : 1),
   });
 
-  const { animationsEnabled, themeColor } = useMeetingAppContext();
+  const { animationsEnabled, appTheme } = useMeetingAppContext();
 
   const startBlinking = () => {
     intervalRef.current = setInterval(() => {
@@ -86,9 +86,9 @@ const OutlineIconButton = ({
             ? bgColor
             : isFocused
             ? focusBGColor || "#fff"
-            : themeColor === appThemes.DARK
+            : appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
           border: `${2}px solid ${
@@ -97,10 +97,10 @@ const OutlineIconButton = ({
               : bgColor
               ? bgColor
               : focusBGColor
-              ? themeColor === appThemes.LIGHT
+              ? appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.outlineColor
                 : focusBGColor
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.outlineColor
               : "#ffffff33"
           }`,
@@ -165,12 +165,12 @@ const OutlineIconButton = ({
                   <Icon
                     style={{
                       color: isFocused
-                        ? focusIconColor || themeColor === appThemes.LIGHT
+                        ? focusIconColor || appTheme === appThemes.LIGHT
                           ? theme.palette.common.white
                           : "#1C1F2E"
                         : color
                         ? color
-                        : themeColor === appThemes.LIGHT
+                        : appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.contrastText
                         : "#fff",
                       height: iconSize,
@@ -178,12 +178,12 @@ const OutlineIconButton = ({
                     }}
                     fillColor={
                       isFocused
-                        ? focusIconColor || themeColor === appThemes.LIGHT
+                        ? focusIconColor || appTheme === appThemes.LIGHT
                           ? theme.palette.common.white
                           : "#1C1F2E"
                         : color
                         ? color
-                        : themeColor === appThemes.LIGHT
+                        : appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.contrastText
                         : "#fff"
                     }

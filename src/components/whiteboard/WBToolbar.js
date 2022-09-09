@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <Tooltip title={title} arrow placement="right">
@@ -63,9 +63,9 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         color="inherit"
         style={{
           backgroundColor: isSelected
-            ? themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+            ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
               ? "#596BFF33"
-              : themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+              : appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
               ? "#596BFF33"
               : "#D5E8FF"
             : "",
@@ -76,7 +76,7 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         <Icon
           fill={
             isSelected
-              ? themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+              ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                 ? theme.palette.lightTheme.primaryMain
                 : theme.palette.primary.main
               : "black"
@@ -100,7 +100,7 @@ const CustomColorPicker = ({
   Icon,
 }) => {
   const classes = useStyles();
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <>
@@ -114,7 +114,7 @@ const CustomColorPicker = ({
           }}
           style={{
             backgroundColor:
-              themeColor === appThemes.LIGHT ? "#596BFF33" : `#D5E8FF`,
+              appTheme === appThemes.LIGHT ? "#596BFF33" : `#D5E8FF`,
             borderRadius: 6,
           }}
         >
@@ -279,7 +279,7 @@ const WBToolbar = ({
 
   const open = Boolean(anchorEl);
 
-  const { canDrawOnWhiteboard, themeColor } = useMeetingAppContext();
+  const { canDrawOnWhiteboard, appTheme } = useMeetingAppContext();
 
   useEffect(() => {
     setColor(parentColor);
@@ -340,8 +340,7 @@ const WBToolbar = ({
                 tool === "squareFilled" ||
                 tool === "circle" ||
                 tool === "circleFilled"
-                  ? themeColor === appThemes.LIGHT ||
-                    themeColor === appThemes.DARK
+                  ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                     ? "#596BFF33"
                     : "#D5E8FF"
                   : "",
@@ -351,8 +350,7 @@ const WBToolbar = ({
             {tool === "square" ? (
               <SquareIcon
                 fill={
-                  themeColor === appThemes.LIGHT ||
-                  themeColor === appThemes.DARK
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -360,8 +358,7 @@ const WBToolbar = ({
             ) : tool === "squareFilled" ? (
               <ShapeIcon
                 fill={
-                  themeColor === appThemes.LIGHT ||
-                  themeColor === appThemes.DARK
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -369,8 +366,7 @@ const WBToolbar = ({
             ) : tool === "circle" ? (
               <CircleIcon
                 fill={
-                  themeColor === appThemes.LIGHT ||
-                  themeColor === appThemes.DARK
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -378,8 +374,7 @@ const WBToolbar = ({
             ) : tool === "circleFilled" ? (
               <CircleFilledIcon
                 fill={
-                  themeColor === appThemes.LIGHT ||
-                  themeColor === appThemes.DARK
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }

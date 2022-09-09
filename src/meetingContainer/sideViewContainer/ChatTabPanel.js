@@ -39,7 +39,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const localSender = localParticipantId === senderId;
 
   const theme = useTheme();
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <Box
@@ -58,9 +58,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
           paddingRight: theme.spacing(1),
           borderRadius: 6,
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : theme.palette.common.sidePanel,
           display: "flex",
@@ -71,9 +71,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
         <Typography
           style={{
             color:
-              themeColor === appThemes.LIGHT
+              appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.five
-                : themeColor === appThemes.DARK
+                : appTheme === appThemes.DARK
                 ? theme.palette.lightTheme.four
                 : "#ffffff80",
           }}
@@ -87,7 +87,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
               color:
-                themeColor === appThemes.LIGHT &&
+                appTheme === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
           >
@@ -99,8 +99,8 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                       target: "_blank",
                       style: {
                         color:
-                          themeColor === appThemes.LIGHT ||
-                          themeColor === appThemes.DARK
+                          appTheme === appThemes.LIGHT ||
+                          appTheme === appThemes.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main,
                       },
@@ -120,9 +120,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
             variant={"caption"}
             style={{
               color:
-                themeColor === appThemes.LIGHT
+                appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.four
-                  : themeColor === appThemes.DARK
+                  : appTheme === appThemes.DARK
                   ? theme.palette.lightTheme.five
                   : "#ffffff80",
               fontStyle: "italic",
@@ -194,7 +194,7 @@ const ChatMessageInput = ({ inputHeight }) => {
   const { publish } = usePubSub("CHAT");
   const theme = useTheme();
 
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <Box
@@ -228,17 +228,17 @@ const ChatMessageInput = ({ inputHeight }) => {
           set={"google"}
           showPreview={false}
           showSkinTones={false}
-          theme={themeColor === appThemes.LIGHT ? "light" : "dark"}
+          theme={appTheme === appThemes.LIGHT ? "light" : "dark"}
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.main
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
           }}
           color={
-            themeColor === appThemes.LIGHT || themeColor === appThemes.DARK
+            appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
               ? theme.palette.lightTheme.primaryMain
               : theme.palette.primary.main
           }
@@ -255,7 +255,7 @@ const ChatMessageInput = ({ inputHeight }) => {
         multiline
         ref={input}
         classes={{
-          root: themeColor === appThemes.LIGHT && classes.textField,
+          root: appTheme === appThemes.LIGHT && classes.textField,
         }}
         placeholder="Write your message"
         fullWidth
@@ -290,7 +290,7 @@ const ChatMessageInput = ({ inputHeight }) => {
                     fontSize={"small"}
                     style={{
                       color:
-                        themeColor === appThemes.LIGHT &&
+                        appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                   />
@@ -314,7 +314,7 @@ const ChatMessageInput = ({ inputHeight }) => {
                     fontSize={"small"}
                     style={{
                       color:
-                        themeColor === appThemes.LIGHT &&
+                        appTheme === appThemes.LIGHT &&
                         theme.palette.lightTheme.contrastText,
                     }}
                   />

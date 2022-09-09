@@ -127,7 +127,7 @@ export default function JoinMeeting({
   setSelectedMic,
   setSelectedWebcam,
   mode,
-  themeColor,
+  appTheme,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -441,9 +441,9 @@ export default function JoinMeeting({
           flexDirection: "column",
           height: "100vh",
           backgroundColor:
-            themeColor === appThemes.DARK
+            appTheme === appThemes.DARK
               ? theme.palette.darkTheme.main
-              : themeColor === appThemes.LIGHT
+              : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
         }}
@@ -569,9 +569,9 @@ export default function JoinMeeting({
                                 top: 0,
                                 right: 0,
                                 backgroundColor:
-                                  themeColor === appThemes.DARK
+                                  appTheme === appThemes.DARK
                                     ? theme.palette.darkTheme.seven
-                                    : themeColor === appThemes.LIGHT
+                                    : appTheme === appThemes.LIGHT
                                     ? theme.palette.lightTheme.three
                                     : "#1C1F2E80",
                                 borderRadius: 4,
@@ -599,7 +599,7 @@ export default function JoinMeeting({
                                 >
                                   <CheckboxIcon
                                     fill={
-                                      themeColor === appThemes.LIGHT
+                                      appTheme === appThemes.LIGHT
                                         ? theme.palette.lightTheme.contrastText
                                         : "#fff"
                                     }
@@ -610,7 +610,7 @@ export default function JoinMeeting({
                                   style={{
                                     marginLeft: 4,
                                     color:
-                                      themeColor === appThemes.LIGHT &&
+                                      appTheme === appThemes.LIGHT &&
                                       theme.palette.lightTheme.contrastText,
                                   }}
                                 >
@@ -644,7 +644,7 @@ export default function JoinMeeting({
                           participantCanToggleSelfWebcam={
                             participantCanToggleSelfWebcam
                           }
-                          themeColor={themeColor}
+                          appTheme={appTheme}
                         />
                       ) : null}
 
@@ -757,14 +757,14 @@ export default function JoinMeeting({
                     onClick({ name, webcamOn, micOn });
                   }}
                   isXLOnly={isXLOnly}
-                  themeColor={themeColor}
+                  appTheme={appTheme}
                 />
               </Box>
             </Grid>
           </Grid>
 
           <ConfirmBox
-            themeColor={themeColor}
+            appTheme={appTheme}
             open={dlgMuted}
             successText="OKAY"
             onSuccess={() => {
@@ -776,7 +776,7 @@ export default function JoinMeeting({
           />
 
           <ConfirmBox
-            themeColor={themeColor}
+            appTheme={appTheme}
             open={dlgDevices}
             successText="DISMISS"
             onSuccess={() => {

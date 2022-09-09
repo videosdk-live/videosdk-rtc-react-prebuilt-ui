@@ -22,7 +22,7 @@ const PlayerViewer = () => {
     downstreamUrl,
     hlsPlayerControlsVisible,
     afterMeetingJoinedHLSState,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const lottieSize = useResponsiveSize({
@@ -127,9 +127,9 @@ const PlayerViewer = () => {
         height: "100%",
         width: "100%",
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.two
             : theme.palette.background.default,
         position: "relative",
@@ -198,7 +198,7 @@ const PlayerViewer = () => {
             <h2
               style={{
                 color:
-                  themeColor === appThemes.LIGHT
+                  appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
                 marginTop: 0,
@@ -214,7 +214,7 @@ const PlayerViewer = () => {
               <h2
                 style={{
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                   marginTop: 0,

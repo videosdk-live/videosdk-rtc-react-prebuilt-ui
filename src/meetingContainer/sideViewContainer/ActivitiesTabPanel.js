@@ -37,7 +37,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     setSideBarNestedMode,
     sideBarNestedMode,
     meetingMode,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   return sideBarNestedMode === sideBarNestedModes.POLLS ? (
@@ -80,9 +80,9 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             alignItems: "center",
             justifyContent: "center",
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.seven
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : theme.palette.common.sidePanel,
             width: "100%",
@@ -100,7 +100,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                   fontSize: 16,
                   fontWeight: 600,
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                   lineHeight: 1.5,
@@ -114,9 +114,9 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                 style={{
                   fontSize: 14,
                   color:
-                    themeColor === appThemes.DARK
+                    appTheme === appThemes.DARK
                       ? theme.palette.darkTheme.four
-                      : themeColor === appThemes.LIGHT
+                      : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.five
                       : "#9fa0a7",
                   fontWeight: 500,

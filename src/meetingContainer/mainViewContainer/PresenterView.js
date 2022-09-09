@@ -44,7 +44,7 @@ const PresenterView = ({ presenterId }) => {
     mainViewParticipants,
     meetingLayout,
     animationsEnabled,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
@@ -137,9 +137,9 @@ const PresenterView = ({ presenterId }) => {
         height: "100%",
         width: "100%",
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.two
             : "black",
         alignItems:
@@ -205,9 +205,9 @@ const PresenterView = ({ presenterId }) => {
               left: "50%",
               transform: "translate(-50%,-50%)",
               backgroundColor:
-                themeColor === appThemes.DARK
+                appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
-                  : themeColor === appThemes.LIGHT
+                  : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.two
                   : "#333244",
             }}
@@ -215,7 +215,7 @@ const PresenterView = ({ presenterId }) => {
             <ScreenShare
               style={{
                 color:
-                  themeColor === appThemes.LIGHT
+                  appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : theme.palette.common.white,
                 height: theme.spacing(6),
@@ -228,7 +228,7 @@ const PresenterView = ({ presenterId }) => {
                 style={{
                   fontWeight: "bold",
                   color:
-                    themeColor === appThemes.LIGHT
+                    appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : theme.palette.common.white,
                 }}
@@ -248,8 +248,7 @@ const PresenterView = ({ presenterId }) => {
                   transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                   transitionTimingFunction: "linear",
                   backgroundColor:
-                    themeColor === appThemes.LIGHT ||
-                    themeColor === appThemes.DARK
+                    appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                       ? theme.palette.lightTheme.primaryMain
                       : theme.palette.primary.main,
                 }}

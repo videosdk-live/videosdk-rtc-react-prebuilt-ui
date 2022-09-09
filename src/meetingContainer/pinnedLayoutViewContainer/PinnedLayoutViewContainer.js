@@ -36,7 +36,7 @@ const PinnedLayoutViewContainer = ({
     reduceEdgeSpacing,
     isRecorder,
     layoutGridSize,
-    themeColor,
+    appTheme,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -271,9 +271,9 @@ const PinnedLayoutViewContainer = ({
         height,
         width,
         backgroundColor:
-          themeColor === appThemes.DARK
+          appTheme === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
-            : themeColor === appThemes.LIGHT
+            : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.two
             : theme.palette.background.default,
         overflow: "hidden",
@@ -430,9 +430,9 @@ const PinnedLayoutViewContainer = ({
         <div
           style={{
             backgroundColor:
-              themeColor === appThemes.DARK
+              appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
-                : themeColor === appThemes.LIGHT
+                : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
                 : theme.palette.background.default,
             overflowX: "hidden",

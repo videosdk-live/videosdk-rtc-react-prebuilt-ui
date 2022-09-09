@@ -13,7 +13,7 @@ import { secondsToMinutes } from "./PollList";
 const SubmitPollListItem = ({ poll }) => {
   const timerIntervalRef = useRef();
   const theme = useTheme();
-  const { themeColor } = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -201,7 +201,7 @@ const SubmitPollListItem = ({ poll }) => {
             style={{
               fontSize: 16,
               color:
-                themeColor === appThemes.LIGHT
+                appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.contrastText
                   : "white",
               fontWeight: 600,
@@ -244,7 +244,7 @@ const SubmitPollListItem = ({ poll }) => {
                             style={{
                               fontSize: 15,
                               color:
-                                themeColor === appThemes.LIGHT
+                                appTheme === appThemes.LIGHT
                                   ? theme.palette.lightTheme.contrastText
                                   : "white",
                               fontWeight: 400,
@@ -302,9 +302,9 @@ const SubmitPollListItem = ({ poll }) => {
                             style={{
                               height: 6,
                               backgroundColor:
-                                themeColor === appThemes.DARK
+                                appTheme === appThemes.DARK
                                   ? theme.palette.darkTheme.seven
-                                  : themeColor === appThemes.LIGHT
+                                  : appTheme === appThemes.LIGHT
                                   ? theme.palette.lightTheme.three
                                   : theme.palette.common.sidePanel,
                               borderRadius: 4,
@@ -317,16 +317,16 @@ const SubmitPollListItem = ({ poll }) => {
                                 backgroundColor:
                                   hasCorrectAnswer && isActive
                                     ? isCorrectOption
-                                      ? themeColor === appThemes.LIGHT ||
-                                        themeColor === appThemes.DARK
+                                      ? appTheme === appThemes.LIGHT ||
+                                        appTheme === appThemes.DARK
                                         ? theme.palette.lightTheme.primaryMain
                                         : theme.palette.primary.main
                                       : "#9E9DA6"
                                     : maxSubmittedOptions.includes(
                                         option.optionId
                                       )
-                                    ? themeColor === appThemes.LIGHT ||
-                                      themeColor === appThemes.DARK
+                                    ? appTheme === appThemes.LIGHT ||
+                                      appTheme === appThemes.DARK
                                       ? theme.palette.lightTheme.primaryMain
                                       : theme.palette.primary.main
                                     : "#9E9DA6",
@@ -349,7 +349,7 @@ const SubmitPollListItem = ({ poll }) => {
                                 margin: 0,
                                 padding: 0,
                                 color:
-                                  themeColor === appThemes.LIGHT
+                                  appTheme === appThemes.LIGHT
                                     ? theme.palette.lightTheme.contrastText
                                     : "white",
                               }}
@@ -382,9 +382,9 @@ const SubmitPollListItem = ({ poll }) => {
                         style={{
                           marginLeft: 8,
                           backgroundColor:
-                            themeColor === appThemes.DARK
+                            appTheme === appThemes.DARK
                               ? theme.palette.darkTheme.seven
-                              : themeColor === appThemes.LIGHT
+                              : appTheme === appThemes.LIGHT
                               ? theme.palette.lightTheme.three
                               : theme.palette.common.sidePanel,
                           padding: "8px 8px 8px",
@@ -395,7 +395,7 @@ const SubmitPollListItem = ({ poll }) => {
                         <Typography
                           style={{
                             color:
-                              themeColor === appThemes.LIGHT &&
+                              appTheme === appThemes.LIGHT &&
                               theme.palette.lightTheme.contrastText,
                           }}
                         >
