@@ -19,7 +19,8 @@ function AnswerSubmittedIcon() {
       ></path>
       <path
         fill={
-          themeColor === themeColorType.LIGHT
+          themeColor === themeColorType.LIGHT ||
+          themeColor === themeColorType.DARK
             ? theme.palette.lightTheme.primaryMain
             : theme.palette.primary.main
         }

@@ -250,7 +250,8 @@ function BpCheckbox(CheckboxProps) {
       disableFocusRipple
       color="default"
       checkedIcon={
-        themeColor === themeColorType.LIGHT ? (
+        themeColor === themeColorType.LIGHT ||
+        themeColor === themeColorType.DARK ? (
           <BpCheckedLightIcon />
         ) : (
           <BpCheckedIcon />
@@ -277,7 +278,8 @@ export function MarkCorrectCheckbox(CheckboxProps) {
       disableFocusRipple
       color="default"
       checkedIcon={
-        themeColor === themeColorType.LIGHT ? (
+        themeColor === themeColorType.LIGHT ||
+        themeColor === themeColorType.DARK ? (
           <MarkCorrectCheckedLightIcon />
         ) : (
           <MarkCorrectCheckedIcon />
@@ -435,7 +437,8 @@ const CreatePollPart = ({
                             : "#404B53",
                         backgroundColor:
                           item.isCorrect && item.option !== ""
-                            ? themeColor === themeColorType.LIGHT
+                            ? themeColor === themeColorType.LIGHT ||
+                              themeColor === themeColorType.DARK
                               ? theme.palette.lightTheme.primaryMain
                               : theme.palette.primary.main
                             : themeColor === themeColorType.DARK
@@ -548,7 +551,8 @@ const CreatePollPart = ({
                 color: option.isCorrect && option.option ? "#fff" : "#404B53",
                 backgroundColor:
                   option.isCorrect && option.option
-                    ? themeColor === themeColorType.LIGHT
+                    ? themeColor === themeColorType.LIGHT ||
+                      themeColor === themeColorType.DARK
                       ? theme.palette.lightTheme.primaryMain
                       : theme.palette.primary.main
                     : themeColor === themeColorType.DARK
@@ -937,7 +941,8 @@ const PollButtonPart = ({
           marginLeft: 8,
           color: theme.palette.common.white,
           backgroundColor:
-            themeColor === themeColorType.LIGHT
+            themeColor === themeColorType.LIGHT ||
+            themeColor === themeColorType.DARK
               ? theme.palette.lightTheme.primaryMain
               : theme.palette.primary.main,
           padding: "8px",

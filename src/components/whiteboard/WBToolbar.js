@@ -66,9 +66,11 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         color="inherit"
         style={{
           backgroundColor: isSelected
-            ? themeColor === themeColorType.LIGHT
+            ? themeColor === themeColorType.LIGHT ||
+              themeColor === themeColorType.DARK
               ? "#596BFF33"
-              : themeColor === themeColorType.LIGHT
+              : themeColor === themeColorType.LIGHT ||
+                themeColor === themeColorType.DARK
               ? "#596BFF33"
               : "#D5E8FF"
             : "",
@@ -79,7 +81,8 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         <Icon
           fill={
             isSelected
-              ? themeColor === themeColorType.LIGHT
+              ? themeColor === themeColorType.LIGHT ||
+                themeColor === themeColorType.DARK
                 ? theme.palette.lightTheme.primaryMain
                 : theme.palette.primary.main
               : "black"
@@ -343,7 +346,8 @@ const WBToolbar = ({
                 tool === "squareFilled" ||
                 tool === "circle" ||
                 tool === "circleFilled"
-                  ? themeColor === themeColorType.LIGHT
+                  ? themeColor === themeColorType.LIGHT ||
+                    themeColor === themeColorType.DARK
                     ? "#596BFF33"
                     : "#D5E8FF"
                   : "",
@@ -353,7 +357,8 @@ const WBToolbar = ({
             {tool === "square" ? (
               <SquareIcon
                 fill={
-                  themeColor === themeColorType.LIGHT
+                  themeColor === themeColorType.LIGHT ||
+                  themeColor === themeColorType.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -361,7 +366,8 @@ const WBToolbar = ({
             ) : tool === "squareFilled" ? (
               <ShapeIcon
                 fill={
-                  themeColor === themeColorType.LIGHT
+                  themeColor === themeColorType.LIGHT ||
+                  themeColor === themeColorType.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -369,7 +375,8 @@ const WBToolbar = ({
             ) : tool === "circle" ? (
               <CircleIcon
                 fill={
-                  themeColor === themeColorType.LIGHT
+                  themeColor === themeColorType.LIGHT ||
+                  themeColor === themeColorType.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }
@@ -377,7 +384,8 @@ const WBToolbar = ({
             ) : tool === "circleFilled" ? (
               <CircleFilledIcon
                 fill={
-                  themeColor === themeColorType.LIGHT
+                  themeColor === themeColorType.LIGHT ||
+                  themeColor === themeColorType.DARK
                     ? theme.palette.lightTheme.primaryMain
                     : theme.palette.primary.main
                 }

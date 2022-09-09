@@ -102,7 +102,8 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                       target: "_blank",
                       style: {
                         color:
-                          themeColor === themeColorType.LIGHT
+                          themeColor === themeColorType.LIGHT ||
+                          themeColor === themeColorType.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main,
                       },
@@ -240,7 +241,8 @@ const ChatMessageInput = ({ inputHeight }) => {
                 : theme.palette.background.default,
           }}
           color={
-            themeColor === themeColorType.LIGHT
+            themeColor === themeColorType.LIGHT ||
+            themeColor === themeColorType.DARK
               ? theme.palette.lightTheme.primaryMain
               : theme.palette.primary.main
           }

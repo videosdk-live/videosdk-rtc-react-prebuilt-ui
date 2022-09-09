@@ -322,7 +322,8 @@ export default function SettingDialogueBox({
                           classes={{
                             root:
                               setting === value
-                                ? themeColor === themeColorType.LIGHT
+                                ? themeColor === themeColorType.LIGHT ||
+                                  themeColor === themeColorType.DARK
                                   ? classes.buttonLight
                                   : classes.button
                                 : undefined,
@@ -341,7 +342,8 @@ export default function SettingDialogueBox({
                                 : "white",
                             backgroundColor:
                               setting === value &&
-                              themeColor === themeColorType.LIGHT &&
+                              (themeColor === themeColorType.LIGHT ||
+                                themeColor === themeColorType.DARK) &&
                               theme.palette.lightTheme.primaryMain,
                           }}
                           variant={setting === value ? "contained" : "outlined"}

@@ -283,7 +283,8 @@ export default function MeetingDetailModal({
                   color="primary"
                   style={{
                     backgroundColor:
-                      themeColor === themeColorType.LIGHT
+                      themeColor === themeColorType.LIGHT ||
+                      themeColor === themeColorType.DARK
                         ? theme.palette.lightTheme.primaryMain
                         : theme.palette.primary.main,
                   }}

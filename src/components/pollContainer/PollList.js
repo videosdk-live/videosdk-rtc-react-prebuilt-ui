@@ -302,12 +302,14 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       style={{
                         backgroundColor: hasCorrectAnswer
                           ? isCorrectOption
-                            ? themeColor === themeColorType.LIGHT
+                            ? themeColor === themeColorType.LIGHT ||
+                              themeColor === themeColorType.DARK
                               ? theme.palette.lightTheme.primaryMain
                               : theme.palette.primary.main
                             : "#9E9DA6"
                           : maxSubmittedOptions.includes(item.optionId)
-                          ? themeColor === themeColorType.LIGHT
+                          ? themeColor === themeColorType.LIGHT ||
+                            themeColor === themeColorType.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main
                           : "#9E9DA6",
@@ -525,7 +527,8 @@ const PollList = ({ panelHeight }) => {
               width: "100%",
               color: theme.palette.common.white,
               backgroundColor:
-                themeColor === themeColorType.LIGHT
+                themeColor === themeColorType.LIGHT ||
+                themeColor === themeColorType.DARK
                   ? theme.palette.lightTheme.primaryMain
                   : theme.palette.primary.main,
               padding: "12px",

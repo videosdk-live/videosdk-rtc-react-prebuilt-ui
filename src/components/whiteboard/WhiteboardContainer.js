@@ -69,7 +69,7 @@ function WhiteboardContainer({
   const [pages, setpages] = useState(0);
   const [currentPageNo, setCurrentPageNo] = useState(1);
   const [color, setColor] = useState(
-    themeColor === themeColorType.LIGHT
+    themeColor === themeColorType.LIGHT || themeColor === themeColorType.DARK
       ? theme.palette.lightTheme.primaryMain
       : theme.palette.primary.main
   );
@@ -938,11 +938,15 @@ function WhiteboardContainer({
             size="medium"
             style={{
               color:
-                themeColor === themeColorType.LIGHT
+                themeColor === themeColorType.LIGHT ||
+                themeColor === themeColorType.DARK
                   ? theme.palette.lightTheme.primaryMain
                   : theme.palette.primary.main,
               backgroundColor:
-                themeColor === themeColorType.LIGHT ? "#596BFF33" : "#D5E8FF",
+                themeColor === themeColorType.LIGHT ||
+                themeColor === themeColorType.DARK
+                  ? "#596BFF33"
+                  : "#D5E8FF",
               fontSize: 18,
               fontWeight: "bold",
             }}
