@@ -413,7 +413,8 @@ const SubmitPollListItem = ({ poll }) => {
 };
 
 const SubmitPollList = ({ panelHeight }) => {
-  const { polls } = useMeetingAppContext();
+  const { polls, appTheme } = useMeetingAppContext();
+  const theme = useTheme();
 
   return (
     <Box
@@ -456,7 +457,14 @@ const SubmitPollList = ({ panelHeight }) => {
           >
             <NoPollActiveIcon />
             <Typography
-              style={{ color: "white", fontSize: 16, fontWeight: 700 }}
+              style={{
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+                fontSize: 16,
+                fontWeight: 700,
+              }}
             >
               No Poll has been launched yet.
             </Typography>
