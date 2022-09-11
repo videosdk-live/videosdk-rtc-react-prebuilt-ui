@@ -179,6 +179,9 @@ const MeetingContainer = () => {
     setDownstreamUrl,
     setAfterMeetingJoinedHLSState,
     appTheme,
+    recordingTheme,
+    hlsTheme,
+    liveStreamTheme,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -321,7 +324,7 @@ const MeetingContainer = () => {
       //
 
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
-        startLivestream(outputs, { layout });
+        startLivestream(outputs, { layout, theme: liveStreamTheme });
 
         liveStreamConfigPublishRef.current(
           {
@@ -337,14 +340,17 @@ const MeetingContainer = () => {
       //
 
       if (autoStartRecording && !isRecording) {
-        startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+        startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+          layout,
+          theme: recordingTheme,
+        });
       }
 
       //
       //
 
       if (autoStartHls && !isHls) {
-        startHls({ layout });
+        startHls({ layout, theme: hlsTheme });
       }
     }, 3000);
 

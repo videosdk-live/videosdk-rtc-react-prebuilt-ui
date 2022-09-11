@@ -87,6 +87,7 @@ const App = () => {
       recordingWebhookUrl: "recordingWebhookUrl",
       recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
+      recordingTheme: "recordingTheme",
       //
       brandingEnabled: "brandingEnabled",
       brandLogoURL: "brandLogoURL",
@@ -96,6 +97,7 @@ const App = () => {
       liveStreamEnabled: "liveStreamEnabled",
       autoStartLiveStream: "autoStartLiveStream",
       liveStreamOutputs: "liveStreamOutputs",
+      liveStreamTheme: "liveStreamTheme",
       //
       askJoin: "askJoin",
       //
@@ -146,6 +148,7 @@ const App = () => {
       hlsEnabled: "hlsEnabled",
       autoStartHls: "autoStartHls",
       hlsPlayerControlsVisible: "hlsPlayerControlsVisible",
+      hlsTheme: "hlsTheme",
       //
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
@@ -370,6 +373,21 @@ const App = () => {
     if (!paramKeys.theme || typeof paramKeys.theme !== "string") {
       paramKeys.theme = "DEFAULT";
     }
+    if (
+      !paramKeys.recordingTheme ||
+      typeof paramKeys.recordingTheme !== "string"
+    ) {
+      paramKeys.recordingTheme = "DEFAULT";
+    }
+    if (
+      !paramKeys.liveStreamTheme ||
+      typeof paramKeys.liveStreamTheme !== "string"
+    ) {
+      paramKeys.liveStreamTheme = "DEFAULT";
+    }
+    if (!paramKeys.hlsTheme || typeof paramKeys.hlsTheme !== "string") {
+      paramKeys.hlsTheme = "DEFAULT";
+    }
 
     if (typeof paramKeys.preferredProtocol !== "string") {
       paramKeys.preferredProtocol = "UDP_ONLY";
@@ -553,10 +571,12 @@ const App = () => {
             hlsEnabled: paramKeys.hlsEnabled === "true",
             recordingWebhookUrl: paramKeys.recordingWebhookUrl,
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
+            recordingTheme: paramKeys.recordingTheme,
             autoStartRecording: paramKeys.autoStartRecording === "true",
             autoStartHls: paramKeys.autoStartHls === "true",
             hlsPlayerControlsVisible:
               paramKeys.hlsPlayerControlsVisible === "true",
+            hlsTheme: paramKeys.hlsTheme,
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
             participantCanToggleHls:
@@ -566,6 +586,7 @@ const App = () => {
             liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
             autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
             liveStreamOutputs: paramKeys.liveStreamOutputs,
+            liveStreamTheme: paramKeys.liveStreamTheme,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0
                 ? paramKeys.brandLogoURL

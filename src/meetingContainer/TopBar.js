@@ -456,6 +456,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     recordingAWSDirPath,
     participantCanToggleRecording,
     appMeetingLayout,
+    recordingTheme,
     appTheme,
   } = useMeetingAppContext();
 
@@ -507,7 +508,10 @@ const RecordingBTN = ({ isMobile, isTab }) => {
 
     const layout = { type, priority, gridSize };
 
-    startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+    startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+      layout,
+      theme: recordingTheme,
+    });
   };
 
   const _handleClick = () => {
@@ -613,6 +617,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     liveStreamConfig,
     setSideBarMode,
     appMeetingLayout,
+    liveStreamTheme,
   } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
@@ -668,7 +673,7 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
 
     const layout = { type, priority, gridSize };
 
-    startLivestream(liveStreamConfig, { layout });
+    startLivestream(liveStreamConfig, { layout, theme: liveStreamTheme });
   };
 
   const _handleClick = () => {
@@ -778,7 +783,8 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
   const isHls = useIsHls();
 
-  const { appMeetingLayout, participantCanToggleHls } = useMeetingAppContext();
+  const { appMeetingLayout, participantCanToggleHls, hlsTheme } =
+    useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
     () => ({
@@ -839,7 +845,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
     const layout = { type, priority, gridSize };
 
-    startHls(layout);
+    startHls({ layout, theme: hlsTheme });
   };
 
   const _handleClick = () => {
