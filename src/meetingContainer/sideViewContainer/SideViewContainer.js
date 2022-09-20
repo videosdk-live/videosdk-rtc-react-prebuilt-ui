@@ -10,7 +10,11 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
-import { sideBarModes, useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  sideBarModes,
+  appThemes,
+  useMeetingAppContext,
+} from "../../MeetingAppContextDef";
 import ChatTabPanel from "./ChatTabPanel";
 import ParticipantsTabPanel from "./ParticipantsTabPanel";
 import CloseIcon from "@material-ui/icons/Close";
@@ -36,6 +40,12 @@ const useStyles = makeStyles(() => ({
       background: "transparent",
     },
   },
+  iconContainerLight: {
+    "&:hover $icon": {
+      color: "#404B53",
+      background: "transparent",
+    },
+  },
   icon: {
     color: "#9FA0A7",
     background: "transparent",
@@ -52,6 +62,7 @@ const SideBarTabView = ({ width, height }) => {
     sideBarNestedMode,
     setSideBarNestedMode,
     meetingMode,
+    appTheme,
   } = useMeetingAppContext();
   const { participants } = useMeeting();
   const value =
@@ -104,13 +115,23 @@ const SideBarTabView = ({ width, height }) => {
         paddingLeft: panelPadding,
         paddingRight: panelPadding,
         paddingBottom: panelPadding,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.main
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.main
+            : theme.palette.background.default,
       }}
     >
       <Fade in={sideBarMode}>
         <div
           style={{
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.slightLighter
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.two
+                : theme.palette.background.paper,
             height: paddedHeight,
             borderRadius: 10,
             overflow: "hidden",
@@ -135,33 +156,45 @@ const SideBarTabView = ({ width, height }) => {
                     justifyContent: "center",
                   }}
                 >
-                  {(sideBarNestedMode === "POLLS" ||
-                    sideBarNestedMode === "CREATE_POLL") && (
-                    <IconButton
-                      onClick={() => {
-                        setSideBarNestedMode(null);
-                      }}
-                      disableFocusRipple
-                      disableRipple
-                      disableTouchRipple
-                      style={{
-                        cursor: "pointer",
-                        margin: 0,
-                        padding: 0,
-                        marginLeft: -4,
-                      }}
-                      className={classes.iconbutton}
-                      classes={{
-                        root: classes.iconContainer,
-                      }}
-                    >
-                      <NavigateBeforeOutlined
-                        fontSize="medium"
-                        className={classes.icon}
-                      />
-                    </IconButton>
-                  )}
-                  <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+                  {sideBarMode === sideBarModes.ACTIVITIES &&
+                    (sideBarNestedMode === "POLLS" ||
+                      sideBarNestedMode === "CREATE_POLL") && (
+                      <IconButton
+                        onClick={() => {
+                          setSideBarNestedMode(null);
+                        }}
+                        disableFocusRipple
+                        disableRipple
+                        disableTouchRipple
+                        style={{
+                          cursor: "pointer",
+                          margin: 0,
+                          padding: 0,
+                          marginLeft: -4,
+                        }}
+                        className={classes.iconbutton}
+                        classes={{
+                          root:
+                            appTheme === appThemes.LIGHT
+                              ? classes.iconContainerLight
+                              : classes.iconContainer,
+                        }}
+                      >
+                        <NavigateBeforeOutlined
+                          fontSize="medium"
+                          className={classes.icon}
+                        />
+                      </IconButton>
+                    )}
+                  <Typography
+                    variant={"body1"}
+                    style={{
+                      fontWeight: "bold",
+                      color:
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
+                    }}
+                  >
                     {sideBarMode === "PARTICIPANTS"
                       ? `${capitalize(
                           String(sideBarMode || "").toLowerCase()
@@ -194,7 +227,10 @@ const SideBarTabView = ({ width, height }) => {
                     disableTouchRipple
                     className={classes.iconbutton}
                     classes={{
-                      root: classes.iconContainer,
+                      root:
+                        appTheme === appThemes.LIGHT
+                          ? classes.iconContainerLight
+                          : classes.iconContainer,
                     }}
                     style={{ padding: 0, margin: 0 }}
                   >
@@ -231,6 +267,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
     setSideBarMode,
     endCallContainerRef,
     animationsEnabled,
+    appTheme,
   } = useMeetingAppContext();
   const isTab = useIsTab();
   const isMobile = useIsMobile();
@@ -271,7 +308,12 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
           width,
           top: 0,
           left: 0,
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.slightLighter
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.two
+              : theme.palette.background.paper,
           flex: 1,
           flexDirection: "column",
           display: "flex",

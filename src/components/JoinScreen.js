@@ -18,6 +18,7 @@ import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
+import { appThemes } from "../MeetingAppContextDef";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -126,6 +127,7 @@ export default function JoinMeeting({
   setSelectedMic,
   setSelectedWebcam,
   mode,
+  appTheme,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -438,7 +440,12 @@ export default function JoinMeeting({
           flex: 1,
           flexDirection: "column",
           height: "100vh",
-          backgroundColor: theme.palette.background.default,
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.main
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
         }}
       >
         <Box
@@ -561,7 +568,12 @@ export default function JoinMeeting({
                                 position: "absolute",
                                 top: 0,
                                 right: 0,
-                                backgroundColor: "#1C1F2E80",
+                                backgroundColor:
+                                  appTheme === appThemes.DARK
+                                    ? theme.palette.darkTheme.seven
+                                    : appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.three
+                                    : "#1C1F2E80",
                                 borderRadius: 4,
                                 cursor: "pointer",
                               }}
@@ -579,12 +591,28 @@ export default function JoinMeeting({
                                 }}
                                 m={0.5}
                               >
-                                <IconButton style={{ margin: 0, padding: 0 }}>
-                                  <CheckboxIcon />
+                                <IconButton
+                                  style={{
+                                    margin: 0,
+                                    padding: 0,
+                                  }}
+                                >
+                                  <CheckboxIcon
+                                    fill={
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.contrastText
+                                        : "#fff"
+                                    }
+                                  />
                                 </IconButton>
                                 <Typography
                                   variant="subtitle1"
-                                  style={{ marginLeft: 4 }}
+                                  style={{
+                                    marginLeft: 4,
+                                    color:
+                                      appTheme === appThemes.LIGHT &&
+                                      theme.palette.lightTheme.contrastText,
+                                  }}
                                 >
                                   Check your audio and video
                                 </Typography>
@@ -616,6 +644,7 @@ export default function JoinMeeting({
                           participantCanToggleSelfWebcam={
                             participantCanToggleSelfWebcam
                           }
+                          appTheme={appTheme}
                         />
                       ) : null}
 
@@ -728,12 +757,14 @@ export default function JoinMeeting({
                     onClick({ name, webcamOn, micOn });
                   }}
                   isXLOnly={isXLOnly}
+                  appTheme={appTheme}
                 />
               </Box>
             </Grid>
           </Grid>
 
           <ConfirmBox
+            appTheme={appTheme}
             open={dlgMuted}
             successText="OKAY"
             onSuccess={() => {
@@ -745,6 +776,7 @@ export default function JoinMeeting({
           />
 
           <ConfirmBox
+            appTheme={appTheme}
             open={dlgDevices}
             successText="DISMISS"
             onSuccess={() => {

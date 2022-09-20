@@ -1,8 +1,15 @@
-import { Box, Button, Typography, useTheme } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  makeStyles,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   sideBarNestedModes,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
@@ -18,8 +25,19 @@ export const secondsToMinutes = (time) => {
   return minutes + " : " + seconds;
 };
 
+const useStyles = makeStyles(() => ({
+  button: {
+    "&:hover": {
+      backgroundColor: "#EEF0F2",
+    },
+  },
+}));
+
 const Poll = ({ poll, isDraft, publishDraftPoll }) => {
   const timerIntervalRef = useRef();
+  const { appTheme } = useMeetingAppContext();
+  const theme = useTheme();
+  const classes = useStyles();
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -220,7 +238,16 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           </Typography>
         </Box>
         <Box style={{ marginTop: 16 }}>
-          <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
+          <Typography
+            style={{
+              fontSize: 16,
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
+              fontWeight: 600,
+            }}
+          >
             {poll.question}
           </Typography>
           {poll.options.map((item, j) => {
@@ -241,7 +268,10 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 <Typography
                   style={{
                     fontSize: 15,
-                    color: "white",
+                    color:
+                      appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "white",
                     fontWeight: 400,
                   }}
                 >
@@ -257,7 +287,12 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                   <Box
                     style={{
                       height: 6,
-                      backgroundColor: "#3D3C4E",
+                      backgroundColor:
+                        appTheme === appThemes.DARK
+                          ? theme.palette.darkTheme.seven
+                          : appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.three
+                          : theme.palette.common.sidePanel,
                       borderRadius: 4,
                       display: "flex",
                       flex: 1,
@@ -267,10 +302,16 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       style={{
                         backgroundColor: hasCorrectAnswer
                           ? isCorrectOption
-                            ? "#1178F8"
+                            ? appTheme === appThemes.LIGHT ||
+                              appTheme === appThemes.DARK
+                              ? theme.palette.lightTheme.primaryMain
+                              : theme.palette.primary.main
                             : "#9E9DA6"
                           : maxSubmittedOptions.includes(item.optionId)
-                          ? "#1178F8"
+                          ? appTheme === appThemes.LIGHT ||
+                            appTheme === appThemes.DARK
+                            ? theme.palette.lightTheme.primaryMain
+                            : theme.palette.primary.main
                           : "#9E9DA6",
 
                         // backgroundColor: item.isCorrect ? "#1178F8" : "#9E9DA6",
@@ -290,7 +331,15 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                         justifyContent: "flex-end",
                       }}
                     >
-                      <Typography style={{ margin: 0, padding: 0 }}>
+                      <Typography
+                        style={{
+                          margin: 0,
+                          padding: 0,
+                          color:
+                            appTheme === appThemes.LIGHT &&
+                            theme.palette.lightTheme.contrastText,
+                        }}
+                      >
                         {`${Math.floor(percentage)}%`}
                       </Typography>
                     </Box>
@@ -316,7 +365,20 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 onClick={() => {
                   publishDraftPoll(poll);
                 }}
-                style={{ marginTop: equalSpacing + 2 }}
+                style={{
+                  marginTop: equalSpacing + 2,
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                  borderColor:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                }}
+                classes={{
+                  root: appTheme === appThemes.LIGHT && classes.button,
+                }}
               >
                 Launch
               </Button>
@@ -325,7 +387,20 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               <Button
                 variant="outlined"
                 size="small"
-                style={{ marginTop: equalSpacing + 2 }}
+                classes={{
+                  root: appTheme === appThemes.LIGHT && classes.button,
+                }}
+                style={{
+                  marginTop: equalSpacing + 2,
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                  borderColor:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                }}
                 onClick={() => {
                   EndPublish(
                     {
@@ -346,7 +421,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 };
 
 const PollList = ({ panelHeight }) => {
-  const { setSideBarNestedMode, polls, draftPolls } = useMeetingAppContext();
+  const { setSideBarNestedMode, polls, draftPolls, appTheme } =
+    useMeetingAppContext();
 
   const theme = useTheme();
 
@@ -450,7 +526,10 @@ const PollList = ({ panelHeight }) => {
             style={{
               width: "100%",
               color: theme.palette.common.white,
-              backgroundColor: theme.palette.primary.main,
+              backgroundColor:
+                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                  ? theme.palette.lightTheme.primaryMain
+                  : theme.palette.primary.main,
               padding: "12px",
             }}
             onClick={() => {

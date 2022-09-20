@@ -2,7 +2,7 @@ import { useTheme } from "@material-ui/core";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import React, { useMemo } from "react";
 import { useMediaQuery } from "react-responsive";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import { meetingLayouts } from "../../MeetingAppContextDef";
 import {
   calcQuality,
@@ -36,6 +36,7 @@ const PinnedLayoutViewContainer = ({
     reduceEdgeSpacing,
     isRecorder,
     layoutGridSize,
+    appTheme,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -269,7 +270,12 @@ const PinnedLayoutViewContainer = ({
       style={{
         height,
         width,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.slightLighter
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.two
+            : theme.palette.background.default,
         overflow: "hidden",
         transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
         transitionTimingFunction: "ease-in-out",
@@ -423,7 +429,12 @@ const PinnedLayoutViewContainer = ({
       ) : (
         <div
           style={{
-            backgroundColor: theme.palette.background.default,
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.slightLighter
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.two
+                : theme.palette.background.default,
             overflowX: "hidden",
             overflowY: spotlightParticipantId ? "scroll" : "hidden",
             width: spotlightParticipantId ? presentingSideBarWidth : width,

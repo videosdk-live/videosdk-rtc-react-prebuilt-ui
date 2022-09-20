@@ -9,7 +9,7 @@ function CheckboxIcon(props) {
       viewBox="0 0 14 14"
       {...props}
     >
-      <g data-name="check (1)" fill="#fff">
+      <g data-name="check (1)" fill={props.fill}>
         <path
           data-name="Path 5840"
           d="M13.124 4.96a.874.874 0 00-.875.875v6.416H1.75V1.752h6.416a.875.875 0 100-1.75H.875A.874.874 0 000 .877v12.249a.874.874 0 00.875.875h12.249a.874.874 0 00.875-.875V5.835a.874.874 0 00-.875-.875z"

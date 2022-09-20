@@ -3,7 +3,7 @@ import { fabric } from "fabric";
 import { Box, Chip, useTheme } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { useMeeting } from "@videosdk.live/react-sdk";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
 import usePrevious from "../../utils/usePrevious";
@@ -57,6 +57,7 @@ function WhiteboardContainer({
     animationsEnabled,
     notificationAlertsEnabled,
     notificationSoundEnabled,
+    appTheme,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -64,7 +65,11 @@ function WhiteboardContainer({
   //
   const [pages, setpages] = useState(0);
   const [currentPageNo, setCurrentPageNo] = useState(1);
-  const [color, setColor] = useState(theme.palette.primary.main);
+  const [color, setColor] = useState(
+    appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+      ? theme.palette.lightTheme.primaryMain
+      : theme.palette.primary.main
+  );
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
     whiteboardState.state.config?.bgColor || "#f5f7f9"
   );
@@ -929,8 +934,14 @@ function WhiteboardContainer({
             color="primary"
             size="medium"
             style={{
-              color: theme.palette.primary.main,
-              backgroundColor: "#D5E8FF",
+              color:
+                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                  ? theme.palette.lightTheme.primaryMain
+                  : theme.palette.primary.main,
+              backgroundColor:
+                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                  ? "#596BFF33"
+                  : "#D5E8FF",
               fontSize: 18,
               fontWeight: "bold",
             }}

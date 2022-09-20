@@ -6,6 +6,7 @@ import {
   OutlinedInput as Input,
   InputAdornment,
   Popover,
+  makeStyles,
 } from "@material-ui/core";
 import React, { useEffect, useRef, useState } from "react";
 import Linkify from "react-linkify";
@@ -16,6 +17,19 @@ import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
 import { formatAMPM, json_verify, nameTructed } from "../../utils/common";
 import { toArray } from "react-emoji-render";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
+
+const useStyles = makeStyles(() => ({
+  textField: {
+    "&:hover": {
+      border: "1px solid #70707033",
+      borderRadius: "4px",
+    },
+    border: "1px solid #70707033",
+    borderRadius: "4px",
+    color: "#404B53",
+  },
+}));
 
 const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const mMeeting = useMeeting();
@@ -25,6 +39,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const localSender = localParticipantId === senderId;
 
   const theme = useTheme();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <Box
@@ -42,13 +57,27 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
           paddingLeft: theme.spacing(1),
           paddingRight: theme.spacing(1),
           borderRadius: 6,
-          backgroundColor: theme.palette.common.sidePanel,
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.three
+              : theme.palette.common.sidePanel,
           display: "flex",
           flexDirection: "column",
           alignItems: localSender ? "flex-end" : "flex-start",
         }}
       >
-        <Typography style={{ color: "#ffffff80" }}>
+        <Typography
+          style={{
+            color:
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.five
+                : appTheme === appThemes.DARK
+                ? theme.palette.lightTheme.four
+                : "#ffffff80",
+          }}
+        >
           {localSender ? "You" : nameTructed(senderName, 15)}
         </Typography>
         <Box mt={0.5}>
@@ -57,6 +86,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               display: "inline-block",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
+              color:
+                appTheme === appThemes.LIGHT &&
+                theme.palette.lightTheme.contrastText,
             }}
           >
             {toArray(text).map((t, i) => (
@@ -66,7 +98,11 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                     properties={{
                       target: "_blank",
                       style: {
-                        color: theme.palette.primary.main,
+                        color:
+                          appTheme === appThemes.LIGHT ||
+                          appTheme === appThemes.DARK
+                            ? theme.palette.lightTheme.primaryMain
+                            : theme.palette.primary.main,
                       },
                     }}
                   >
@@ -82,7 +118,15 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
         <Box mt={0.5}>
           <Typography
             variant={"caption"}
-            style={{ color: "#ffffff80", fontStyle: "italic" }}
+            style={{
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : appTheme === appThemes.DARK
+                  ? theme.palette.lightTheme.five
+                  : "#ffffff80",
+              fontStyle: "italic",
+            }}
           >
             {formatAMPM(new Date(timestamp))}
           </Typography>
@@ -145,9 +189,12 @@ const ChatMessageInput = ({ inputHeight }) => {
 
   const input = useRef();
   const inputContainer = useRef();
+  const classes = useStyles();
 
   const { publish } = usePubSub("CHAT");
   const theme = useTheme();
+
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <Box
@@ -181,11 +228,20 @@ const ChatMessageInput = ({ inputHeight }) => {
           set={"google"}
           showPreview={false}
           showSkinTones={false}
-          theme={"dark"}
+          theme={appTheme === appThemes.LIGHT ? "light" : "dark"}
           style={{
-            backgroundColor: theme.palette.background.default,
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.main
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
           }}
-          color={theme.palette.primary.main}
+          color={
+            appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+              ? theme.palette.lightTheme.primaryMain
+              : theme.palette.primary.main
+          }
           onSelect={(e) => {
             setMessageText((s) => `${s}${e.native}`);
           }}
@@ -198,6 +254,9 @@ const ChatMessageInput = ({ inputHeight }) => {
         rowsMax={2}
         multiline
         ref={input}
+        classes={{
+          root: appTheme === appThemes.LIGHT && classes.textField,
+        }}
         placeholder="Write your message"
         fullWidth
         value={messageText}
@@ -227,7 +286,14 @@ const ChatMessageInput = ({ inputHeight }) => {
                     setEmojiOpen(true);
                   }}
                 >
-                  <InsertEmoticonIcon fontSize={"small"} />
+                  <InsertEmoticonIcon
+                    fontSize={"small"}
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
+                    }}
+                  />
                 </IconButton>
               </Box>
               <Box>
@@ -244,7 +310,14 @@ const ChatMessageInput = ({ inputHeight }) => {
                     }
                   }}
                 >
-                  <SendIcon fontSize={"small"} />
+                  <SendIcon
+                    fontSize={"small"}
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
+                    }}
+                  />
                 </IconButton>
               </Box>
             </Box>

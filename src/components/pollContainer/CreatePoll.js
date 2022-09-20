@@ -20,6 +20,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { usePubSub } from "@videosdk.live/react-sdk";
 import {
   sideBarNestedModes,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import CloseIcon from "@material-ui/icons/Close";
@@ -30,11 +31,46 @@ const useStyles = makeStyles(() => ({
     color: "white",
     fontWeight: 400,
   },
-
+  textFieldLight: {
+    "& .MuiInputBase-input": {
+      fontSize: "16px",
+      fontWeight: 400,
+      color: "#404B53",
+      // backgroundColor: "#D1D6DE",
+    },
+  },
+  textFieldSelected: {
+    "& .MuiInputBase-input": {
+      fontSize: "16px",
+      fontWeight: 400,
+      color: "#fff",
+      // backgroundColor: "#D1D6DE",
+    },
+  },
   textFieldRoot: {
     "& .MuiInputBase-input": {
       fontSize: "16px",
       fontWeight: 400,
+    },
+  },
+  textFieldRootLight: {
+    "& .MuiInputBase-input": {
+      fontSize: "16px",
+      fontWeight: 400,
+      color: "#404B53",
+    },
+  },
+  paperDark: {
+    background: "#232830",
+    color: "#fff",
+  },
+  paperLight: {
+    background: "#EFF0F2",
+    color: "#404B53",
+  },
+  listItem: {
+    "&:hover ": {
+      backgroundColor: "#404B531a !important",
     },
   },
 
@@ -45,20 +81,45 @@ const useStyles = makeStyles(() => ({
     borderRadius: "4px",
   },
 
-  checkbox1: {
-    "&$checked": {
-      color: "#1178F8",
-    },
-  },
+  // checkbox1: {
+  //   "&$checked": {
+  //     color: "#1178F8",
+  //   },
+  // },
 
   selectRoot: {
     "& .MuiInputBase-input ": {
       padding: "0px 24px 0px 0",
+      // color: "#fff",
+      borderBottom: "1px solid #404B53",
     },
+    "&:hover": {
+      borderBottom: "1px solid #404B53",
+    },
+  },
+  textFieldBorder: {
+    "&:hover:not(.Mui-disabled):after": {
+      borderBottom: "none",
+    },
+    "&:hover:not(.Mui-disabled):before": {
+      borderBottom: "none", // String should be terminated
+    },
+  },
+  selectIcon: {
+    color: "#fff",
+  },
+  selectIconLight: {
+    color: "#404B53",
   },
 
   iconbutton: {
     "&:hover ": {
+      background: "transparent",
+    },
+  },
+  iconContainerLight: {
+    "&:hover $icon": {
+      color: "#404B53",
       background: "transparent",
     },
   },
@@ -68,28 +129,31 @@ const useStyles = makeStyles(() => ({
       background: "transparent",
     },
   },
-
   icon: {
     color: "#9FA0A7",
     background: "transparent",
   },
-
-  checkbox: {
-    "&. .MuiCheckbox-colorSecondary": {
-      color: "#1178F8",
-    },
-    "& .MuiCheckbox-colorSecondary.Mui-checked ": {
-      backgroundColor: "#1178F8",
-      color: "#1178F8",
-    },
-    "& .Mui-checked": {
-      backgroundColor: "#1178F8",
-      color: "#1178F8",
-    },
-    "& .MuiCheckbox-root": {
-      color: "#fff",
-    },
+  iconSelected: {
+    color: "#fff",
+    background: "transparent",
   },
+
+  // checkbox: {
+  //   "&. .MuiCheckbox-colorSecondary": {
+  //     color: "#1178F8",
+  //   },
+  //   "& .MuiCheckbox-colorSecondary.Mui-checked ": {
+  //     backgroundColor: "#1178F8",
+  //     color: "#1178F8",
+  //   },
+  //   "& .Mui-checked": {
+  //     backgroundColor: "#1178F8",
+  //     color: "#1178F8",
+  //   },
+  //   "& .MuiCheckbox-root": {
+  //     color: "#fff",
+  //   },
+  // },
 }));
 
 const BpIcon = styled("span")(({ theme }) => ({
@@ -133,6 +197,36 @@ const BpCheckedIcon = styled(BpIcon)({
   },
 });
 
+const BpCheckedLightIcon = styled(BpIcon)({
+  backgroundColor: "#596BFF",
+  border: "2px solid #596BFF",
+  "&:before": {
+    display: "block",
+    width: 16,
+    height: 16,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+});
+
+const MarkCorrectCheckedLightIcon = styled(MarkCorrectIcon)({
+  backgroundColor: "#596BFF",
+  border: "2px solid #596BFF",
+  "&:before": {
+    display: "block",
+    width: 16,
+    height: 16,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+});
+
 const MarkCorrectCheckedIcon = styled(MarkCorrectIcon)({
   backgroundColor: "#1178F8",
   border: "2px solid #1178F8",
@@ -149,12 +243,19 @@ const MarkCorrectCheckedIcon = styled(MarkCorrectIcon)({
 });
 
 function BpCheckbox(CheckboxProps) {
+  const { appTheme } = useMeetingAppContext();
   return (
     <Checkbox
       disableRipple
       disableFocusRipple
       color="default"
-      checkedIcon={<BpCheckedIcon />}
+      checkedIcon={
+        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? (
+          <BpCheckedLightIcon />
+        ) : (
+          <BpCheckedIcon />
+        )
+      }
       icon={<BpIcon />}
       style={{
         paddingTop: 0,
@@ -169,12 +270,19 @@ function BpCheckbox(CheckboxProps) {
 }
 
 export function MarkCorrectCheckbox(CheckboxProps) {
+  const { appTheme } = useMeetingAppContext();
   return (
     <Radio
       disableRipple
       disableFocusRipple
       color="default"
-      checkedIcon={<MarkCorrectCheckedIcon />}
+      checkedIcon={
+        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? (
+          <MarkCorrectCheckedLightIcon />
+        ) : (
+          <MarkCorrectCheckedIcon />
+        )
+      }
       icon={<MarkCorrectIcon />}
       style={{
         padding: 0,
@@ -207,7 +315,9 @@ const CreatePollPart = ({
   correctAnswerErr,
   minOptionErr,
   optionErr,
+  appTheme,
 }) => {
+  const theme = useTheme();
   const createOptionRef = useRef(null);
   //for timer
   const pollTimerArr = useMemo(() => {
@@ -238,12 +348,25 @@ const CreatePollPart = ({
     >
       <TextField
         variant="standard"
-        style={{ width: "100%", borderBottom: "1px solid #3D3C4E" }}
+        style={{
+          width: "100%",
+          borderBottom: `1px solid ${
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.three
+              : theme.palette.common.sidePanel
+          }`,
+        }}
         placeholder="What you want to ask ?"
         autoFocus
         InputProps={{
           classes: {
-            root: classes.textFieldRoot,
+            underline: classes.textFieldBorder,
+            root:
+              appTheme === appThemes.LIGHT
+                ? classes.textFieldRootLight
+                : classes.textFieldRoot,
           },
         }}
         value={question}
@@ -306,15 +429,31 @@ const CreatePollPart = ({
                       className={classes.root}
                       style={{
                         marginLeft: isMarkAsCorrectChecked ? 8 : 0,
+                        color:
+                          option.isCorrect && option.option
+                            ? "#fff"
+                            : "#404B53",
                         backgroundColor:
                           item.isCorrect && item.option !== ""
-                            ? "#1178F8"
-                            : "#3D3C4E",
+                            ? appTheme === appThemes.LIGHT ||
+                              appTheme === appThemes.DARK
+                              ? theme.palette.lightTheme.primaryMain
+                              : theme.palette.primary.main
+                            : appTheme === appThemes.DARK
+                            ? theme.palette.darkTheme.seven
+                            : appTheme === appThemes.LIGHT
+                            ? theme.palette.lightTheme.three
+                            : theme.palette.common.sidePanel,
                       }}
                       InputProps={{
                         disableUnderline: true,
                         classes: {
-                          root: classes.textField,
+                          root:
+                            item.isCorrect && item.option !== ""
+                              ? classes.textFieldSelected
+                              : appTheme === appThemes.LIGHT
+                              ? classes.textFieldRootLight
+                              : classes.textField,
                         },
                         endAdornment: (
                           <IconButton
@@ -333,13 +472,21 @@ const CreatePollPart = ({
                             disableTouchRipple
                             className={classes.iconbutton}
                             classes={{
-                              root: classes.iconContainer,
+                              root:
+                                appTheme === appThemes.LIGHT
+                                  ? classes.iconContainerLight
+                                  : classes.iconContainer,
                             }}
                             style={{ padding: 0, margin: 0 }}
                           >
                             <CloseIcon
                               fontSize={"small"}
-                              className={classes.icon}
+                              // className={classes.icon}
+                              className={
+                                item.isCorrect && item.option !== ""
+                                  ? classes.iconSelected
+                                  : classes.icon
+                              }
                             />
                           </IconButton>
                         ),
@@ -399,13 +546,28 @@ const CreatePollPart = ({
               className={classes.root}
               style={{
                 marginLeft: isMarkAsCorrectChecked && option.option ? 8 : 0,
+                color: option.isCorrect && option.option ? "#fff" : "#404B53",
                 backgroundColor:
-                  option.isCorrect && option.option ? "#1178F8" : "#3D3C4E",
+                  option.isCorrect && option.option
+                    ? appTheme === appThemes.LIGHT ||
+                      appTheme === appThemes.DARK
+                      ? theme.palette.lightTheme.primaryMain
+                      : theme.palette.primary.main
+                    : appTheme === appThemes.DARK
+                    ? theme.palette.darkTheme.seven
+                    : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.three
+                    : theme.palette.common.sidePanel,
               }}
               InputProps={{
                 disableUnderline: true,
                 classes: {
-                  root: classes.textField,
+                  root:
+                    option.isCorrect && option.option
+                      ? classes.textFieldSelected
+                      : appTheme === appThemes.LIGHT
+                      ? classes.textFieldRootLight
+                      : classes.textField,
                 },
               }}
             />
@@ -436,11 +598,20 @@ const CreatePollPart = ({
                 style={{
                   marginLeft: 0,
                   marginTop: 16,
+                  backgroundColor:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.seven
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.three
+                      : theme.palette.common.sidePanel,
                 }}
                 InputProps={{
                   disableUnderline: true,
                   classes: {
-                    root: classes.textField,
+                    root:
+                      appTheme === appThemes.LIGHT
+                        ? classes.textFieldLight
+                        : classes.textField,
                   },
                 }}
               />
@@ -471,7 +642,12 @@ const CreatePollPart = ({
               }}
             >
               <FormControlLabel
-                style={{ color: "white" }}
+                style={{
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                }}
                 control={
                   <BpCheckbox
                     onClick={() => {
@@ -479,7 +655,19 @@ const CreatePollPart = ({
                     }}
                   />
                 }
-                label="Mark correct option"
+                label={
+                  <Typography
+                    variant="body1"
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
+                    }}
+                  >
+                    Mark correct option
+                  </Typography>
+                }
               />
             </FormGroup>
             {correctAnswerErr && (
@@ -498,6 +686,10 @@ const CreatePollPart = ({
                   flexDirection: "row",
                   alignItems: "center",
                   marginTop: 14,
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
                 }}
               >
                 <FormGroup
@@ -505,10 +697,19 @@ const CreatePollPart = ({
                     display: "flex",
                     paddingLeft: 6,
                     justifyContent: "center",
+                    color:
+                      appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "white",
                   }}
                 >
                   <FormControlLabel
-                    style={{ color: "white" }}
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
+                    }}
                     control={
                       <BpCheckbox
                         onClick={(e) => {
@@ -516,7 +717,19 @@ const CreatePollPart = ({
                         }}
                       />
                     }
-                    label="Set timer"
+                    label={
+                      <Typography
+                        variant="body1"
+                        style={{
+                          color:
+                            appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white",
+                        }}
+                      >
+                        Set Timer
+                      </Typography>
+                    }
                   />
                 </FormGroup>
                 {isSetTimerChecked && (
@@ -526,10 +739,39 @@ const CreatePollPart = ({
                       setTimer(e.target.value);
                     }}
                     className={classes.selectRoot}
+                    classes={{
+                      icon:
+                        appTheme === appThemes.LIGHT
+                          ? classes.selectIconLight
+                          : classes.selectIcon,
+                    }}
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
+                    }}
+                    MenuProps={{
+                      classes: {
+                        paper:
+                          appTheme === appThemes.LIGHT
+                            ? classes.paperLight
+                            : appTheme === appThemes.DARK
+                            ? classes.paperDark
+                            : "",
+                      },
+                    }}
                   >
                     {pollTimerArr.map((item) => {
                       return (
-                        <MenuItem value={item.value}>{item.Label}</MenuItem>
+                        <MenuItem
+                          className={
+                            appTheme === appThemes.LIGHT && classes.listItem
+                          }
+                          value={item.value}
+                        >
+                          {item.Label}
+                        </MenuItem>
                       );
                     })}
                   </Select>
@@ -567,7 +809,7 @@ const PollButtonPart = ({
   setMinOptionErr,
   setOptionErr,
 }) => {
-  const { polls } = useMeetingAppContext();
+  const { polls, appTheme } = useMeetingAppContext();
 
   const singleOption = options?.map((option) => {
     return option.option;
@@ -643,8 +885,16 @@ const PollButtonPart = ({
         variant="contained"
         style={{
           width: "50%",
-          backgroundColor: theme.palette.common.sidePanel,
-          color: theme.palette.common.white,
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.three
+              : theme.palette.common.sidePanel,
+          color:
+            appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.contrastText
+              : theme.palette.common.white,
           padding: "8px",
           boxShadow: "none",
         }}
@@ -687,7 +937,10 @@ const PollButtonPart = ({
           width: "50%",
           marginLeft: 8,
           color: theme.palette.common.white,
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor:
+            appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+              ? theme.palette.lightTheme.primaryMain
+              : theme.palette.primary.main,
           padding: "8px",
           boxShadow: "none",
         }}
@@ -737,7 +990,7 @@ const CreatePoll = ({ panelHeight }) => {
     xs: 4,
   });
 
-  const { setSideBarNestedMode } = useMeetingAppContext();
+  const { setSideBarNestedMode, appTheme } = useMeetingAppContext();
   const classes = useStyles();
   const [isMarkAsCorrectChecked, setIsMarkAsCorrectChecked] = useState(false);
   const [isSetTimerChecked, setIsSetTimerChecked] = useState(false);
@@ -813,6 +1066,7 @@ const CreatePoll = ({ panelHeight }) => {
           correctAnswerErr={correctAnswerErr}
           minOptionErr={minOptionErr}
           optionErr={optionErr}
+          appTheme={appTheme}
         />
         <PollButtonPart
           theme={theme}

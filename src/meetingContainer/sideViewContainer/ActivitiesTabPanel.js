@@ -12,6 +12,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import CreatePoll from "../../components/pollContainer/CreatePoll";
 import {
   sideBarNestedModes,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import PollList from "../../components/pollContainer/PollList";
@@ -36,6 +37,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     setSideBarNestedMode,
     sideBarNestedMode,
     meetingMode,
+    appTheme,
   } = useMeetingAppContext();
 
   return sideBarNestedMode === sideBarNestedModes.POLLS ? (
@@ -77,7 +79,12 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: theme.palette.common.sidePanel,
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.seven
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.three
+                : theme.palette.common.sidePanel,
             width: "100%",
             marginBottom: 12,
             borderRadius: 4,
@@ -92,7 +99,10 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                 style={{
                   fontSize: 16,
                   fontWeight: 600,
-                  color: "white",
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
                   lineHeight: 1.5,
                   marginTop: 6,
                   marginBottom: 0,
@@ -103,8 +113,13 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
               <h2
                 style={{
                   fontSize: 14,
-                  color: "#9fa0a7",
-                  fontWeight: 400,
+                  color:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.four
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.five
+                      : "#9fa0a7",
+                  fontWeight: 500,
                   lineHeight: 1.43,
                   marginTop: 0,
                   marginBottom: 6,

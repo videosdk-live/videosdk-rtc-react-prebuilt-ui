@@ -3,7 +3,7 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@material-ui/core";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import {
   invertColor,
   getRandomColor,
@@ -48,6 +48,7 @@ export const CornerDisplayName = ({
     animationsEnabled,
     alwaysShowOverlay,
     networkBarEnabled,
+    appTheme,
   } = useMeetingAppContext();
 
   const defaultOptions = {
@@ -136,7 +137,10 @@ export const CornerDisplayName = ({
           paddingLeft: isMobile ? 4 : isTab ? 6 : 8,
           paddingRight: isMobile ? 4 : isTab ? 6 : 8,
           transform: `scale(${show ? 1 : 0})`,
-          backgroundColor: "#00000066",
+          backgroundColor:
+            appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.three
+              : "#00000066",
           borderRadius: 6,
           display: "flex",
           alignItems: "center",
@@ -161,6 +165,9 @@ export const CornerDisplayName = ({
             display: "flex",
             alignItems: "center",
             lineHeight: 1,
+            color:
+              appTheme === appThemes.LIGHT &&
+              theme.palette.lightTheme.contrastText,
           }}
         >
           {isPresenting
@@ -271,6 +278,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     animationsEnabled,
     isRecorder,
     maintainVideoAspectRatio,
+    appTheme,
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
@@ -306,7 +314,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [webcamStream, webcamOn]);
 
-  const participantAccentColor = useMemo(() => getRandomColor("light"), []);
+  const participantAccentColor = useMemo(
+    () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
+    []
+  );
 
   const theme = useTheme();
 
@@ -435,7 +446,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
         style={{
           height: "100%",
           width: "100%",
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.slightLighter
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.two
+              : theme.palette.background.paper,
           position: "relative",
           overflow: "hidden",
           borderRadius: theme.spacing(1),

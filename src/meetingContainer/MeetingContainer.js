@@ -5,6 +5,7 @@ import TopBar from "./TopBar";
 import {
   meetingLayouts,
   sideBarNestedModes,
+  appThemes,
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
@@ -177,6 +178,10 @@ const MeetingContainer = () => {
     isRecorder,
     setDownstreamUrl,
     setAfterMeetingJoinedHLSState,
+    appTheme,
+    recordingTheme,
+    hlsTheme,
+    liveStreamTheme,
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -319,7 +324,7 @@ const MeetingContainer = () => {
       //
 
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
-        startLivestream(outputs, { layout });
+        startLivestream(outputs, { layout, theme: liveStreamTheme });
 
         liveStreamConfigPublishRef.current(
           {
@@ -335,14 +340,17 @@ const MeetingContainer = () => {
       //
 
       if (autoStartRecording && !isRecording) {
-        startRecording(recordingWebhookUrl, recordingAWSDirPath, { layout });
+        startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+          layout,
+          theme: recordingTheme,
+        });
       }
 
       //
       //
 
       if (autoStartHls && !isHls) {
-        startHls({ layout });
+        startHls({ layout, theme: hlsTheme });
       }
     }, 3000);
 
@@ -742,7 +750,17 @@ const MeetingContainer = () => {
   return (
     <div
       ref={containerRef}
-      style={{ height: "100vh", overflow: "hidden", position: "relative" }}
+      style={{
+        height: "100vh",
+        overflow: "hidden",
+        position: "relative",
+        backgroundColor:
+          appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.main
+            : appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.main
+            : theme.palette.background.default,
+      }}
     >
       <ConfirmBox
         open={meetingError}
@@ -856,7 +874,12 @@ const MeetingContainer = () => {
               height: "100vh",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: theme.palette.background.default,
+              backgroundColor:
+                appTheme === appThemes.DARK
+                  ? theme.palette.darkTheme.slightLighter
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.two
+                  : theme.palette.background.default,
             }}
           >
             <CircularProgress size={"4rem"} />

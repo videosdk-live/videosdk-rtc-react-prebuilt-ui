@@ -5,7 +5,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
 import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animation.json";
 import { appEvents, eventEmitter } from "../../utils/common";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
 
 export async function sleep(ms) {
@@ -22,6 +22,7 @@ const PlayerViewer = () => {
     downstreamUrl,
     hlsPlayerControlsVisible,
     afterMeetingJoinedHLSState,
+    appTheme,
   } = useMeetingAppContext();
 
   const lottieSize = useResponsiveSize({
@@ -125,7 +126,12 @@ const PlayerViewer = () => {
       style={{
         height: "100%",
         width: "100%",
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.slightLighter
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.two
+            : theme.palette.background.default,
         position: "relative",
         overflow: "hidden",
         borderRadius: theme.spacing(1),
@@ -191,7 +197,10 @@ const PlayerViewer = () => {
             />
             <h2
               style={{
-                color: "white",
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
                 marginTop: 0,
                 marginBottom: 4,
                 textAlign: "center",
@@ -202,7 +211,16 @@ const PlayerViewer = () => {
                 : "Waiting for host to start live stream."}
             </h2>
             {afterMeetingJoinedHLSState !== "STOPPED" && (
-              <h2 style={{ color: "white", marginTop: 0, textAlign: "center" }}>
+              <h2
+                style={{
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
+                  marginTop: 0,
+                  textAlign: "center",
+                }}
+              >
                 Meanwhile, take a few deep breaths.
               </h2>
             )}

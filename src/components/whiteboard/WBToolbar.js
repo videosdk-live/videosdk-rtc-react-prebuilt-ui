@@ -23,7 +23,7 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from "../../icons";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
 import UploadImageIcon from "../../icons/UploadImageIcon";
 
@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <Tooltip title={title} arrow placement="right">
@@ -61,12 +62,26 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
         className={classes.btnTool}
         color="inherit"
         style={{
-          backgroundColor: isSelected ? "#D5E8FF" : "",
+          backgroundColor: isSelected
+            ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+              ? "#596BFF33"
+              : appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+              ? "#596BFF33"
+              : "#D5E8FF"
+            : "",
           borderRadius: 6,
         }}
         onClick={onClick}
       >
-        <Icon fill={isSelected ? theme.palette.primary.main : "black"} />
+        <Icon
+          fill={
+            isSelected
+              ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                ? theme.palette.lightTheme.primaryMain
+                : theme.palette.primary.main
+              : "black"
+          }
+        />
       </ButtonBase>
     </Tooltip>
   );
@@ -85,6 +100,7 @@ const CustomColorPicker = ({
   Icon,
 }) => {
   const classes = useStyles();
+  const { appTheme } = useMeetingAppContext();
 
   return (
     <>
@@ -97,7 +113,8 @@ const CustomColorPicker = ({
             setColorPicker(e.currentTarget);
           }}
           style={{
-            backgroundColor: `#D5E8FF`,
+            backgroundColor:
+              appTheme === appThemes.LIGHT ? "#596BFF33" : `#D5E8FF`,
             borderRadius: 6,
           }}
         >
@@ -262,7 +279,7 @@ const WBToolbar = ({
 
   const open = Boolean(anchorEl);
 
-  const { canDrawOnWhiteboard } = useMeetingAppContext();
+  const { canDrawOnWhiteboard, appTheme } = useMeetingAppContext();
 
   useEffect(() => {
     setColor(parentColor);
@@ -323,19 +340,45 @@ const WBToolbar = ({
                 tool === "squareFilled" ||
                 tool === "circle" ||
                 tool === "circleFilled"
-                  ? "#D5E8FF"
+                  ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                    ? "#596BFF33"
+                    : "#D5E8FF"
                   : "",
               borderRadius: 6,
             }}
           >
             {tool === "square" ? (
-              <SquareIcon fill={theme.palette.primary.main} />
+              <SquareIcon
+                fill={
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : tool === "squareFilled" ? (
-              <ShapeIcon fill={theme.palette.primary.main} />
+              <ShapeIcon
+                fill={
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : tool === "circle" ? (
-              <CircleIcon fill={theme.palette.primary.main} />
+              <CircleIcon
+                fill={
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : tool === "circleFilled" ? (
-              <CircleFilledIcon fill={theme.palette.primary.main} />
+              <CircleFilledIcon
+                fill={
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                    ? theme.palette.lightTheme.primaryMain
+                    : theme.palette.primary.main
+                }
+              />
             ) : (
               <ShapeIcon fill={"#000"} />
             )}

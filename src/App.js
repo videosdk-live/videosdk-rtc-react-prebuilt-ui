@@ -6,6 +6,7 @@ import {
   meetingLayoutPriorities,
   meetingLayouts,
   meetingLayoutTopics,
+  appThemes,
 } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
@@ -66,6 +67,7 @@ const App = () => {
       pollEnabled: "pollEnabled",
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
+      theme: "theme",
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
@@ -85,6 +87,7 @@ const App = () => {
       recordingWebhookUrl: "recordingWebhookUrl",
       recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
+      recordingTheme: "recordingTheme",
       //
       brandingEnabled: "brandingEnabled",
       brandLogoURL: "brandLogoURL",
@@ -94,6 +97,7 @@ const App = () => {
       liveStreamEnabled: "liveStreamEnabled",
       autoStartLiveStream: "autoStartLiveStream",
       liveStreamOutputs: "liveStreamOutputs",
+      liveStreamTheme: "liveStreamTheme",
       //
       askJoin: "askJoin",
       //
@@ -144,6 +148,7 @@ const App = () => {
       hlsEnabled: "hlsEnabled",
       autoStartHls: "autoStartHls",
       hlsPlayerControlsVisible: "hlsPlayerControlsVisible",
+      hlsTheme: "hlsTheme",
       //
       // liveStreamLayoutType: "liveStreamLayoutType",
       // liveStreamLayoutPriority: "liveStreamLayoutPriority",
@@ -365,6 +370,24 @@ const App = () => {
     if (!paramKeys.region || typeof paramKeys.region !== "string") {
       paramKeys.region = "sg001";
     }
+    if (!paramKeys.theme || typeof paramKeys.theme !== "string") {
+      paramKeys.theme = "DEFAULT";
+    }
+    if (
+      !paramKeys.recordingTheme ||
+      typeof paramKeys.recordingTheme !== "string"
+    ) {
+      paramKeys.recordingTheme = "DEFAULT";
+    }
+    if (
+      !paramKeys.liveStreamTheme ||
+      typeof paramKeys.liveStreamTheme !== "string"
+    ) {
+      paramKeys.liveStreamTheme = "DEFAULT";
+    }
+    if (!paramKeys.hlsTheme || typeof paramKeys.hlsTheme !== "string") {
+      paramKeys.hlsTheme = "DEFAULT";
+    }
 
     if (typeof paramKeys.preferredProtocol !== "string") {
       paramKeys.preferredProtocol = "UDP_ONLY";
@@ -510,7 +533,12 @@ const App = () => {
             height: "100vh",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: theme.palette.background.default,
+            backgroundColor:
+              paramKeys.theme === appThemes.DARK
+                ? theme.palette.darkTheme.main
+                : paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
           }}
         >
           <CircularProgress size={"4rem"} />
@@ -543,10 +571,12 @@ const App = () => {
             hlsEnabled: paramKeys.hlsEnabled === "true",
             recordingWebhookUrl: paramKeys.recordingWebhookUrl,
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
+            recordingTheme: paramKeys.recordingTheme,
             autoStartRecording: paramKeys.autoStartRecording === "true",
             autoStartHls: paramKeys.autoStartHls === "true",
             hlsPlayerControlsVisible:
               paramKeys.hlsPlayerControlsVisible === "true",
+            hlsTheme: paramKeys.hlsTheme,
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
             participantCanToggleHls:
@@ -556,6 +586,7 @@ const App = () => {
             liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
             autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
             liveStreamOutputs: paramKeys.liveStreamOutputs,
+            liveStreamTheme: paramKeys.liveStreamTheme,
             brandLogoURL:
               paramKeys.brandLogoURL?.length > 0
                 ? paramKeys.brandLogoURL
@@ -614,6 +645,7 @@ const App = () => {
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
+            appTheme: paramKeys.theme,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
@@ -693,6 +725,7 @@ const App = () => {
               : paramKeys.participantCanToggleSelfMic
           }
           mode={paramKeys.mode}
+          appTheme={paramKeys.theme}
         />
       ) : (
         <ClickAnywhereToContinue

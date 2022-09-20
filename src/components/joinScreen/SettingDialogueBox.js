@@ -18,6 +18,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import useWindowSize from "../../utils/useWindowSize";
 import ConfirmBox from "../ConfirmBox";
+import { appThemes } from "../../MeetingAppContextDef";
 
 const AudioAnalyser = ({ audioTrack }) => {
   const theme = useTheme();
@@ -141,10 +142,31 @@ const AudioAnalyser = ({ audioTrack }) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  toggleSelected: {
-    backgroundColor: "#1178F8",
+  selectIcon: {
+    color: "#404B53",
+  },
+  menuRoot: {
+    color: "#404B53 !important",
+    backgroundColor: "#EEF0F2 !important",
+  },
+  paperDark: {
+    background: "#232830",
     color: "#fff",
   },
+  paperLight: {
+    background: "#EFF0F2",
+    color: "#404B53",
+  },
+  listItem: {
+    "&:hover ": {
+      backgroundColor: "#404B531a !important",
+    },
+  },
+
+  // toggleSelected: {
+  //   backgroundColor: "#1178F8",
+  //   color: "#fff",
+  // },
   video: {
     borderRadius: "6px",
     backgroundColor: "#1c1c1c",
@@ -159,6 +181,11 @@ const useStyles = makeStyles((theme) => ({
   button: {
     "&:hover": {
       backgroundColor: "#1178F8",
+    },
+  },
+  buttonLight: {
+    "&:hover": {
+      backgroundColor: "#596BFF",
     },
   },
 }));
@@ -179,6 +206,7 @@ export default function SettingDialogueBox({
   audioTrack,
   participantCanToggleSelfMic,
   participantCanToggleSelfWebcam,
+  appTheme,
 }) {
   const theme = useTheme();
   const classes = useStyles();
@@ -229,6 +257,12 @@ export default function SettingDialogueBox({
                 flexDirection: "column",
                 overflow: "hidden",
                 borderRadius: "4px",
+                backgroundColor:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.two
+                    : appTheme === appThemes.DARK
+                    ? theme.palette.darkTheme.slightLighter
+                    : "",
               }}
             >
               <Box
@@ -244,10 +278,24 @@ export default function SettingDialogueBox({
                       handleClose();
                     }}
                   >
-                    <CloseIcon></CloseIcon>
+                    <CloseIcon
+                      style={{
+                        color:
+                          appTheme === appThemes.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
+                      }}
+                    ></CloseIcon>
                   </IconButton>
                 </Box>
-                <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                <Typography
+                  variant="h5"
+                  style={{
+                    fontWeight: "bold",
+                    color:
+                      appTheme === appThemes.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                >
                   Settings
                 </Typography>
               </Box>
@@ -273,13 +321,41 @@ export default function SettingDialogueBox({
                         <Button
                           classes={{
                             root:
-                              setting === value ? classes.button : undefined,
+                              setting === value
+                                ? appTheme === appThemes.LIGHT ||
+                                  appTheme === appThemes.DARK
+                                  ? classes.buttonLight
+                                  : classes.button
+                                : undefined,
                           }}
-                          style={{ borderRadius: 0 }}
+                          style={{
+                            borderRadius: 0,
+                            color:
+                              appTheme === appThemes.LIGHT
+                                ? setting === value
+                                  ? "white"
+                                  : theme.palette.lightTheme.contrastText
+                                : "white",
+                            borderColor:
+                              appTheme === appThemes.LIGHT
+                                ? theme.palette.lightTheme.three
+                                : "white",
+                            backgroundColor:
+                              setting === value &&
+                              (appTheme === appThemes.LIGHT ||
+                                appTheme === appThemes.DARK) &&
+                              theme.palette.lightTheme.primaryMain,
+                          }}
                           variant={setting === value ? "contained" : "outlined"}
                           disableElevation
                           disableRipple
-                          color={setting === value ? "primary" : "white"}
+                          color={
+                            setting === value
+                              ? "primary"
+                              : appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white"
+                          }
                           size={"large"}
                           onClick={() => {
                             handleSetting(null, value);
@@ -312,7 +388,12 @@ export default function SettingDialogueBox({
                             <Box ml={2}>
                               <Typography
                                 variant="subtitle1"
-                                style={{ fontWeight: "bold" }}
+                                style={{
+                                  fontWeight: "bold",
+                                  color:
+                                    appTheme === appThemes.LIGHT &&
+                                    theme.palette.lightTheme.contrastText,
+                                }}
                               >
                                 Microphone
                               </Typography>
@@ -325,6 +406,29 @@ export default function SettingDialogueBox({
                                 fullWidth
                                 variant="outlined"
                                 value={audioTrack?.getSettings()?.deviceId}
+                                MenuProps={{
+                                  classes: {
+                                    paper:
+                                      appTheme === appThemes.LIGHT
+                                        ? classes.paperLight
+                                        : appTheme === appThemes.DARK
+                                        ? classes.paperDark
+                                        : "",
+                                  },
+                                }}
+                                classes={{
+                                  icon: classes.selectIcon,
+                                }}
+                                style={{
+                                  border: `1px solid ${
+                                    appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.three
+                                      : "white"
+                                  }`,
+                                  color:
+                                    appTheme === appThemes.LIGHT &&
+                                    theme.palette.lightTheme.contrastText,
+                                }}
                                 onChange={(e) => {
                                   changeMic(e.target.value);
                                 }}
@@ -332,6 +436,10 @@ export default function SettingDialogueBox({
                                 {mics?.map((item) => {
                                   return item?.kind === "audioinput" ? (
                                     <MenuItem
+                                      className={
+                                        appTheme === appThemes.LIGHT &&
+                                        classes.listItem
+                                      }
                                       value={item?.deviceId}
                                       onClick={(e) => {
                                         setSelectedMic((s) => ({
@@ -410,7 +518,12 @@ export default function SettingDialogueBox({
                             <Box ml={2}>
                               <Typography
                                 variant="subtitle1"
-                                style={{ fontWeight: "bold" }}
+                                style={{
+                                  fontWeight: "bold",
+                                  color:
+                                    appTheme === appThemes.LIGHT &&
+                                    theme.palette.lightTheme.contrastText,
+                                }}
                               >
                                 Camera
                               </Typography>
@@ -425,10 +538,37 @@ export default function SettingDialogueBox({
                                 onChange={(e) => {
                                   changeWebcam(e.target.value);
                                 }}
+                                MenuProps={{
+                                  classes: {
+                                    paper:
+                                      appTheme === appThemes.LIGHT
+                                        ? classes.paperLight
+                                        : appTheme === appThemes.DARK
+                                        ? classes.paperDark
+                                        : "",
+                                  },
+                                }}
+                                classes={{
+                                  icon: classes.selectIcon,
+                                }}
+                                style={{
+                                  border: `1px solid ${
+                                    appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.three
+                                      : "white"
+                                  }`,
+                                  color:
+                                    appTheme === appThemes.LIGHT &&
+                                    theme.palette.lightTheme.contrastText,
+                                }}
                               >
                                 {webcams?.map((item) => {
                                   return item?.kind === "videoinput" ? (
                                     <MenuItem
+                                      className={
+                                        appTheme === appThemes.LIGHT &&
+                                        classes.listItem
+                                      }
                                       value={item?.deviceId}
                                       onClick={() => {
                                         setSelectedWebcam((s) => ({

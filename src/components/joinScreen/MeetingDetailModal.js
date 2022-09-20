@@ -4,6 +4,7 @@ import {
   Card,
   IconButton,
   InputAdornment,
+  makeStyles,
   TextField,
   Tooltip,
   Typography,
@@ -15,6 +16,26 @@ import useCopyClipboard from "react-use-clipboard";
 import { Keyboard } from "@material-ui/icons";
 import { CopyIcon } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
+import { appThemes } from "../../MeetingAppContextDef";
+
+const useStyles = makeStyles(() => ({
+  textFieldLight: {
+    "&:hover": {
+      border: "1px solid #70707033",
+      borderRadius: "4px",
+    },
+    "& .MuiInputBase-input": {
+      color: "#404B53",
+    },
+    border: "1px solid #70707033",
+    borderRadius: "4px",
+  },
+  textField: {
+    "& .MuiInputBase-input": {
+      color: "white",
+    },
+  },
+}));
 
 export default function MeetingDetailModal({
   internalPadding,
@@ -25,8 +46,10 @@ export default function MeetingDetailModal({
   startMeeting,
   meetingTitle,
   meetingUrl,
+  appTheme,
 }) {
   const theme = useTheme();
+  const classes = useStyles();
   const [descriptionBoxHeight, setDescriptionBoxHeight] = useState(0);
   const [copyBoxHeight, setCopyBoxHeight] = useState(0);
 
@@ -80,6 +103,13 @@ export default function MeetingDetailModal({
           style={{
             borderRadius: 10,
             color: theme.palette.primary.contrastText,
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.slightLighter
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.two
+                : "",
+            boxShadow: appTheme === appThemes.LIGHT && "none",
           }}
         >
           <Box p={internalPadding}>
@@ -87,7 +117,10 @@ export default function MeetingDetailModal({
               <div
                 style={{
                   fontFamily: "Roboto, sans-serif",
-                  color: theme.palette.primary.contrastText,
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : theme.palette.primary.contrastText,
                 }}
               >
                 <LinesEllipsis
@@ -116,7 +149,12 @@ export default function MeetingDetailModal({
                   display: "flex",
                   flexDirection: "row",
                   flex: 1,
-                  backgroundColor: "#1C1F2E80",
+                  backgroundColor:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.seven
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.three
+                      : "#1C1F2E80",
                   borderRadius: 4,
                   overflow: "hidden",
                   alignItems: "center",
@@ -135,6 +173,9 @@ export default function MeetingDetailModal({
                       textOverflow: "ellipsis",
                       overflow: "hidden",
                       whiteSpace: "nowrap",
+                      color:
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
                     }}
                     variant="subtitle1"
                   >
@@ -160,7 +201,11 @@ export default function MeetingDetailModal({
                       }}
                     >
                       <CopyIcon
-                        fill={"#fff"}
+                        fill={
+                          appTheme === appThemes.LIGHT
+                            ? theme.palette.lightTheme.contrastText
+                            : "#fff"
+                        }
                         style={{
                           cursor: "pointer",
                         }}
@@ -176,7 +221,10 @@ export default function MeetingDetailModal({
         <div
           style={{
             fontFamily: "Roboto, sans-serif",
-            color: theme.palette.primary.contrastText,
+            color:
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : theme.palette.primary.contrastText,
           }}
         >
           <LinesEllipsis
@@ -200,11 +248,17 @@ export default function MeetingDetailModal({
           fullWidth
           value={name}
           error={nameErr}
-          helperText={
-            nameErr
-              ? "Enter Minimum 3 Characters"
-              : "Your name will help everyone identify you in the meeting"
-          }
+          classes={{
+            root:
+              appTheme === appThemes.LIGHT
+                ? classes.textFieldLight
+                : classes.textField,
+          }}
+          // helperText={
+          //   nameErr
+          //     ? "Enter Minimum 3 Characters"
+          //     : "Your name will help everyone identify you in the meeting"
+          // }
           onChange={(ev) => {
             setName(ev.target.value);
           }}
@@ -214,7 +268,10 @@ export default function MeetingDetailModal({
                 <IconButton>
                   <Keyboard
                     style={{
-                      color: theme.palette.primary.contrastText,
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : theme.palette.primary.contrastText,
                     }}
                   />
                 </IconButton>
@@ -224,6 +281,13 @@ export default function MeetingDetailModal({
               <InputAdornment position="end">
                 <Button
                   color="primary"
+                  style={{
+                    backgroundColor:
+                      appTheme === appThemes.LIGHT ||
+                      appTheme === appThemes.DARK
+                        ? theme.palette.lightTheme.primaryMain
+                        : theme.palette.primary.main,
+                  }}
                   variant="contained"
                   onClick={(e) => {
                     const isValid = handleValidation();
@@ -239,6 +303,22 @@ export default function MeetingDetailModal({
             ),
           }}
         />
+        <p
+          style={{
+            marginTop: 3,
+            marginBottom: 0,
+            fontSize: 12,
+            marginLeft: 14,
+            color:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.four
+                : "#8F927A",
+          }}
+        >
+          {nameErr
+            ? "Enter Minimum 3 Characters"
+            : "Your name will help everyone identify you in the meeting"}
+        </p>
       </Box>
     </Box>
   );

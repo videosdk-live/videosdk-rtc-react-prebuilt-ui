@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import animationData from "../../src/animations/join_meeting.json";
 import Lottie from "react-lottie";
-import { Box } from "@material-ui/core";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { Box, useTheme } from "@material-ui/core";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 const WaitingToJoin = () => {
-  const { waitingScreenImageUrl, waitingScreenText } = useMeetingAppContext();
+  const { waitingScreenImageUrl, waitingScreenText, appTheme } =
+    useMeetingAppContext();
+  const theme = useTheme();
 
   const waitingMessages = [
     { index: 0, text: "Creating a room for you..." },
@@ -67,6 +69,12 @@ const WaitingToJoin = () => {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
+        backgroundColor:
+          appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.main
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.main
+            : theme.palette.background.default,
       }}
     >
       {waitingScreenImageUrl?.length || waitingScreenText?.length ? (
@@ -102,7 +110,16 @@ const WaitingToJoin = () => {
             )
           ) : null}
           {waitingScreenText?.length ? (
-            <h2 style={{ color: "white", marginTop: 4, textAlign: "center" }}>
+            <h2
+              style={{
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+                marginTop: 4,
+                textAlign: "center",
+              }}
+            >
               {waitingScreenText}
             </h2>
           ) : null}
@@ -115,7 +132,16 @@ const WaitingToJoin = () => {
             height={lottieSize}
             width={lottieSize}
           />
-          <h2 style={{ color: "white", marginTop: 4, textAlign: "center" }}>
+          <h2
+            style={{
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
+              marginTop: 4,
+              textAlign: "center",
+            }}
+          >
             {message.text}
           </h2>
         </Box>

@@ -1,17 +1,19 @@
-import { Box, Tooltip, Typography } from "@material-ui/core";
+import { Box, Tooltip, Typography, useTheme } from "@material-ui/core";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import AnswerSubmittedIcon from "../../icons/AnswerSubmittedIcon";
 import CorrectSelectedIcon from "../../icons/CorrectSelectedIcon";
 import NoPollActiveIcon from "../../icons/NoPollActiveIcon";
 import WrongOptionSelectedIcon from "../../icons/WrongOptionSelectedIcon";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { MarkCorrectCheckbox } from "./CreatePoll";
 import { secondsToMinutes } from "./PollList";
 
 const SubmitPollListItem = ({ poll }) => {
   const timerIntervalRef = useRef();
+  const theme = useTheme();
+  const { appTheme } = useMeetingAppContext();
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -195,7 +197,16 @@ const SubmitPollListItem = ({ poll }) => {
           </Typography>
         </Box>
         <Box style={{ marginTop: 16 }}>
-          <Typography style={{ fontSize: 16, color: "white", fontWeight: 600 }}>
+          <Typography
+            style={{
+              fontSize: 16,
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
+              fontWeight: 600,
+            }}
+          >
             {poll.question}
           </Typography>
           <Box style={{ marginTop: 16 }}>
@@ -232,7 +243,10 @@ const SubmitPollListItem = ({ poll }) => {
                           <Typography
                             style={{
                               fontSize: 15,
-                              color: "white",
+                              color:
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.contrastText
+                                  : "white",
                               fontWeight: 400,
                             }}
                           >
@@ -287,7 +301,12 @@ const SubmitPollListItem = ({ poll }) => {
                           <Box
                             style={{
                               height: 6,
-                              backgroundColor: "#3D3C4E",
+                              backgroundColor:
+                                appTheme === appThemes.DARK
+                                  ? theme.palette.darkTheme.seven
+                                  : appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.three
+                                  : theme.palette.common.sidePanel,
                               borderRadius: 4,
                               display: "flex",
                               flex: 1,
@@ -298,12 +317,18 @@ const SubmitPollListItem = ({ poll }) => {
                                 backgroundColor:
                                   hasCorrectAnswer && isActive
                                     ? isCorrectOption
-                                      ? "#1178F8"
+                                      ? appTheme === appThemes.LIGHT ||
+                                        appTheme === appThemes.DARK
+                                        ? theme.palette.lightTheme.primaryMain
+                                        : theme.palette.primary.main
                                       : "#9E9DA6"
                                     : maxSubmittedOptions.includes(
                                         option.optionId
                                       )
-                                    ? "#1178F8"
+                                    ? appTheme === appThemes.LIGHT ||
+                                      appTheme === appThemes.DARK
+                                      ? theme.palette.lightTheme.primaryMain
+                                      : theme.palette.primary.main
                                     : "#9E9DA6",
                                 width: `${percentage}%`,
                                 borderRadius: 4,
@@ -319,7 +344,16 @@ const SubmitPollListItem = ({ poll }) => {
                               justifyContent: "flex-end",
                             }}
                           >
-                            <Typography style={{ margin: 0, padding: 0 }}>
+                            <Typography
+                              style={{
+                                margin: 0,
+                                padding: 0,
+                                color:
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.contrastText
+                                    : "white",
+                              }}
+                            >
                               {`${Math.floor(percentage)}%`}
                             </Typography>
                           </Box>
@@ -347,13 +381,26 @@ const SubmitPollListItem = ({ poll }) => {
                       <Box
                         style={{
                           marginLeft: 8,
-                          backgroundColor: "#3D3C4E",
+                          backgroundColor:
+                            appTheme === appThemes.DARK
+                              ? theme.palette.darkTheme.seven
+                              : appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.three
+                              : theme.palette.common.sidePanel,
                           padding: "8px 8px 8px",
                           width: "100%",
                           borderRadius: "4px",
                         }}
                       >
-                        <Typography>{option.option}</Typography>
+                        <Typography
+                          style={{
+                            color:
+                              appTheme === appThemes.LIGHT &&
+                              theme.palette.lightTheme.contrastText,
+                          }}
+                        >
+                          {option.option}
+                        </Typography>
                       </Box>
                     </Box>
                   );
@@ -366,7 +413,8 @@ const SubmitPollListItem = ({ poll }) => {
 };
 
 const SubmitPollList = ({ panelHeight }) => {
-  const { polls } = useMeetingAppContext();
+  const { polls, appTheme } = useMeetingAppContext();
+  const theme = useTheme();
 
   return (
     <Box
@@ -409,7 +457,14 @@ const SubmitPollList = ({ panelHeight }) => {
           >
             <NoPollActiveIcon />
             <Typography
-              style={{ color: "white", fontSize: 16, fontWeight: 700 }}
+              style={{
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+                fontSize: 16,
+                fontWeight: 700,
+              }}
             >
               No Poll has been launched yet.
             </Typography>

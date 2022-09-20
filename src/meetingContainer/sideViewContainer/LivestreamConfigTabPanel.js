@@ -4,10 +4,11 @@ import {
   Typography,
   Button,
   makeStyles,
+  useTheme,
 } from "@material-ui/core";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
-import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import ConfirmBox from "../../components/ConfirmBox";
 import { extractRootDomain, getUniqueId } from "../../utils/common";
 import useIsLiveStreaming from "../useIsLivestreaming";
@@ -18,10 +19,30 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "#3D3C4E",
     color: "white",
   },
+
+  textFieldLight: {
+    borderRadius: "4px",
+    backgroundColor: "#D3D7DA",
+    color: "#404B53",
+    "&:hover": {
+      backgroundColor: "#D3D7DA",
+    },
+  },
+  textFieldDisabled: {
+    "&:disabled": {
+      color: "#8A9197",
+      backgroundColor: "#CCD2DB",
+    },
+  },
   button: {
     color: "#95959E",
     "&:hover": {
       color: "#ffffff",
+    },
+  },
+  buttonLight: {
+    "&:hover": {
+      backgroundColor: "#CCD2DB",
     },
   },
   input: {
@@ -30,6 +51,19 @@ const useStyles = makeStyles(() => ({
   root: {
     "& .MuiFilledInput-input": {
       padding: "12px 12px 12px",
+    },
+  },
+  rootDark: {
+    "& .MuiFilledInput-input": {
+      padding: "12px 12px 12px",
+      background: "#3E4346",
+    },
+  },
+
+  rootLight: {
+    "& .MuiFilledInput-input": {
+      padding: "12px 12px 12px",
+      background: "#D3D7DA",
     },
   },
 }));
@@ -43,7 +77,9 @@ const SingleLiveStreamItem = ({
   _handleRemove,
   publish,
   index,
+  appTheme,
 }) => {
+  const theme = useTheme();
   const isLiveStreaming = useIsLiveStreaming();
   const rootDomain = extractRootDomain(item.url);
   const mainDomain = rootDomain?.split(".")[0];
@@ -121,7 +157,17 @@ const SingleLiveStreamItem = ({
     <>
       <Box
         style={{
-          borderTop: index === 0 ? "" : "3px solid #3A3F4B",
+          borderTop:
+            index === 0
+              ? ""
+              : `3px solid 
+                  ${
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.seven
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.three
+                      : "#3A3F4B"
+                  }`,
           paddingRight: "12px",
           paddingLeft: "12px",
           paddingTop: "12px",
@@ -136,7 +182,15 @@ const SingleLiveStreamItem = ({
           }}
         >
           <Box style={{ display: "flex", flex: 1 }}>
-            <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+            <Typography
+              variant={"body1"}
+              style={{
+                fontWeight: "bold",
+                color:
+                  appTheme === appThemes.LIGHT &&
+                  theme.palette.lightTheme.contrastText,
+              }}
+            >
               {item.url ? domainName : item.title}
             </Typography>
           </Box>
@@ -164,7 +218,16 @@ const SingleLiveStreamItem = ({
                       setIsEditingId(null);
                     }
                   }}
-                  className={classes.button}
+                  style={{
+                    color:
+                      appTheme === appThemes.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                  className={
+                    appTheme === appThemes.LIGHT
+                      ? classes.buttonLight
+                      : classes.button
+                  }
                 >
                   Save
                 </Button>
@@ -173,7 +236,16 @@ const SingleLiveStreamItem = ({
                   onClick={() => {
                     setOnCancelClick({ id: item.id, visible: true });
                   }}
-                  className={classes.button}
+                  style={{
+                    color:
+                      appTheme === appThemes.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                  className={
+                    appTheme === appThemes.LIGHT
+                      ? classes.buttonLight
+                      : classes.button
+                  }
                 >
                   Cancel
                 </Button>
@@ -186,7 +258,16 @@ const SingleLiveStreamItem = ({
                     // setIsEditing({ id: item.id, editing: true });
                     setIsEditingId(item.id);
                   }}
-                  className={classes.button}
+                  style={{
+                    color:
+                      appTheme === appThemes.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                  className={
+                    appTheme === appThemes.LIGHT
+                      ? classes.buttonLight
+                      : classes.button
+                  }
                   disabled={isEditing || isLiveStreaming}
                 >
                   EDIT
@@ -200,7 +281,16 @@ const SingleLiveStreamItem = ({
                       visible: true,
                     });
                   }}
-                  className={classes.button}
+                  style={{
+                    color:
+                      appTheme === appThemes.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
+                  }}
+                  className={
+                    appTheme === appThemes.LIGHT
+                      ? classes.buttonLight
+                      : classes.button
+                  }
                   disabled={isEditing || isLiveStreaming}
                 >
                   REMOVE
@@ -216,13 +306,32 @@ const SingleLiveStreamItem = ({
             variant="filled"
             type="password"
             autocomplete="off"
-            className={classes.root}
+            style={{
+              backgroundColor:
+                appTheme === appThemes.DARK
+                  ? theme.palette.darkTheme.seven
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.three
+                  : "",
+            }}
+            className={
+              appTheme === appThemes.LIGHT
+                ? classes.rootLight
+                : appTheme === appThemes.DARK
+                ? classes.rootDark
+                : classes.root
+            }
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedStreamKey : item.streamKey}
             InputProps={{
               disableUnderline: true,
               classes: {
-                root: classes.textField,
+                disabled:
+                  appTheme === appThemes.LIGHT && classes.textFieldDisabled,
+                root:
+                  appTheme === appThemes.LIGHT
+                    ? classes.textFieldLight
+                    : classes.textField,
               },
             }}
             onChange={(e) => {
@@ -240,14 +349,33 @@ const SingleLiveStreamItem = ({
             fullWidth
             variant="filled"
             autocomplete="off"
-            style={{ marginTop: "8px" }}
-            className={classes.root}
+            style={{
+              marginTop: "8px",
+              backgroundColor:
+                appTheme === appThemes.DARK
+                  ? theme.palette.darkTheme.seven
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.three
+                  : "",
+            }}
+            className={
+              appTheme === appThemes.LIGHT
+                ? classes.rootLight
+                : appTheme === appThemes.DARK
+                ? classes.rootDark
+                : classes.root
+            }
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedUrl : item.url}
             InputProps={{
               disableUnderline: true,
               classes: {
-                root: classes.textField,
+                disabled:
+                  appTheme === appThemes.LIGHT && classes.textFieldDisabled,
+                root:
+                  appTheme === appThemes.LIGHT
+                    ? classes.textFieldLight
+                    : classes.textField,
               },
             }}
             onChange={(e) => {
@@ -296,7 +424,13 @@ const SingleLiveStreamItem = ({
   );
 };
 
-const AddLiveStream = ({ _handleSave, renderCallback }) => {
+const AddLiveStream = ({
+  _handleSave,
+  renderCallback,
+  appTheme,
+  liveStreamConfig,
+}) => {
+  const theme = useTheme();
   const [streamKey, setStreamKey] = useState("");
   const [url, setStreamUrl] = useState("");
   const [streamKeyErr, setStreamKeyErr] = useState(false);
@@ -348,7 +482,15 @@ const AddLiveStream = ({ _handleSave, renderCallback }) => {
         paddingTop: "12px",
         paddingBottom: "12px",
         boxShadow: "0 -10px 20px -5px rgba(0,0,0,0.35)",
-        borderTop: "3px solid #3A3F4B",
+        borderTop:
+          liveStreamConfig?.length > 0 &&
+          `3px solid ${
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.three
+              : "#3A3F4B"
+          }`,
       }}
     >
       <Box
@@ -359,7 +501,15 @@ const AddLiveStream = ({ _handleSave, renderCallback }) => {
         }}
       >
         <Box style={{ display: "flex", flex: 1 }}>
-          <Typography variant={"body1"} style={{ fontWeight: "bold" }}>
+          <Typography
+            variant={"body1"}
+            style={{
+              fontWeight: "bold",
+              color:
+                appTheme === appThemes.LIGHT &&
+                theme.palette.lightTheme.contrastText,
+            }}
+          >
             {url ? domainName : "Platform Name"}
           </Typography>
         </Box>
@@ -385,7 +535,16 @@ const AddLiveStream = ({ _handleSave, renderCallback }) => {
                 setStreamUrl("");
               }
             }}
-            className={classes.button}
+            style={{
+              color:
+                appTheme === appThemes.LIGHT &&
+                theme.palette.lightTheme.contrastText,
+            }}
+            className={
+              appTheme === appThemes.LIGHT
+                ? classes.buttonLight
+                : classes.button
+            }
           >
             ADD
           </Button>
@@ -398,12 +557,29 @@ const AddLiveStream = ({ _handleSave, renderCallback }) => {
           variant="filled"
           type="password"
           autocomplete="off"
-          className={classes.root}
+          style={{
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.seven
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.three
+                : "",
+          }}
+          className={
+            appTheme === appThemes.LIGHT
+              ? classes.rootLight
+              : appTheme === appThemes.DARK
+              ? classes.rootDark
+              : classes.root
+          }
           value={streamKey}
           InputProps={{
             disableUnderline: true,
             classes: {
-              root: classes.textField,
+              root:
+                appTheme === appThemes.LIGHT
+                  ? classes.textFieldLight
+                  : classes.textField,
             },
           }}
           onChange={(e) => {
@@ -419,14 +595,31 @@ const AddLiveStream = ({ _handleSave, renderCallback }) => {
           placeholder="Stream Url"
           fullWidth
           variant="filled"
-          style={{ marginTop: "8px" }}
+          style={{
+            marginTop: "8px",
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.seven
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.three
+                : "",
+          }}
           autocomplete="off"
-          className={classes.root}
+          className={
+            appTheme === appThemes.LIGHT
+              ? classes.rootLight
+              : appTheme === appThemes.DARK
+              ? classes.rootDark
+              : classes.root
+          }
           value={url}
           InputProps={{
             disableUnderline: true,
             classes: {
-              root: classes.textField,
+              root:
+                appTheme === appThemes.LIGHT
+                  ? classes.textFieldLight
+                  : classes.textField,
             },
           }}
           onChange={(e) => {
@@ -450,7 +643,8 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
   const [isEditingId, setIsEditingId] = useState(null);
 
   const mMeeting = useMeeting({});
-  const { liveStreamConfig, setLiveStreamConfig } = useMeetingAppContext();
+  const { liveStreamConfig, setLiveStreamConfig, appTheme } =
+    useMeetingAppContext();
 
   const isLiveStreaming = useIsLiveStreaming();
 
@@ -506,6 +700,7 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
             <SingleLiveStreamItem
               key={`live_stream_op_item${i}`}
               item={item}
+              appTheme={appTheme}
               liveStreamConfig={liveStreamConfig}
               setLiveStreamConfig={setLiveStreamConfig}
               liveStreamConfigRef={liveStreamConfigRef}
@@ -525,6 +720,8 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
         <AddLiveStream
           {...{
             _handleSave,
+            appTheme,
+            liveStreamConfig,
             renderCallback: (el) => {
               addLiveStreamBoxRef.current = el;
 

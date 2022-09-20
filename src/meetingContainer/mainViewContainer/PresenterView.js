@@ -13,6 +13,7 @@ import {
 } from "../../utils/common";
 import {
   meetingLayouts,
+  appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { useMediaQuery } from "react-responsive";
@@ -43,6 +44,7 @@ const PresenterView = ({ presenterId }) => {
     mainViewParticipants,
     meetingLayout,
     animationsEnabled,
+    appTheme,
   } = useMeetingAppContext();
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
@@ -134,7 +136,12 @@ const PresenterView = ({ presenterId }) => {
         position: "relative",
         height: "100%",
         width: "100%",
-        backgroundColor: "black",
+        backgroundColor:
+          appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.slightLighter
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.two
+            : "black",
         alignItems:
           mobilePortrait && meetingLayout !== meetingLayouts.SPOTLIGHT
             ? undefined
@@ -197,12 +204,20 @@ const PresenterView = ({ presenterId }) => {
               top: "50%",
               left: "50%",
               transform: "translate(-50%,-50%)",
-              backgroundColor: "#333244",
+              backgroundColor:
+                appTheme === appThemes.DARK
+                  ? theme.palette.darkTheme.slightLighter
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.two
+                  : "#333244",
             }}
           >
             <ScreenShare
               style={{
-                color: theme.palette.common.white,
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : theme.palette.common.white,
                 height: theme.spacing(6),
                 width: theme.spacing(6),
               }}
@@ -212,7 +227,10 @@ const PresenterView = ({ presenterId }) => {
                 variant="h6"
                 style={{
                   fontWeight: "bold",
-                  color: theme.palette.common.white,
+                  color:
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : theme.palette.common.white,
                 }}
               >
                 You are presenting to everyone
@@ -229,6 +247,10 @@ const PresenterView = ({ presenterId }) => {
                 style={{
                   transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
                   transitionTimingFunction: "linear",
+                  backgroundColor:
+                    appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                      ? theme.palette.lightTheme.primaryMain
+                      : theme.palette.primary.main,
                 }}
               >
                 Stop presenting

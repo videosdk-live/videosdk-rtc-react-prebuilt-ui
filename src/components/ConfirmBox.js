@@ -5,10 +5,19 @@ import {
   Typography,
   DialogActions,
   Button,
+  useTheme,
+  makeStyles,
 } from "@material-ui/core";
 import React from "react";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
+const useStyles = makeStyles(() => ({
+  button: {
+    "&:hover": {
+      backgroundColor: "#EEF0F2",
+    },
+  },
+}));
 const ConfirmBox = ({
   successText,
   rejectText,
@@ -18,8 +27,12 @@ const ConfirmBox = ({
   title,
   subTitle,
   subTitleColor,
+  appTheme,
 }) => {
   const v = useMeetingAppContext();
+  const classes = useStyles();
+
+  const theme = useTheme();
 
   if (v && v?.isRecorder) {
     return <></>;
@@ -31,9 +44,23 @@ const ConfirmBox = ({
       maxWidth="xs"
       open={open}
       onClose={() => {}}
+      style={{
+        backgroundColor:
+          ((v && v?.appTheme) || appTheme) === appThemes.DARK && "#FFFFFF30",
+      }}
       aria-labelledby="responsive-dialog-title"
     >
-      <Box style={{ padding: 8 }}>
+      <Box
+        style={{
+          padding: 8,
+          backgroundColor:
+            ((v && v?.appTheme) || appTheme) === appThemes.DARK
+              ? theme.palette.darkTheme.main
+              : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
+        }}
+      >
         <Box
           style={{
             display: "flex",
@@ -50,10 +77,26 @@ const ConfirmBox = ({
             }}
           >
             <DialogTitle
-              style={{ padding: 8, margin: 0 }}
+              style={{
+                padding: 8,
+                margin: 0,
+                color:
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "#fff",
+              }}
               id="responsive-dialog-title"
             >
-              <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
+              <Typography
+                variant="subtitle1"
+                style={{
+                  fontWeight: "bold",
+                  color:
+                    ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "#fff",
+                }}
+              >
                 {title}
                 {/* {`Allow participant entry?`} */}
               </Typography>
@@ -61,7 +104,11 @@ const ConfirmBox = ({
                 variant="subtitle1"
                 style={{
                   marginTop: 3,
-                  color: subTitleColor ? subTitleColor : "#9FA0A7",
+                  color: subTitleColor
+                    ? subTitleColor
+                    : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+                    ? theme.palette.lightTheme.four
+                    : "#9FA0A7",
                 }}
               >
                 {subTitle}
@@ -72,7 +119,22 @@ const ConfirmBox = ({
         </Box>
         <Box>
           <DialogActions>
-            <Button onClick={onReject} color="white" size="medium">
+            <Button
+              onClick={onReject}
+              color={"white"}
+              classes={{
+                root:
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT &&
+                  classes.button,
+              }}
+              style={{
+                color:
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+              }}
+              size="medium"
+            >
               {rejectText}
             </Button>
 
@@ -82,6 +144,21 @@ const ConfirmBox = ({
               color="white"
               autoFocus
               variant="outlined"
+              classes={{
+                root:
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT &&
+                  classes.button,
+              }}
+              style={{
+                color:
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+                borderColor:
+                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+              }}
             >
               {successText}
             </Button>

@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 import {
   useContext,
@@ -58,6 +58,11 @@ export const meetingLayoutTopics = {
   HLS_LAYOUT: "HLS_LAYOUT",
 };
 
+export const appThemes = {
+  DARK: "DARK",
+  LIGHT: "LIGHT",
+};
+
 export const MeetingAppProvider = ({
   children,
   redirectOnLeave,
@@ -72,6 +77,9 @@ export const MeetingAppProvider = ({
   recordingWebhookUrl,
   recordingAWSDirPath,
   autoStartRecording,
+  recordingTheme,
+  hlsTheme,
+  liveStreamTheme,
   autoStartHls,
   participantCanToggleRecording,
   participantCanToggleHls,
@@ -132,9 +140,11 @@ export const MeetingAppProvider = ({
   maintainVideoAspectRatio,
   networkBarEnabled,
   hlsPlayerControlsVisible,
+  appTheme,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
+  const theme = useTheme();
 
   const classes = useStyles();
   const [sideBarMode, setSideBarMode] = useState(null);
@@ -243,6 +253,9 @@ export const MeetingAppProvider = ({
         recordingAWSDirPath,
         autoStartRecording,
         autoStartHls,
+        recordingTheme,
+        hlsTheme,
+        liveStreamTheme,
         participantCanToggleRecording,
         participantCanToggleHls,
         brandingEnabled,
@@ -288,6 +301,7 @@ export const MeetingAppProvider = ({
         isRecorder,
         maintainVideoAspectRatio,
         networkBarEnabled,
+        appTheme,
 
         // states
         sideBarMode,
@@ -340,6 +354,17 @@ export const MeetingAppProvider = ({
       <SnackbarProvider
         className={classes.container}
         autoHideDuration={5000}
+        style={{
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.main
+              : "",
+          color:
+            appTheme === appThemes.LIGHT &&
+            theme.palette.lightTheme.contrastText,
+        }}
         maxSnack={3}
         anchorOrigin={{
           vertical: isTab || isMobile ? "top" : "bottom",
