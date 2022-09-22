@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
-import { Box, Chip, useTheme } from "@material-ui/core";
+import { Box, Chip, IconButton, useTheme } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -11,6 +11,7 @@ import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import Compressor from "compressorjs";
+import CloseIcon from "@material-ui/icons/Close";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,
@@ -928,25 +929,29 @@ function WhiteboardContainer({
           )}
         </Box>
 
-        <div style={{ position: "absolute", top: 16, left: 16 }}>
-          <Chip
-            label="BETA"
-            color="primary"
-            size="medium"
-            style={{
-              color:
-                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
-                  ? theme.palette.lightTheme.primaryMain
-                  : theme.palette.primary.main,
-              backgroundColor:
-                appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
-                  ? "#596BFF33"
-                  : "#D5E8FF",
-              fontSize: 18,
-              fontWeight: "bold",
+        <Box style={{ position: "absolute", top: 16, right: 16, zIndex: 999 }}>
+          <IconButton
+            onClick={() => {
+              mMeeting.meeting.stopWhiteboard();
             }}
-          />
-        </div>
+            style={{
+              cursor: "pointer",
+              backgroundColor: theme.palette.lightTheme.three,
+              padding: 8,
+              margin: 0,
+            }}
+          >
+            <CloseIcon
+              fontSize={"small"}
+              style={{
+                color:
+                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                    ? theme.palette.lightTheme.contrastText
+                    : theme.palette.common.white,
+              }}
+            />
+          </IconButton>
+        </Box>
       </Box>
     </Box>
   );

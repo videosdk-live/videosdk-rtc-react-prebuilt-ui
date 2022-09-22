@@ -1,4 +1,12 @@
-import { Box, IconButton, Tooltip } from "@material-ui/core";
+import {
+  Box,
+  IconButton,
+  makeStyles,
+  MenuItem,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import {
   useMeeting,
   useParticipant,
@@ -7,10 +15,24 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { meetingModes } from "../CONSTS";
 import AddCohostIcon from "../icons/AddCohostIcon";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import ParticipantAddHostIcon from "../icons/ParticipantAddHostIcon";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
+const useStyles = makeStyles(() => ({
+  popoverHover: {
+    "&:hover": {
+      backgroundColor: "#CCD2D899",
+    },
+  },
+  popoverHoverDark: {
+    "&:hover": {
+      backgroundColor: "#2B303499",
+    },
+  },
+}));
 const ToggleModeContainer = ({ participantId, participantMode }) => {
   const mMeetingRef = useRef();
+  const classes = useStyles();
 
   const [isHoverOnCohost, setIsHoverOnCohost] = useState(false);
 
@@ -23,54 +45,78 @@ const ToggleModeContainer = ({ participantId, participantMode }) => {
   }, [mMeeting]);
 
   const { publish } = usePubSub(`CHANGE_MODE_${participantId}`, {});
+  const { appTheme } = useMeetingAppContext();
+  const theme = useTheme();
 
   return (
     !isLocal && (
-      <Box
-        ml={1}
-        mr={0}
-        onMouseEnter={() => setIsHoverOnCohost(true)}
-        onMouseLeave={() => setIsHoverOnCohost(false)}
+      <MenuItem
+        key={`mode_${participantId}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          publish({
+            mode:
+              participantMode === meetingModes.CONFERENCE
+                ? meetingModes.VIEWER
+                : meetingModes.CONFERENCE,
+          });
+        }}
+        classes={{
+          root:
+            appTheme === appThemes.LIGHT
+              ? classes.popoverHover
+              : appTheme === appThemes.DARK
+              ? classes.popoverHoverDark
+              : "",
+        }}
       >
-        <Tooltip
-          title={
-            participantMode === meetingModes.CONFERENCE
-              ? "Remove from Co-host"
-              : "Add as a Co-host"
-          }
-          style={{ backgroundColor: "#fff" }}
-        >
-          <IconButton
-            style={{ padding: 0 }}
-            onClick={() => {
-              publish({
-                mode:
-                  participantMode === meetingModes.CONFERENCE
-                    ? meetingModes.VIEWER
-                    : meetingModes.CONFERENCE,
-              });
+        <Box style={{ display: "flex", flexDirection: "row" }}>
+          <Box
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Box
+            <ParticipantAddHostIcon
+              fill={
+                isHoverOnCohost || participantMode === meetingModes.CONFERENCE
+                  ? appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : theme.palette.common.white
+                  : "#9E9EA7"
+              }
+            />
+          </Box>
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              marginLeft: 12,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 100,
-              }}
-              p={0.5}
-            >
-              <AddCohostIcon
-                fill={
+                fontSize: 14,
+
+                color:
                   isHoverOnCohost || participantMode === meetingModes.CONFERENCE
-                    ? "#fff"
-                    : "#9E9EA7"
-                }
-              />
-            </Box>
-          </IconButton>
-        </Tooltip>
-      </Box>
+                    ? appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "#fff"
+                    : theme.palette.text.secondary,
+              }}
+            >
+              {participantMode === meetingModes.CONFERENCE
+                ? "Remove from Co-host"
+                : "Add as a Co-host"}
+            </Typography>
+          </Box>
+        </Box>
+      </MenuItem>
     )
   );
 };

@@ -1,46 +1,18 @@
-import { SvgIcon } from "@material-ui/core";
-import React from "react";
+import * as React from "react";
 
-const MicOn = (props) => {
-  return (
-    <SvgIcon {...props} viewBox="0 0 22 22">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        width="22"
-        height="22"
-        viewBox="0 0 22 22"
-      >
-        <defs>
-          <clipPath id="clip-path">
-            <rect
-              id="Rectangle_6481"
-              data-name="Rectangle 6481"
-              width="22"
-              height="22"
-            />
-          </clipPath>
-        </defs>
-        <g id="mic_on" clipPath="url(#clip-path)">
-          <g id="mic" transform="translate(1.935 1.05)">
-            <path
-              id="Path_3"
-              data-name="Path 3"
-              d="M17.157,16.186a3.053,3.053,0,0,0,3.057-3.052l.01-6.1a3.067,3.067,0,0,0-6.135,0v6.1A3.062,3.062,0,0,0,17.157,16.186Zm5.419-3.052a5.289,5.289,0,0,1-5.419,5.187,5.289,5.289,0,0,1-5.419-5.187H10a7.108,7.108,0,0,0,6.135,6.835V23.3H18.18V19.97a7.109,7.109,0,0,0,6.135-6.835Z"
-              transform="translate(-7.876 -3.965)"
-            />
-            <path
-              id="Path_4"
-              data-name="Path 4"
-              d="M0,0H18.563V18.563H0Z"
-              transform="translate(0 0.777)"
-              fill="none"
-            />
-          </g>
-        </g>
-      </svg>
-    </SvgIcon>
-  );
-};
+const MicOn = (props) => (
+  <svg
+    width={24}
+    height={24}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M11.499 14.637a3.236 3.236 0 0 0 2.266-.922 3.119 3.119 0 0 0 .94-2.234l.011-6.31a3.15 3.15 0 0 0-.941-2.242A3.236 3.236 0 0 0 11.502 2c-.853 0-1.67.334-2.273.929a3.15 3.15 0 0 0-.941 2.243v6.31c.002.838.342 1.641.944 2.233a3.228 3.228 0 0 0 2.267.922Zm5.678-3.156a5.403 5.403 0 0 1-.464 2.093 5.465 5.465 0 0 1-1.244 1.755c-.527.499-1.15.89-1.831 1.15a5.605 5.605 0 0 1-2.139.366 5.605 5.605 0 0 1-2.139-.366 5.55 5.55 0 0 1-1.831-1.15 5.465 5.465 0 0 1-1.244-1.755 5.404 5.404 0 0 1-.464-2.093H4a7.297 7.297 0 0 0 1.902 4.696 7.48 7.48 0 0 0 4.526 2.371V22h2.144v-3.452a7.48 7.48 0 0 0 4.526-2.371A7.298 7.298 0 0 0 19 11.48h-1.823Z"
+      fill="#fff"
+    />
+  </svg>
+);
 
 export default MicOn;

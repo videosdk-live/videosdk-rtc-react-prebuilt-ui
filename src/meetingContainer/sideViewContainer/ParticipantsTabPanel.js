@@ -3,15 +3,7 @@ import {
   useParticipant,
   usePubSub,
 } from "@videosdk.live/react-sdk";
-import {
-  Close,
-  MoreVert,
-  SearchOutlined,
-  MicOff as MicOffIcon,
-  Mic as MicIcon,
-  VideocamOff as VideocamOffIcon,
-  Videocam as VideocamIcon,
-} from "@material-ui/icons";
+import { MoreVert, SearchOutlined } from "@material-ui/icons";
 import {
   Avatar,
   Box,
@@ -23,10 +15,13 @@ import {
   Fade,
   Tooltip,
   makeStyles,
+  MenuList,
+  MenuItem,
+  Popover,
 } from "@material-ui/core";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
-import { Pin, RaiseHand, KickoutUserIcon } from "../../icons";
+import { LeaveMeetingIcon, RaiseHand } from "../../icons";
 import { List } from "react-virtualized";
 import useWindowSize from "../../utils/useWindowSize";
 import useIsTab from "../../utils/useIsTab";
@@ -36,18 +31,47 @@ import { nameTructed } from "../../utils/common";
 import ToggleModeContainer from "../../components/ToggleModeContainer";
 import { meetingModes } from "../../CONSTS";
 import ParticipantScreenShareIcon from "../../icons/ParticipantScreenShareIcon";
+import ParticipantMicOnIcon from "../../icons/ParticipantMicOnIcon";
+import ParticipantMicOffIcon from "../../icons/ParticipantMicOffIcon";
+import ParticipantVideoOnIcon from "../../icons/ParticipantVideoOnIcon";
+import ParticipantVideoOffIcon from "../../icons/ParticipantVideoOffIcon";
+import ParticipantPinIcon from "../../icons/ParticipantPinIcon";
+import ParticipantRemoveIcon from "../../icons/ParticipantRemoveIcon";
+import ParticipantCloseIcon from "../../icons/ParticipantCloseIcon";
 
 const useStyles = makeStyles(() => ({
   textField: {
     "&:hover": {
       border: "1px solid #70707033",
-      borderRadius: "4px",
+      borderRadius: "6px",
     },
     "& .MuiInputBase-input": {
       color: "#404B53",
     },
     border: "1px solid #70707033",
-    borderRadius: "4px",
+    borderRadius: "6px",
+  },
+  input: {
+    "& .MuiOutlinedInput-input": {
+      padding: "16px 12px",
+    },
+  },
+  popover: { backgroundColor: "transparent" },
+  popoverBorder: {
+    borderRadius: "12px",
+    backgroundColor: "#212032",
+    marginTop: 8,
+    width: 300,
+  },
+  popoverHover: {
+    "&:hover": {
+      backgroundColor: "#CCD2D899",
+    },
+  },
+  popoverHoverDark: {
+    "&:hover": {
+      backgroundColor: "#2B303499",
+    },
   },
 }));
 
@@ -96,6 +120,18 @@ function ParticipantListItem({
 
   const [morePanelWidth, setMorePanelWidth] = useState(0);
   const [participantMode, setParticipantMode] = useState(null);
+  const [moreIconClicked, setMoreIconClicked] = useState(null);
+
+  const handleClick = (event) => {
+    setMoreIconClicked(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setMoreIconClicked(null);
+  };
+
+  const tollTipEl = useRef();
+  const classes = useStyles();
 
   const theme = useTheme();
 
@@ -203,7 +239,7 @@ function ParticipantListItem({
               flex: 1,
               justifyContent: "center",
               alignItems: "center",
-              position: "relative",
+              // position: "relative",
             }}
           >
             <Box
@@ -212,9 +248,6 @@ function ParticipantListItem({
                 flex: 1,
                 justifyContent: "center",
                 alignItems: "center",
-                transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
-                right: expanded ? morePanelWidth : 0,
-                position: "absolute",
               }}
             >
               {raisedHand && (
@@ -255,27 +288,19 @@ function ParticipantListItem({
                         justifyContent: "center",
                         alignItems: "center",
                         borderRadius: 100,
-                        backgroundColor: micOn
-                          ? null
-                          : theme.palette.error.main,
                       }}
                       p={0.5}
                     >
                       {micOn ? (
-                        <MicIcon
-                          fontSize="small"
-                          style={{
-                            color:
-                              appTheme === appThemes.LIGHT
-                                ? theme.palette.lightTheme.contrastText
-                                : theme.palette.common.white,
-                          }}
+                        <ParticipantMicOnIcon
+                          fillColor={
+                            appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white"
+                          }
                         />
                       ) : (
-                        <MicOffIcon
-                          fontSize="small"
-                          style={{ color: theme.palette.common.white }}
-                        />
+                        <ParticipantMicOffIcon />
                       )}
                     </Box>
                   </IconButton>
@@ -305,46 +330,24 @@ function ParticipantListItem({
                         justifyContent: "center",
                         alignItems: "center",
                         borderRadius: 100,
-                        backgroundColor: webcamOn
-                          ? null
-                          : theme.palette.error.main,
                       }}
                       p={0.5}
                     >
                       {webcamOn ? (
-                        <VideocamIcon
-                          fontSize="small"
-                          style={{
-                            color:
-                              appTheme === appThemes.LIGHT
-                                ? theme.palette.lightTheme.contrastText
-                                : theme.palette.common.white,
-                          }}
+                        <ParticipantVideoOnIcon
+                          fillColor={
+                            appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white"
+                          }
                         />
                       ) : (
-                        <VideocamOffIcon
-                          fontSize="small"
-                          style={{ color: theme.palette.common.white }}
-                        />
+                        <ParticipantVideoOffIcon />
                       )}
                     </Box>
                   </IconButton>
                 </Box>
               )}
-            </Box>
-            <Box
-              ref={morePanelRef}
-              style={{
-                display: "flex",
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
-                right: expanded ? 0 : -morePanelWidth,
-                position: "absolute",
-                opacity: expanded ? 1 : 0,
-              }}
-            >
               {canPin && (
                 <Box
                   style={{
@@ -361,7 +364,7 @@ function ParticipantListItem({
                   >
                     <IconButton
                       disabled={
-                        !expanded ||
+                        // !expanded ||
                         meetingMode === meetingModes.VIEWER ||
                         participantMode === meetingModes.VIEWER
                       }
@@ -376,7 +379,7 @@ function ParticipantListItem({
                         justifyContent: "center",
                       }}
                     >
-                      <Pin
+                      <ParticipantPinIcon
                         fill={
                           pinState?.share || pinState?.cam
                             ? appTheme === appThemes.LIGHT
@@ -386,135 +389,25 @@ function ParticipantListItem({
                             ? theme.palette.lightTheme.four
                             : "#ffffff80"
                         }
-                        style={{
-                          width: 20,
-                          height: 20,
-                        }}
                       />
                     </IconButton>
                   </Tooltip>
                 </Box>
               )}
-
-              {meetingMode === meetingModes.CONFERENCE && (
-                <Box ml={1} mr={0}>
-                  <Tooltip title={`Screen share`}>
-                    <IconButton
-                      disabled={
-                        !(
-                          !isLocal &&
-                          partcipantCanToogleOtherScreenShare &&
-                          (presenterId ? isParticipantPresenting : true)
-                        ) ||
-                        meetingMode === meetingModes.VIEWER ||
-                        participantMode === meetingModes.VIEWER
-                      }
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        publish({
-                          setScreenShareOn: !isParticipantPresenting,
-                        });
-                      }}
-                    >
-                      <Box
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          borderRadius: 100,
-                        }}
-                        p={0.5}
-                      >
-                        {/* {isParticipantPresenting ? (
-                          <ScreenShare />
-                        ) : (
-                          <ScreenShareOutlined color="#ffffff80" />
-                        )} */}
-                        {isParticipantPresenting ? (
-                          <ParticipantScreenShareIcon
-                            fillColor={
-                              appTheme === appThemes.LIGHT
-                                ? theme.palette.lightTheme.contrastText
-                                : "#ffffff"
-                            }
-                          />
-                        ) : (
-                          <ParticipantScreenShareIcon
-                            fillColor={
-                              appTheme === appThemes.LIGHT
-                                ? theme.palette.lightTheme.four
-                                : "#ffffff80"
-                            }
-                          />
-                        )}
-                      </Box>
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              )}
-
-              {participantCanToggleOtherMode && (
-                <ToggleModeContainer
-                  participantId={participantId}
-                  participantMode={participantMode}
-                />
-              )}
-
-              {!isLocal && canRemoveOtherParticipant && (
-                <Box ml={1} mr={0}>
-                  <Tooltip title={`Remove`}>
-                    <IconButton
-                      disabled={!expanded}
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsParticipantKickoutVisible(true);
-                      }}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <KickoutUserIcon height={18} width={18} />
-                    </IconButton>
-                  </Tooltip>
-                  <ConfirmBox
-                    open={isParticipantKickoutVisible}
-                    title={`Remove ${nameTructed(displayName, 15)} `}
-                    subTitle={`Are you sure want to remove ${nameTructed(
-                      displayName,
-                      15
-                    )} from the call?`}
-                    successText={"Remove"}
-                    rejectText={"Cancel"}
-                    onSuccess={() => {
-                      participant.remove();
-                    }}
-                    onReject={() => {
-                      setIsParticipantKickoutVisible(false);
-                    }}
-                  />
-                </Box>
-              )}
             </Box>
           </Box>
+
           {meetingMode === meetingModes.CONFERENCE && (
             <Box
               style={{
                 transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
               }}
-              ml={expanded ? 1.5 : 1}
             >
               <IconButton
                 style={{ padding: 0 }}
                 disabled={meetingMode === meetingModes.VIEWER}
                 onClick={(e) => {
-                  if (participantId === participantExpandedId) {
-                    setParticipantExpandedId(null);
-                  } else {
-                    setParticipantExpandedId(participantId);
-                  }
+                  handleClick(e);
                 }}
               >
                 <Box
@@ -528,28 +421,251 @@ function ParticipantListItem({
                         ? theme.palette.error.main
                         : theme.palette.common.secondaryContrastTextLight
                     }`,
-                    backgroundColor: expanded ? theme.palette.error.main : null,
                   }}
                   p={0.5}
                 >
-                  {expanded ? (
-                    <Close fontSize="small" />
-                  ) : (
-                    <MoreVert
-                      fontSize="small"
-                      style={{
-                        color:
-                          appTheme === appThemes.LIGHT &&
-                          theme.palette.lightTheme.contrastText,
-                      }}
-                    />
-                  )}
+                  <MoreVert
+                    fontSize="small"
+                    style={{
+                      height: 18,
+                      width: 18,
+                      color:
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
+                    }}
+                  />
                 </Box>
               </IconButton>
+              <Popover
+                open={Boolean(moreIconClicked)}
+                anchorEl={moreIconClicked}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                style={{ marginTop: 4, marginRight: 16 }}
+              >
+                <MenuList
+                  style={{
+                    backgroundColor:
+                      appTheme === appThemes.DARK
+                        ? theme.palette.darkTheme.slightLighter
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.two
+                        : "",
+                    color:
+                      appTheme === appThemes.DARK
+                        ? theme.palette.common.white
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "",
+                  }}
+                >
+                  {!isLocal && canRemoveOtherParticipant && (
+                    <>
+                      <MenuItem
+                        key={`remove`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsParticipantKickoutVisible(true);
+                        }}
+                        classes={{
+                          root:
+                            appTheme === appThemes.LIGHT
+                              ? classes.popoverHover
+                              : appTheme === appThemes.DARK
+                              ? classes.popoverHoverDark
+                              : "",
+                        }}
+                      >
+                        <Box style={{ display: "flex", flexDirection: "row" }}>
+                          <Box
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <ParticipantRemoveIcon
+                              fillColor={
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.contrastText
+                                  : theme.palette.common.white
+                              }
+                            />
+                          </Box>
+                          <Box
+                            style={{
+                              display: "flex",
+                              flex: 1,
+                              flexDirection: "column",
+                              marginLeft: 12,
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Typography
+                              style={{
+                                fontSize: 14,
+                                color:
+                                  appTheme === appThemes.LIGHT &&
+                                  theme.palette.lightTheme.contrastText,
+                              }}
+                            >
+                              Remove Participant
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </MenuItem>
+                      {/* <ConfirmBox
+                        open={isParticipantKickoutVisible}
+                        title={`Remove ${nameTructed(displayName, 15)} `}
+                        subTitle={`Are you sure want to remove ${nameTructed(
+                          displayName,
+                          15
+                        )} from the call?`}
+                        successText={"Remove"}
+                        rejectText={"Cancel"}
+                        onSuccess={() => {
+                          participant.remove();
+                          setIsParticipantKickoutVisible(false);
+                        }}
+                        onReject={() => {
+                          setIsParticipantKickoutVisible(false);
+                        }}
+                      /> */}
+                    </>
+                  )}
+                  {participantCanToggleOtherMode && (
+                    <ToggleModeContainer
+                      participantId={participantId}
+                      participantMode={participantMode}
+                    />
+                  )}
+                  {meetingMode === meetingModes.CONFERENCE && (
+                    <MenuItem
+                      key={`screen-share`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        publish({
+                          setScreenShareOn: !isParticipantPresenting,
+                        });
+                      }}
+                      classes={{
+                        root:
+                          appTheme === appThemes.LIGHT
+                            ? classes.popoverHover
+                            : appTheme === appThemes.DARK
+                            ? classes.popoverHoverDark
+                            : "",
+                      }}
+                      disabled={
+                        !(
+                          !isLocal &&
+                          partcipantCanToogleOtherScreenShare &&
+                          (presenterId ? isParticipantPresenting : true)
+                        ) ||
+                        meetingMode === meetingModes.VIEWER ||
+                        participantMode === meetingModes.VIEWER
+                      }
+                    >
+                      <Box style={{ display: "flex", flexDirection: "row" }}>
+                        <Box
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {isParticipantPresenting ? (
+                            <ParticipantScreenShareIcon
+                              fillColor={
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.contrastText
+                                  : theme.palette.common.white
+                              }
+                            />
+                          ) : (
+                            <ParticipantScreenShareIcon
+                              fillColor={
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.contrastText
+                                  : !(
+                                      !isLocal &&
+                                      partcipantCanToogleOtherScreenShare &&
+                                      (presenterId
+                                        ? isParticipantPresenting
+                                        : true)
+                                    ) ||
+                                    meetingMode === meetingModes.VIEWER ||
+                                    participantMode === meetingModes.VIEWER
+                                  ? appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.contrastText
+                                    : "#ffffff80"
+                                  : appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.contrastText
+                                  : "#ffffff"
+                              }
+                            />
+                          )}
+                        </Box>
+                        <Box
+                          style={{
+                            display: "flex",
+                            flex: 1,
+                            flexDirection: "column",
+                            marginLeft: 12,
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Typography
+                            style={{
+                              fontSize: 14,
+                              color:
+                                !(
+                                  !isLocal &&
+                                  partcipantCanToogleOtherScreenShare &&
+                                  (presenterId ? isParticipantPresenting : true)
+                                ) ||
+                                meetingMode === meetingModes.VIEWER ||
+                                participantMode === meetingModes.VIEWER
+                                  ? theme.palette.text.secondary
+                                  : appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.contrastText
+                                  : theme.palette.common.white,
+                            }}
+                          >
+                            {isParticipantPresenting
+                              ? "Stop Screenshare"
+                              : "Request Screenshare"}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </MenuItem>
+                  )}
+                </MenuList>
+              </Popover>
             </Box>
           )}
         </Box>
       </Box>
+      <ConfirmBox
+        open={isParticipantKickoutVisible}
+        title={`Remove ${nameTructed(displayName, 15)} `}
+        subTitle={`Are you sure want to remove ${nameTructed(
+          displayName,
+          15
+        )} from the call?`}
+        successText={"Remove"}
+        rejectText={"Cancel"}
+        onSuccess={() => {
+          participant.remove();
+          setIsParticipantKickoutVisible(false);
+        }}
+        onReject={() => {
+          setIsParticipantKickoutVisible(false);
+        }}
+      />
     </Box>
   );
 }
@@ -678,9 +794,11 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
             color:
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText,
+            borderRadius: "6px",
           }}
           onChange={(e) => setFilterQuery(e.target.value)}
           InputProps={{
+            classes: { root: classes.input },
             startAdornment: (
               <InputAdornment position="start">
                 <SearchOutlined

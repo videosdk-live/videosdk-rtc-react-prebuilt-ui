@@ -65,7 +65,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               : theme.palette.common.sidePanel,
           display: "flex",
           flexDirection: "column",
-          alignItems: localSender ? "flex-end" : "flex-start",
+          // alignItems: localSender ? "flex-end" : "flex-start",
         }}
       >
         <Typography
@@ -76,16 +76,24 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                 : appTheme === appThemes.DARK
                 ? theme.palette.lightTheme.four
                 : "#ffffff80",
+            textAlign: "left",
           }}
         >
           {localSender ? "You" : nameTructed(senderName, 15)}
         </Typography>
-        <Box mt={0.5}>
+        <Box
+          mt={0.5}
+          style={{
+            display: "flex",
+            alignItems: localSender ? "flex-end" : "flex-start",
+          }}
+        >
           <Typography
             style={{
               display: "inline-block",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
+              textAlign: "right",
               color:
                 appTheme === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
@@ -115,7 +123,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
             ))}
           </Typography>
         </Box>
-        <Box mt={0.5}>
+        <Box mt={0.5} style={{ textAlign: "right" }}>
           <Typography
             variant={"caption"}
             style={{
@@ -126,6 +134,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                   ? theme.palette.lightTheme.five
                   : "#ffffff80",
               fontStyle: "italic",
+              textAlign: "right",
             }}
           >
             {formatAMPM(new Date(timestamp))}

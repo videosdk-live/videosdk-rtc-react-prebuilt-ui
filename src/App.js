@@ -25,8 +25,10 @@ import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
 import { version as prebuiltSDKVersion } from "../package.json";
 import { meetingModes } from "./CONSTS";
+import useIsMobile from "./utils/useIsMobile";
 
 const App = () => {
+  const isMobile = useIsMobile();
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,
     meetingId: null,
@@ -507,6 +509,14 @@ const App = () => {
       });
     }
   }, [paramKeys]);
+
+  useEffect(() => {
+    if (isMobile) {
+      window.onbeforeunload = () => {
+        return "Are you sure you want to exit?";
+      };
+    }
+  }, [isMobile]);
 
   const theme = useTheme();
 

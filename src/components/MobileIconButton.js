@@ -129,7 +129,7 @@ const MobileIconButton = ({
                   }}
                   fillColor={
                     isFocused
-                      ? "#fff"
+                      ? focusIconColor || "#fff"
                       : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#95959E"
@@ -145,7 +145,9 @@ const MobileIconButton = ({
                 style={{
                   fontWeight: "bold",
                   color: isFocused
-                    ? "#fff"
+                    ? appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "#fff"
                     : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "#95959E",
