@@ -271,6 +271,19 @@ export function calcQuality(participantsCount) {
   }
 }
 
+export function getQualityScore(stats) {
+  console.log(stats);
+  const packetLossPercent = stats.packetsLost / stats.totalPackets || 0;
+  const jitter = stats.jitter;
+  const rtt = stats.rtt;
+  console.log({ packetLossPercent, jitter, rtt });
+  let score = 100;
+  score -= packetLossPercent * 50;
+  score -= (jitter / 30) * 25 || 0;
+  score -= (rtt / 300) * 25 || 0;
+  return score / 10;
+}
+
 export const json_verify = (s) => {
   try {
     JSON.parse(s);

@@ -10,6 +10,7 @@ import {
   eventEmitter,
   appEvents,
   nameTructed,
+  getQualityScore,
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
@@ -88,13 +89,20 @@ export const CornerDisplayName = ({
   const [score, setScore] = useState({});
 
   const updateStats = async () => {
-    let stats = {};
+    let stats = [];
     if (webcamStream) {
       stats = await getVideoStats();
     } else if (micStream) {
       stats = await getAudioStats();
     }
-    setScore(stats?.score);
+    // setScore(stats?.score);
+    let score = stats
+      ? stats.length > 0
+        ? getQualityScore(stats[0])
+        : 100
+      : 100;
+    console.log(score);
+    setScore(score);
   };
 
   useEffect(() => {
@@ -151,10 +159,10 @@ export const CornerDisplayName = ({
       >
         {(webcamStream || micStream) && networkBarEnabled && (
           <NetworkIcon
-            color1={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
-            color2={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
-            color3={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FFDBDB"}
-            color4={score > 8 ? "#3BA55D" : score > 5 ? "#69571F" : "#FFDBDB"}
+            color1={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FF5D5D"}
+            color2={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FF5D5D"}
+            color3={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FFDBDB"}
+            color4={score > 7 ? "#3BA55D" : score > 4 ? "#69571F" : "#FFDBDB"}
             style={{ marginRight: analyzerSize / 4 }}
           />
         )}
