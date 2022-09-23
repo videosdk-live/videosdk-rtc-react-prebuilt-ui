@@ -935,6 +935,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       }
       lottieOption={isHls ? defaultOptions : null}
       disabled={!participantCanToggleHls}
+      isRequestProcessing={isRequestProcessing}
     />
   );
 };

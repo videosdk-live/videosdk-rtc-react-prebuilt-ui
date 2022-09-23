@@ -587,28 +587,56 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnHlsStarted = (data) => {
+  const _handleOnHlsStateChanged = (data) => {
+    //
     if (
       participantCanToggleHls &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE
+      meetingModeRef.current === meetingModes.CONFERENCE && // trigger on conference mode only
+      (data.status === Constants.hlsEvents.HLS_STARTED ||
+        data.status === Constants.hlsEvents.HLS_STOPPED)
     ) {
-      enqueueSnackbar("Meeting HLS is started.");
+      enqueueSnackbar(
+        data.status === Constants.hlsEvents.HLS_STARTED
+          ? "Meeting HLS is started."
+          : "Meeting HLS is stopped."
+      );
+
+      setDownstreamUrl(
+        data.status === Constants.hlsEvents.HLS_STARTED
+          ? data.setDownstreamUrl
+          : null
+      );
     }
 
-    setDownstreamUrl(data);
+    //set downstream url on basis of started or stopped
+  };
+
+  const _handleOnHlsStarted = (data) => {
+    // if (
+    //   participantCanToggleHls &&
+    //   notificationAlertsEnabled &&
+    //   meetingModeRef.current === meetingModes.CONFERENCE
+    // ) {
+    //   enqueueSnackbar("Meeting HLS is started.");
+    // }
+    // setDownstreamUrl(data);
+    //? oonil this is not needed maybe? remove this from
+    //?  everywhere
     setAfterMeetingJoinedHLSState("STARTED");
   };
 
   const _handleOnHlsStopped = () => {
-    if (
-      participantCanToggleHls &&
-      notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE
-    ) {
-      enqueueSnackbar("Meeting HLS is stopped.");
-    }
-    setDownstreamUrl(null);
+    // if (
+    //   participantCanToggleHls &&
+    //   notificationAlertsEnabled &&
+    //   meetingModeRef.current === meetingModes.CONFERENCE
+    // ) {
+    //   enqueueSnackbar("Meeting HLS is stopped.");
+    // }
+    // setDownstreamUrl(null);
+    //? oonil this is not needed maybe? remove this from
+    //?  everywhere
     setAfterMeetingJoinedHLSState("STOPPED");
   };
 
@@ -699,6 +727,7 @@ const MeetingContainer = () => {
     onError: _handleOnError,
     onRecordingStateChanged: _handleOnRecordingStateChanged,
     onLivestreamStateChanged: _handleOnLivestreamStateChanged,
+    onHlsStateChanged: _handleOnHlsStateChanged,
     onHlsStarted: _handleOnHlsStarted,
     onHlsStopped: _handleOnHlsStopped,
   });
