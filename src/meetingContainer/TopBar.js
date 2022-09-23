@@ -941,7 +941,9 @@ const WebcamBTN = () => {
         tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
-        onClick={toggleWebcam}
+        onClick={() => {
+          toggleWebcam();
+        }}
         focusBGColor={
           appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.contrastText
