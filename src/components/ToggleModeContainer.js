@@ -1,9 +1,7 @@
 import {
   Box,
-  IconButton,
   makeStyles,
   MenuItem,
-  Tooltip,
   Typography,
   useTheme,
 } from "@material-ui/core";
@@ -30,7 +28,11 @@ const useStyles = makeStyles(() => ({
     },
   },
 }));
-const ToggleModeContainer = ({ participantId, participantMode }) => {
+const ToggleModeContainer = ({
+  participantId,
+  participantMode,
+  handleClose,
+}) => {
   const mMeetingRef = useRef();
   const classes = useStyles();
 
@@ -60,6 +62,7 @@ const ToggleModeContainer = ({ participantId, participantMode }) => {
                 ? meetingModes.VIEWER
                 : meetingModes.CONFERENCE,
           });
+          handleClose();
         }}
         classes={{
           root:

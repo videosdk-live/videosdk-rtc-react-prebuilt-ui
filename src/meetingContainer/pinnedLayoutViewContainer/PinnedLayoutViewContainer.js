@@ -272,9 +272,9 @@ const PinnedLayoutViewContainer = ({
         width,
         backgroundColor:
           appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.slightLighter
+            ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.two
+            ? theme.palette.lightTheme.main
             : theme.palette.background.default,
         overflow: "hidden",
         transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -431,9 +431,9 @@ const PinnedLayoutViewContainer = ({
           style={{
             backgroundColor:
               appTheme === appThemes.DARK
-                ? theme.palette.darkTheme.slightLighter
+                ? theme.palette.darkTheme.main
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.two
+                ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
             overflowX: "hidden",
             overflowY: spotlightParticipantId ? "scroll" : "hidden",

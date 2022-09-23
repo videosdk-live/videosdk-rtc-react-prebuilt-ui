@@ -10,7 +10,7 @@ import {
 } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
-import { Box, CircularProgress } from "@material-ui/core";
+import { Box, CircularProgress, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
@@ -25,10 +25,8 @@ import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
 import { version as prebuiltSDKVersion } from "../package.json";
 import { meetingModes } from "./CONSTS";
-import useIsMobile from "./utils/useIsMobile";
 
 const App = () => {
-  const isMobile = useIsMobile();
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,
     meetingId: null,
@@ -510,15 +508,15 @@ const App = () => {
     }
   }, [paramKeys]);
 
+  const theme = useTheme();
+  const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
   useEffect(() => {
-    if (isMobile) {
+    if (isXStoSM) {
       window.onbeforeunload = () => {
         return "Are you sure you want to exit?";
       };
     }
-  }, [isMobile]);
-
-  const theme = useTheme();
+  }, [isXStoSM]);
 
   return (
     <>

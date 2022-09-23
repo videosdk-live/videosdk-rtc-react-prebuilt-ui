@@ -19,9 +19,9 @@ import {
   MenuItem,
   Popover,
 } from "@material-ui/core";
-import React, { useEffect, useRef, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
-import { LeaveMeetingIcon, RaiseHand } from "../../icons";
+import { RaiseHand } from "../../icons";
 import { List } from "react-virtualized";
 import useWindowSize from "../../utils/useWindowSize";
 import useIsTab from "../../utils/useIsTab";
@@ -37,7 +37,7 @@ import ParticipantVideoOnIcon from "../../icons/ParticipantVideoOnIcon";
 import ParticipantVideoOffIcon from "../../icons/ParticipantVideoOffIcon";
 import ParticipantPinIcon from "../../icons/ParticipantPinIcon";
 import ParticipantRemoveIcon from "../../icons/ParticipantRemoveIcon";
-import ParticipantCloseIcon from "../../icons/ParticipantCloseIcon";
+import useIsHls from "../useIsHls";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -75,12 +75,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function ParticipantListItem({
-  raisedHand,
-  participantId,
-  participantExpandedId,
-  setParticipantExpandedId,
-}) {
+function ParticipantListItem({ raisedHand, participantId }) {
   const { presenterId } = useMeeting();
   const {
     participant,
@@ -118,7 +113,6 @@ function ParticipantListItem({
   const [isParticipantKickoutVisible, setIsParticipantKickoutVisible] =
     useState(false);
 
-  const [morePanelWidth, setMorePanelWidth] = useState(0);
   const [participantMode, setParticipantMode] = useState(null);
   const [moreIconClicked, setMoreIconClicked] = useState(null);
 
@@ -130,19 +124,11 @@ function ParticipantListItem({
     setMoreIconClicked(null);
   };
 
-  const tollTipEl = useRef();
+  const isHls = useIsHls();
+
   const classes = useStyles();
 
   const theme = useTheme();
-
-  const expanded = participantExpandedId === participantId;
-
-  const morePanelRef = useRef();
-
-  useEffect(() => {
-    morePanelRef.current?.offsetWidth &&
-      setMorePanelWidth(morePanelRef.current.offsetWidth);
-  }, []);
 
   usePubSub(`CURRENT_MODE_${participantId}`, {
     onMessageReceived: (data) => {
@@ -202,24 +188,23 @@ function ParticipantListItem({
         >
           {displayName?.charAt(0)}
         </Avatar>
-        <Fade in={!expanded}>
-          <Box ml={1} mr={0.5} style={{ flex: 1, display: "flex" }}>
-            <Typography
-              style={{
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "pre-wrap",
-                color:
-                  appTheme === appThemes.LIGHT &&
-                  theme.palette.lightTheme.contrastText,
-              }}
-              variant="body1"
-              noWrap
-            >
-              {isLocal ? "You" : nameTructed(displayName, 15)}
-            </Typography>
-          </Box>
-        </Fade>
+
+        <Box ml={1} mr={0.5} style={{ flex: 1, display: "flex" }}>
+          <Typography
+            style={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "pre-wrap",
+              color:
+                appTheme === appThemes.LIGHT &&
+                theme.palette.lightTheme.contrastText,
+            }}
+            variant="body1"
+            noWrap
+          >
+            {isLocal ? "You" : nameTructed(displayName, 15)}
+          </Typography>
+        </Box>
 
         <Box
           style={{
@@ -260,7 +245,13 @@ function ParticipantListItem({
                   mr={0.5}
                   p={0.5}
                 >
-                  <RaiseHand />
+                  <RaiseHand
+                    fillColor={
+                      appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : theme.palette.common.white
+                    }
+                  />
                 </Box>
               )}
 
@@ -416,11 +407,6 @@ function ParticipantListItem({
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 100,
-                    border: `${expanded ? "0" : "0"}px solid ${
-                      expanded
-                        ? theme.palette.error.main
-                        : theme.palette.common.secondaryContrastTextLight
-                    }`,
                   }}
                   p={0.5}
                 >
@@ -469,6 +455,7 @@ function ParticipantListItem({
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsParticipantKickoutVisible(true);
+                          handleClose();
                         }}
                         classes={{
                           root:
@@ -517,29 +504,13 @@ function ParticipantListItem({
                           </Box>
                         </Box>
                       </MenuItem>
-                      {/* <ConfirmBox
-                        open={isParticipantKickoutVisible}
-                        title={`Remove ${nameTructed(displayName, 15)} `}
-                        subTitle={`Are you sure want to remove ${nameTructed(
-                          displayName,
-                          15
-                        )} from the call?`}
-                        successText={"Remove"}
-                        rejectText={"Cancel"}
-                        onSuccess={() => {
-                          participant.remove();
-                          setIsParticipantKickoutVisible(false);
-                        }}
-                        onReject={() => {
-                          setIsParticipantKickoutVisible(false);
-                        }}
-                      /> */}
                     </>
                   )}
-                  {participantCanToggleOtherMode && (
+                  {participantCanToggleOtherMode && isHls && (
                     <ToggleModeContainer
                       participantId={participantId}
                       participantMode={participantMode}
+                      handleClose={handleClose}
                     />
                   )}
                   {meetingMode === meetingModes.CONFERENCE && (
@@ -550,6 +521,7 @@ function ParticipantListItem({
                         publish({
                           setScreenShareOn: !isParticipantPresenting,
                         });
+                        handleClose();
                       }}
                       classes={{
                         root:
@@ -672,7 +644,6 @@ function ParticipantListItem({
 
 export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   const [filterQuery, setFilterQuery] = useState("");
-  const [participantExpandedId, setParticipantExpandedId] = useState(null);
 
   const { participants } = useMeeting();
   const { raisedHandsParticipants, appTheme } = useMeetingAppContext();
@@ -747,8 +718,6 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
           <ParticipantListItem
             participantId={participantId}
             raisedHand={raisedHand}
-            participantExpandedId={participantExpandedId}
-            setParticipantExpandedId={setParticipantExpandedId}
           />
         ) : (
           <Box

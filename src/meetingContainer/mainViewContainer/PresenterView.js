@@ -227,6 +227,7 @@ const PresenterView = ({ presenterId }) => {
                 variant="h6"
                 style={{
                   fontWeight: "bold",
+                  textAlign: "center",
                   color:
                     appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText

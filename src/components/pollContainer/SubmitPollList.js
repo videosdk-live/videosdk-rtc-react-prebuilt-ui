@@ -316,6 +316,8 @@ const SubmitPollListItem = ({ poll }) => {
                               style={{
                                 backgroundColor:
                                   hasCorrectAnswer && isActive
+                                    ? "#9E9DA6"
+                                    : hasCorrectAnswer && !isActive
                                     ? isCorrectOption
                                       ? appTheme === appThemes.LIGHT ||
                                         appTheme === appThemes.DARK

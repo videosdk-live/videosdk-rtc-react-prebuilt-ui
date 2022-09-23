@@ -223,7 +223,7 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {(!micOn || (webcamOn && isActiveSpeaker)) && (
+      {(!micOn || isActiveSpeaker) && !isPresenting && (
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -234,11 +234,7 @@ export const CornerDisplayName = ({
             right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             transform: `scale(${show ? 1 : 0})`,
             padding: isMobile ? 2 : isTab ? 3 : 4,
-            backgroundColor: isActiveSpeaker
-              ? "#00000066"
-              : micOn
-              ? undefined
-              : "#D32F2Fcc",
+            backgroundColor: isActiveSpeaker ? "#00000066" : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -247,7 +243,7 @@ export const CornerDisplayName = ({
             transitionTimingFunction: "linear",
           }}
         >
-          {webcamOn && isActiveSpeaker ? (
+          {isActiveSpeaker ? (
             <Lottie
               options={defaultOptions}
               eventListeners={[{ eventName: "done" }]}
@@ -255,14 +251,16 @@ export const CornerDisplayName = ({
               width={analyzerSize}
               isClickToPauseDisabled
             />
-          ) : micOn ? null : (
-            <MicOff
-              style={{
-                color: theme.palette.common.white,
-                height: (analyzerSize * 2) / 3,
-                width: (analyzerSize * 2) / 3,
-              }}
-            />
+          ) : (
+            !micOn && (
+              <MicOff
+                style={{
+                  color: theme.palette.common.white,
+                  height: (analyzerSize * 2) / 3,
+                  width: (analyzerSize * 2) / 3,
+                }}
+              />
+            )
           )}
         </div>
       )}

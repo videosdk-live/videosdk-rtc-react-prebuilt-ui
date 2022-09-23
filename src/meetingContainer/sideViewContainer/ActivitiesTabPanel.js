@@ -89,9 +89,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
               ? true
               : false,
           onClick: () => {
-            whiteboardStarted
-              ? mMeeting.meeting.stopWhiteboard()
-              : mMeeting.meeting.startWhiteboard();
+            mMeeting.meeting.startWhiteboard();
             setSideBarMode((s) => s === sideBarModes.ACTIVITIES && null);
             setSideBarNestedMode(null);
           },

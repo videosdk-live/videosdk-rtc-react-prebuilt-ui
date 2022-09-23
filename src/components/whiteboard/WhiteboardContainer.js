@@ -947,7 +947,7 @@ function WhiteboardContainer({
                 color:
                   appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
                     ? theme.palette.lightTheme.contrastText
-                    : theme.palette.common.white,
+                    : theme.palette.common.black,
               }}
             />
           </IconButton>
