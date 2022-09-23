@@ -587,30 +587,47 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handleOnHlsStarted = (data) => {
+  const _handleOnHlsStateChanged = (data) => {
+    //
     if (
       participantCanToggleHls &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE
+      meetingModeRef.current === meetingModes.CONFERENCE && // trigger on conference mode only
+      (data.status === Constants.hlsEvents.HLS_STARTED ||
+        data.status === Constants.hlsEvents.HLS_STOPPED)
     ) {
-      enqueueSnackbar("Meeting HLS is started.");
+      enqueueSnackbar(
+        data.status === Constants.hlsEvents.HLS_STARTED
+          ? "Meeting HLS is started."
+          : "Meeting HLS is stopped."
+      );
     }
 
-    setDownstreamUrl(data);
-    setAfterMeetingJoinedHLSState("STARTED");
-  };
-
-  const _handleOnHlsStopped = () => {
     if (
-      participantCanToggleHls &&
-      notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE
+      data.status === Constants.hlsEvents.HLS_STARTED ||
+      data.status === Constants.hlsEvents.HLS_STOPPED
     ) {
-      enqueueSnackbar("Meeting HLS is stopped.");
+      setDownstreamUrl(
+        data.status === Constants.hlsEvents.HLS_STARTED
+          ? data.downstreamUrl
+          : null
+      );
     }
-    setDownstreamUrl(null);
-    setAfterMeetingJoinedHLSState("STOPPED");
+
+    if (data.status === Constants.hlsEvents.HLS_STARTED) {
+      setAfterMeetingJoinedHLSState("STARTED");
+    }
+
+    if (data.status === Constants.hlsEvents.HLS_STOPPED) {
+      setAfterMeetingJoinedHLSState("STOPPED");
+    }
+
+    //set downstream url on basis of started or stopped
   };
+
+  const _handleOnHlsStarted = (data) => {};
+
+  const _handleOnHlsStopped = () => {};
 
   const _handleOnEntryRequested = () => {};
 
@@ -699,6 +716,7 @@ const MeetingContainer = () => {
     onError: _handleOnError,
     onRecordingStateChanged: _handleOnRecordingStateChanged,
     onLivestreamStateChanged: _handleOnLivestreamStateChanged,
+    onHlsStateChanged: _handleOnHlsStateChanged,
     onHlsStarted: _handleOnHlsStarted,
     onHlsStopped: _handleOnHlsStopped,
   });

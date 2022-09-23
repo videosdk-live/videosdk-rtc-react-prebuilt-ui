@@ -10,6 +10,7 @@ import {
   eventEmitter,
   appEvents,
   nameTructed,
+  getQualityScore,
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
@@ -88,13 +89,20 @@ export const CornerDisplayName = ({
   const [score, setScore] = useState({});
 
   const updateStats = async () => {
-    let stats = {};
+    let stats = [];
     if (webcamStream) {
       stats = await getVideoStats();
     } else if (micStream) {
       stats = await getAudioStats();
     }
-    setScore(stats?.score);
+    // setScore(stats?.score);
+    let score = stats
+      ? stats.length > 0
+        ? getQualityScore(stats[0])
+        : 100
+      : 100;
+    console.log(score);
+    setScore(score);
   };
 
   useEffect(() => {
@@ -151,10 +159,10 @@ export const CornerDisplayName = ({
       >
         {(webcamStream || micStream) && networkBarEnabled && (
           <NetworkIcon
-            color1={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
-            color2={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FF5D5D"}
-            color3={score > 8 ? "#3BA55D" : score > 5 ? "#F1CC4A" : "#FFDBDB"}
-            color4={score > 8 ? "#3BA55D" : score > 5 ? "#69571F" : "#FFDBDB"}
+            color1={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FF5D5D"}
+            color2={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FF5D5D"}
+            color3={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FFDBDB"}
+            color4={score > 7 ? "#3BA55D" : score > 4 ? "#69571F" : "#FFDBDB"}
             style={{ marginRight: analyzerSize / 4 }}
           />
         )}
@@ -215,7 +223,7 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {(!micOn || (webcamOn && isActiveSpeaker)) && (
+      {(!micOn || isActiveSpeaker) && !isPresenting && (
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -226,11 +234,7 @@ export const CornerDisplayName = ({
             right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
             transform: `scale(${show ? 1 : 0})`,
             padding: isMobile ? 2 : isTab ? 3 : 4,
-            backgroundColor: isActiveSpeaker
-              ? "#00000066"
-              : micOn
-              ? undefined
-              : "#D32F2Fcc",
+            backgroundColor: isActiveSpeaker ? "#00000066" : "#D32F2Fcc",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -239,7 +243,7 @@ export const CornerDisplayName = ({
             transitionTimingFunction: "linear",
           }}
         >
-          {webcamOn && isActiveSpeaker ? (
+          {isActiveSpeaker ? (
             <Lottie
               options={defaultOptions}
               eventListeners={[{ eventName: "done" }]}
@@ -247,14 +251,16 @@ export const CornerDisplayName = ({
               width={analyzerSize}
               isClickToPauseDisabled
             />
-          ) : micOn ? null : (
-            <MicOff
-              style={{
-                color: theme.palette.common.white,
-                height: (analyzerSize * 2) / 3,
-                width: (analyzerSize * 2) / 3,
-              }}
-            />
+          ) : (
+            !micOn && (
+              <MicOff
+                style={{
+                  color: theme.palette.common.white,
+                  height: (analyzerSize * 2) / 3,
+                  width: (analyzerSize * 2) / 3,
+                }}
+              />
+            )
           )}
         </div>
       )}
@@ -539,7 +545,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               }}
             >
               <Typography
-                variant="h5"
+                variant={presenterId || whiteboardStarted ? "body2" : "h5"}
                 style={{ color: invertColor(participantAccentColor) }}
               >
                 {String(displayName).charAt(0).toUpperCase()}

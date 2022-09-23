@@ -74,7 +74,11 @@ const OutlineIconButton = ({
   }, []);
 
   return (
-    <Tooltip placement="bottom" title={tooltipTitle || ""}>
+    <Tooltip
+      placement="bottom"
+      title={tooltipTitle || ""}
+      open={mouseOver || mouseDown}
+    >
       <Box
         style={{
           display: "flex",

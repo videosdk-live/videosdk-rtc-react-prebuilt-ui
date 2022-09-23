@@ -14,6 +14,7 @@ import {
   sideBarModes,
   appThemes,
   useMeetingAppContext,
+  sideBarNestedModes,
 } from "../../MeetingAppContextDef";
 import ChatTabPanel from "./ChatTabPanel";
 import ParticipantsTabPanel from "./ParticipantsTabPanel";
@@ -72,7 +73,7 @@ const SideBarTabView = ({ width, height }) => {
       ? 1
       : sideBarMode === sideBarModes.ACTIVITIES
       ? 2
-      : sideBarMode === sideBarModes.ADD_LIVE_STREAM
+      : sideBarNestedMode === sideBarNestedModes.ADD_LIVE_STREAM //sideBarMode === sideBarModes.ADD_LIVE_STREAM
       ? 3
       : sideBarMode === sideBarModes.CONFIGURATION
       ? 4
@@ -158,7 +159,8 @@ const SideBarTabView = ({ width, height }) => {
                 >
                   {sideBarMode === sideBarModes.ACTIVITIES &&
                     (sideBarNestedMode === "POLLS" ||
-                      sideBarNestedMode === "CREATE_POLL") && (
+                      sideBarNestedMode === "CREATE_POLL" ||
+                      sideBarNestedMode === "ADD_LIVE_STREAM") && (
                       <IconButton
                         onClick={() => {
                           setSideBarNestedMode(null);
@@ -199,7 +201,8 @@ const SideBarTabView = ({ width, height }) => {
                       ? `${capitalize(
                           String(sideBarMode || "").toLowerCase()
                         )} (${new Map(participants)?.size})`
-                      : sideBarMode === "ADD_LIVE_STREAM"
+                      : sideBarMode === "ADD_LIVE_STREAM" ||
+                        sideBarNestedMode === "ADD_LIVE_STREAM"
                       ? "Add Live Streams"
                       : sideBarMode === "ACTIVITIES" &&
                         sideBarNestedMode === "POLLS"
@@ -216,6 +219,8 @@ const SideBarTabView = ({ width, height }) => {
                       : sideBarNestedMode === "CREATE_POLL" &&
                         sideBarMode === "ACTIVITIES"
                       ? "Create a poll"
+                      : sideBarMode === "ACTIVITIES"
+                      ? "More Options"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
                   </Typography>
                 </Box>

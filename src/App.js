@@ -10,7 +10,7 @@ import {
 } from "./MeetingAppContextDef";
 import JoinMeeting from "./components/JoinScreen";
 import ClickAnywhereToContinue from "./components/ClickAnywhereToContinue";
-import { Box, CircularProgress } from "@material-ui/core";
+import { Box, CircularProgress, useMediaQuery } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import MeetingLeftScreen from "./components/MeetingLeftScreen";
 import ConfirmBox from "./components/ConfirmBox";
@@ -509,6 +509,16 @@ const App = () => {
   }, [paramKeys]);
 
   const theme = useTheme();
+
+  const isXStoSM = useMediaQuery(theme.breakpoints.only("xs"));
+
+  useEffect(() => {
+    if (isXStoSM) {
+      window.onbeforeunload = () => {
+        return "Are you sure you want to exit?";
+      };
+    }
+  }, [isXStoSM]);
 
   return (
     <>
