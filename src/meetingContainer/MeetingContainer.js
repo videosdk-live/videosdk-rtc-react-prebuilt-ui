@@ -601,44 +601,33 @@ const MeetingContainer = () => {
           ? "Meeting HLS is started."
           : "Meeting HLS is stopped."
       );
+    }
 
+    if (
+      data.status === Constants.hlsEvents.HLS_STARTED ||
+      data.status === Constants.hlsEvents.HLS_STOPPED
+    ) {
       setDownstreamUrl(
         data.status === Constants.hlsEvents.HLS_STARTED
-          ? data.setDownstreamUrl
+          ? data.downstreamUrl
           : null
       );
+    }
+
+    if (data.status === Constants.hlsEvents.HLS_STARTED) {
+      setAfterMeetingJoinedHLSState("STARTED");
+    }
+
+    if (data.status === Constants.hlsEvents.HLS_STOPPED) {
+      setAfterMeetingJoinedHLSState("STOPPED");
     }
 
     //set downstream url on basis of started or stopped
   };
 
-  const _handleOnHlsStarted = (data) => {
-    // if (
-    //   participantCanToggleHls &&
-    //   notificationAlertsEnabled &&
-    //   meetingModeRef.current === meetingModes.CONFERENCE
-    // ) {
-    //   enqueueSnackbar("Meeting HLS is started.");
-    // }
-    // setDownstreamUrl(data);
-    //? oonil this is not needed maybe? remove this from
-    //?  everywhere
-    setAfterMeetingJoinedHLSState("STARTED");
-  };
+  const _handleOnHlsStarted = (data) => {};
 
-  const _handleOnHlsStopped = () => {
-    // if (
-    //   participantCanToggleHls &&
-    //   notificationAlertsEnabled &&
-    //   meetingModeRef.current === meetingModes.CONFERENCE
-    // ) {
-    //   enqueueSnackbar("Meeting HLS is stopped.");
-    // }
-    // setDownstreamUrl(null);
-    //? oonil this is not needed maybe? remove this from
-    //?  everywhere
-    setAfterMeetingJoinedHLSState("STOPPED");
-  };
+  const _handleOnHlsStopped = () => {};
 
   const _handleOnEntryRequested = () => {};
 
