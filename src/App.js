@@ -509,7 +509,9 @@ const App = () => {
   }, [paramKeys]);
 
   const theme = useTheme();
-  const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
+
+  const isXStoSM = useMediaQuery(theme.breakpoints.only("xs"));
+
   useEffect(() => {
     if (isXStoSM) {
       window.onbeforeunload = () => {
