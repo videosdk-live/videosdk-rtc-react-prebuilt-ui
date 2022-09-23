@@ -219,6 +219,8 @@ const SideBarTabView = ({ width, height }) => {
                       : sideBarNestedMode === "CREATE_POLL" &&
                         sideBarMode === "ACTIVITIES"
                       ? "Create a poll"
+                      : sideBarMode === "ACTIVITIES"
+                      ? "More Options"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
                   </Typography>
                 </Box>

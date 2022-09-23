@@ -545,7 +545,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               }}
             >
               <Typography
-                variant="h5"
+                variant={presenterId || whiteboardStarted ? "body2" : "h5"}
                 style={{ color: invertColor(participantAccentColor) }}
               >
                 {String(displayName).charAt(0).toUpperCase()}

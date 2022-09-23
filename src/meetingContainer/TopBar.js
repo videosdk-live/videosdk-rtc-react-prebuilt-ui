@@ -244,8 +244,8 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={Activities}
-      tooltipTitle={"Activities"}
-      buttonText={"Activities"}
+      tooltipTitle={"More Options"}
+      buttonText={"More Options"}
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
         typeof onClick === "function" && onClick();
@@ -259,7 +259,7 @@ const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
     />
   ) : (
     <OutlineIconButton
-      tooltipTitle={"Activities"}
+      tooltipTitle={"More Options"}
       Icon={Activities}
       focusBGColor={
         appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText

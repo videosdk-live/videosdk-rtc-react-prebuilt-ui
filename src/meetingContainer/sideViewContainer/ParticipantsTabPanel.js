@@ -202,7 +202,7 @@ function ParticipantListItem({ raisedHand, participantId }) {
             variant="body1"
             noWrap
           >
-            {isLocal ? "You" : nameTructed(displayName, 15)}
+            {isLocal ? "You" : nameTructed(displayName, 10)}
           </Typography>
         </Box>
 
@@ -242,8 +242,9 @@ function ParticipantListItem({ raisedHand, participantId }) {
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                  mr={0.5}
-                  p={0.5}
+                  mr={0}
+                  p={0}
+                  ml={0.5}
                 >
                   <RaiseHand
                     fillColor={

@@ -102,19 +102,20 @@ const SingleLiveStreamItem = ({
 
   const handleValidation = () => {
     let isValid = true;
-    if (editedStreamKey.length === 0) {
+    if (editedStreamKey.length >= 2 && /^\S*$/.test(editedStreamKey)) {
+      setEditedStreamKeyErr(false);
+    } else {
       isValid = false;
       setEditedStreamKeyErr(true);
       return false;
-    } else {
-      setEditedStreamKeyErr(false);
     }
-    if (editedUrl.length === 0) {
+
+    if (editedUrl.length >= 2 && /^\S*$/.test(editedUrl)) {
+      setEditedUrlErr(false);
+    } else {
       isValid = false;
       setEditedUrlErr(true);
       return false;
-    } else {
-      setEditedUrlErr(false);
     }
     return isValid;
   };
@@ -340,7 +341,7 @@ const SingleLiveStreamItem = ({
           />
           {editedStreamKeyErr && (
             <Typography variant="body2" style={{ color: "#D33730" }}>
-              Please provide stream key
+              Please provide valid stream key
             </Typography>
           )}
 
@@ -384,7 +385,7 @@ const SingleLiveStreamItem = ({
           />
           {editedUrlErr && (
             <Typography variant="body2" style={{ color: "#D33730" }}>
-              Please provide stream url
+              Please provide valid stream url
             </Typography>
           )}
         </Box>
@@ -447,19 +448,19 @@ const AddLiveStream = ({
 
   const handleValidation = ({ streamKey, url }) => {
     let isValid = true;
-    if (streamKey.length === 0) {
+    if (streamKey.length >= 2 && /^\S*$/.test(streamKey)) {
+      setStreamKeyErr(false);
+    } else {
       isValid = false;
       setStreamKeyErr(true);
       return false;
-    } else {
-      setStreamKeyErr(false);
     }
-    if (url.length === 0) {
+    if (url.length >= 2 && /^\S*$/.test(url)) {
+      setStreamUrlErr(false);
+    } else {
       isValid = false;
       setStreamUrlErr(true);
       return false;
-    } else {
-      setStreamUrlErr(false);
     }
     return isValid;
   };
@@ -588,7 +589,7 @@ const AddLiveStream = ({
         />
         {streamKeyErr && (
           <Typography variant="body2" style={{ color: "#D33730" }}>
-            Please provide stream key
+            Please provide valid stream key
           </Typography>
         )}
         <TextField
@@ -628,7 +629,7 @@ const AddLiveStream = ({
         />
         {streamUrlErr && (
           <Typography variant="body2" style={{ color: "#D33730" }}>
-            Please provide stream url
+            Please provide valid stream url
           </Typography>
         )}
       </Box>
