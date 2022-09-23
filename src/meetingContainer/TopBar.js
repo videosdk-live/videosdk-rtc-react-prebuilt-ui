@@ -786,14 +786,24 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
 };
 const HlsBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
+  const theme = useTheme();
 
   const startHls = mMeeting?.startHls;
   const stopHls = mMeeting?.stopHls;
-  const [isHlsStop, setIsHlsStop] = useState(false);
+  const hlsState = mMeeting?.hlsState;
 
   const isHls = useIsHls();
 
-  const { appMeetingLayout, participantCanToggleHls, hlsTheme } =
+  const { isRequestProcessing } = useMemo(
+    () => ({
+      isRequestProcessing:
+        hlsState === Constants.hlsEvents.HLS_STARTING ||
+        hlsState === Constants.hlsEvents.HLS_STOPPING,
+    }),
+    [hlsState]
+  );
+
+  const { appMeetingLayout, participantCanToggleHls, hlsTheme, appTheme } =
     useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
@@ -863,38 +873,79 @@ const HlsBTN = ({ isMobile, isTab }) => {
 
     if (isHls) {
       stopHls();
-      setIsHlsStop(true);
     } else {
       _handleStartHLS();
-      setIsHlsStop(false);
     }
   };
 
   return isMobile || isTab ? (
     <MobileIconButton
       onClick={_handleClick}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       tooltipTitle={
-        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+        hlsState === Constants.hlsEvents.HLS_STARTED
+          ? "Stop HLS"
+          : hlsState === Constants.hlsEvents.HLS_STARTING
+          ? "Starting HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPED
+          ? "Start HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPING
+          ? "Stopping HLS"
+          : "Start HLS"
       }
       Icon={LiveIcon}
       buttonText={
-        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+        hlsState === Constants.hlsEvents.HLS_STARTED
+          ? "Stop HLS"
+          : hlsState === Constants.hlsEvents.HLS_STARTING
+          ? "Starting HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPED
+          ? "Start HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPING
+          ? "Stopping HLS"
+          : "Start HLS"
+      }
+      bgColor={
+        appTheme === appThemes.LIGHT &&
+        (hlsState === Constants.hlsEvents.HLS_STARTED ||
+          hlsState === Constants.hlsEvents.HLS_STOPPING) &&
+        "#EEF0F2"
       }
       isFocused={isHls}
-      lottieOption={isHls ? (isHlsStop ? null : defaultOptions) : null}
       disabled={!participantCanToggleHls}
+      lottieOption={isHls ? defaultOptions : null}
+      isRequestProcessing={isRequestProcessing}
     />
   ) : (
     <OutlineIconTextButton
       onClick={_handleClick}
       tooltipTitle={
-        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+        hlsState === Constants.hlsEvents.HLS_STARTED
+          ? "Stop HLS"
+          : hlsState === Constants.hlsEvents.HLS_STARTING
+          ? "Starting HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPED
+          ? "Start HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPING
+          ? "Stopping HLS"
+          : "Start HLS"
       }
       buttonText={
-        isHls ? (isHlsStop ? "Stopping HLS" : "Stop HLS") : "Start HLS"
+        hlsState === Constants.hlsEvents.HLS_STARTED
+          ? "Stop HLS"
+          : hlsState === Constants.hlsEvents.HLS_STARTING
+          ? "Starting HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPED
+          ? "Start HLS"
+          : hlsState === Constants.hlsEvents.HLS_STOPPING
+          ? "Stopping HLS"
+          : "Start HLS"
       }
-      lottieOption={isHls ? (isHlsStop ? null : defaultOptions) : null}
+      lottieOption={isHls ? defaultOptions : null}
       disabled={!participantCanToggleHls}
+      isRequestProcessing={isRequestProcessing}
     />
   );
 };
