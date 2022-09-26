@@ -45,7 +45,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     appTheme,
     whiteboardEnabled,
     canToggleWhiteboard,
-    whiteboardStarted,
+    participantCanToggleLivestream,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -98,7 +98,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
           Icon: AddLiveStreamsIcon,
           primary: "Add Live Streams",
           secondary: "Broadcast live stream to other platforms",
-          disabled: false,
+          disabled: !participantCanToggleLivestream,
           displayed: true,
           onClick: () => {
             setSideBarNestedMode(sideBarNestedModes.ADD_LIVE_STREAM);
@@ -127,17 +127,34 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             >
               <ListItem key={`activities_panel_item_${i}`}>
                 <ListItemAvatar>
-                  <Icon />
+                  <Icon
+                    fillColor={
+                      disabled
+                        ? appTheme === appThemes.DARK
+                          ? theme.palette.darkTheme.four
+                          : appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.five
+                          : theme.palette.text.secondary
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : theme.palette.common.white
+                    }
+                  />
                 </ListItemAvatar>
                 <div>
                   <h1
                     style={{
                       fontSize: 16,
                       fontWeight: 600,
-                      color:
-                        appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.contrastText
-                          : "white",
+                      color: disabled
+                        ? appTheme === appThemes.DARK
+                          ? theme.palette.darkTheme.four
+                          : appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.five
+                          : theme.palette.text.secondary
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : theme.palette.common.white,
                       lineHeight: 1.5,
                       marginTop: 6,
                       marginBottom: 0,
@@ -153,7 +170,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                           ? theme.palette.darkTheme.four
                           : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.five
-                          : "#9fa0a7",
+                          : theme.palette.text.secondary,
                       fontWeight: 500,
                       lineHeight: 1.43,
                       marginTop: 0,

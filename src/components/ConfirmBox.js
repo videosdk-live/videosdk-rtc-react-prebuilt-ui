@@ -44,10 +44,6 @@ const ConfirmBox = ({
       maxWidth="xs"
       open={open}
       onClose={() => {}}
-      style={{
-        backgroundColor:
-          ((v && v?.appTheme) || appTheme) === appThemes.DARK && "#FFFFFF30",
-      }}
       aria-labelledby="responsive-dialog-title"
     >
       <Box
