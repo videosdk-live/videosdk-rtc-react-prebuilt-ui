@@ -30,6 +30,7 @@ export const sideBarNestedModes = {
   CREATE_POLL: "CREATE_POLL",
   QNA: "QNA",
   ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
+  VIRTUAL_BACKGROUND: "VIRTUAL_BACKGROUND",
 };
 
 const useStyles = makeStyles((theme) => ({

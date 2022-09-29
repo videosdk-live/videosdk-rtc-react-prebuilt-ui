@@ -22,6 +22,8 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import WhiteboardIcon from "../../icons/WhiteboardIcon";
 import AddLiveStreamsIcon from "../../icons/AddLiveStreamsIcon";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
+import VirtualBackgroundIcon from "../../icons/VirtualBackgroundIcon";
+import VirtualBackgroundTabPanel from "./VirtualBackgroundTabPanel";
 
 const ActivitiesTabPanel = ({ panelHeight }) => {
   const theme = useTheme();
@@ -66,17 +68,19 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     <CreatePoll {...{ panelHeight }} />
   ) : sideBarNestedMode === sideBarNestedModes.ADD_LIVE_STREAM ? (
     <LiveStreamConfigTabPanel {...{ panelHeight }} />
+  ) : sideBarNestedMode === sideBarNestedModes.VIRTUAL_BACKGROUND ? (
+    <VirtualBackgroundTabPanel {...{ panelHeight }} />
   ) : (
     <List style={{ padding: listPadding }}>
       {[
         {
-          Icon: PollIcon,
-          primary: "Polls",
-          displayed: true,
-          secondary: "Find out participant’s opinion.",
+          Icon: VirtualBackgroundIcon,
+          primary: "Virtual Background",
+          secondary: "Add custom background to meetings",
           disabled: false,
+          displayed: true,
           onClick: () => {
-            setSideBarNestedMode(sideBarNestedModes.POLLS);
+            setSideBarNestedMode(sideBarNestedModes.VIRTUAL_BACKGROUND);
           },
         },
         {
@@ -94,6 +98,17 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
             setSideBarNestedMode(null);
           },
         },
+        {
+          Icon: PollIcon,
+          primary: "Polls",
+          displayed: true,
+          secondary: "Find out participant’s opinion.",
+          disabled: false,
+          onClick: () => {
+            setSideBarNestedMode(sideBarNestedModes.POLLS);
+          },
+        },
+
         {
           Icon: AddLiveStreamsIcon,
           primary: "Add Live Streams",

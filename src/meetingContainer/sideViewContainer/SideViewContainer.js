@@ -160,7 +160,8 @@ const SideBarTabView = ({ width, height }) => {
                   {sideBarMode === sideBarModes.ACTIVITIES &&
                     (sideBarNestedMode === "POLLS" ||
                       sideBarNestedMode === "CREATE_POLL" ||
-                      sideBarNestedMode === "ADD_LIVE_STREAM") && (
+                      sideBarNestedMode === "ADD_LIVE_STREAM" ||
+                      sideBarNestedMode === "VIRTUAL_BACKGROUND") && (
                       <IconButton
                         onClick={() => {
                           setSideBarNestedMode(null);
@@ -220,7 +221,10 @@ const SideBarTabView = ({ width, height }) => {
                         sideBarMode === "ACTIVITIES"
                       ? "Create a poll"
                       : sideBarMode === "ACTIVITIES"
-                      ? "More Options"
+                      ? sideBarNestedMode ===
+                        sideBarNestedModes.VIRTUAL_BACKGROUND
+                        ? "Virtual Background"
+                        : "More Options"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
                   </Typography>
                 </Box>
