@@ -1,4 +1,4 @@
-import { Box, useMediaQuery, useTheme } from "@material-ui/core";
+import { Box, Typography, useMediaQuery, useTheme } from "@material-ui/core";
 import {
   createCameraVideoTrack,
   useMeeting,
@@ -6,30 +6,43 @@ import {
 } from "@videosdk.live/react-sdk";
 import { useMemo, useRef } from "react";
 import ReactPlayer from "react-player";
-import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
-import useResponsiveSize from "../../utils/useResponsiveSize";
-import { VirtualBackgroundProcessor } from "videosdk-processor";
+import { appThemes, useMeetingAppContext } from "../../../MeetingAppContextDef";
+import useIsLGDesktop from "../../../utils/useIsLGDesktop";
+import useIsTab from "../../../utils/useIsTab";
+import useResponsiveSize from "../../../utils/useResponsiveSize";
+import DesktopBackgroundSection from "./DesktopBackgroundSection";
+import LGDesktopBackgroundSection from "./LGDesktopBackgroundSection";
+import TabBackgroundSection from "./TabBackgroundSection";
 // import { VideoSDKNoiseSuppressor } from "videosdk-processor";
 
-const SingleRow = ({ arr, blur, topSpacing, videoProcessor }) => {
+export const SingleRow = ({ arr, blur, topSpacing, videoProcessor, isTab }) => {
   const Width = useResponsiveSize({
     xl: 102,
     lg: 98,
     md: 98,
-    sm: 98,
-    xs: 98,
+    sm: 90,
+    xs: 90,
   });
   const mMeeting = useMeeting();
-
   const changeWebcam = mMeeting?.changeWebcam;
+
+  const participantId = mMeeting?.localParticipant?.id;
+
+  const { isLocal } = useParticipant(participantId, {});
+
+  const flipStyle = useMemo(
+    () =>
+      isLocal ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" } : {},
+    [isLocal]
+  );
 
   return (
     <Box
       style={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: topSpacing && 8,
+        // justifyContent: "space-between",
+        marginTop: topSpacing && isTab ? 14 : 8,
       }}
     >
       {arr.map(({ imageUrl, displayImageUrl }, i) => {
@@ -40,7 +53,7 @@ const SingleRow = ({ arr, blur, topSpacing, videoProcessor }) => {
                 await videoProcessor.init();
               }
               let config = {};
-              if (i === 0) {
+              if (i === 0 && blur) {
                 videoProcessor.stop();
                 const stream = await createCameraVideoTrack({});
                 changeWebcam(stream);
@@ -77,7 +90,12 @@ const SingleRow = ({ arr, blur, topSpacing, videoProcessor }) => {
             }}
           >
             {imageUrl && (
-              <img id={`virtualBgImage_${i}`} src={imageUrl} width={Width} />
+              <img
+                style={flipStyle}
+                id={`virtualBgImage_${i}`}
+                src={imageUrl}
+                width={Width}
+              />
             )}
           </Box>
         );
@@ -90,7 +108,11 @@ const BackgroundSelection = ({ padding, theme }) => {
   const { appTheme, videoProcessor } = useMeetingAppContext();
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
   const isXSOnly = useMediaQuery(theme.breakpoints.only("xs"));
+
   const videoPlayer = useRef();
+
+  const isLGDesktop = useIsLGDesktop();
+  const isTab = useIsTab();
 
   const mMeeting = useMeeting();
   const participantId = mMeeting?.localParticipant?.id;
@@ -111,60 +133,6 @@ const BackgroundSelection = ({ padding, theme }) => {
     [isLocal]
   );
 
-  const firstRowArr = [
-    {
-      imageUrl:
-        appTheme === appThemes.DARK
-          ? "VirtualBackground/no-filter-dark.png"
-          : appTheme === appThemes.LIGHT
-          ? "VirtualBackground/no-filter-light.png"
-          : "VirtualBackground/No-filter.png",
-      displayImageUrl: "",
-    },
-    {
-      imageUrl:
-        appTheme === appThemes.DARK
-          ? "VirtualBackground/blur-dark.png"
-          : appTheme === appThemes.LIGHT
-          ? "VirtualBackground/blur-light.png"
-          : "VirtualBackground/Blur.png",
-      displayImageUrl: "",
-    },
-
-    {
-      imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-1.png`,
-      displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-1.jpg`,
-    },
-  ];
-
-  const secondRowArr = [
-    {
-      imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-2.png`,
-      displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-2.jpg`,
-    },
-    {
-      imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-3.png`,
-      displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-3.jpg`,
-    },
-    ,
-    {
-      imageUrl: "VirtualBackground/image-4.png",
-      displayImageUrl: "bgImages/image-4.jpg",
-    },
-  ];
-
-  const thirdRowArr = [
-    {
-      imageUrl: "VirtualBackground/image-5.png",
-      displayImageUrl: "bgImages/image-5.jpg",
-    },
-    {
-      imageUrl: "VirtualBackground/image-6.png",
-      displayImageUrl: "bgImages/image-6.jpg",
-    },
-    { imageUrl: "" },
-  ];
-
   return (
     <Box
       style={{
@@ -179,17 +147,19 @@ const BackgroundSelection = ({ padding, theme }) => {
             style={{
               flex: 1,
               display: "flex",
-              width: isXStoSM ? "50%" : "100%",
-              height: isXStoSM ? "50%" : undefined,
-              paddingTop: !isXSOnly ? "56.25%" : "auto",
+              width: isXStoSM ? "100%" : "100%",
+              height: isXStoSM ? "100%" : "100%",
+              paddingTop: !isXSOnly ? "56.25%" : "56.25%",
               position: "relative",
               borderRadius: theme.spacing(1 / 4),
               overflow: "hidden",
+              // alignItems: isXStoSM && "center",
+              // justifyContent: isXStoSM && "center",
             }}
           >
             <Box
               style={{
-                position: !isXSOnly ? "absolute" : "unset",
+                position: !isXSOnly ? "absolute" : "absolute",
                 top: 0,
                 left: 0,
                 right: 0,
@@ -199,9 +169,11 @@ const BackgroundSelection = ({ padding, theme }) => {
                 flexDirection: "column",
                 borderRadius: theme.spacing(1),
                 overflow: "hidden",
+                // alignItems: isXStoSM && "center",
+                // justifyContent: isXStoSM && "center",
               }}
             >
-              {webcamOn && (
+              {webcamOn ? (
                 <ReactPlayer
                   ref={videoPlayer}
                   //
@@ -226,6 +198,30 @@ const BackgroundSelection = ({ padding, theme }) => {
                   //   checkAndUpdatePortrait();
                   // }}
                 />
+              ) : (
+                <Box
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : theme.palette.common.white,
+                      textAlign: "center",
+                    }}
+                  >
+                    Your camera is turned off.Selecting an effect will turn it
+                    on.
+                  </Typography>
+                </Box>
               )}
             </Box>
           </Box>
@@ -233,31 +229,30 @@ const BackgroundSelection = ({ padding, theme }) => {
         <Box
           style={{ marginTop: 12, display: "flex", flexDirection: "column" }}
         >
-          {/* 1st row */}
-          <SingleRow
-            arr={firstRowArr}
-            blur={true}
-            videoProcessor={videoProcessor}
-          />
-          {/* 2nd row */}
-          <SingleRow
-            arr={secondRowArr}
-            topSpacing={true}
-            videoProcessor={videoProcessor}
-          />
-          {/* 3rd row */}
-          <SingleRow
-            arr={thirdRowArr}
-            topSpacing={true}
-            videoProcessor={videoProcessor}
-          />
+          {isTab ? (
+            <TabBackgroundSection
+              videoProcessor={videoProcessor}
+              appTheme={appTheme}
+              isTab={isTab}
+            />
+          ) : isLGDesktop ? (
+            <LGDesktopBackgroundSection
+              videoProcessor={videoProcessor}
+              appTheme={appTheme}
+            />
+          ) : (
+            <DesktopBackgroundSection
+              videoProcessor={videoProcessor}
+              appTheme={appTheme}
+            />
+          )}
         </Box>
       </Box>
     </Box>
   );
 };
 
-const VirtualBackgroundTabPanel = ({ panelWidth, panelHeight }) => {
+const VirtualBackgroundContainer = ({ panelHeight }) => {
   const padding = useResponsiveSize({
     xl: 12,
     lg: 16,
@@ -292,4 +287,4 @@ const VirtualBackgroundTabPanel = ({ panelWidth, panelHeight }) => {
   );
 };
 
-export default VirtualBackgroundTabPanel;
+export default VirtualBackgroundContainer;

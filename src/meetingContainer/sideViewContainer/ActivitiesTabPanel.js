@@ -23,7 +23,7 @@ import WhiteboardIcon from "../../icons/WhiteboardIcon";
 import AddLiveStreamsIcon from "../../icons/AddLiveStreamsIcon";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import VirtualBackgroundIcon from "../../icons/VirtualBackgroundIcon";
-import VirtualBackgroundTabPanel from "./VirtualBackgroundTabPanel";
+import VirtualBackgroundContainer from "./VirtualBackgroundTabPanel/VirtualBackgroundContainer";
 
 const ActivitiesTabPanel = ({ panelHeight }) => {
   const theme = useTheme();
@@ -69,7 +69,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
   ) : sideBarNestedMode === sideBarNestedModes.ADD_LIVE_STREAM ? (
     <LiveStreamConfigTabPanel {...{ panelHeight }} />
   ) : sideBarNestedMode === sideBarNestedModes.VIRTUAL_BACKGROUND ? (
-    <VirtualBackgroundTabPanel {...{ panelHeight }} />
+    <VirtualBackgroundContainer {...{ panelHeight }} />
   ) : (
     <List style={{ padding: listPadding }}>
       {[
