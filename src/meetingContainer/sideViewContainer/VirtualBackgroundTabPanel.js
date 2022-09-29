@@ -11,7 +11,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { VirtualBackgroundProcessor } from "videosdk-processor";
 // import { VideoSDKNoiseSuppressor } from "videosdk-processor";
 
-const SingleRow = ({ arr, blur, topSpacing }) => {
+const SingleRow = ({ arr, blur, topSpacing, videoProcessor }) => {
   const Width = useResponsiveSize({
     xl: 102,
     lg: 98,
@@ -36,24 +36,34 @@ const SingleRow = ({ arr, blur, topSpacing }) => {
         return (
           <Box
             onClick={async () => {
-              const videoProcessor = new VirtualBackgroundProcessor();
-              const stream = await createCameraVideoTrack({});
-
+              if (!videoProcessor.ready) {
+                await videoProcessor.init();
+              }
+              let config = {};
+              if (i === 0) {
+                videoProcessor.stop();
+                const stream = await createCameraVideoTrack({});
+                changeWebcam(stream);
+                return;
+              }
               if (i === 1 && blur) {
-                videoProcessor.getBlurBackgroundStream(
-                  stream,
-                  (virtualBgStream) => {
-                    changeWebcam(virtualBgStream);
-                  }
-                );
+                config.type = "blur";
               } else {
-                videoProcessor.getVirtualBackgroundStream(
+                config = {
+                  type: "image",
+                  imageUrl: displayImageUrl,
+                };
+              }
+
+              if (!videoProcessor.processorRunning) {
+                const stream = await createCameraVideoTrack({});
+                const processedStream = await videoProcessor.start(
                   stream,
-                  displayImageUrl,
-                  (virtualBgStream) => {
-                    changeWebcam(virtualBgStream);
-                  }
+                  config
                 );
+                changeWebcam(processedStream);
+              } else {
+                videoProcessor.updateProcessorConfig(config);
               }
             }}
             style={{
@@ -77,7 +87,7 @@ const SingleRow = ({ arr, blur, topSpacing }) => {
 };
 
 const BackgroundSelection = ({ padding, theme }) => {
-  const { appTheme } = useMeetingAppContext();
+  const { appTheme, videoProcessor } = useMeetingAppContext();
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
   const isXSOnly = useMediaQuery(theme.breakpoints.only("xs"));
   const videoPlayer = useRef();
@@ -122,20 +132,21 @@ const BackgroundSelection = ({ padding, theme }) => {
     },
 
     {
-      imageUrl: "VirtualBackground/image-1.png",
-      displayImageUrl: "bgImages/image-1.jpg",
+      imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-1.png`,
+      displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-1.jpg`,
     },
   ];
 
   const secondRowArr = [
     {
-      imageUrl: "VirtualBackground/image-2.png",
-      displayImageUrl: "bgImages/image-2.jpg",
+      imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-2.png`,
+      displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-2.jpg`,
     },
     {
-      imageUrl: "VirtualBackground/image-3.png",
-      displayImageUrl: "bgImages/image-3.jpg",
+      imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-3.png`,
+      displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-3.jpg`,
     },
+    ,
     {
       imageUrl: "VirtualBackground/image-4.png",
       displayImageUrl: "bgImages/image-4.jpg",
@@ -223,11 +234,23 @@ const BackgroundSelection = ({ padding, theme }) => {
           style={{ marginTop: 12, display: "flex", flexDirection: "column" }}
         >
           {/* 1st row */}
-          <SingleRow arr={firstRowArr} blur={true} />
+          <SingleRow
+            arr={firstRowArr}
+            blur={true}
+            videoProcessor={videoProcessor}
+          />
           {/* 2nd row */}
-          <SingleRow arr={secondRowArr} topSpacing={true} />
+          <SingleRow
+            arr={secondRowArr}
+            topSpacing={true}
+            videoProcessor={videoProcessor}
+          />
           {/* 3rd row */}
-          <SingleRow arr={thirdRowArr} topSpacing={true} />
+          <SingleRow
+            arr={thirdRowArr}
+            topSpacing={true}
+            videoProcessor={videoProcessor}
+          />
         </Box>
       </Box>
     </Box>

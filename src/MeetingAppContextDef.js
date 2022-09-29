@@ -12,6 +12,7 @@ import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
 import { validURL } from "./utils/common";
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
+import { VirtualBackgroundProcessor } from "videosdk-processor";
 
 export const MeetingAppContext = createContext();
 
@@ -225,6 +226,8 @@ export const MeetingAppProvider = ({
       : meetingLayouts.GRID;
   }, [appMeetingLayout, meetingLayouts]);
 
+  const videoProcessor = new VirtualBackgroundProcessor();
+
   return (
     <MeetingAppContext.Provider
       value={{
@@ -351,6 +354,8 @@ export const MeetingAppProvider = ({
         setEndedPolls,
         setSubmissions,
         setAfterMeetingJoinedHLSState,
+
+        videoProcessor,
       }}
     >
       <SnackbarProvider
