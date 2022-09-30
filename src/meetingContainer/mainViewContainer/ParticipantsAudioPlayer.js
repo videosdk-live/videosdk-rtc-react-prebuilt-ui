@@ -39,7 +39,9 @@ const ParticipantAudioPlayer = ({ participantId }) => {
     }
   }, [micStream, micOn, isLocal, participantId]);
 
-  return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
+  return (
+    <audio autoPlay playsInline controls={false} ref={audioPlayer} id="audio" />
+  );
 };
 
 const ParticipantsAudioPlayer = () => {

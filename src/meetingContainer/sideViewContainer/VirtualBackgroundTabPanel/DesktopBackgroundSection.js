@@ -1,8 +1,9 @@
+import { Grid } from "@material-ui/core";
 import { appThemes } from "../../../MeetingAppContextDef";
-import { SingleRow } from "./VirtualBackgroundContainer";
+import { SingleImage } from "./VirtualBackgroundContainer";
 
 const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
-  const firstRowArr = [
+  const arr = [
     {
       imageUrl:
         appTheme === appThemes.DARK
@@ -11,6 +12,7 @@ const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
           ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-light.png`
           : `${process.env.PUBLIC_URL}/VirtualBackground/No-filter.png`,
       displayImageUrl: "",
+      noFilter: true,
     },
     {
       imageUrl:
@@ -20,14 +22,12 @@ const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
           ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-light.png`
           : `${process.env.PUBLIC_URL}/VirtualBackground/Blur.png`,
       displayImageUrl: "",
+      blurEffect: true,
     },
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-1.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-1.jpg`,
     },
-  ];
-
-  const secondRowArr = [
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-2.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-2.jpg`,
@@ -41,9 +41,6 @@ const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-4.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-4.jpg`,
     },
-  ];
-
-  const thirdRowArr = [
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-5.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-5.jpg`,
@@ -56,9 +53,6 @@ const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-7.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-7.jpg`,
     },
-  ];
-
-  const fourthRowArr = [
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-8.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-8.jpg`,
@@ -71,9 +65,6 @@ const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-10.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-10.jpg`,
     },
-  ];
-
-  const fifthRowArr = [
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-11.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-11.jpg`,
@@ -87,40 +78,24 @@ const DesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-13.jpg`,
     },
   ];
+
   return (
-    <>
-      {/* 1st row */}
-      <SingleRow
-        arr={firstRowArr}
-        blur={true}
-        videoProcessor={videoProcessor}
-        topSpacing={false}
-      />
-      {/* 2nd row */}
-      <SingleRow
-        arr={secondRowArr}
-        topSpacing={true}
-        videoProcessor={videoProcessor}
-      />
-      {/* 3rd row */}
-      <SingleRow
-        arr={thirdRowArr}
-        topSpacing={true}
-        videoProcessor={videoProcessor}
-      />
-      {/* 4th row */}
-      <SingleRow
-        arr={fourthRowArr}
-        topSpacing={true}
-        videoProcessor={videoProcessor}
-      />
-      {/* 5th row */}
-      <SingleRow
-        arr={fifthRowArr}
-        topSpacing={true}
-        videoProcessor={videoProcessor}
-      />
-    </>
+    <Grid container spacing={1}>
+      {arr.map(({ imageUrl, displayImageUrl, noFilter, blurEffect }, i) => {
+        return (
+          <Grid item xs={4} key={i}>
+            <SingleImage
+              videoProcessor={videoProcessor}
+              imageUrl={imageUrl}
+              displayImageUrl={displayImageUrl}
+              i={i}
+              noFilter={noFilter}
+              blurEffect={blurEffect}
+            />
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 };
 

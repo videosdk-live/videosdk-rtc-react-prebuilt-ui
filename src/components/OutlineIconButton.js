@@ -28,6 +28,7 @@ const OutlineIconButton = ({
   buttonText,
   lottieOption,
   isRequestProcessing,
+  focusBorderColor,
   color,
 }) => {
   const theme = useTheme();
@@ -98,6 +99,8 @@ const OutlineIconButton = ({
           border: `${2}px solid ${
             mouseOver || mouseDown
               ? "transparent"
+              : focusBorderColor
+              ? focusBorderColor
               : bgColor
               ? bgColor
               : focusBGColor

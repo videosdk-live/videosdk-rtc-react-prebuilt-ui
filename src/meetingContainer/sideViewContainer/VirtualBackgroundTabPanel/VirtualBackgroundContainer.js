@@ -13,13 +13,19 @@ import useResponsiveSize from "../../../utils/useResponsiveSize";
 import DesktopBackgroundSection from "./DesktopBackgroundSection";
 import LGDesktopBackgroundSection from "./LGDesktopBackgroundSection";
 import TabBackgroundSection from "./TabBackgroundSection";
-// import { VideoSDKNoiseSuppressor } from "videosdk-processor";
 
-export const SingleRow = ({ arr, blur, topSpacing, videoProcessor, isTab }) => {
+export const SingleImage = ({
+  videoProcessor,
+  imageUrl,
+  displayImageUrl,
+  i,
+  noFilter,
+  blurEffect,
+}) => {
   const Width = useResponsiveSize({
     xl: 102,
     lg: 98,
-    md: 98,
+    md: 102,
     sm: 90,
     xs: 90,
   });
@@ -27,6 +33,7 @@ export const SingleRow = ({ arr, blur, topSpacing, videoProcessor, isTab }) => {
   const changeWebcam = mMeeting?.changeWebcam;
 
   const participantId = mMeeting?.localParticipant?.id;
+  const localWebcamOn = mMeeting?.localWebcamOn;
 
   const { isLocal } = useParticipant(participantId, {});
 
@@ -35,71 +42,68 @@ export const SingleRow = ({ arr, blur, topSpacing, videoProcessor, isTab }) => {
       isLocal ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" } : {},
     [isLocal]
   );
-
   return (
     <Box
+      onClick={async () => {
+        if (!videoProcessor.ready) {
+          await videoProcessor.init();
+        }
+        let config = {};
+
+        if (i === 0 && noFilter) {
+          try {
+            if (videoProcessor.processorRunning || !localWebcamOn) {
+              videoProcessor.stop();
+              const stream = await createCameraVideoTrack({});
+              changeWebcam(stream);
+            }
+            return;
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        if (i === 1 && blurEffect) {
+          // setBackgroundConfig({ type: "blur", imageUrl:"" })
+          config.type = "blur";
+        } else {
+          // setBackgroundConfig({ type: "image", imageUrl:displayImageUrl})
+
+          config = {
+            type: "image",
+            imageUrl: displayImageUrl,
+          };
+        }
+
+        if (!videoProcessor.processorRunning) {
+          try {
+            const stream = await createCameraVideoTrack({});
+            const processedStream = await videoProcessor.start(stream, config);
+            changeWebcam(processedStream);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          videoProcessor.updateProcessorConfig(config);
+        }
+      }}
       style={{
         display: "flex",
-        flexDirection: "row",
-        // justifyContent: "space-between",
-        marginTop: topSpacing && isTab ? 14 : 8,
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        borderRadius: 4,
+        marginLeft: i === 0 ? 0 : 8,
       }}
     >
-      {arr.map(({ imageUrl, displayImageUrl }, i) => {
-        return (
-          <Box
-            onClick={async () => {
-              if (!videoProcessor.ready) {
-                await videoProcessor.init();
-              }
-              let config = {};
-              if (i === 0 && blur) {
-                videoProcessor.stop();
-                const stream = await createCameraVideoTrack({});
-                changeWebcam(stream);
-                return;
-              }
-              if (i === 1 && blur) {
-                config.type = "blur";
-              } else {
-                config = {
-                  type: "image",
-                  imageUrl: displayImageUrl,
-                };
-              }
-
-              if (!videoProcessor.processorRunning) {
-                const stream = await createCameraVideoTrack({});
-                const processedStream = await videoProcessor.start(
-                  stream,
-                  config
-                );
-                changeWebcam(processedStream);
-              } else {
-                videoProcessor.updateProcessorConfig(config);
-              }
-            }}
-            style={{
-              display: "flex",
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              borderRadius: 4,
-              marginLeft: i === 0 ? 0 : 8,
-            }}
-          >
-            {imageUrl && (
-              <img
-                style={flipStyle}
-                id={`virtualBgImage_${i}`}
-                src={imageUrl}
-                width={Width}
-              />
-            )}
-          </Box>
-        );
-      })}
+      {imageUrl && (
+        <img
+          style={flipStyle}
+          id={`virtualBgImage_${i}`}
+          src={imageUrl}
+          width={Width}
+        />
+      )}
     </Box>
   );
 };
@@ -153,8 +157,6 @@ const BackgroundSelection = ({ padding, theme }) => {
               position: "relative",
               borderRadius: theme.spacing(1 / 4),
               overflow: "hidden",
-              // alignItems: isXStoSM && "center",
-              // justifyContent: isXStoSM && "center",
             }}
           >
             <Box
@@ -164,13 +166,16 @@ const BackgroundSelection = ({ padding, theme }) => {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: theme.palette.darkTheme.main,
+                backgroundColor:
+                  appTheme === appThemes.DARK
+                    ? theme.palette.darkTheme.eight
+                    : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.three
+                    : theme.palette.background.default,
                 display: "flex",
                 flexDirection: "column",
                 borderRadius: theme.spacing(1),
                 overflow: "hidden",
-                // alignItems: isXStoSM && "center",
-                // justifyContent: isXStoSM && "center",
               }}
             >
               {webcamOn ? (

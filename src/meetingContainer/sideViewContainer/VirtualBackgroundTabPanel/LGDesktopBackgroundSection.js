@@ -1,8 +1,9 @@
+import { Grid } from "@material-ui/core";
 import { appThemes } from "../../../MeetingAppContextDef";
-import { SingleRow } from "./VirtualBackgroundContainer";
+import { SingleImage } from "./VirtualBackgroundContainer";
 
 const LGDesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
-  const LGDesktopArr = [
+  const arr = [
     {
       imageUrl:
         appTheme === appThemes.DARK
@@ -11,6 +12,7 @@ const LGDesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
           ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-light.png`
           : `${process.env.PUBLIC_URL}/VirtualBackground/No-filter.png`,
       displayImageUrl: "",
+      noFilter: true,
     },
     {
       imageUrl:
@@ -20,6 +22,7 @@ const LGDesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
           ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-light.png`
           : `${process.env.PUBLIC_URL}/VirtualBackground/Blur.png`,
       displayImageUrl: "",
+      blurEffect: true,
     },
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-1.png`,
@@ -33,6 +36,7 @@ const LGDesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-3.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-3.jpg`,
     },
+    ,
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-4.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-4.jpg`,
@@ -45,9 +49,6 @@ const LGDesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-6.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-6.jpg`,
     },
-  ];
-
-  const LGDesktopArr2 = [
     {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-7.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-7.jpg`,
@@ -76,23 +77,25 @@ const LGDesktopBackgroundSection = ({ videoProcessor, appTheme }) => {
       imageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-13.png`,
       displayImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-13.jpg`,
     },
-    { imageUrl: "" },
   ];
 
   return (
-    <>
-      <SingleRow
-        arr={LGDesktopArr}
-        blur={true}
-        videoProcessor={videoProcessor}
-        topSpacing={false}
-      />
-      <SingleRow
-        arr={LGDesktopArr2}
-        videoProcessor={videoProcessor}
-        topSpacing={true}
-      />
-    </>
+    <Grid container spacing={1}>
+      {arr.map(({ imageUrl, displayImageUrl, noFilter, blurEffect }, i) => {
+        return (
+          <Grid item xs={2} key={i}>
+            <SingleImage
+              videoProcessor={videoProcessor}
+              imageUrl={imageUrl}
+              displayImageUrl={displayImageUrl}
+              i={i}
+              noFilter={noFilter}
+              blurEffect={blurEffect}
+            />
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 };
 

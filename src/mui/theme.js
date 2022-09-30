@@ -31,6 +31,8 @@ export default function generateMuiTheme(type, primary, secondary) {
           seven: "#232830", //"#26282C", //"#2B3034",
           slightLighter: "#1A1C22",
           main: "#050A0E",
+          eight: "#26282C",
+          contrastText: "#95959E",
         },
         lightTheme: {
           main: "#FFFFFF", //"#F3F4F8",
