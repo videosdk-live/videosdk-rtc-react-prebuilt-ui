@@ -1,4 +1,10 @@
-import { Box, Typography, useMediaQuery, useTheme } from "@material-ui/core";
+import {
+  Box,
+  Grid,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import {
   createCameraVideoTrack,
   useMeeting,
@@ -10,14 +16,11 @@ import { appThemes, useMeetingAppContext } from "../../../MeetingAppContextDef";
 import useIsLGDesktop from "../../../utils/useIsLGDesktop";
 import useIsTab from "../../../utils/useIsTab";
 import useResponsiveSize from "../../../utils/useResponsiveSize";
-import DesktopBackgroundSection from "./DesktopBackgroundSection";
-import LGDesktopBackgroundSection from "./LGDesktopBackgroundSection";
-import TabBackgroundSection from "./TabBackgroundSection";
 
-export const SingleImage = ({
+const SingleImage = ({
   videoProcessor,
-  imageUrl,
-  displayImageUrl,
+  backgroundImageUrl,
+  previewImageUrl,
   i,
   noFilter,
   blurEffect,
@@ -50,11 +53,11 @@ export const SingleImage = ({
         }
         let config = {};
 
+        const stream = await createCameraVideoTrack({});
         if (i === 0 && noFilter) {
           try {
             if (videoProcessor.processorRunning || !localWebcamOn) {
               videoProcessor.stop();
-              const stream = await createCameraVideoTrack({});
               changeWebcam(stream);
             }
             return;
@@ -63,20 +66,16 @@ export const SingleImage = ({
           }
         }
         if (i === 1 && blurEffect) {
-          // setBackgroundConfig({ type: "blur", imageUrl:"" })
           config.type = "blur";
         } else {
-          // setBackgroundConfig({ type: "image", imageUrl:displayImageUrl})
-
           config = {
             type: "image",
-            imageUrl: displayImageUrl,
+            imageUrl: previewImageUrl,
           };
         }
 
         if (!videoProcessor.processorRunning) {
           try {
-            const stream = await createCameraVideoTrack({});
             const processedStream = await videoProcessor.start(stream, config);
             changeWebcam(processedStream);
           } catch (error) {
@@ -96,11 +95,11 @@ export const SingleImage = ({
         marginLeft: i === 0 ? 0 : 8,
       }}
     >
-      {imageUrl && (
+      {backgroundImageUrl && (
         <img
           style={flipStyle}
           id={`virtualBgImage_${i}`}
-          src={imageUrl}
+          src={backgroundImageUrl}
           width={Width}
         />
       )}
@@ -112,9 +111,7 @@ const BackgroundSelection = ({ padding, theme }) => {
   const { appTheme, videoProcessor } = useMeetingAppContext();
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
   const isXSOnly = useMediaQuery(theme.breakpoints.only("xs"));
-
   const videoPlayer = useRef();
-
   const isLGDesktop = useIsLGDesktop();
   const isTab = useIsTab();
 
@@ -136,6 +133,82 @@ const BackgroundSelection = ({ padding, theme }) => {
       isLocal ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" } : {},
     [isLocal]
   );
+
+  const backgroundImageArr = [
+    {
+      backgroundImageUrl:
+        appTheme === appThemes.DARK
+          ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-dark.png`
+          : appTheme === appThemes.LIGHT
+          ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-light.png`
+          : `${process.env.PUBLIC_URL}/VirtualBackground/No-filter.png`,
+      previewImageUrl: "",
+      noFilter: true,
+    },
+    {
+      backgroundImageUrl:
+        appTheme === appThemes.DARK
+          ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-dark.png`
+          : appTheme === appThemes.LIGHT
+          ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-light.png`
+          : `${process.env.PUBLIC_URL}/VirtualBackground/Blur.png`,
+      previewImageUrl: "",
+      blurEffect: true,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-1.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-1.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-2.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-2.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-3.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-3.jpg`,
+    },
+    ,
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-4.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-4.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-5.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-5.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-6.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-6.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-7.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-7.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-8.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-8.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-9.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-9.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-10.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-10.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-11.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-11.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-12.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-12.jpg`,
+    },
+    {
+      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-13.png`,
+      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-13.jpg`,
+    },
+  ];
 
   return (
     <Box
@@ -199,9 +272,6 @@ const BackgroundSelection = ({ padding, theme }) => {
                   onError={(err) => {
                     console.log(err, "participant video error");
                   }}
-                  // onProgress={() => {
-                  //   checkAndUpdatePortrait();
-                  // }}
                 />
               ) : (
                 <Box
@@ -234,23 +304,27 @@ const BackgroundSelection = ({ padding, theme }) => {
         <Box
           style={{ marginTop: 12, display: "flex", flexDirection: "column" }}
         >
-          {isTab ? (
-            <TabBackgroundSection
-              videoProcessor={videoProcessor}
-              appTheme={appTheme}
-              isTab={isTab}
-            />
-          ) : isLGDesktop ? (
-            <LGDesktopBackgroundSection
-              videoProcessor={videoProcessor}
-              appTheme={appTheme}
-            />
-          ) : (
-            <DesktopBackgroundSection
-              videoProcessor={videoProcessor}
-              appTheme={appTheme}
-            />
-          )}
+          <Grid container spacing={1}>
+            {backgroundImageArr.map(
+              (
+                { backgroundImageUrl, previewImageUrl, noFilter, blurEffect },
+                i
+              ) => {
+                return (
+                  <Grid item xs={isTab || isLGDesktop ? 2 : 4} key={i}>
+                    <SingleImage
+                      videoProcessor={videoProcessor}
+                      backgroundImageUrl={backgroundImageUrl}
+                      previewImageUrl={previewImageUrl}
+                      i={i}
+                      noFilter={noFilter}
+                      blurEffect={blurEffect}
+                    />
+                  </Grid>
+                );
+              }
+            )}
+          </Grid>
         </Box>
       </Box>
     </Box>
@@ -281,7 +355,6 @@ const VirtualBackgroundContainer = ({ panelHeight }) => {
         style={{
           display: "flex",
           flexDirection: "column",
-
           flex: 1,
           height: "100%",
         }}
