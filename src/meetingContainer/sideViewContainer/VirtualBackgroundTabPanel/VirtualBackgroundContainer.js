@@ -19,11 +19,10 @@ import useResponsiveSize from "../../../utils/useResponsiveSize";
 
 const SingleImage = ({
   videoProcessor,
-  backgroundImageUrl,
   previewImageUrl,
+  backgroudImageUrl,
   i,
-  noFilter,
-  blurEffect,
+  type,
 }) => {
   const Width = useResponsiveSize({
     xl: 102,
@@ -51,10 +50,9 @@ const SingleImage = ({
         if (!videoProcessor.ready) {
           await videoProcessor.init();
         }
-        let config = {};
 
         const stream = await createCameraVideoTrack({});
-        if (i === 0 && noFilter) {
+        if (type === "DEFAULT") {
           try {
             if (videoProcessor.processorRunning || !localWebcamOn) {
               videoProcessor.stop();
@@ -65,24 +63,22 @@ const SingleImage = ({
             console.log(error);
           }
         }
-        if (i === 1 && blurEffect) {
-          config.type = "blur";
-        } else {
-          config = {
-            type: "image",
-            imageUrl: previewImageUrl,
-          };
-        }
 
         if (!videoProcessor.processorRunning) {
           try {
-            const processedStream = await videoProcessor.start(stream, config);
+            const processedStream = await videoProcessor.start(stream, {
+              type,
+              imageUrl: backgroudImageUrl,
+            });
             changeWebcam(processedStream);
           } catch (error) {
             console.log(error);
           }
         } else {
-          videoProcessor.updateProcessorConfig(config);
+          videoProcessor.updateProcessorConfig({
+            type,
+            imageUrl: backgroudImageUrl,
+          });
         }
       }}
       style={{
@@ -95,11 +91,11 @@ const SingleImage = ({
         marginLeft: i === 0 ? 0 : 8,
       }}
     >
-      {backgroundImageUrl && (
+      {previewImageUrl && (
         <img
           style={flipStyle}
           id={`virtualBgImage_${i}`}
-          src={backgroundImageUrl}
+          src={previewImageUrl}
           width={Width}
         />
       )}
@@ -134,79 +130,95 @@ const BackgroundSelection = ({ padding, theme }) => {
     [isLocal]
   );
 
+  const BASE_URL = "https://cdn.videosdk.live/virtual-background";
+
   const backgroundImageArr = [
     {
-      backgroundImageUrl:
+      previewImageUrl:
         appTheme === appThemes.DARK
           ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-dark.png`
           : appTheme === appThemes.LIGHT
           ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-light.png`
           : `${process.env.PUBLIC_URL}/VirtualBackground/No-filter.png`,
-      previewImageUrl: "",
-      noFilter: true,
+      backgroudImageUrl: "",
+      type: "DEFAULT",
     },
     {
-      backgroundImageUrl:
+      previewImageUrl:
         appTheme === appThemes.DARK
           ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-dark.png`
           : appTheme === appThemes.LIGHT
           ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-light.png`
           : `${process.env.PUBLIC_URL}/VirtualBackground/Blur.png`,
-      previewImageUrl: "",
-      blurEffect: true,
+      backgroudImageUrl: "",
+      type: "blur",
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-1.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-1.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/san-fran-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/san-fran.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-2.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-2.jpg`,
+      previewImageUrl: `${BASE_URL}/hill-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/hill.jpeg`,
+      type: "image",
     },
+
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-3.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-3.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/cloud-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/cloud.jpeg`,
     },
     ,
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-4.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-4.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/beach-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/beach.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-5.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-5.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/white-wall-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/white-wall.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-6.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-6.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/wall-with-pot-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/wall-with-pot.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-7.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-7.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/window-conference-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/window-conference.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-8.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-8.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/sky-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/sky.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-9.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-9.jpg`,
+      previewImageUrl: `${BASE_URL}/red-mix-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/red-mix.jpeg`,
+      type: "image",
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-10.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-10.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/blue-mix-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/blue-mix.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-11.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-11.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/coffe-wall-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/coffe-wall.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-12.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-12.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/paper-wall-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/paper-wall.jpeg`,
     },
     {
-      backgroundImageUrl: `${process.env.PUBLIC_URL}/VirtualBackground/image-13.png`,
-      previewImageUrl: `${process.env.PUBLIC_URL}/bgImages/image-13.jpg`,
+      type: "image",
+      previewImageUrl: `${BASE_URL}/design-wall-preview.png`,
+      backgroudImageUrl: `${BASE_URL}/design-wall.jpeg`,
     },
   ];
 
@@ -293,7 +305,7 @@ const BackgroundSelection = ({ padding, theme }) => {
                       textAlign: "center",
                     }}
                   >
-                    Your camera is turned off.Selecting an effect will turn it
+                    Your camera is turned off. Selecting an effect will turn it
                     on.
                   </Typography>
                 </Box>
@@ -306,19 +318,15 @@ const BackgroundSelection = ({ padding, theme }) => {
         >
           <Grid container spacing={1}>
             {backgroundImageArr.map(
-              (
-                { backgroundImageUrl, previewImageUrl, noFilter, blurEffect },
-                i
-              ) => {
+              ({ previewImageUrl, backgroudImageUrl, type }, i) => {
                 return (
                   <Grid item xs={isTab || isLGDesktop ? 2 : 4} key={i}>
                     <SingleImage
                       videoProcessor={videoProcessor}
-                      backgroundImageUrl={backgroundImageUrl}
                       previewImageUrl={previewImageUrl}
+                      backgroudImageUrl={backgroudImageUrl}
                       i={i}
-                      noFilter={noFilter}
-                      blurEffect={blurEffect}
+                      type={type}
                     />
                   </Grid>
                 );
