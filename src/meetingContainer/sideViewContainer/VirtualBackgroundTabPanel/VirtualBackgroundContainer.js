@@ -12,6 +12,8 @@ import {
 } from "@videosdk.live/react-sdk";
 import { useMemo, useRef } from "react";
 import ReactPlayer from "react-player";
+import BlurIcon from "../../../icons/BlurIcon";
+import NoFilterIcon from "../../../icons/NoFilterIcon";
 import { appThemes, useMeetingAppContext } from "../../../MeetingAppContextDef";
 import useIsLGDesktop from "../../../utils/useIsLGDesktop";
 import useIsTab from "../../../utils/useIsTab";
@@ -21,6 +23,9 @@ const SingleImage = ({
   videoProcessor,
   previewImageUrl,
   backgroudImageUrl,
+  Icon,
+  theme,
+  appTheme,
   i,
   type,
 }) => {
@@ -88,9 +93,26 @@ const SingleImage = ({
         justifyContent: "center",
         cursor: "pointer",
         borderRadius: 4,
-        marginLeft: i === 0 ? 0 : 8,
+        width: Icon && Width,
+        height: Icon && 69,
+        backgroundColor:
+          Icon && appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.eight
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.three
+            : theme.palette.background.default,
+        borderRadius: Icon && 6,
       }}
     >
+      {Icon && (
+        <Icon
+          fillColor={
+            appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.contrastText
+              : theme.palette.common.white
+          }
+        />
+      )}
       {previewImageUrl && (
         <img
           style={flipStyle}
@@ -134,23 +156,11 @@ const BackgroundSelection = ({ padding, theme }) => {
 
   const backgroundImageArr = [
     {
-      previewImageUrl:
-        appTheme === appThemes.DARK
-          ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-dark.png`
-          : appTheme === appThemes.LIGHT
-          ? `${process.env.PUBLIC_URL}/VirtualBackground/no-filter-light.png`
-          : `${process.env.PUBLIC_URL}/VirtualBackground/No-filter.png`,
-      backgroudImageUrl: "",
+      Icon: NoFilterIcon,
       type: "DEFAULT",
     },
     {
-      previewImageUrl:
-        appTheme === appThemes.DARK
-          ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-dark.png`
-          : appTheme === appThemes.LIGHT
-          ? `${process.env.PUBLIC_URL}/VirtualBackground/blur-light.png`
-          : `${process.env.PUBLIC_URL}/VirtualBackground/Blur.png`,
-      backgroudImageUrl: "",
+      Icon: BlurIcon,
       type: "blur",
     },
     {
@@ -318,13 +328,16 @@ const BackgroundSelection = ({ padding, theme }) => {
         >
           <Grid container spacing={1}>
             {backgroundImageArr.map(
-              ({ previewImageUrl, backgroudImageUrl, type }, i) => {
+              ({ previewImageUrl, backgroudImageUrl, type, Icon }, i) => {
                 return (
                   <Grid item xs={isTab || isLGDesktop ? 2 : 4} key={i}>
                     <SingleImage
                       videoProcessor={videoProcessor}
                       previewImageUrl={previewImageUrl}
                       backgroudImageUrl={backgroudImageUrl}
+                      Icon={Icon}
+                      theme={theme}
+                      appTheme={appTheme}
                       i={i}
                       type={type}
                     />
