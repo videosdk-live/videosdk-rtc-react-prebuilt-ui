@@ -223,7 +223,7 @@ const SideBarTabView = ({ width, height }) => {
                       : sideBarMode === "ACTIVITIES"
                       ? sideBarNestedMode ===
                         sideBarNestedModes.VIRTUAL_BACKGROUND
-                        ? "Virtual Background"
+                        ? "Virtual Background (BETA)"
                         : "More Options"
                       : capitalize(String(sideBarMode || "").toLowerCase())}
                   </Typography>

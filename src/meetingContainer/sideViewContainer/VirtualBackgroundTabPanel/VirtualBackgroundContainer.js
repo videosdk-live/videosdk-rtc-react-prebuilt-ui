@@ -93,18 +93,18 @@ const SingleImage = ({
         justifyContent: "center",
         cursor: "pointer",
         borderRadius: 4,
-        width: Icon && Width,
-        height: Icon && 69,
-        backgroundColor:
-          Icon && appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.eight
-            : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.three
-            : theme.palette.background.default,
-        borderRadius: Icon && 6,
+        // width: Icon && Width,
+        // height: Icon && 69,
+        // backgroundColor:
+        //   Icon && appTheme === appThemes.DARK
+        //     ? theme.palette.darkTheme.eight
+        //     : appTheme === appThemes.LIGHT
+        //     ? theme.palette.lightTheme.three
+        //     : theme.palette.background.default,
+        // borderRadius: Icon && 6,
       }}
     >
-      {Icon && (
+      {/* {Icon && (
         <Icon
           fillColor={
             appTheme === appThemes.LIGHT
@@ -112,7 +112,7 @@ const SingleImage = ({
               : theme.palette.common.white
           }
         />
-      )}
+      )} */}
       {previewImageUrl && (
         <img
           style={flipStyle}
@@ -156,11 +156,23 @@ const BackgroundSelection = ({ padding, theme }) => {
 
   const backgroundImageArr = [
     {
-      Icon: NoFilterIcon,
+      // Icon: NoFilterIcon,
+      previewImageUrl:
+        appTheme === appThemes.DARK
+          ? `${BASE_URL}/webcam-no-filter-dark-preview.png`
+          : appTheme === appThemes.LIGHT
+          ? `${BASE_URL}/webcam-no-filter-light-preview.png`
+          : `${BASE_URL}/webcam-no-filter-preview.png`,
       type: "DEFAULT",
     },
     {
-      Icon: BlurIcon,
+      // Icon: BlurIcon,
+      previewImageUrl:
+        appTheme === appThemes.DARK
+          ? `${BASE_URL}/webcam-blur-dark-preview.png`
+          : appTheme === appThemes.LIGHT
+          ? `${BASE_URL}/webcam-blur-light-preview.png`
+          : `${BASE_URL}/webcam-blur-preview.png`,
       type: "blur",
     },
     {

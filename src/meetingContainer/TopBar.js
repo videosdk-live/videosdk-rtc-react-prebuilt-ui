@@ -1188,6 +1188,7 @@ const SingleMicMenu = ({
 const MicMenu = ({
   selectedDeviceId,
   setSelectedDeviceId,
+  localMicOn,
   downArrow,
   mics,
   outputmics,
@@ -1237,7 +1238,7 @@ const MicMenu = ({
           theme={theme}
           handleClose={handleClose}
         />
-        <Box
+        {/* <Box
           style={{
             height: 1,
             width: "100%",
@@ -1256,102 +1257,109 @@ const MicMenu = ({
           appTheme={appTheme}
           theme={theme}
           handleClose={handleClose}
-        />
+        /> */}
 
-        <Box
-          style={{ height: 1, width: "100%", borderTop: "1px solid #9FA0A7" }}
-        ></Box>
-
-        <Box>
-          <MenuList
-            disableRipple
-            disableFocusRipple
-            style={{
-              backgroundColor:
-                appTheme === appThemes.DARK
-                  ? theme.palette.darkTheme.slightLighter
-                  : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.two
-                  : "",
-              color:
-                appTheme === appThemes.DARK
-                  ? theme.palette.common.white
-                  : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.contrastText
-                  : "",
-            }}
-          >
+        {localMicOn && (
+          <>
             <Box
               style={{
-                display: "flex",
-                alignItems: "center",
-                paddingLeft: isNoiseRemovalChecked ? 12 : 6,
-                paddingRight: 6,
-                backgroundColor: isNoiseRemovalChecked
-                  ? appTheme === appThemes.DARK
-                    ? "#3F4046"
-                    : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.three
-                    : "#6D6E71"
-                  : "",
+                height: 1,
+                width: "100%",
+                borderTop: "1px solid #9FA0A7",
               }}
-              classes={{
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.popoverHover
-                    : appTheme === appThemes.DARK
-                    ? classes.popoverHoverDark
-                    : classes.popoverHoverDefault,
-              }}
-            >
-              {isNoiseRemovalChecked ? (
-                <SelectedIcon />
-              ) : (
-                <BpCheckbox
-                  value={isNoiseRemovalChecked}
-                  checked={isNoiseRemovalChecked}
-                  onClick={(e) => {
-                    _handleNoiseClick(e);
-                  }}
-                />
-              )}
-
-              <MenuItem
+            ></Box>
+            <Box>
+              <MenuList
                 disableRipple
+                disableFocusRipple
                 style={{
-                  display: "flex",
-                  flex: 1,
-                  backgroundColor: isNoiseRemovalChecked
-                    ? appTheme === appThemes.DARK
-                      ? "#3F4046"
+                  backgroundColor:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.slightLighter
                       : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.three
-                      : "#6D6E71"
-                    : "",
-                }}
-                key={`noise_removal`}
-                selected={isNoiseRemovalChecked}
-                onClick={(e) => {
-                  handleClose();
-                  _handleNoiseClick(e);
-                }}
-                classes={{
-                  root:
-                    appTheme === appThemes.LIGHT
-                      ? classes.menuItemHover
-                      : appTheme === appThemes.DARK
-                      ? classes.menuItemDark
-                      : classes.menuItemDefault,
-                  gutters: isNoiseRemovalChecked
-                    ? classes.singleMenuItemGuttersAfterSelect
-                    : classes.singleMenuItemGutters,
+                      ? theme.palette.lightTheme.two
+                      : "",
+                  color:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.common.white
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "",
                 }}
               >
-                AI Noise Removal
-              </MenuItem>
+                <Box
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    paddingLeft: isNoiseRemovalChecked ? 12 : 6,
+                    paddingRight: 6,
+                    backgroundColor: isNoiseRemovalChecked
+                      ? appTheme === appThemes.DARK
+                        ? "#3F4046"
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.three
+                        : "#6D6E71"
+                      : "",
+                  }}
+                  classes={{
+                    root:
+                      appTheme === appThemes.LIGHT
+                        ? classes.popoverHover
+                        : appTheme === appThemes.DARK
+                        ? classes.popoverHoverDark
+                        : classes.popoverHoverDefault,
+                  }}
+                >
+                  {isNoiseRemovalChecked ? (
+                    <SelectedIcon />
+                  ) : (
+                    <BpCheckbox
+                      value={isNoiseRemovalChecked}
+                      checked={isNoiseRemovalChecked}
+                      onClick={(e) => {
+                        _handleNoiseClick(e);
+                      }}
+                    />
+                  )}
+
+                  <MenuItem
+                    disableRipple
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      backgroundColor: isNoiseRemovalChecked
+                        ? appTheme === appThemes.DARK
+                          ? "#3F4046"
+                          : appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.three
+                          : "#6D6E71"
+                        : "",
+                    }}
+                    key={`noise_removal`}
+                    selected={isNoiseRemovalChecked}
+                    onClick={(e) => {
+                      handleClose();
+                      _handleNoiseClick(e);
+                    }}
+                    classes={{
+                      root:
+                        appTheme === appThemes.LIGHT
+                          ? classes.menuItemHover
+                          : appTheme === appThemes.DARK
+                          ? classes.menuItemDark
+                          : classes.menuItemDefault,
+                      gutters: isNoiseRemovalChecked
+                        ? classes.singleMenuItemGuttersAfterSelect
+                        : classes.singleMenuItemGutters,
+                    }}
+                  >
+                    AI Noise Removal
+                  </MenuItem>
+                </Box>
+              </MenuList>
             </Box>
-          </MenuList>
-        </Box>
+          </>
+        )}
       </Box>
     </Popover>
   );
@@ -1625,6 +1633,7 @@ const MicBTN = () => {
         selectedDeviceId={selectedDeviceId}
         setSelectedDeviceId={setSelectedDeviceId}
         isNoiseRemovalChecked={isNoiseRemovalChecked}
+        localMicOn={localMicOn}
         theme={theme}
         appTheme={appTheme}
         downArrow={downArrow}

@@ -156,13 +156,7 @@ const PresenterView = ({ presenterId }) => {
             : "flex",
       }}
     >
-      <audio
-        autoPlay
-        playsInline
-        controls={false}
-        ref={audioPlayer}
-        id="audio"
-      />
+      <audio autoPlay playsInline controls={false} ref={audioPlayer} />
 
       <div
         style={{

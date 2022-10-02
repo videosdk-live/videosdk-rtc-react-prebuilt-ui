@@ -75,7 +75,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
       {[
         {
           Icon: VirtualBackgroundIcon,
-          primary: "Virtual Background",
+          primary: "Virtual Background (BETA)",
           secondary: "Add custom background to meetings",
           disabled: false,
           displayed: true,
