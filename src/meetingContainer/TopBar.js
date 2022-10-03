@@ -1067,9 +1067,9 @@ const SingleMicMenu = ({
   micArr,
   Icon,
   label,
-  selectedDeviceId,
   classes,
-  setSelectedDeviceId,
+  selectMicDeviceId,
+  setSelectMicDeviceId,
   changeMic,
   appTheme,
   theme,
@@ -1123,7 +1123,7 @@ const SingleMicMenu = ({
               paddingLeft: 12,
               paddingRight: 12,
               backgroundColor:
-                deviceId === selectedDeviceId
+                deviceId === selectMicDeviceId
                   ? appTheme === appThemes.DARK
                     ? "#3F4046"
                     : appTheme === appThemes.LIGHT
@@ -1140,7 +1140,7 @@ const SingleMicMenu = ({
                   : classes.popoverHoverDefault,
             }}
           >
-            {deviceId === selectedDeviceId && <SelectedIcon />}
+            {deviceId === selectMicDeviceId && <SelectedIcon />}
 
             <MenuItem
               disableRipple
@@ -1148,7 +1148,7 @@ const SingleMicMenu = ({
                 display: "flex",
                 flex: 1,
                 backgroundColor:
-                  deviceId === selectedDeviceId
+                  deviceId === selectMicDeviceId
                     ? appTheme === appThemes.DARK
                       ? "#3F4046"
                       : appTheme === appThemes.LIGHT
@@ -1157,10 +1157,10 @@ const SingleMicMenu = ({
                     : "",
               }}
               key={`mics_${deviceId}`}
-              selected={deviceId === selectedDeviceId}
+              selected={deviceId === selectMicDeviceId}
               onClick={() => {
                 handleClose();
-                setSelectedDeviceId(deviceId);
+                setSelectMicDeviceId(deviceId);
                 changeMic(deviceId);
               }}
               classes={{
@@ -1171,7 +1171,7 @@ const SingleMicMenu = ({
                     ? classes.menuItemDark
                     : classes.menuItemDefault,
                 gutters:
-                  deviceId === selectedDeviceId
+                  deviceId === selectMicDeviceId
                     ? classes.menuItemGuttersAfterSelect
                     : classes.menuItemGutters,
               }}
@@ -1186,8 +1186,8 @@ const SingleMicMenu = ({
 };
 
 const MicMenu = ({
-  selectedDeviceId,
-  setSelectedDeviceId,
+  selectMicDeviceId,
+  setSelectMicDeviceId,
   localMicOn,
   downArrow,
   mics,
@@ -1230,8 +1230,8 @@ const MicMenu = ({
           micArr={mics}
           label={"MICROPHONE"}
           Icon={MicrophoneIcon}
-          selectedDeviceId={selectedDeviceId}
-          setSelectedDeviceId={setSelectedDeviceId}
+          selectMicDeviceId={selectMicDeviceId}
+          setSelectMicDeviceId={setSelectMicDeviceId}
           changeMic={changeMic}
           classes={classes}
           appTheme={appTheme}
@@ -1250,8 +1250,8 @@ const MicMenu = ({
           micArr={outputmics}
           label={"SPEAKER"}
           Icon={SpeakerMenuIcon}
-          selectedDeviceId={selectedDeviceId}
-          setSelectedDeviceId={setSelectedDeviceId}
+          selectMicDeviceId={selectMicDeviceId}
+          setSelectMicDeviceId={setSelectMicDeviceId}
           classes={classes}
           changeMic={changeMic}
           appTheme={appTheme}
@@ -1317,7 +1317,7 @@ const MicMenu = ({
                       value={isNoiseRemovalChecked}
                       checked={isNoiseRemovalChecked}
                       onClick={(e) => {
-                        _handleNoiseClick(e);
+                        _handleNoiseClick({ e, selectMicDeviceId });
                       }}
                     />
                   )}
@@ -1339,7 +1339,7 @@ const MicMenu = ({
                     selected={isNoiseRemovalChecked}
                     onClick={(e) => {
                       handleClose();
-                      _handleNoiseClick(e);
+                      _handleNoiseClick({ e, selectMicDeviceId });
                     }}
                     classes={{
                       root:
@@ -1369,8 +1369,9 @@ const WebcamBTN = () => {
   const theme = useTheme();
   const classes = useStyles();
   const mMeeting = useMeeting({});
-  const { selectedWebcam, appTheme } = useMeetingAppContext();
-  const [selectedDeviceId, setSelectedDeviceId] = useState(selectedWebcam.id);
+  const { appTheme, selectWebcamDeviceId, setSelectWebcamDeviceId } =
+    useMeetingAppContext();
+
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
@@ -1474,10 +1475,10 @@ const WebcamBTN = () => {
           {webcams.map(({ deviceId, label }, index) => (
             <MenuItem
               key={`output_webcams_${deviceId}`}
-              selected={deviceId === selectedDeviceId}
+              selected={deviceId === selectWebcamDeviceId}
               onClick={() => {
                 handleClose();
-                setSelectedDeviceId(deviceId);
+                setSelectWebcamDeviceId(deviceId);
                 changeWebcam(deviceId);
               }}
               classes={{
@@ -1499,12 +1500,13 @@ const WebcamBTN = () => {
 };
 const MicBTN = () => {
   const {
-    selectedMic,
     appTheme,
     notificationSoundEnabled,
     notificationAlertsEnabled,
+    selectMicDeviceId,
+    setSelectMicDeviceId,
   } = useMeetingAppContext();
-  const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
+
   const [isNoiseRemovalChecked, setIsNoiseRemovalChecked] = useState(false);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
@@ -1541,7 +1543,7 @@ const MicBTN = () => {
     outputMics && outputMics?.length && setOutputMics(outputMics);
   };
 
-  const _handleNoiseClick = async (e) => {
+  const _handleNoiseClick = async ({ e, selectMicDeviceId }) => {
     e.stopPropagation();
     let _isNoiseRemovalChecked;
     setIsNoiseRemovalChecked((s) => {
@@ -1553,7 +1555,9 @@ const MicBTN = () => {
     try {
       const processor = new VideoSDKNoiseSuppressor();
 
-      const stream = await createMicrophoneAudioTrack({});
+      const stream = await createMicrophoneAudioTrack({
+        microphoneId: selectMicDeviceId,
+      });
       const processedStream = await processor.getNoiseSuppressedAudioStream(
         stream
       );
@@ -1630,8 +1634,8 @@ const MicBTN = () => {
         }}
       />
       <MicMenu
-        selectedDeviceId={selectedDeviceId}
-        setSelectedDeviceId={setSelectedDeviceId}
+        selectMicDeviceId={selectMicDeviceId}
+        setSelectMicDeviceId={setSelectMicDeviceId}
         isNoiseRemovalChecked={isNoiseRemovalChecked}
         localMicOn={localMicOn}
         theme={theme}
