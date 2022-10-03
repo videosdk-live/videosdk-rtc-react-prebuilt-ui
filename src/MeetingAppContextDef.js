@@ -152,6 +152,10 @@ export const MeetingAppProvider = ({
   const classes = useStyles();
   const [sideBarMode, setSideBarMode] = useState(null);
   const [sideBarNestedMode, setSideBarNestedMode] = useState(null);
+  const [selectWebcamDeviceId, setSelectWebcamDeviceId] = useState(
+    selectedWebcam.id
+  );
+  const [selectMicDeviceId, setSelectMicDeviceId] = useState(selectedMic.id);
   const [activeSortedParticipants, setActiveSortedParticipants] = useState([]);
   const [mainViewParticipants, setMainViewParticipants] = useState([]);
   const [overlaidInfoVisible, setOverlaidInfoVisible] = useState(true);
@@ -333,6 +337,8 @@ export const MeetingAppProvider = ({
         endedPolls,
         submissions,
         afterMeetingJoinedHLSState,
+        selectMicDeviceId,
+        selectWebcamDeviceId,
 
         // setters
         setSideBarMode,
@@ -354,6 +360,8 @@ export const MeetingAppProvider = ({
         setEndedPolls,
         setSubmissions,
         setAfterMeetingJoinedHLSState,
+        setSelectMicDeviceId,
+        setSelectWebcamDeviceId,
 
         videoProcessor,
       }}

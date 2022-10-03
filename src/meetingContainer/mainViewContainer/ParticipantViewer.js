@@ -101,7 +101,7 @@ export const CornerDisplayName = ({
         ? getQualityScore(stats[0])
         : 100
       : 100;
-    console.log(score);
+
     setScore(score);
   };
 

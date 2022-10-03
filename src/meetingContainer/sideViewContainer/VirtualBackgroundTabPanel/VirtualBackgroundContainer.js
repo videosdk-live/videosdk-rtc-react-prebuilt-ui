@@ -12,8 +12,6 @@ import {
 } from "@videosdk.live/react-sdk";
 import { useMemo, useRef } from "react";
 import ReactPlayer from "react-player";
-import BlurIcon from "../../../icons/BlurIcon";
-import NoFilterIcon from "../../../icons/NoFilterIcon";
 import { appThemes, useMeetingAppContext } from "../../../MeetingAppContextDef";
 import useIsLGDesktop from "../../../utils/useIsLGDesktop";
 import useIsTab from "../../../utils/useIsTab";
@@ -23,12 +21,10 @@ const SingleImage = ({
   videoProcessor,
   previewImageUrl,
   backgroudImageUrl,
-  Icon,
-  theme,
-  appTheme,
   i,
   type,
 }) => {
+  const { selectWebcamDeviceId } = useMeetingAppContext();
   const Width = useResponsiveSize({
     xl: 102,
     lg: 98,
@@ -49,6 +45,7 @@ const SingleImage = ({
       isLocal ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" } : {},
     [isLocal]
   );
+
   return (
     <Box
       onClick={async () => {
@@ -56,7 +53,9 @@ const SingleImage = ({
           await videoProcessor.init();
         }
 
-        const stream = await createCameraVideoTrack({});
+        const stream = await createCameraVideoTrack({
+          cameraId: selectWebcamDeviceId,
+        });
         if (type === "DEFAULT") {
           try {
             if (videoProcessor.processorRunning || !localWebcamOn) {
@@ -93,26 +92,8 @@ const SingleImage = ({
         justifyContent: "center",
         cursor: "pointer",
         borderRadius: 4,
-        // width: Icon && Width,
-        // height: Icon && 69,
-        // backgroundColor:
-        //   Icon && appTheme === appThemes.DARK
-        //     ? theme.palette.darkTheme.eight
-        //     : appTheme === appThemes.LIGHT
-        //     ? theme.palette.lightTheme.three
-        //     : theme.palette.background.default,
-        // borderRadius: Icon && 6,
       }}
     >
-      {/* {Icon && (
-        <Icon
-          fillColor={
-            appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.contrastText
-              : theme.palette.common.white
-          }
-        />
-      )} */}
       {previewImageUrl && (
         <img
           style={flipStyle}
@@ -156,7 +137,6 @@ const BackgroundSelection = ({ padding, theme }) => {
 
   const backgroundImageArr = [
     {
-      // Icon: NoFilterIcon,
       previewImageUrl:
         appTheme === appThemes.DARK
           ? `${BASE_URL}/webcam-no-filter-dark-preview.png`
@@ -166,7 +146,6 @@ const BackgroundSelection = ({ padding, theme }) => {
       type: "DEFAULT",
     },
     {
-      // Icon: BlurIcon,
       previewImageUrl:
         appTheme === appThemes.DARK
           ? `${BASE_URL}/webcam-blur-dark-preview.png`
