@@ -12,6 +12,7 @@ import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
 import { validURL } from "./utils/common";
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
+import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-media-processor-web";
 
 export const MeetingAppContext = createContext();
 
@@ -30,6 +31,7 @@ export const sideBarNestedModes = {
   CREATE_POLL: "CREATE_POLL",
   QNA: "QNA",
   ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
+  VIRTUAL_BACKGROUND: "VIRTUAL_BACKGROUND",
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -224,6 +226,8 @@ export const MeetingAppProvider = ({
       : meetingLayouts.GRID;
   }, [appMeetingLayout, meetingLayouts]);
 
+  const videoProcessor = new VirtualBackgroundProcessor();
+
   return (
     <MeetingAppContext.Provider
       value={{
@@ -350,6 +354,8 @@ export const MeetingAppProvider = ({
         setEndedPolls,
         setSubmissions,
         setAfterMeetingJoinedHLSState,
+
+        videoProcessor,
       }}
     >
       <SnackbarProvider

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, styled, useTheme } from "@material-ui/core/styles";
 import {
   IconButton,
   Box,
@@ -11,9 +11,18 @@ import {
   Link,
   SwipeableDrawer,
   Grid,
+  Radio,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { Constants, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import {
+  Constants,
+  createMicrophoneAudioTrack,
+  useMeeting,
+  usePubSub,
+} from "@videosdk.live/react-sdk";
 import {
   sideBarModes,
   appThemes,
@@ -60,6 +69,78 @@ import WebCamOnIcon from "../icons/WebCamOnIcon";
 import WebCamOffIcon from "../icons/WebCamOffIcon";
 import ConfigIcon from "../icons/ConfigIcon";
 import MicOffIcon from "../icons/MicOffIcon";
+import MicrophoneIcon from "../icons/MicrophoneIcon";
+import SpeakerMenuIcon from "../icons/SpeakerMenuIcon";
+import SelectedIcon from "../icons/SelectedIcon";
+import { useSnackbar } from "notistack";
+import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
+
+const BpIcon = styled("span")(({ theme }) => ({
+  borderRadius: 12,
+  padding: 0,
+  margin: 0,
+  width: 10,
+  height: 10,
+  border: `2px solid ${theme.palette.text.secondary}`,
+  "input:disabled ~ &": {
+    boxShadow: "none",
+    background: theme.palette.text.secondary,
+  },
+}));
+
+const BpCheckedIcon = styled(SelectedIcon)({
+  "&:before": {
+    display: "block",
+    width: 10,
+    height: 10,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+});
+
+const BpCheckedLightIcon = styled(SelectedIcon)({
+  "&:before": {
+    display: "block",
+    width: 10,
+    height: 10,
+    backgroundImage:
+      "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+      " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+      "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+    content: '""',
+  },
+});
+
+function BpCheckbox(CheckboxProps) {
+  const { appTheme } = useMeetingAppContext();
+  return (
+    <Checkbox
+      disableRipple
+      disableFocusRipple
+      color="default"
+      checkedIcon={
+        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? (
+          <BpCheckedLightIcon />
+        ) : (
+          <BpCheckedIcon />
+        )
+      }
+      icon={<BpIcon />}
+      style={{
+        paddingTop: 0,
+        paddingBottom: 0,
+        marginTop: 0,
+        marginBottom: 0,
+        marginLeft: 0,
+        backgroundColor: "transparent",
+      }}
+      {...CheckboxProps}
+    />
+  );
+}
 
 const useStyles = makeStyles({
   row: { display: "flex", alignItems: "center" },
@@ -80,6 +161,38 @@ const useStyles = makeStyles({
     "&:hover": {
       backgroundColor: "#2B303499",
     },
+  },
+  popoverHoverDefault: {
+    "&:hover": {
+      backgroundColor: "#43425399",
+    },
+  },
+  menuItemHover: {
+    "&:hover": {
+      backgroundColor: "transparent",
+    },
+  },
+  menuItemDark: {
+    "&:hover": {
+      backgroundColor: "transparent",
+    },
+  },
+  menuItemDefault: {
+    "&:hover": {
+      backgroundColor: "transparent",
+    },
+  },
+  singleMenuItemGutters: {
+    padding: "6px 2px",
+  },
+  singleMenuItemGuttersAfterSelect: {
+    padding: "6px 12px",
+  },
+  menuItemGutters: {
+    padding: "6px 28px",
+  },
+  menuItemGuttersAfterSelect: {
+    padding: "6px 12px",
   },
 });
 
@@ -949,6 +1062,309 @@ const HlsBTN = ({ isMobile, isTab }) => {
     />
   );
 };
+
+const SingleMicMenu = ({
+  micArr,
+  Icon,
+  label,
+  selectedDeviceId,
+  classes,
+  setSelectedDeviceId,
+  changeMic,
+  appTheme,
+  theme,
+  handleClose,
+}) => {
+  return (
+    <Box>
+      <Box
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: 12,
+          paddingBottom: 0,
+        }}
+      >
+        <Icon />
+
+        <Typography
+          style={{
+            marginLeft: 12,
+            fontSize: 14,
+            color: theme.palette.darkTheme.contrastText,
+          }}
+        >
+          {label}
+        </Typography>
+      </Box>
+      <MenuList
+        disableRipple
+        disableFocusRipple
+        style={{
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.slightLighter
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.two
+              : "",
+          color:
+            appTheme === appThemes.DARK
+              ? theme.palette.common.white
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.contrastText
+              : "",
+        }}
+      >
+        {micArr.map(({ deviceId, label }, index) => (
+          <Box
+            style={{
+              display: "flex",
+              alignItems: "center",
+              paddingLeft: 12,
+              paddingRight: 12,
+              backgroundColor:
+                deviceId === selectedDeviceId
+                  ? appTheme === appThemes.DARK
+                    ? "#3F4046"
+                    : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.three
+                    : "#6D6E71"
+                  : "",
+            }}
+            classes={{
+              root:
+                appTheme === appThemes.LIGHT
+                  ? classes.popoverHover
+                  : appTheme === appThemes.DARK
+                  ? classes.popoverHoverDark
+                  : classes.popoverHoverDefault,
+            }}
+          >
+            {deviceId === selectedDeviceId && <SelectedIcon />}
+
+            <MenuItem
+              disableRipple
+              style={{
+                display: "flex",
+                flex: 1,
+                backgroundColor:
+                  deviceId === selectedDeviceId
+                    ? appTheme === appThemes.DARK
+                      ? "#3F4046"
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.three
+                      : "#6D6E71"
+                    : "",
+              }}
+              key={`mics_${deviceId}`}
+              selected={deviceId === selectedDeviceId}
+              onClick={() => {
+                handleClose();
+                setSelectedDeviceId(deviceId);
+                changeMic(deviceId);
+              }}
+              classes={{
+                root:
+                  appTheme === appThemes.LIGHT
+                    ? classes.menuItemHover
+                    : appTheme === appThemes.DARK
+                    ? classes.menuItemDark
+                    : classes.menuItemDefault,
+                gutters:
+                  deviceId === selectedDeviceId
+                    ? classes.menuItemGuttersAfterSelect
+                    : classes.menuItemGutters,
+              }}
+            >
+              {label || `Mic ${index + 1}`}
+            </MenuItem>
+          </Box>
+        ))}
+      </MenuList>
+    </Box>
+  );
+};
+
+const MicMenu = ({
+  selectedDeviceId,
+  setSelectedDeviceId,
+  localMicOn,
+  downArrow,
+  mics,
+  outputmics,
+  classes,
+  _handleNoiseClick,
+  handleClose,
+  isNoiseRemovalChecked,
+  theme,
+  appTheme,
+  tollTipEl,
+  changeMic,
+}) => {
+  return (
+    <Popover
+      container={tollTipEl.current}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "center",
+      }}
+      anchorEl={tollTipEl.current}
+      open={Boolean(downArrow)}
+      onClose={handleClose}
+    >
+      <Box
+        style={{
+          backgroundColor:
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.slightLighter
+              : appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.two
+              : "",
+        }}
+      >
+        <SingleMicMenu
+          micArr={mics}
+          label={"MICROPHONE"}
+          Icon={MicrophoneIcon}
+          selectedDeviceId={selectedDeviceId}
+          setSelectedDeviceId={setSelectedDeviceId}
+          changeMic={changeMic}
+          classes={classes}
+          appTheme={appTheme}
+          theme={theme}
+          handleClose={handleClose}
+        />
+        {/* <Box
+          style={{
+            height: 1,
+            width: "100%",
+            borderTop: `1px solid ${theme.palette.darkTheme.contrastText}`,
+          }}
+        ></Box>
+
+        <SingleMicMenu
+          micArr={outputmics}
+          label={"SPEAKER"}
+          Icon={SpeakerMenuIcon}
+          selectedDeviceId={selectedDeviceId}
+          setSelectedDeviceId={setSelectedDeviceId}
+          classes={classes}
+          changeMic={changeMic}
+          appTheme={appTheme}
+          theme={theme}
+          handleClose={handleClose}
+        /> */}
+
+        {localMicOn && (
+          <>
+            <Box
+              style={{
+                height: 1,
+                width: "100%",
+                borderTop: "1px solid #9FA0A7",
+              }}
+            ></Box>
+            <Box>
+              <MenuList
+                disableRipple
+                disableFocusRipple
+                style={{
+                  backgroundColor:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.slightLighter
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.two
+                      : "",
+                  color:
+                    appTheme === appThemes.DARK
+                      ? theme.palette.common.white
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "",
+                }}
+              >
+                <Box
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    paddingLeft: isNoiseRemovalChecked ? 12 : 6,
+                    paddingRight: 6,
+                    backgroundColor: isNoiseRemovalChecked
+                      ? appTheme === appThemes.DARK
+                        ? "#3F4046"
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.three
+                        : "#6D6E71"
+                      : "",
+                  }}
+                  classes={{
+                    root:
+                      appTheme === appThemes.LIGHT
+                        ? classes.popoverHover
+                        : appTheme === appThemes.DARK
+                        ? classes.popoverHoverDark
+                        : classes.popoverHoverDefault,
+                  }}
+                >
+                  {isNoiseRemovalChecked ? (
+                    <SelectedIcon />
+                  ) : (
+                    <BpCheckbox
+                      value={isNoiseRemovalChecked}
+                      checked={isNoiseRemovalChecked}
+                      onClick={(e) => {
+                        _handleNoiseClick(e);
+                      }}
+                    />
+                  )}
+
+                  <MenuItem
+                    disableRipple
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      backgroundColor: isNoiseRemovalChecked
+                        ? appTheme === appThemes.DARK
+                          ? "#3F4046"
+                          : appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.three
+                          : "#6D6E71"
+                        : "",
+                    }}
+                    key={`noise_removal`}
+                    selected={isNoiseRemovalChecked}
+                    onClick={(e) => {
+                      handleClose();
+                      _handleNoiseClick(e);
+                    }}
+                    classes={{
+                      root:
+                        appTheme === appThemes.LIGHT
+                          ? classes.menuItemHover
+                          : appTheme === appThemes.DARK
+                          ? classes.menuItemDark
+                          : classes.menuItemDefault,
+                      gutters: isNoiseRemovalChecked
+                        ? classes.singleMenuItemGuttersAfterSelect
+                        : classes.singleMenuItemGutters,
+                    }}
+                  >
+                    AI Noise Removal
+                  </MenuItem>
+                </Box>
+              </MenuList>
+            </Box>
+          </>
+        )}
+      </Box>
+    </Popover>
+  );
+};
+
 const WebcamBTN = () => {
   const theme = useTheme();
   const classes = useStyles();
@@ -1082,13 +1498,21 @@ const WebcamBTN = () => {
   );
 };
 const MicBTN = () => {
-  const { selectedMic, appTheme } = useMeetingAppContext();
+  const {
+    selectedMic,
+    appTheme,
+    notificationSoundEnabled,
+    notificationAlertsEnabled,
+  } = useMeetingAppContext();
   const [selectedDeviceId, setSelectedDeviceId] = useState(selectedMic.id);
+  const [isNoiseRemovalChecked, setIsNoiseRemovalChecked] = useState(false);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
+  const [outputmics, setOutputMics] = useState([]);
   const mMeeting = useMeeting({});
   const theme = useTheme();
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleClick = (event) => {
     setDownArrow(event.currentTarget);
@@ -1110,6 +1534,48 @@ const MicBTN = () => {
 
   const tollTipEl = useRef();
 
+  const getOutputDevices = async () => {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const outputMics = devices.filter((d) => d.kind === "audiooutput");
+
+    outputMics && outputMics?.length && setOutputMics(outputMics);
+  };
+
+  const _handleNoiseClick = async (e) => {
+    e.stopPropagation();
+    let _isNoiseRemovalChecked;
+    setIsNoiseRemovalChecked((s) => {
+      const notS = !s;
+      _isNoiseRemovalChecked = notS;
+      return notS;
+    });
+
+    try {
+      const processor = new VideoSDKNoiseSuppressor();
+
+      const stream = await createMicrophoneAudioTrack({});
+      const processedStream = await processor.getNoiseSuppressedAudioStream(
+        stream
+      );
+
+      changeMic(processedStream);
+    } catch (error) {
+      console.log(error);
+    }
+
+    if (_isNoiseRemovalChecked) {
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar("Noise removal activated");
+      }
+    }
+  };
+
   return (
     <Box
       ref={tollTipEl}
@@ -1121,7 +1587,13 @@ const MicBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnMic"}
-        tooltipTitle={localMicOn ? "Turn off mic" : "Turn on mic"}
+        tooltipTitle={
+          isNoiseRemovalChecked
+            ? "Noise Removal Activated"
+            : localMicOn
+            ? "Turn off mic"
+            : "Turn on mic"
+        }
         isFocused={localMicOn}
         Icon={localMicOn ? MicOn : MicOffIcon}
         onClick={toggleMic}
@@ -1130,6 +1602,7 @@ const MicBTN = () => {
             ? theme.palette.lightTheme.contrastText
             : "#ffffff33"
         }
+        focusBorderColor={isNoiseRemovalChecked && localMicOn ? "#7dcc7d" : ""}
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
@@ -1137,6 +1610,7 @@ const MicBTN = () => {
               <IconButton
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
+                  getOutputDevices();
                   handleClick(e);
                 }}
                 size={"small"}
@@ -1155,60 +1629,22 @@ const MicBTN = () => {
           );
         }}
       />
-
-      <Popover
-        container={tollTipEl.current}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        anchorEl={tollTipEl.current}
-        open={Boolean(downArrow)}
-        onClose={handleClose}
-      >
-        <MenuList
-          style={{
-            backgroundColor:
-              appTheme === appThemes.DARK
-                ? theme.palette.darkTheme.slightLighter
-                : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.two
-                : "",
-            color:
-              appTheme === appThemes.DARK
-                ? theme.palette.common.white
-                : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.contrastText
-                : "",
-          }}
-        >
-          {mics.map(({ deviceId, label }, index) => (
-            <MenuItem
-              key={`output_mics_${deviceId}`}
-              selected={deviceId === selectedDeviceId}
-              onClick={() => {
-                handleClose();
-                setSelectedDeviceId(deviceId);
-                changeMic(deviceId);
-              }}
-              classes={{
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.popoverHover
-                    : appTheme === appThemes.DARK
-                    ? classes.popoverHoverDark
-                    : "",
-              }}
-            >
-              {label || `Mic ${index + 1}`}
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Popover>
+      <MicMenu
+        selectedDeviceId={selectedDeviceId}
+        setSelectedDeviceId={setSelectedDeviceId}
+        isNoiseRemovalChecked={isNoiseRemovalChecked}
+        localMicOn={localMicOn}
+        theme={theme}
+        appTheme={appTheme}
+        downArrow={downArrow}
+        tollTipEl={tollTipEl}
+        changeMic={changeMic}
+        mics={mics}
+        outputmics={outputmics}
+        classes={classes}
+        _handleNoiseClick={_handleNoiseClick}
+        handleClose={handleClose}
+      />
     </Box>
   );
 };

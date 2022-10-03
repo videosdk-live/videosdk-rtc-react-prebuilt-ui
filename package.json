@@ -1,8 +1,8 @@
 {
   "name": "videosdk-rtc-react-prebuilt-ui",
-  "version": "0.3.20",
+  "version": "0.3.21",
   "private": true,
-  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.20/",
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.21/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@videosdk.live/react-sdk": "^0.1.50",
+    "@videosdk.live/videosdk-media-processor-web": "^0.0.10",
     "compressorjs": "^1.1.1",
     "emoji-mart": "^3.0.1",
     "fabric": "^4.6.0",
@@ -34,8 +35,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
