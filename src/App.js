@@ -25,6 +25,8 @@ import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
 import { version as prebuiltSDKVersion } from "../package.json";
 import { meetingModes } from "./CONSTS";
+import animationData from "./animations/meeting-left.json";
+import lightThemeAnimationData from "./animations/meeting_left_white.json";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -530,6 +532,23 @@ const App = () => {
             leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
             leftScreenRejoinButtonEnabled={
               paramKeys.leftScreenRejoinButtonEnabled !== "false"
+            }
+            backgroundColor={
+              paramKeys.theme === appThemes.DARK
+                ? theme.palette.darkTheme.main
+                : paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default
+            }
+            color={
+              paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : theme.palette.common.white
+            }
+            animationData={
+              paramKeys.theme === appThemes.LIGHT
+                ? lightThemeAnimationData
+                : animationData
             }
             setMeetingLeft={setMeetingLeft}
           />
