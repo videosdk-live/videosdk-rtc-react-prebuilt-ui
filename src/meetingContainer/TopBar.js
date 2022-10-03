@@ -1602,7 +1602,7 @@ const MicBTN = () => {
             ? theme.palette.lightTheme.contrastText
             : "#ffffff33"
         }
-        focusBorderColor={isNoiseRemovalChecked ? "#7dcc7d" : ""}
+        focusBorderColor={isNoiseRemovalChecked && localMicOn ? "#7dcc7d" : ""}
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
