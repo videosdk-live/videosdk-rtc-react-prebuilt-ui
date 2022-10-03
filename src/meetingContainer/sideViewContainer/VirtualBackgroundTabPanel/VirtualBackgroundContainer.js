@@ -342,7 +342,7 @@ const BackgroundSelection = ({ padding, theme }) => {
             {backgroundImageArr.map(
               ({ previewImageUrl, backgroudImageUrl, type, Icon }, i) => {
                 return (
-                  <Grid item xs={isTab || isLGDesktop ? 2 : 4} key={i}>
+                  <Grid item xl={4} xs={isTab || isLGDesktop ? 2 : 4} key={i}>
                     <SingleImage
                       videoProcessor={videoProcessor}
                       previewImageUrl={previewImageUrl}
