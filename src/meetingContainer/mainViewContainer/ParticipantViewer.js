@@ -111,8 +111,14 @@ export const CornerDisplayName = ({
     [alwaysShowOverlay, isPinned, mouseOver]
   );
 
-  const { webcamStream, micStream, getVideoStats, getAudioStats } =
-    useParticipant(participantId);
+  const {
+    webcamStream,
+    micStream,
+    getVideoStats,
+    getAudioStats,
+    getShareStats,
+    screenShareStream,
+  } = useParticipant(participantId);
 
   const statsIntervalIdRef = useRef();
   const [score, setScore] = useState({});
@@ -123,15 +129,17 @@ export const CornerDisplayName = ({
     let stats = [];
     let audioStats = [];
     let videoStats = [];
-    if (webcamStream) {
+    if (isPresenting) {
+      stats = await getShareStats();
+    } else if (webcamStream) {
       stats = await getVideoStats();
     } else if (micStream) {
       stats = await getAudioStats();
     }
 
-    if (webcamStream || micStream) {
-      videoStats = await getVideoStats();
-      audioStats = await getAudioStats();
+    if (webcamStream || micStream || isPresenting) {
+      videoStats = isPresenting ? await getShareStats() : await getVideoStats();
+      audioStats = isPresenting ? [] : await getAudioStats();
     }
 
     // setScore(stats?.score);
@@ -150,17 +158,21 @@ export const CornerDisplayName = ({
     { label: "", audio: "Audio", video: "Video" },
     {
       label: "Latency",
-      audio: audioStats ? `${audioStats[0]?.rtt} ms` : "-",
-      video: videoStats ? `${videoStats[0]?.rtt} ms` : "-",
+      audio:
+        audioStats && audioStats[0]?.rtt ? `${audioStats[0]?.rtt} ms` : "-",
+      video:
+        videoStats && videoStats[0]?.rtt ? `${videoStats[0]?.rtt} ms` : "-",
     },
     {
       label: "Jitter",
-      audio: audioStats
-        ? `${parseFloat(audioStats[0]?.jitter).toFixed(2)} ms`
-        : "-",
-      video: videoStats
-        ? `${parseFloat(videoStats[0]?.jitter).toFixed(2)} ms`
-        : "-",
+      audio:
+        audioStats && audioStats[0]?.jitter
+          ? `${parseFloat(audioStats[0]?.jitter).toFixed(2)} ms`
+          : "-",
+      video:
+        videoStats && videoStats[0]?.jitter
+          ? `${parseFloat(videoStats[0]?.jitter).toFixed(2)} ms`
+          : "-",
     },
     {
       label: "Packet Loss",
@@ -181,12 +193,14 @@ export const CornerDisplayName = ({
     },
     {
       label: "Bitrate",
-      audio: audioStats
-        ? `${parseFloat(audioStats[0]?.bitrate).toFixed(2)} kb/s`
-        : "-",
-      video: videoStats
-        ? `${parseFloat(videoStats[0]?.bitrate).toFixed(2)} kb/s`
-        : "-",
+      audio:
+        audioStats && audioStats[0]?.bitrate
+          ? `${parseFloat(audioStats[0]?.bitrate).toFixed(2)} kb/s`
+          : "-",
+      video:
+        videoStats && videoStats[0]?.bitrate
+          ? `${parseFloat(videoStats[0]?.bitrate).toFixed(2)} kb/s`
+          : "-",
     },
     {
       label: "Frame rate",
@@ -355,7 +369,7 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {(webcamStream || micStream) && networkBarEnabled && (
+      {(webcamStream || micStream || screenShareStream) && networkBarEnabled && (
         <Box>
           <div
             onClick={(e) => {
