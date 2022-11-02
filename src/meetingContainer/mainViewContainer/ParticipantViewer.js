@@ -455,136 +455,95 @@ export const CornerDisplayName = ({
                 </Box>
                 <Box style={{ display: "flex" }}>
                   <Box style={{ display: "flex", flexDirection: "column" }}>
-                    {videoStats || audioStats ? (
-                      qualityStateArray.map((item, index) => {
-                        return (
-                          <Box
-                            style={{
-                              // paddingLeft: 8,
-                              // paddingRight: 8,
-                              display: "flex",
-                              borderBottom:
-                                index === qualityStateArray.length - 1
-                                  ? ""
-                                  : `1px solid ${
-                                      appTheme === appThemes.LIGHT
-                                        ? theme.palette.lightTheme.outlineColor
-                                        : "#ffffff33"
-                                    }`,
-                            }}
-                          >
-                            <Box
-                              style={{
-                                display: "flex",
-                                flex: 1,
-                                width: 120,
-                                alignItems: "center",
-                              }}
-                            >
-                              {index !== 0 && (
-                                <Typography
-                                  style={{
-                                    fontSize: 12,
-                                    marginTop: 6,
-                                    marginBottom: 6,
-                                    marginLeft: 8,
-                                  }}
-                                >
-                                  {item.label}
-                                </Typography>
-                              )}
-                            </Box>
-                            <Box
-                              style={{
-                                display: "flex",
-                                flex: 1,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderLeft: `1px solid ${
-                                  appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.outlineColor
-                                    : "#ffffff33"
-                                }`,
-                              }}
-                            >
-                              <Typography
-                                style={{
-                                  fontSize: 12,
-                                  marginTop: 6,
-                                  marginBottom: 6,
-                                  width: 65,
-                                  textAlign: "center",
-                                }}
-                              >
-                                {item.audio}
-                              </Typography>
-                            </Box>
-                            <Box
-                              style={{
-                                display: "flex",
-                                flex: 1,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderLeft: `1px solid ${
-                                  appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.outlineColor
-                                    : "#ffffff33"
-                                }`,
-                              }}
-                            >
-                              <Typography
-                                style={{
-                                  fontSize: 12,
-                                  marginTop: 6,
-                                  marginBottom: 6,
-                                  width: 65,
-                                  textAlign: "center",
-                                }}
-                              >
-                                {item.video}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        );
-                      })
-                    ) : (
-                      <Box
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: 240,
-                          width: 240,
-                        }}
-                      >
-                        {/* <div
+                    {qualityStateArray.map((item, index) => {
+                      return (
+                        <Box
                           style={{
                             display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: "100%",
-                            height: 240,
+                            borderBottom:
+                              index === qualityStateArray.length - 1
+                                ? ""
+                                : `1px solid ${
+                                    appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.outlineColor
+                                      : "#ffffff33"
+                                  }`,
                           }}
                         >
-                          <div
+                          <Box
                             style={{
-                              borderTopColor: "#DB2777",
-                              animation: "spin 1s linear infinite",
-                              transitionTimingFunction: "linear",
-                              borderRadius: "9999px",
-                              borderWidth: "4px",
-                              borderColor: "white",
-                              height: "3rem",
-                              width: "3rem",
+                              display: "flex",
+                              flex: 1,
+                              width: 120,
+                              alignItems: "center",
                             }}
-                            className="animate-spin  ease-linear rounded-full border-4  border-gray-200 h-12 w-12"
-                          ></div>
-                        </div> */}
-                        <Typography variant="body1" style={{ fontWeight: 600 }}>
-                          Fecthing Quality Stats...
-                        </Typography>
-                      </Box>
-                    )}
+                          >
+                            {index !== 0 && (
+                              <Typography
+                                style={{
+                                  fontSize: 12,
+                                  marginTop: 6,
+                                  marginBottom: 6,
+                                  marginLeft: 8,
+                                }}
+                              >
+                                {item.label}
+                              </Typography>
+                            )}
+                          </Box>
+                          <Box
+                            style={{
+                              display: "flex",
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderLeft: `1px solid ${
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                              }`,
+                            }}
+                          >
+                            <Typography
+                              style={{
+                                fontSize: 12,
+                                marginTop: 6,
+                                marginBottom: 6,
+                                width: 65,
+                                textAlign: "center",
+                              }}
+                            >
+                              {item.audio}
+                            </Typography>
+                          </Box>
+                          <Box
+                            style={{
+                              display: "flex",
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderLeft: `1px solid ${
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                              }`,
+                            }}
+                          >
+                            <Typography
+                              style={{
+                                fontSize: 12,
+                                marginTop: 6,
+                                marginBottom: 6,
+                                width: 65,
+                                textAlign: "center",
+                              }}
+                            >
+                              {item.video}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      );
+                    })}
                   </Box>
                 </Box>
               </Box>
