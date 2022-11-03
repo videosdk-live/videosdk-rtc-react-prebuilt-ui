@@ -221,6 +221,35 @@ export const CornerDisplayName = ({
           : `${videoStats[0]?.size?.width}x${videoStats[0]?.size?.height}`
         : "-",
     },
+    {
+      label: "Codec",
+      audio: audioStats && audioStats[0]?.codec ? audioStats[0]?.codec : "-",
+      video: videoStats && videoStats[0]?.codec ? videoStats[0]?.codec : "-",
+    },
+    {
+      label: "Cur. Layers",
+      audio: "-",
+      video:
+        videoStats && !isLocal
+          ? videoStats && videoStats[0]?.currentSpatialLayer === null
+            ? "-"
+            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${
+                videoStats[0]?.currentTemporalLayer || 0
+              }`
+          : "-",
+    },
+    {
+      label: "Pref. Layers",
+      audio: "-",
+      video:
+        videoStats && !isLocal
+          ? videoStats && videoStats[0]?.preferredSpatialLayer === null
+            ? "-"
+            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${
+                videoStats[0]?.preferredTemporalLayer || 0
+              }`
+          : "-",
+    },
   ];
 
   useEffect(() => {
@@ -614,11 +643,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const theme = useTheme();
 
-  // useEffect(() => {
-  //   if (!quality || isRecorder) return;
+  useEffect(() => {
+    if (!quality || isRecorder) return;
 
-  // setQuality(quality);
-  // }, [quality, setQuality, isRecorder]);
+    setQuality("high");
+  }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -663,10 +692,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       !isLocal &&
       webcamStream
     ) {
-      setViewPort(
-        videoDivWrapperRef?.offsetWidth,
-        videoDivWrapperRef?.offsetHeight
-      );
+      // setViewPort(
+      //   videoDivWrapperRef?.offsetWidth,
+      //   videoDivWrapperRef?.offsetHeight
+      // );
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
