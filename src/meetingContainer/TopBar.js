@@ -686,22 +686,6 @@ const RecordingBTN = ({ isMobile, isTab }) => {
           }
           isRequestProcessing={isRequestProcessing}
         />
-      ) : recordingState === Constants.recordingEvents.RECORDING_STOPPING ||
-        recordingState === Constants.recordingEvents.RECORDING_STARTING ? (
-        <OutlineIconTextButton
-          tooltipTitle={
-            recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Rec"
-              : "Stopping Recording"
-          }
-          buttonText={
-            recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Rec"
-              : "Stopping Rec"
-          }
-          isRequestProcessing={isRequestProcessing}
-          // disabled
-        />
       ) : (
         <OutlineIconButton
           Icon={ScreenRecording}
@@ -731,6 +715,13 @@ const RecordingBTN = ({ isMobile, isTab }) => {
               recordingState ===
                 Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
+          }
+          buttonText={
+            recordingState === Constants.recordingEvents.RECORDING_STARTING
+              ? "Starting"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+              ? "Stopping"
+              : ""
           }
           disabled={!participantCanToggleRecording}
           lottieOption={

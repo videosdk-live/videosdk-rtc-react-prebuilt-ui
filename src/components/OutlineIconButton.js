@@ -200,7 +200,10 @@ const OutlineIconButton = ({
             )}
           </Box>
           {buttonText ? (
-            <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
+            <Typography
+              variant="subtitle2"
+              style={{ fontWeight: "bold", marginRight: 8 }}
+            >
               {buttonText}
             </Typography>
           ) : null}
