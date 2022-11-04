@@ -51,7 +51,7 @@ const ConfirmBox = ({
           padding: 8,
           backgroundColor:
             ((v && v?.appTheme) || appTheme) === appThemes.DARK
-              ? theme.palette.darkTheme.main
+              ? theme.palette.darkTheme.slightLighter
               : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
@@ -103,7 +103,7 @@ const ConfirmBox = ({
                   color: subTitleColor
                     ? subTitleColor
                     : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
-                    ? theme.palette.lightTheme.four
+                    ? theme.palette.lightTheme.five
                     : "#9FA0A7",
                 }}
               >

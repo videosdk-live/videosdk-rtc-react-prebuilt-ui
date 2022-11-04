@@ -556,6 +556,7 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
 const RecordingBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
   const theme = useTheme();
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
 
   const startRecording = mMeeting?.startRecording;
   const stopRecording = mMeeting?.stopRecording;
@@ -641,76 +642,121 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     if (isRecording) {
       stopRecording();
     } else {
-      _handleStartRecording();
+      setShowConfirmationPopup(true);
     }
   };
 
-  return isMobile || isTab ? (
-    <MobileIconButton
-      Icon={ScreenRecording}
-      onClick={_handleClick}
-      tooltipTitle={
-        recordingState === Constants.recordingEvents.RECORDING_STARTED
-          ? "Stop Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STARTING
-          ? "Starting Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-          ? "Start Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-          ? "Stopping Recording"
-          : "Start Recording"
-      }
-      isFocused={isRecording}
-      disabled={!participantCanToggleRecording}
-      lottieOption={isRecording ? defaultOptions : null}
-      bgColor={
-        appTheme === appThemes.LIGHT &&
-        (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
-          recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
-        "#EEF0F2"
-      }
-      buttonText={
-        recordingState === Constants.recordingEvents.RECORDING_STARTED
-          ? "Stop Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STARTING
-          ? "Starting Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-          ? "Start Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-          ? "Stopping Recording"
-          : "Start Recording"
-      }
-      isRequestProcessing={isRequestProcessing}
-    />
-  ) : (
-    <OutlineIconButton
-      Icon={ScreenRecording}
-      onClick={_handleClick}
-      focusBGColor={
-        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
-      }
-      tooltipTitle={
-        recordingState === Constants.recordingEvents.RECORDING_STARTED
-          ? "Stop Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STARTING
-          ? "Starting Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-          ? "Start Recording"
-          : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-          ? "Stopping Recording"
-          : "Start Recording"
-      }
-      isFocused={isRecording}
-      bgColor={
-        appTheme === appThemes.LIGHT &&
-        (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
-          recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
-        "#EEF0F2"
-      }
-      disabled={!participantCanToggleRecording}
-      lottieOption={isRecording ? defaultOptions : null}
-      isRequestProcessing={isRequestProcessing}
-    />
+  return (
+    <>
+      {isMobile || isTab ? (
+        <MobileIconButton
+          Icon={ScreenRecording}
+          onClick={_handleClick}
+          tooltipTitle={
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+              ? "Stop Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STARTING
+              ? "Starting Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+              ? "Start Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+              ? "Stopping Recording"
+              : "Start Recording"
+          }
+          isFocused={isRecording}
+          disabled={!participantCanToggleRecording}
+          lottieOption={isRecording ? defaultOptions : null}
+          bgColor={
+            appTheme === appThemes.LIGHT &&
+            (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
+              recordingState ===
+                Constants.recordingEvents.RECORDING_STOPPING) &&
+            "#EEF0F2"
+          }
+          buttonText={
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+              ? "Stop Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STARTING
+              ? "Starting Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+              ? "Start Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+              ? "Stopping Recording"
+              : "Start Recording"
+          }
+          isRequestProcessing={isRequestProcessing}
+        />
+      ) : recordingState === Constants.recordingEvents.RECORDING_STOPPING ||
+        recordingState === Constants.recordingEvents.RECORDING_STARTING ? (
+        <OutlineIconTextButton
+          tooltipTitle={
+            recordingState === Constants.recordingEvents.RECORDING_STARTING
+              ? "Starting Rec"
+              : "Stopping Recording"
+          }
+          buttonText={
+            recordingState === Constants.recordingEvents.RECORDING_STARTING
+              ? "Starting Rec"
+              : "Stopping Rec"
+          }
+          isRequestProcessing={isRequestProcessing}
+          // disabled
+        />
+      ) : (
+        <OutlineIconButton
+          Icon={ScreenRecording}
+          onClick={_handleClick}
+          focusBGColor={
+            appTheme === appThemes.LIGHT &&
+            theme.palette.lightTheme.contrastText
+          }
+          tooltipTitle={
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+              ? "Stop Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STARTING
+              ? "Starting Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+              ? "Start Recording"
+              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+              ? "Stopping Recording"
+              : "Start Recording"
+          }
+          isFocused={
+            isRecording &&
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+          }
+          bgColor={
+            appTheme === appThemes.LIGHT &&
+            (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
+              recordingState ===
+                Constants.recordingEvents.RECORDING_STOPPING) &&
+            "#EEF0F2"
+          }
+          disabled={!participantCanToggleRecording}
+          lottieOption={
+            isRecording &&
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+              ? defaultOptions
+              : null
+          }
+          isRequestProcessing={isRequestProcessing}
+        />
+      )}
+      <ConfirmBox
+        title={"Start Recording"}
+        subTitle={"Are you sure you want to start recording?"}
+        open={showConfirmationPopup}
+        successText={"Yes"}
+        onSuccess={() => {
+          _handleStartRecording();
+          setShowConfirmationPopup(false);
+        }}
+        rejectText={"No"}
+        onReject={() => {
+          setShowConfirmationPopup(false);
+        }}
+      />
+    </>
   );
 };
 const GoLiveBTN = ({ isMobile, isTab }) => {
