@@ -704,6 +704,7 @@ const App = () => {
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
               autoConsume: false,
+              mode: paramKeys.mode,
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction
