@@ -720,13 +720,28 @@ function WhiteboardContainer({
   //   }
 
   function downloadCanvas() {
-    let uri = fabricRef.current.toDataURL({ format: "png" });
+    // set background
+    fabricRef.current.setBackgroundColor(canvasBackgroundColor || "#F5F7F9");
+    // set zoomIn
+    const currentZoom = fabricRef.current.getZoom();
+    const newZoom = currentZoom - 0.4;
+    fabricRef.current.fire("exitText", {});
+    fabricRef.current.setZoom(newZoom);
+    // convert canvas to image
+    let uri = fabricRef.current.toDataURL({ format: "jpg" });
     let link = document.createElement("a");
     link.href = uri;
-    link.download = `${Date.now()}-canvas.png`;
+    link.download = `${Date.now()}-canvas.jpg`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    // remove background
+    fabricRef.current.setBackgroundColor("transparent");
+    // set zoomOut
+    const currentZoom1 = fabricRef.current.getZoom();
+    const newZoom1 = currentZoom1 + 0.4;
+    fabricRef.current.fire("exitText", {});
+    fabricRef.current.setZoom(newZoom1);
   }
 
   function convertZoomTo800() {
@@ -856,6 +871,20 @@ function WhiteboardContainer({
             }}
             ref={canvasCotainerRef}
           >
+            <canvas
+              id="canvasId"
+              width={width}
+              height={height}
+              style={{
+                width: width,
+                height: height,
+                borderRadius: theme.spacing(1),
+                transition: animationsEnabled
+                  ? "height 800ms, width 800ms"
+                  : undefined,
+                zIndex: 100,
+              }}
+            />
             <div
               style={{
                 position: "absolute",
@@ -866,6 +895,7 @@ function WhiteboardContainer({
                 transition: animationsEnabled
                   ? "height 800ms, width 800ms"
                   : undefined,
+                pointerEvents: "none",
               }}
             >
               {arrX.map((_, itemx) =>
@@ -889,20 +919,6 @@ function WhiteboardContainer({
                 ))
               )}
             </div>
-            <canvas
-              id="canvasId"
-              width={width}
-              height={height}
-              style={{
-                width: width,
-                height: height,
-                borderRadius: theme.spacing(1),
-                transition: animationsEnabled
-                  ? "height 800ms, width 800ms"
-                  : undefined,
-                zIndex: 100,
-              }}
-            />
           </div>
           <canvas
             style={{
