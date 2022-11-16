@@ -139,7 +139,6 @@ export const MeetingAppProvider = ({
 
   participantCanToggleLivestream,
   reduceEdgeSpacing,
-  reduceRecorderSpacing,
   isRecorder,
   maintainVideoAspectRatio,
   networkBarEnabled,
@@ -308,7 +307,7 @@ export const MeetingAppProvider = ({
         alwaysShowOverlay,
         sideStackSize,
         reduceEdgeSpacing,
-        reduceRecorderSpacing,
+
         isRecorder,
         maintainVideoAspectRatio,
         networkBarEnabled,

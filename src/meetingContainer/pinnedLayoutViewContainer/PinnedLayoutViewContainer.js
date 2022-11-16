@@ -37,7 +37,6 @@ const PinnedLayoutViewContainer = ({
     isRecorder,
     layoutGridSize,
     appTheme,
-    reduceRecorderSpacing,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -247,7 +246,7 @@ const PinnedLayoutViewContainer = ({
       : 0;
 
   const mainContainerHorizontalPadding = useMemo(() => {
-    return reduceRecorderSpacing
+    return reduceEdgeSpacing
       ? 0
       : (whiteboardStarted || presenterId) &&
         meetingLayout === meetingLayouts.SPOTLIGHT

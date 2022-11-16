@@ -139,7 +139,6 @@ const App = () => {
       alwaysShowOverlay: "alwaysShowOverlay",
       sideStackSize: "sideStackSize",
       reduceEdgeSpacing: "reduceEdgeSpacing",
-      reduceRecorderSpacing: "reduceRecorderSpacing",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
       rawUserAgent: "rawUserAgent",
       canChangeLayout: "canChangeLayout",
@@ -675,7 +674,6 @@ const App = () => {
             alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
-            reduceRecorderSpacing: paramKeys.reduceRecorderSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
             appTheme: paramKeys.theme,
             //
