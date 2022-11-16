@@ -141,6 +141,7 @@ export const MeetingAppProvider = ({
   reduceEdgeSpacing,
   isRecorder,
   maintainVideoAspectRatio,
+  maintainLandscapeVideoAspectRatio,
   networkBarEnabled,
   hlsPlayerControlsVisible,
   appTheme,
@@ -310,6 +311,7 @@ export const MeetingAppProvider = ({
 
         isRecorder,
         maintainVideoAspectRatio,
+        maintainLandscapeVideoAspectRatio,
         networkBarEnabled,
         appTheme,
 
