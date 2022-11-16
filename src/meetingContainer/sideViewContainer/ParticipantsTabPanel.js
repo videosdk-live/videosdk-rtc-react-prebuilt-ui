@@ -507,13 +507,13 @@ function ParticipantListItem({ raisedHand, participantId }) {
                       </MenuItem>
                     </>
                   )}
-                  {participantCanToggleOtherMode && isHls && (
+                  {/* {participantCanToggleOtherMode && isHls && (
                     <ToggleModeContainer
                       participantId={participantId}
                       participantMode={participantMode}
                       handleClose={handleClose}
                     />
-                  )}
+                  )} */}
                   {meetingMode === meetingModes.CONFERENCE && (
                     <MenuItem
                       key={`screen-share`}
