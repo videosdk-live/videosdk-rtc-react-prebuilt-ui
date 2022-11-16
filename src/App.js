@@ -139,6 +139,7 @@ const App = () => {
       alwaysShowOverlay: "alwaysShowOverlay",
       sideStackSize: "sideStackSize",
       reduceEdgeSpacing: "reduceEdgeSpacing",
+      reduceRecorderSpacing: "reduceRecorderSpacing",
       joinWithoutUserInteraction: "joinWithoutUserInteraction",
       rawUserAgent: "rawUserAgent",
       canChangeLayout: "canChangeLayout",
@@ -337,6 +338,7 @@ const App = () => {
       paramKeys.alwaysShowOverlay = "true";
       paramKeys.sideStackSize = "5";
       paramKeys.reduceEdgeSpacing = "true";
+      paramKeys.reduceSideSpacing = "true";
       paramKeys.topbarEnabled = "false";
       paramKeys.notificationSoundEnabled = "false";
       paramKeys.notificationAlertsEnabled = "false";
@@ -673,6 +675,7 @@ const App = () => {
             alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
             sideStackSize: paramKeys.sideStackSize,
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
+            reduceRecorderSpacing: paramKeys.reduceRecorderSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
             appTheme: paramKeys.theme,
             //

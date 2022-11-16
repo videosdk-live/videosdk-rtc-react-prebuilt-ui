@@ -214,6 +214,7 @@ const MainViewContainer = ({
     hideLocalParticipant,
     sideStackSize,
     reduceEdgeSpacing,
+    reduceRecorderSpacing,
     mode,
     appTheme,
   } = useMeetingAppContext();
@@ -458,9 +459,11 @@ const MainViewContainer = ({
 
   const mainContainerHorizontalPadding = useMemo(
     () =>
-      presenterId ||
-      whiteboardStarted ||
-      (mainLayoutParticipantId && singleRow.length !== 0)
+      reduceRecorderSpacing
+        ? 0
+        : presenterId ||
+          whiteboardStarted ||
+          (mainLayoutParticipantId && singleRow.length !== 0)
         ? 0
         : typeof sideBarMode === "string"
         ? 0
