@@ -46,6 +46,7 @@ import {
 import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import PollsListner from "../components/PollListner";
+import RecordingLoader from "../components/RecordingLoader";
 
 const getPinMsg = ({
   localParticipant,
@@ -900,7 +901,7 @@ const MeetingContainer = () => {
                   : theme.palette.background.default,
             }}
           >
-            <CircularProgress size={"4rem"} />
+            <RecordingLoader {...{ meetingLayout, appTheme }} />
           </Box>
         ) : (
           <WaitingToJoin />
