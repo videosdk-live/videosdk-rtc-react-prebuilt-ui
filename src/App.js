@@ -343,7 +343,6 @@ const App = () => {
       paramKeys.sideStackSize = "5";
       paramKeys.reduceEdgeSpacing = "true";
       paramKeys.maintainLandscapeVideoAspectRatio = "true";
-      paramKeys.reduceSideSpacing = "true";
       paramKeys.topbarEnabled = "false";
       paramKeys.notificationSoundEnabled = "false";
       paramKeys.notificationAlertsEnabled = "false";
@@ -528,8 +527,6 @@ const App = () => {
       };
     }
   }, [isXStoSM]);
-
-  console.log("paramKeys", paramKeys.maintainLandscapeVideoAspectRatio);
 
   return (
     <>

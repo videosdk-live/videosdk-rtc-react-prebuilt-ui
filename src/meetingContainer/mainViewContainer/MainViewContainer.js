@@ -492,6 +492,7 @@ const MainViewContainer = ({
       presenterId,
       mainLayoutParticipantId,
       meetingLayout,
+      reduceEdgeSpacing,
     ]
   );
 

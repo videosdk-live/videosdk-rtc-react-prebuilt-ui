@@ -257,6 +257,7 @@ const PinnedLayoutViewContainer = ({
     whiteboardStarted,
     presenterId,
     meetingLayout,
+    reduceEdgeSpacing,
   ]);
 
   const gridVerticalSpacing = useResponsiveSize({
