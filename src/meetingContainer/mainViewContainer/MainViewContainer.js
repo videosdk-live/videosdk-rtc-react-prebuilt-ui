@@ -458,9 +458,11 @@ const MainViewContainer = ({
 
   const mainContainerHorizontalPadding = useMemo(
     () =>
-      presenterId ||
-      whiteboardStarted ||
-      (mainLayoutParticipantId && singleRow.length !== 0)
+      reduceEdgeSpacing
+        ? 0
+        : presenterId ||
+          whiteboardStarted ||
+          (mainLayoutParticipantId && singleRow.length !== 0)
         ? 0
         : typeof sideBarMode === "string"
         ? 0
@@ -490,6 +492,7 @@ const MainViewContainer = ({
       presenterId,
       mainLayoutParticipantId,
       meetingLayout,
+      reduceEdgeSpacing,
     ]
   );
 

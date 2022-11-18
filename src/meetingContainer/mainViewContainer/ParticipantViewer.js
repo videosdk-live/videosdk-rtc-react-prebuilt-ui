@@ -284,6 +284,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     animationsEnabled,
     isRecorder,
     maintainVideoAspectRatio,
+    maintainLandscapeVideoAspectRatio,
     appTheme,
   } = useMeetingAppContext();
 
@@ -462,7 +463,13 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        className={`${!portrait ? "video-cover" : ""}`}
+        className={`${
+          maintainLandscapeVideoAspectRatio && !portrait
+            ? "video-contain"
+            : portrait
+            ? ""
+            : "video-cover"
+        }`}
       >
         {webcamOn ? (
           <>

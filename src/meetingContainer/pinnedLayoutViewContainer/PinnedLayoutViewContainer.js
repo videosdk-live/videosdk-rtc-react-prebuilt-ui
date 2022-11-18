@@ -246,8 +246,10 @@ const PinnedLayoutViewContainer = ({
       : 0;
 
   const mainContainerHorizontalPadding = useMemo(() => {
-    return (whiteboardStarted || presenterId) &&
-      meetingLayout === meetingLayouts.SPOTLIGHT
+    return reduceEdgeSpacing
+      ? 0
+      : (whiteboardStarted || presenterId) &&
+        meetingLayout === meetingLayouts.SPOTLIGHT
       ? 0
       : _mainContainerHorizontalPadding;
   }, [
@@ -255,6 +257,7 @@ const PinnedLayoutViewContainer = ({
     whiteboardStarted,
     presenterId,
     meetingLayout,
+    reduceEdgeSpacing,
   ]);
 
   const gridVerticalSpacing = useResponsiveSize({

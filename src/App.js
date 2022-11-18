@@ -160,6 +160,7 @@ const App = () => {
       // recordingLayoutGridSize: "recordingLayoutGridSize",
 
       maintainVideoAspectRatio: "maintainVideoAspectRatio",
+      maintainLandscapeVideoAspectRatio: "maintainLandscapeVideoAspectRatio",
       networkBarEnabled: "networkBarEnabled",
     };
 
@@ -295,6 +296,10 @@ const App = () => {
       paramKeys.maintainVideoAspectRatio = "false";
     }
 
+    if (typeof paramKeys.maintainLandscapeVideoAspectRatio !== "string") {
+      paramKeys.maintainLandscapeVideoAspectRatio = "false";
+    }
+
     if (typeof paramKeys.networkBarEnabled !== "string") {
       paramKeys.networkBarEnabled = "true";
     }
@@ -337,6 +342,7 @@ const App = () => {
       paramKeys.alwaysShowOverlay = "true";
       paramKeys.sideStackSize = "5";
       paramKeys.reduceEdgeSpacing = "true";
+      paramKeys.maintainLandscapeVideoAspectRatio = "true";
       paramKeys.topbarEnabled = "false";
       paramKeys.notificationSoundEnabled = "false";
       paramKeys.notificationAlertsEnabled = "false";
@@ -685,6 +691,8 @@ const App = () => {
             //
             maintainVideoAspectRatio:
               paramKeys.maintainVideoAspectRatio === "true",
+            maintainLandscapeVideoAspectRatio:
+              paramKeys.maintainLandscapeVideoAspectRatio === "true",
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
           }}
         >
