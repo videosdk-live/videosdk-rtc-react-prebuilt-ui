@@ -144,6 +144,7 @@ export const MeetingAppProvider = ({
   networkBarEnabled,
   hlsPlayerControlsVisible,
   appTheme,
+  multiStream,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -311,6 +312,7 @@ export const MeetingAppProvider = ({
         maintainVideoAspectRatio,
         networkBarEnabled,
         appTheme,
+        multiStream,
 
         // states
         sideBarMode,

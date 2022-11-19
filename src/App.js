@@ -161,6 +161,7 @@ const App = () => {
 
       maintainVideoAspectRatio: "maintainVideoAspectRatio",
       networkBarEnabled: "networkBarEnabled",
+      multiStream: "multiStream",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -417,6 +418,10 @@ const App = () => {
       default:
         paramKeys.mode = meetingModes.CONFERENCE;
         break;
+    }
+
+    if (typeof paramKeys.multiStream !== "string") {
+      paramKeys.multiStream = "true";
     }
 
     return paramKeys;
@@ -686,6 +691,7 @@ const App = () => {
             maintainVideoAspectRatio:
               paramKeys.maintainVideoAspectRatio === "true",
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
+            multiStream: paramKeys.multiStream === "true",
           }}
         >
           <MeetingProvider
@@ -704,6 +710,7 @@ const App = () => {
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
               autoConsume: false,
+              multiStream: paramKeys.multiStream === "true",
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction

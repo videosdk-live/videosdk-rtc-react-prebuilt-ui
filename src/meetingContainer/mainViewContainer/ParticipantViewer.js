@@ -604,11 +604,15 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
-    // console.log(participantId, stream.kind, " Stream started ");
+    console.log(participantId, stream, " Stream started ");
   };
 
   const onStreamDisabled = (stream) => {
     // console.log(participantId, stream.kind, " Stream stopped ");
+  };
+
+  const onVideoQualityChanged = (data) => {
+    console.log("Quality Change:", data);
   };
 
   const {
@@ -626,6 +630,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   } = useParticipant(participantId, {
     onStreamDisabled,
     onStreamEnabled,
+    onVideoQualityChanged,
   });
 
   const mediaStream = useMemo(() => {

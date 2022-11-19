@@ -19,6 +19,7 @@ import {
 import OutlineIconButton from "../components/OutlineIconButton";
 import {
   Constants,
+  createCameraVideoTrack,
   createMicrophoneAudioTrack,
   useMeeting,
   usePubSub,
@@ -1376,7 +1377,16 @@ const WebcamBTN = () => {
   const [webcams, setWebcams] = useState([]);
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = mMeeting?.toggleWebcam;
+  const toggleWebcam = async () => {
+    const track = await createCameraVideoTrack({
+      cameraId: selectWebcamDeviceId,
+      optimizationMode: "motion",
+      encoderConfig: "h1080p_w1920p",
+      facingMode: "environment",
+      multiStream: false,
+    });
+    mMeeting?.toggleWebcam(track);
+  };
   const changeWebcam = mMeeting?.changeWebcam;
 
   const handleClick = (event) => {
@@ -1476,10 +1486,17 @@ const WebcamBTN = () => {
             <MenuItem
               key={`output_webcams_${deviceId}`}
               selected={deviceId === selectWebcamDeviceId}
-              onClick={() => {
+              onClick={async () => {
                 handleClose();
                 setSelectWebcamDeviceId(deviceId);
-                changeWebcam(deviceId);
+                const track = await createCameraVideoTrack({
+                  cameraId: deviceId,
+                  optimizationMode: "motion",
+                  encoderConfig: "h1080p_w1920p",
+                  facingMode: "environment",
+                  multiStream: false,
+                });
+                changeWebcam(track);
               }}
               classes={{
                 root:
