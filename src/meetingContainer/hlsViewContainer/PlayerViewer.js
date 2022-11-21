@@ -7,6 +7,8 @@ import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animati
 import { appEvents, eventEmitter } from "../../utils/common";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
+import useIsMobile from "../../utils/useIsMobile";
+import { useRef } from "react";
 
 export async function sleep(ms) {
   return new Promise((resolve) => {
@@ -17,6 +19,8 @@ export async function sleep(ms) {
 const PlayerViewer = () => {
   const theme = useTheme();
   const [canPlay, setCanPlay] = useState(false);
+  const isMobile = useIsMobile();
+  const playerRef = useRef();
 
   const {
     downstreamUrl,
@@ -116,7 +120,11 @@ const PlayerViewer = () => {
           console.log(err);
         });
       } else {
-        console.error("HLS is not supported");
+        if (typeof playerRef.current?.play === "function") {
+          playerRef.current.src = downstreamUrl;
+          playerRef.current.play();
+        }
+        // console.error("HLS is not supported");
       }
     }
   }, [downstreamUrl, canPlay]);
@@ -155,9 +163,14 @@ const PlayerViewer = () => {
           }}
         >
           <video
-            controls={hlsPlayerControlsVisible}
+            ref={playerRef}
             id="hlsPlayer"
+            controls={isMobile ? true : hlsPlayerControlsVisible}
             autoPlay={true}
+            muted={true}
+            playsinline
+            playsInline
+            playing
             style={{ width: "100%", height: "100%" }}
           />
         </Box>
