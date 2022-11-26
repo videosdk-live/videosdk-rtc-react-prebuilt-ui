@@ -9,7 +9,10 @@ import {
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import {
+  createMicrophoneAudioTrack,
+  useMeeting,
+} from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import { usePubSub, Constants } from "@videosdk.live/react-sdk";
@@ -368,8 +371,13 @@ const MeetingContainer = () => {
     if (joinScreenMic && selectedMic.id) {
       await new Promise((resolve) => {
         muteMic();
-        setTimeout(() => {
-          changeMic(selectedMic.id);
+        setTimeout(async () => {
+          const audioTrack = await createMicrophoneAudioTrack({
+            encoderConfig: "speech_standard",
+            microphoneId: selectedMic.id,
+          });
+          changeMic(audioTrack);
+          // changeMic(selectedMic.id);
           resolve();
         }, 500);
       });

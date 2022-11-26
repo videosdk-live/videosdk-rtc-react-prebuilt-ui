@@ -1562,7 +1562,16 @@ const MicBTN = () => {
   };
 
   const localMicOn = mMeeting?.localMicOn;
-  const toggleMic = mMeeting?.toggleMic;
+  const toggleMic = async () => {
+    if (localMicOn) {
+      mMeeting?.toggleMic();
+    } else {
+      const audioTrack = await createMicrophoneAudioTrack({
+        encoderConfig: "speech_standard",
+      });
+      mMeeting?.toggleMic(audioTrack);
+    }
+  };
   const changeMic = mMeeting?.changeMic;
 
   const getMics = async (mGetMics) => {

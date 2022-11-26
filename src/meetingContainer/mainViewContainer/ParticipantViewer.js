@@ -1,4 +1,10 @@
-import { Box, Typography, useTheme } from "@material-ui/core";
+import {
+  Box,
+  makeStyles,
+  Popover,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
@@ -23,6 +29,20 @@ import { Pin } from "../../icons";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import ReactPlayer from "react-player";
 import NetworkIcon from "../../icons/NetworkIcon";
+import { CloseOutlined } from "@material-ui/icons";
+
+const useStyles = makeStyles({
+  popoverHover: {
+    "&:hover": {
+      backgroundColor: "#CCD2D899",
+    },
+  },
+  popoverHoverDark: {
+    "&:hover": {
+      backgroundColor: "#2B303499",
+    },
+  },
+});
 
 export const CornerDisplayName = ({
   participantId,
@@ -42,6 +62,15 @@ export const CornerDisplayName = ({
   const isMobile = useIsMobile();
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
+
+  const [downArrow, setDownArrow] = useState(null);
+  const handleClick = (event) => {
+    setDownArrow(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setDownArrow(null);
+  };
 
   const {
     overlaidInfoVisible,
@@ -82,19 +111,37 @@ export const CornerDisplayName = ({
     [alwaysShowOverlay, isPinned, mouseOver]
   );
 
-  const { webcamStream, micStream, getVideoStats, getAudioStats } =
-    useParticipant(participantId);
+  const {
+    webcamStream,
+    micStream,
+    getVideoStats,
+    getAudioStats,
+    getShareStats,
+    screenShareStream,
+  } = useParticipant(participantId);
 
   const statsIntervalIdRef = useRef();
   const [score, setScore] = useState({});
+  const [audioStats, setAudioStats] = useState({});
+  const [videoStats, setVideoStats] = useState({});
 
   const updateStats = async () => {
     let stats = [];
-    if (webcamStream) {
+    let audioStats = [];
+    let videoStats = [];
+    if (isPresenting) {
+      stats = await getShareStats();
+    } else if (webcamStream) {
       stats = await getVideoStats();
     } else if (micStream) {
       stats = await getAudioStats();
     }
+
+    if (webcamStream || micStream || isPresenting) {
+      videoStats = isPresenting ? await getShareStats() : await getVideoStats();
+      audioStats = isPresenting ? [] : await getAudioStats();
+    }
+
     // setScore(stats?.score);
     let score = stats
       ? stats.length > 0
@@ -103,7 +150,107 @@ export const CornerDisplayName = ({
       : 100;
 
     setScore(score);
+    setAudioStats(audioStats);
+    setVideoStats(videoStats);
   };
+
+  const qualityStateArray = [
+    { label: "", audio: "Audio", video: "Video" },
+    {
+      label: "Latency",
+      audio:
+        audioStats && audioStats[0]?.rtt ? `${audioStats[0]?.rtt} ms` : "-",
+      video:
+        videoStats && videoStats[0]?.rtt ? `${videoStats[0]?.rtt} ms` : "-",
+    },
+    {
+      label: "Jitter",
+      audio:
+        audioStats && audioStats[0]?.jitter
+          ? `${parseFloat(audioStats[0]?.jitter).toFixed(2)} ms`
+          : "-",
+      video:
+        videoStats && videoStats[0]?.jitter
+          ? `${parseFloat(videoStats[0]?.jitter).toFixed(2)} ms`
+          : "-",
+    },
+    {
+      label: "Packet Loss",
+      audio: audioStats
+        ? audioStats[0]?.packetsLost
+          ? `${parseFloat(
+              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
+            ).toFixed(2)}%`
+          : "-"
+        : "-",
+      video: videoStats
+        ? videoStats[0]?.packetsLost
+          ? `${parseFloat(
+              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
+            ).toFixed(2)}%`
+          : "-"
+        : "-",
+    },
+    {
+      label: "Bitrate",
+      audio:
+        audioStats && audioStats[0]?.bitrate
+          ? `${parseFloat(audioStats[0]?.bitrate).toFixed(2)} kb/s`
+          : "-",
+      video:
+        videoStats && videoStats[0]?.bitrate
+          ? `${parseFloat(videoStats[0]?.bitrate).toFixed(2)} kb/s`
+          : "-",
+    },
+    {
+      label: "Frame rate",
+      audio: "-",
+      video:
+        videoStats &&
+        (videoStats[0]?.size?.framerate === null ||
+          videoStats[0]?.size?.framerate === undefined)
+          ? "-"
+          : `${videoStats ? videoStats[0]?.size?.framerate : "-"}`,
+    },
+    {
+      label: "Resolution",
+      audio: "-",
+      video: videoStats
+        ? videoStats && videoStats[0]?.size?.width === null
+          ? "-"
+          : `${videoStats[0]?.size?.width}x${videoStats[0]?.size?.height}`
+        : "-",
+    },
+    {
+      label: "Codec",
+      audio: audioStats && audioStats[0]?.codec ? audioStats[0]?.codec : "-",
+      video: videoStats && videoStats[0]?.codec ? videoStats[0]?.codec : "-",
+    },
+    {
+      label: "Cur. Layers",
+      audio: "-",
+      video:
+        videoStats && !isLocal
+          ? videoStats && videoStats[0]?.currentSpatialLayer === null
+            ? "-"
+            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${
+                videoStats[0]?.currentTemporalLayer || 0
+              }`
+          : "-",
+    },
+    {
+      label: "Pref. Layers",
+      audio: "-",
+      video:
+        videoStats && !isLocal
+          ? videoStats && videoStats[0]?.preferredSpatialLayer === null
+            ? "-"
+            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${
+                videoStats[0]?.preferredTemporalLayer || 0
+              }`
+          : "-",
+    },
+  ];
 
   useEffect(() => {
     if (networkBarEnabled) {
@@ -114,7 +261,7 @@ export const CornerDisplayName = ({
           clearInterval(statsIntervalIdRef.current);
         }
 
-        statsIntervalIdRef.current = setInterval(updateStats, 10000);
+        statsIntervalIdRef.current = setInterval(updateStats, 500);
       } else {
         if (statsIntervalIdRef.current) {
           clearInterval(statsIntervalIdRef.current);
@@ -157,22 +304,13 @@ export const CornerDisplayName = ({
           transitionTimingFunction: "linear",
         }}
       >
-        {(webcamStream || micStream) && networkBarEnabled && (
-          <NetworkIcon
-            color1={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FF5D5D"}
-            color2={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FF5D5D"}
-            color3={score > 7 ? "#3BA55D" : score > 4 ? "#F1CC4A" : "#FFDBDB"}
-            color4={score > 7 ? "#3BA55D" : score > 4 ? "#69571F" : "#FFDBDB"}
-            style={{ marginRight: analyzerSize / 4 }}
-          />
-        )}
         <Typography
           variant={isLGDesktop ? "subtitle1" : "subtitle2"}
           style={{
             justifyContent: "center",
             display: "flex",
             alignItems: "center",
-            lineHeight: 1,
+            // lineHeight: 1,
             color:
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText,
@@ -186,7 +324,44 @@ export const CornerDisplayName = ({
             ? "You"
             : nameTructed(displayName, 26)}
         </Typography>
+        {(!micOn || isActiveSpeaker) && !isPresenting && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            style={{
+              padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
+              backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 24,
+              marginLeft: 6,
+            }}
+          >
+            {isActiveSpeaker ? (
+              <Lottie
+                options={defaultOptions}
+                eventListeners={[{ eventName: "done" }]}
+                height={(analyzerSize * 2) / 3}
+                width={(analyzerSize * 2) / 2}
+                isClickToPauseDisabled
+              />
+            ) : (
+              !micOn && (
+                <MicOff
+                  style={{
+                    color: theme.palette.common.white,
+                    height: (analyzerSize * 2) / 3,
+                    width: (analyzerSize * 2) / 3,
+                  }}
+                />
+              )
+            )}
+          </div>
+        )}
       </div>
+
       {canPin && (
         <div
           className="pinClass"
@@ -223,46 +398,187 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {(!micOn || isActiveSpeaker) && !isPresenting && (
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-          style={{
-            position: "absolute",
-            top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
-            right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
-            transform: `scale(${show ? 1 : 0})`,
-            padding: isMobile ? 2 : isTab ? 3 : 4,
-            backgroundColor: isActiveSpeaker ? "#00000066" : "#D32F2Fcc",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 24,
-            transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
-            transitionTimingFunction: "linear",
-          }}
-        >
-          {isActiveSpeaker ? (
-            <Lottie
-              options={defaultOptions}
-              eventListeners={[{ eventName: "done" }]}
-              height={analyzerSize}
-              width={analyzerSize}
-              isClickToPauseDisabled
+      {(webcamStream || micStream || screenShareStream) && networkBarEnabled && (
+        <Box>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClick(e);
+            }}
+            style={{
+              position: "absolute",
+              top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
+              right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
+              transform: `scale(${show ? 1 : 0})`,
+              transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
+              transitionTimingFunction: "linear",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: isMobile ? 3 : isTab ? 4 : 5,
+              backgroundColor:
+                score > 7 ? "#3BA55D" : score > 4 ? "#faa713" : "#FF5D5D",
+              borderRadius: 4,
+              cursor: "pointer",
+            }}
+          >
+            <NetworkIcon
+              color1={"#ffffff"}
+              color2={"#ffffff"}
+              color3={"#ffffff"}
+              color4={"#ffffff"}
+              style={{
+                height: analyzerSize * 0.6,
+                width: analyzerSize * 0.6,
+              }}
             />
-          ) : (
-            !micOn && (
-              <MicOff
-                style={{
-                  color: theme.palette.common.white,
-                  height: (analyzerSize * 2) / 3,
-                  width: (analyzerSize * 2) / 3,
-                }}
-              />
-            )
-          )}
-        </div>
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
+              right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
+            }}
+          >
+            <Popover
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              anchorEl={downArrow}
+              open={Boolean(downArrow)}
+              onClose={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
+            >
+              <Box>
+                <Box
+                  style={{
+                    padding: 9,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor:
+                      score > 7 ? "#3BA55D" : score > 4 ? "#faa713" : "#FF5D5D",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    style={{ fontWeight: 600 }}
+                  >{`Quality Score : ${
+                    score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
+                  }`}</Typography>
+
+                  <IconButton
+                    size="small"
+                    style={{ cursor: "pointer" }}
+                    onClick={handleClose}
+                  >
+                    <CloseOutlined style={{ height: 16, width: 16 }} />
+                  </IconButton>
+                </Box>
+                <Box style={{ display: "flex" }}>
+                  <Box style={{ display: "flex", flexDirection: "column" }}>
+                    {qualityStateArray.map((item, index) => {
+                      return (
+                        <Box
+                          style={{
+                            display: "flex",
+                            borderBottom:
+                              index === qualityStateArray.length - 1
+                                ? ""
+                                : `1px solid ${
+                                    appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.outlineColor
+                                      : "#ffffff33"
+                                  }`,
+                          }}
+                        >
+                          <Box
+                            style={{
+                              display: "flex",
+                              flex: 1,
+                              width: 120,
+                              alignItems: "center",
+                            }}
+                          >
+                            {index !== 0 && (
+                              <Typography
+                                style={{
+                                  fontSize: 12,
+                                  marginTop: 6,
+                                  marginBottom: 6,
+                                  marginLeft: 8,
+                                }}
+                              >
+                                {item.label}
+                              </Typography>
+                            )}
+                          </Box>
+                          <Box
+                            style={{
+                              display: "flex",
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderLeft: `1px solid ${
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                              }`,
+                            }}
+                          >
+                            <Typography
+                              style={{
+                                fontSize: 12,
+                                marginTop: 6,
+                                marginBottom: 6,
+                                width: 65,
+                                textAlign: "center",
+                              }}
+                            >
+                              {item.audio}
+                            </Typography>
+                          </Box>
+                          <Box
+                            style={{
+                              display: "flex",
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderLeft: `1px solid ${
+                                appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                              }`,
+                            }}
+                          >
+                            <Typography
+                              style={{
+                                fontSize: 12,
+                                marginTop: 6,
+                                marginBottom: 6,
+                                width: 65,
+                                textAlign: "center",
+                              }}
+                            >
+                              {item.video}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                </Box>
+              </Box>
+            </Popover>
+          </div>
+        </Box>
       )}
     </>
   );
@@ -328,11 +644,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const theme = useTheme();
 
-  // useEffect(() => {
-  //   if (!quality || isRecorder) return;
+  useEffect(() => {
+    if (!quality || isRecorder) return;
 
-  // setQuality(quality);
-  // }, [quality, setQuality, isRecorder]);
+    setQuality("high");
+  }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -377,10 +693,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       !isLocal &&
       webcamStream
     ) {
-      setViewPort(
-        videoDivWrapperRef?.offsetWidth,
-        videoDivWrapperRef?.offsetHeight
-      );
+      // setViewPort(
+      //   videoDivWrapperRef?.offsetWidth,
+      //   videoDivWrapperRef?.offsetHeight
+      // );
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
