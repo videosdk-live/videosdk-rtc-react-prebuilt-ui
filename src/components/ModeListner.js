@@ -70,7 +70,7 @@ const ModeListner = () => {
           reject: () => {},
         });
       } else {
-        setMeetingMode(data.message.mode);
+        mMeeting.changeMode(data.message.mode);
         publishRef.current(data.message.mode, { persist: true });
 
         const muteMic = mMeetingRef.current?.muteMic;
@@ -135,6 +135,14 @@ const ModeListner = () => {
     }, 2000);
   }, []);
 
+  useMeeting({
+    onParticipantModeChanged: ({ mode, participantId }) => {
+      if (participantId === localParticipantId) {
+        setMeetingMode(mode);
+      }
+    },
+  });
+
   return (
     <>
       <ConfirmBox
@@ -149,7 +157,7 @@ const ModeListner = () => {
           );
         }}
         onSuccess={() => {
-          setMeetingMode(reqModeInfo.mode);
+          mMeeting.changeMode(reqModeInfo.mode);
           publishRef.current(reqModeInfo.mode, { persist: true });
           setReqModeInfo(reqInfoDefaultState);
           invitatioAcceptedPublish({}, { persist: true });
