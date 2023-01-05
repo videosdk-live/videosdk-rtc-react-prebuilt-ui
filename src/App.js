@@ -256,7 +256,10 @@ const App = () => {
       paramKeys.canToggleParticipantTab = "true";
     }
 
-    if (paramKeys.autoStartLiveStream === "true") {
+    if (
+      paramKeys.autoStartLiveStream === "true" ||
+      paramKeys.autoStartHls === "false"
+    ) {
       try {
         paramKeys.liveStreamOutputs = JSON.parse(paramKeys.liveStreamOutputs);
         if (

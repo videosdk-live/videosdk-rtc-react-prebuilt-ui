@@ -171,7 +171,9 @@ export const MeetingAppProvider = ({
     gridSize: isRecorder ? RECORDER_MAX_GRID_SIZE : layoutGridSize,
     priority: layoutPriority,
   });
-  const [liveStreamConfig, setLiveStreamConfig] = useState([]);
+  const [liveStreamConfig, setLiveStreamConfig] = useState(
+    liveStreamOutputs || []
+  );
   const [meetingMode, setMeetingMode] = useState(mode);
   const [downstreamUrl, setDownstreamUrl] = useState(null);
   const [afterMeetingJoinedHLSState, setAfterMeetingJoinedHLSState] =
