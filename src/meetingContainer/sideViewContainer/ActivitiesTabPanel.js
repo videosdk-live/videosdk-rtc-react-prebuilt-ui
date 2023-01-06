@@ -48,6 +48,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     whiteboardEnabled,
     canToggleWhiteboard,
     participantCanToggleLivestream,
+    pollEnabled,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -101,7 +102,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
         {
           Icon: PollIcon,
           primary: "Polls",
-          displayed: true,
+          displayed: pollEnabled,
           secondary: "Find out participant’s opinion.",
           disabled: false,
           onClick: () => {

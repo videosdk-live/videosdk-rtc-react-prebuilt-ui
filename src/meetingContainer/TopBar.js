@@ -2073,13 +2073,13 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      if (pollEnabled || whiteboardEnabled) {
-        arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
-        mobileIconArr.unshift({
-          buttonType: topBarButtonTypes.ACTIVITIES,
-          // priority: 10,
-        });
-      }
+      // if (pollEnabled || whiteboardEnabled) {
+      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+      mobileIconArr.unshift({
+        buttonType: topBarButtonTypes.ACTIVITIES,
+        // priority: 10,
+      });
+      // }
 
       arr.unshift(arrSideBar);
 
