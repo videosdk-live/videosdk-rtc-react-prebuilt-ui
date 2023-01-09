@@ -179,15 +179,15 @@ export const CornerDisplayName = ({
       audio: audioStats
         ? audioStats[0]?.packetsLost
           ? `${parseFloat(
-              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
-            ).toFixed(2)}%`
+            (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
+          ).toFixed(2)}%`
           : "-"
         : "-",
       video: videoStats
         ? videoStats[0]?.packetsLost
           ? `${parseFloat(
-              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
-            ).toFixed(2)}%`
+            (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
+          ).toFixed(2)}%`
           : "-"
         : "-",
     },
@@ -207,8 +207,8 @@ export const CornerDisplayName = ({
       audio: "-",
       video:
         videoStats &&
-        (videoStats[0]?.size?.framerate === null ||
-          videoStats[0]?.size?.framerate === undefined)
+          (videoStats[0]?.size?.framerate === null ||
+            videoStats[0]?.size?.framerate === undefined)
           ? "-"
           : `${videoStats ? videoStats[0]?.size?.framerate : "-"}`,
     },
@@ -233,9 +233,8 @@ export const CornerDisplayName = ({
         videoStats && !isLocal
           ? videoStats && videoStats[0]?.currentSpatialLayer === null
             ? "-"
-            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${
-                videoStats[0]?.currentTemporalLayer || 0
-              }`
+            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${videoStats[0]?.currentTemporalLayer || 0
+            }`
           : "-",
     },
     {
@@ -245,9 +244,8 @@ export const CornerDisplayName = ({
         videoStats && !isLocal
           ? videoStats && videoStats[0]?.preferredSpatialLayer === null
             ? "-"
-            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${
-                videoStats[0]?.preferredTemporalLayer || 0
-              }`
+            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${videoStats[0]?.preferredTemporalLayer || 0
+            }`
           : "-",
     },
   ];
@@ -321,8 +319,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
         {(!micOn || isActiveSpeaker) && !isPresenting && (
           <div
@@ -470,9 +468,8 @@ export const CornerDisplayName = ({
                   <Typography
                     variant="body2"
                     style={{ fontWeight: 600 }}
-                  >{`Quality Score : ${
-                    score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
-                  }`}</Typography>
+                  >{`Quality Score : ${score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
+                    }`}</Typography>
 
                   <IconButton
                     size="small"
@@ -492,11 +489,10 @@ export const CornerDisplayName = ({
                             borderBottom:
                               index === qualityStateArray.length - 1
                                 ? ""
-                                : `1px solid ${
-                                    appTheme === appThemes.LIGHT
-                                      ? theme.palette.lightTheme.outlineColor
-                                      : "#ffffff33"
-                                  }`,
+                                : `1px solid ${appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                                }`,
                           }}
                         >
                           <Box
@@ -526,11 +522,10 @@ export const CornerDisplayName = ({
                               flex: 1,
                               alignItems: "center",
                               justifyContent: "center",
-                              borderLeft: `1px solid ${
-                                appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.outlineColor
-                                  : "#ffffff33"
-                              }`,
+                              borderLeft: `1px solid ${appTheme === appThemes.LIGHT
+                                ? theme.palette.lightTheme.outlineColor
+                                : "#ffffff33"
+                                }`,
                             }}
                           >
                             <Typography
@@ -551,11 +546,10 @@ export const CornerDisplayName = ({
                               flex: 1,
                               alignItems: "center",
                               justifyContent: "center",
-                              borderLeft: `1px solid ${
-                                appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.outlineColor
-                                  : "#ffffff33"
-                              }`,
+                              borderLeft: `1px solid ${appTheme === appThemes.LIGHT
+                                ? theme.palette.lightTheme.outlineColor
+                                : "#ffffff33"
+                                }`,
                             }}
                           >
                             <Typography
@@ -602,6 +596,8 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     maintainVideoAspectRatio,
     maintainLandscapeVideoAspectRatio,
     appTheme,
+    s_layer,
+    t_layer
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
@@ -645,10 +641,10 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    if (!quality || isRecorder) return;
+    // setQuality("low");
+    // if (!quality || isRecorder) return;
 
-    setQuality("high");
-  }, [quality, setQuality, isRecorder]);
+  }, []);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -657,6 +653,31 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     sm: 52,
     xs: 52,
   });
+
+  const {
+    height: webcamHeight,
+    width: webcamWidth,
+    frameRate: webcamFrameRate
+  } = useMemo(() => {
+
+    if (webcamStream) {
+
+      try {
+        let settings = webcamStream.track.getSettings()
+
+        console.log(settings, "settingsss")
+
+        return settings
+
+      } catch (err) {
+        console.log(err, "settingsss error")
+
+        return {}
+      }
+
+    } else { return {} }
+
+  })
 
   const flipStyle = useMemo(
     () =>
@@ -681,7 +702,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   useEffect(() => {
     if (isRecorder) {
-      setQuality("high");
+      // setQuality("high");
     }
   }, [isRecorder]);
 
@@ -700,17 +721,23 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
-  useEffect(() => {
-    eventEmitter.emit(appEvents["participant-visible"], {
-      participantId,
-    });
+  // useEffect(() => {
+  //   eventEmitter.emit(appEvents["participant-visible"], {
+  //     participantId,
+  //   });
 
-    return () => {
-      eventEmitter.emit(appEvents["participant-invisible"], {
-        participantId,
-      });
-    };
-  }, []);
+  //   setTimeout(() => {
+  //     eventEmitter.emit(appEvents["participant-invisible"], {
+  //       participantId,
+  //     });
+  //   }, 5000);
+
+  //   return () => {
+  //     eventEmitter.emit(appEvents["participant-invisible"], {
+  //       participantId,
+  //     });
+  //   };
+  // }, []);
 
   const checkAndUpdatePortrait = () => {
     if (webcamStream && maintainVideoAspectRatio) {
@@ -724,6 +751,14 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       setPortrait(false);
     }
   };
+
+  useEffect(() => {
+    if (webcamStream && mMeeting) {
+      const streamId = webcamStream.id
+
+      mMeeting.meeting.setConsumerPreferredLayers(streamId, s_layer, t_layer)
+    }
+  }, [webcamStream, mMeeting, s_layer, t_layer])
 
   return (
     <VisibilitySensor
@@ -773,19 +808,18 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.two
-              : theme.palette.background.paper,
+                ? theme.palette.lightTheme.two
+                : theme.palette.background.paper,
           position: "relative",
           overflow: "hidden",
           borderRadius: theme.spacing(1),
         }}
-        className={`${
-          maintainLandscapeVideoAspectRatio && !portrait
-            ? "video-contain"
-            : portrait
+        className={`${maintainLandscapeVideoAspectRatio && !portrait
+          ? "video-contain"
+          : portrait
             ? ""
             : "video-cover"
-        }`}
+          }`}
       >
         {webcamOn ? (
           <>
@@ -809,7 +843,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               onError={(err) => {
                 console.log(err, "participant video error");
               }}
-              onProgress={() => {
+              onProgress={(state) => {
+                console.log("onProgress", { participantId, state })
+
                 checkAndUpdatePortrait();
               }}
             />
@@ -892,6 +928,33 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             mouseOver,
           }}
         />
+
+        {/* <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+          <p style={{ fontSize: 16, backgroundColor: "white", color: "black" }}>
+            {JSON.stringify({
+              webcamHeight,
+              webcamWidth,
+              webcamFrameRate
+            })}
+          </p>
+          {[0, 1, 2].map(temporalLayer => {
+            return [0, 1, 2].map((spatialLayer) => {
+              return <button onClick={() => {
+                if (webcamStream) {
+                  const streamId = webcamStream.id
+
+                  mMeeting.meeting.setConsumerPreferredLayers(
+                    streamId,
+                    spatialLayer,
+                    temporalLayer
+                  )
+                }
+              }}>
+                {JSON.stringify({ t: temporalLayer, s: spatialLayer, })}
+              </button>
+            })
+          })}
+        </div> */}
       </div>
     </VisibilitySensor>
   );

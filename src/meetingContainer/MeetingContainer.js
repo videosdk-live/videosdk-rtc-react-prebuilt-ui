@@ -10,6 +10,7 @@ import {
 } from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
 import {
+  createCameraVideoTrack,
   createMicrophoneAudioTrack,
   useMeeting,
 } from "@videosdk.live/react-sdk";
@@ -186,6 +187,8 @@ const MeetingContainer = () => {
     recordingTheme,
     hlsTheme,
     liveStreamTheme,
+    set_s_layer,
+    set_t_layer
   } = useMeetingAppContext();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
@@ -239,8 +242,8 @@ const MeetingContainer = () => {
               ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
               : data.message.layout.gridSize
             : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
-            ? RECORDER_MAX_GRID_SIZE
-            : data.message.layout.gridSize
+              ? RECORDER_MAX_GRID_SIZE
+              : data.message.layout.gridSize
           : data.message.layout.gridSize,
       });
     },
@@ -265,8 +268,8 @@ const MeetingContainer = () => {
                 ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
                 : latestMessage.message.layout.gridSize
               : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
-              ? RECORDER_MAX_GRID_SIZE
-              : latestMessage.message.layout.gridSize
+                ? RECORDER_MAX_GRID_SIZE
+                : latestMessage.message.layout.gridSize
             : latestMessage.message.layout.gridSize,
         });
       }
@@ -315,8 +318,8 @@ const MeetingContainer = () => {
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
         : liveStreamOutputs?.length
-        ? liveStreamOutputs
-        : null;
+          ? liveStreamOutputs
+          : null;
 
       const type = typeRef.current;
       const priority = priorityRef.current;
@@ -455,10 +458,9 @@ const MeetingContainer = () => {
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${
-              isLocal
-                ? "You end the call"
-                : " This meeting has been ended by host"
+            `${isLocal
+              ? "You end the call"
+              : " This meeting has been ended by host"
             }`
           );
         }
@@ -548,21 +550,20 @@ const MeetingContainer = () => {
         meetingModeRef.current === meetingModes.CONFERENCE
       ) {
         enqueueSnackbar(
-          `${
-            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          `${isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
           } started presenting`
         );
       }
     }
   };
 
-  const _handleOnRecordingStarted = () => {};
+  const _handleOnRecordingStarted = () => { };
 
-  const _handleOnRecordingStopped = () => {};
+  const _handleOnRecordingStopped = () => { };
 
-  const _handleOnLiveStreamStarted = () => {};
+  const _handleOnLiveStreamStarted = () => { };
 
-  const _handleOnLiveStreamStopped = () => {};
+  const _handleOnLiveStreamStopped = () => { };
 
   const _handleOnRecordingStateChanged = ({ status }) => {
     if (
@@ -634,11 +635,11 @@ const MeetingContainer = () => {
     //set downstream url on basis of started or stopped
   };
 
-  const _handleOnHlsStarted = (data) => {};
+  const _handleOnHlsStarted = (data) => { };
 
-  const _handleOnHlsStopped = () => {};
+  const _handleOnHlsStopped = () => { };
 
-  const _handleOnEntryRequested = () => {};
+  const _handleOnEntryRequested = () => { };
 
   const _handleOnEntryResponded = (participantId, decision) => {
     if (mMeetingRef.current?.localParticipant?.id === participantId) {
@@ -703,8 +704,8 @@ const MeetingContainer = () => {
       message: debug
         ? message
         : isJoiningError
-        ? "Unable to join meeting!"
-        : message,
+          ? "Unable to join meeting!"
+          : message,
     });
   };
 
@@ -748,7 +749,7 @@ const MeetingContainer = () => {
           document.documentElement.msRequestFullscreen();
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -772,7 +773,111 @@ const MeetingContainer = () => {
   const whiteboardToolbarWidth = canDrawOnWhiteboard ? 48 : 0;
   const whiteboardSpacing = canDrawOnWhiteboard ? 16 : 0;
 
+  const { disableWebcam, toggleWebcam } = useMeeting()
+
+  const disableWebcamRef = useRef()
+  const toggleWebcamRef = useRef()
+
+  useEffect(() => {
+    disableWebcamRef.current = disableWebcam
+  }, [disableWebcam])
+  useEffect(() => {
+    toggleWebcamRef.current = toggleWebcam
+  }, [toggleWebcam])
+
+  const _handleSpeakerTester = async (webcamResolution) => {
+    disableWebcamRef.current()
+
+    await new Promise(r => setTimeout(r, 2 * 1000));
+
+    const track = await createCameraVideoTrack({ encoderConfig: webcamResolution });
+
+    toggleWebcamRef.current(track);
+  }
+
+  const { publish: rstPublish } = usePubSub(`R_S_T_CALCULATION`, {
+    onMessageReceived: (data) => {
+      const { webcamResolution, s_layer, t_layer } = data.message
+
+      const location = window.location;
+
+      const urlParams = new URLSearchParams(location.search);
+
+      const testerMode = urlParams.get("testerMode")
+
+      set_s_layer(s_layer)
+      set_t_layer(t_layer)
+
+      if (testerMode === 'SPEAKER') {
+        _handleSpeakerTester(webcamResolution)
+      }
+    }
+  });
+
+  const rstPublishRef = useRef();
+
+  useEffect(() => {
+    rstPublishRef.current = rstPublish;
+  }, [rstPublish]);
+
   const theme = useTheme();
+
+  const _startCalculation = async () => {
+    const location = window.location;
+
+    const urlParams = new URLSearchParams(location.search);
+
+    const webcamResolutionRange = urlParams.get("webcamResolutionRange")
+
+    const resolutions =
+      webcamResolutionRange === "one"
+        ? ["h90p_w160p", "h180p_w320p", "h216p_w384p"]
+        : webcamResolutionRange === "two"
+          ? ["h360p_w640p", "h540p_w960p", "h720p_w1280p"]
+          : webcamResolutionRange === "three"
+            ? ["h1080p_w1920p", "h1440p_w2560p", "h2160p_w3840p"]
+            : webcamResolutionRange === "four"
+              ? ["h120p_w160p", "h180p_w240p", "h240p_w320p"]
+              : webcamResolutionRange === "five"
+                ? ["h360p_w480p", "h480p_w640p", "h540p_w720p"]
+                : webcamResolutionRange === "six"
+                  ? ["h720p_w960p", "h1080p_w1440p", "h1440p_w1920p"]
+                  : [];
+
+    const s_layers = [0, 1, 2]
+    const t_layers = [0, 1, 2]
+
+    for (let r_index = 0; r_index < resolutions.length; r_index++) {
+      const webcamResolution = resolutions[r_index];
+
+      for (let s_index = 0; s_index < s_layers.length; s_index++) {
+        const s_layer = s_layers[s_index];
+
+        for (let t_index = 0; t_index < t_layers.length; t_index++) {
+          const t_layer = t_layers[t_index];
+
+          rstPublishRef.current(
+            {
+              webcamResolution,
+              s_layer,
+              t_layer
+            },
+            { persist: true }
+          );
+
+          await new Promise(r => setTimeout(r, 10 * 60 * 1000));
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      _startCalculation()
+    }, 1000);
+  }, [])
+
+
 
   return (
     <div
@@ -785,8 +890,8 @@ const MeetingContainer = () => {
           appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.darkTheme.main
+              : theme.palette.background.default,
       }}
     >
       <ConfirmBox
@@ -824,8 +929,8 @@ const MeetingContainer = () => {
                 {meetingMode === meetingModes.CONFERENCE ? (
                   <>
                     {mMeeting?.pinnedParticipants.size > 0 &&
-                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                      meetingLayout === meetingLayouts.SIDEBAR) ? (
+                      (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                        meetingLayout === meetingLayouts.SIDEBAR) ? (
                       <PinnedLayoutViewContainer
                         {...{
                           height: containerHeight - topBarHeight,
@@ -834,8 +939,8 @@ const MeetingContainer = () => {
                             (isTab || isMobile
                               ? 0
                               : typeof sideBarMode === "string"
-                              ? sideBarContainerWidth
-                              : 0),
+                                ? sideBarContainerWidth
+                                : 0),
                           whiteboardToolbarWidth,
                           whiteboardSpacing,
                         }}
@@ -849,8 +954,8 @@ const MeetingContainer = () => {
                             (isTab || isMobile
                               ? 0
                               : typeof sideBarMode === "string"
-                              ? sideBarContainerWidth
-                              : 0),
+                                ? sideBarContainerWidth
+                                : 0),
                           whiteboardToolbarWidth,
                           whiteboardSpacing,
                         }}
@@ -869,8 +974,8 @@ const MeetingContainer = () => {
                           (isTab || isMobile
                             ? 0
                             : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
+                              ? sideBarContainerWidth
+                              : 0),
                       }}
                     />
                   </>
@@ -905,8 +1010,8 @@ const MeetingContainer = () => {
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.two
-                  : theme.palette.background.default,
+                    ? theme.palette.lightTheme.two
+                    : theme.palette.background.default,
             }}
           >
             <RecordingLoader {...{ meetingLayout, appTheme }} />

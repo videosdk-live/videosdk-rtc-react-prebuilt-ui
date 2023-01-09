@@ -439,10 +439,10 @@ const App = () => {
     return isLGDesktop
       ? maxParticipantGridCount_large_desktop
       : isSMDesktop
-      ? maxParticipantGridCount_desktop
-      : isTab
-      ? maxParticipantGridCount_tab
-      : maxParticipantGridCount_mobile;
+        ? maxParticipantGridCount_desktop
+        : isTab
+          ? maxParticipantGridCount_tab
+          : maxParticipantGridCount_mobile;
   }, [isLGDesktop, isSMDesktop, isTab]);
 
   const paramKeys = useMemo(() => getParams({ maxGridSize }), [maxGridSize]);
@@ -455,21 +455,21 @@ const App = () => {
   const [joinScreenWebCam, setJoinScreenWebCam] = useState(
     paramKeys.joinScreenEnabled === "true"
       ? paramKeys.participantCanToggleSelfWebcam === "true" &&
-          paramKeys.webcamEnabled === "true"
+      paramKeys.webcamEnabled === "true"
       : paramKeys.webcamEnabled === "true"
   );
 
   const [joinScreenMic, setJoinScreenMic] = useState(
     paramKeys.joinScreenEnabled === "true"
       ? paramKeys.participantCanToggleSelfMic === "true" &&
-          paramKeys.micEnabled === "true"
+      paramKeys.micEnabled === "true"
       : paramKeys.micEnabled === "true"
   );
   const [selectedMic, setSelectedMic] = useState({ id: null });
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token, debug, region }) => {
-    const BASE_URL = "https://api.videosdk.live";
+    const BASE_URL = "https://dev-api.videosdk.live";
 
     const urlMeetingId = `${BASE_URL}/v1/prebuilt/meetings/${meetingId}`;
 
@@ -546,8 +546,8 @@ const App = () => {
               paramKeys.theme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default
             }
             color={
               paramKeys.theme === appThemes.LIGHT
@@ -575,8 +575,8 @@ const App = () => {
               paramKeys.theme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
           }}
         >
           <CircularProgress size={"4rem"} />
@@ -705,13 +705,13 @@ const App = () => {
               micEnabled: joinScreenMic,
               webcamEnabled: joinScreenWebCam,
               name: name,
-              maxResolution:
-                paramKeys.isRecorder === "true"
-                  ? "hd"
-                  : paramKeys.maxResolution === "sd" ||
-                    paramKeys.maxResolution === "hd"
-                  ? paramKeys.maxResolution
-                  : "sd",
+              maxResolution: "hd",
+              // paramKeys.isRecorder === "true"
+              //   ? "hd"
+              //   : paramKeys.maxResolution === "sd" ||
+              //     paramKeys.maxResolution === "hd"
+              //   ? paramKeys.maxResolution
+              //   : "sd",
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
               autoConsume: false,

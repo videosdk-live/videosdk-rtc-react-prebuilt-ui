@@ -68,7 +68,7 @@ const PlayerViewer = () => {
           method: "GET",
         });
         status = res.status;
-      } catch (err) {}
+      } catch (err) { }
 
       if (status === 200) {
         return resolve(true);
@@ -77,7 +77,7 @@ const PlayerViewer = () => {
       await sleep(1000);
 
       return resolve(
-        await waitForHLSPlayable(downstreamUrl, maxRetry - 1).catch((err) => {})
+        await waitForHLSPlayable(downstreamUrl, maxRetry - 1).catch((err) => { })
       );
     });
   }
@@ -115,7 +115,7 @@ const PlayerViewer = () => {
 
         hls.loadSource(downstreamUrl);
         hls.attachMedia(player);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {});
+        hls.on(Hls.Events.MANIFEST_PARSED, function () { });
         hls.on(Hls.Events.ERROR, function (err) {
           console.log(err);
         });
@@ -138,8 +138,8 @@ const PlayerViewer = () => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.two
-            : theme.palette.background.default,
+              ? theme.palette.lightTheme.two
+              : theme.palette.background.default,
         position: "relative",
         overflow: "hidden",
         borderRadius: theme.spacing(1),
