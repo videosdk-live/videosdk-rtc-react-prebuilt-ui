@@ -33,7 +33,9 @@ const ModeListner = () => {
   const mMeeting = useMeeting();
   const localParticipantId = mMeeting?.localParticipant?.id;
   const participant = useParticipant(localParticipantId);
-  const { publish } = usePubSub(`CURRENT_MODE_${mMeeting.localParticipant.id}`);
+  const { publish } = usePubSub(
+    `CURRENT_MODE_${mMeeting?.localParticipant?.id}`
+  );
 
   const participantRef = useRef();
   const publishRef = useRef();

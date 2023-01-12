@@ -44,7 +44,7 @@ const MediaRequested = () => {
     mMeetingRef.current = mMeeting;
   }, [mMeeting]);
 
-  usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant.id}`, {
+  usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: (data) => {
       if (data.message.setScreenShareOn) {
         setReqScreenShareInfo({

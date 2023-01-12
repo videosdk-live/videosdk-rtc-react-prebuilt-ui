@@ -1753,6 +1753,7 @@ const EndCallBTN = () => {
         color={theme.palette.common.white}
         Icon={EndCall}
         onClick={(e) => {
+          window.onbeforeunload = null;
           !participantCanLeave && meetingMode === meetingModes.CONFERENCE
             ? setIsEndMeeting(true)
             : participantCanEndMeeting &&
@@ -1799,6 +1800,7 @@ const EndCallBTN = () => {
               <MenuItem
                 key={`leave`}
                 onClick={() => {
+                  window.onbeforeunload = null;
                   leave();
                 }}
                 classes={{
@@ -1959,6 +1961,7 @@ const EndCallBTN = () => {
                 JSON.stringify({ buttonType: "END_CALL", data: {} })
               );
               setTimeout(() => {
+                window.onbeforeunload = null;
                 end();
               }, 1000);
             }}
