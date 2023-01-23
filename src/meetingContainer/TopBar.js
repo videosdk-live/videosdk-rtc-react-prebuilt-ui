@@ -19,6 +19,7 @@ import {
 import OutlineIconButton from "../components/OutlineIconButton";
 import {
   Constants,
+  createCameraVideoTrack,
   createMicrophoneAudioTrack,
   useMeeting,
   usePubSub,
@@ -481,12 +482,12 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         RDDIsMobile || RDDIsTablet
           ? true
           : whiteboardStarted
-          ? true
-          : presenterId
-          ? localScreenShareOn
-            ? false
-            : true
-          : false
+            ? true
+            : presenterId
+              ? localScreenShareOn
+                ? false
+                : true
+              : false
       }
     />
   ) : (
@@ -511,12 +512,12 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         RDDIsMobile || RDDIsTablet
           ? true
           : whiteboardStarted
-          ? true
-          : presenterId
-          ? localScreenShareOn
-            ? false
-            : true
-          : false
+            ? true
+            : presenterId
+              ? localScreenShareOn
+                ? false
+                : true
+              : false
       }
     />
   );
@@ -656,12 +657,12 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             recordingState === Constants.recordingEvents.RECORDING_STARTED
               ? "Stop Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-              ? "Start Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? "Stopping Recording"
-              : "Start Recording"
+                ? "Starting Recording"
+                : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+                  ? "Start Recording"
+                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                    ? "Stopping Recording"
+                    : "Start Recording"
           }
           isFocused={isRecording}
           disabled={!participantCanToggleRecording}
@@ -670,19 +671,19 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
               recordingState ===
-                Constants.recordingEvents.RECORDING_STOPPING) &&
+              Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
           }
           buttonText={
             recordingState === Constants.recordingEvents.RECORDING_STARTED
               ? "Stop Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-              ? "Start Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? "Stopping Recording"
-              : "Start Recording"
+                ? "Starting Recording"
+                : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+                  ? "Start Recording"
+                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                    ? "Stopping Recording"
+                    : "Start Recording"
           }
           isRequestProcessing={isRequestProcessing}
         />
@@ -698,12 +699,12 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             recordingState === Constants.recordingEvents.RECORDING_STARTED
               ? "Stop Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? "Starting Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-              ? "Start Recording"
-              : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? "Stopping Recording"
-              : "Start Recording"
+                ? "Starting Recording"
+                : recordingState === Constants.recordingEvents.RECORDING_STOPPED
+                  ? "Start Recording"
+                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                    ? "Stopping Recording"
+                    : "Start Recording"
           }
           isFocused={
             isRecording &&
@@ -713,13 +714,13 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
               recordingState ===
-                Constants.recordingEvents.RECORDING_STOPPING) &&
+              Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
           }
           disabled={!participantCanToggleRecording}
           lottieOption={
             isRecording &&
-            recordingState === Constants.recordingEvents.RECORDING_STARTED
+              recordingState === Constants.recordingEvents.RECORDING_STARTED
               ? defaultOptions
               : null
           }
@@ -727,8 +728,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             recordingState === Constants.recordingEvents.RECORDING_STARTING
               ? "Starting"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? "Stopping"
-              : ""
+                ? "Stopping"
+                : ""
           }
           isRequestProcessing={isRequestProcessing}
         />
@@ -860,14 +861,14 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               ? "Stop Live"
               : livestreamState ===
                 Constants.livestreamEvents.LIVESTREAM_STARTING
-              ? "Starting Livestream"
-              : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STOPPED
-              ? "Go Live"
-              : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STOPPING
-              ? "Stopping Livestream"
-              : "Go Live"
+                ? "Starting Livestream"
+                : livestreamState ===
+                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                  ? "Go Live"
+                  : livestreamState ===
+                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                    ? "Stopping Livestream"
+                    : "Go Live"
           }
           Icon={LiveIcon}
           buttonText={
@@ -875,14 +876,14 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               ? "Stop Live"
               : livestreamState ===
                 Constants.livestreamEvents.LIVESTREAM_STARTING
-              ? "Starting Livestream"
-              : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STOPPED
-              ? "Go Live"
-              : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STOPPING
-              ? "Stopping Livestream"
-              : "Go Live"
+                ? "Starting Livestream"
+                : livestreamState ===
+                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                  ? "Go Live"
+                  : livestreamState ===
+                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                    ? "Stopping Livestream"
+                    : "Go Live"
           }
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
@@ -898,14 +899,14 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
               ? "Stop Live"
               : livestreamState ===
                 Constants.livestreamEvents.LIVESTREAM_STARTING
-              ? "Starting Livestream"
-              : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STOPPED
-              ? "Go Live"
-              : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STOPPING
-              ? "Stopping Livestream"
-              : "Go Live"
+                ? "Starting Livestream"
+                : livestreamState ===
+                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                  ? "Go Live"
+                  : livestreamState ===
+                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                    ? "Stopping Livestream"
+                    : "Go Live"
           }
           buttonText="Go Live"
           textColor="#fff"
@@ -1038,24 +1039,24 @@ const HlsBTN = ({ isMobile, isTab }) => {
         hlsState === Constants.hlsEvents.HLS_STARTED
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? "Starting HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? "Start HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? "Stopping HLS"
-          : "Start HLS"
+            ? "Starting HLS"
+            : hlsState === Constants.hlsEvents.HLS_STOPPED
+              ? "Start HLS"
+              : hlsState === Constants.hlsEvents.HLS_STOPPING
+                ? "Stopping HLS"
+                : "Start HLS"
       }
       Icon={LiveIcon}
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? "Starting HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? "Start HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? "Stopping HLS"
-          : "Start HLS"
+            ? "Starting HLS"
+            : hlsState === Constants.hlsEvents.HLS_STOPPED
+              ? "Start HLS"
+              : hlsState === Constants.hlsEvents.HLS_STOPPING
+                ? "Stopping HLS"
+                : "Start HLS"
       }
       bgColor={
         appTheme === appThemes.LIGHT &&
@@ -1075,23 +1076,23 @@ const HlsBTN = ({ isMobile, isTab }) => {
         hlsState === Constants.hlsEvents.HLS_STARTED
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? "Starting HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? "Start HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? "Stopping HLS"
-          : "Start HLS"
+            ? "Starting HLS"
+            : hlsState === Constants.hlsEvents.HLS_STOPPED
+              ? "Start HLS"
+              : hlsState === Constants.hlsEvents.HLS_STOPPING
+                ? "Stopping HLS"
+                : "Start HLS"
       }
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? "Starting HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? "Start HLS"
-          : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? "Stopping HLS"
-          : "Start HLS"
+            ? "Starting HLS"
+            : hlsState === Constants.hlsEvents.HLS_STOPPED
+              ? "Start HLS"
+              : hlsState === Constants.hlsEvents.HLS_STOPPING
+                ? "Stopping HLS"
+                : "Start HLS"
       }
       lottieOption={isHls ? defaultOptions : null}
       disabled={!participantCanToggleHls}
@@ -1142,14 +1143,14 @@ const SingleMicMenu = ({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.two
-              : "",
+                ? theme.palette.lightTheme.two
+                : "",
           color:
             appTheme === appThemes.DARK
               ? theme.palette.common.white
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.contrastText
-              : "",
+                ? theme.palette.lightTheme.contrastText
+                : "",
         }}
       >
         {micArr.map(({ deviceId, label }, index) => (
@@ -1164,8 +1165,8 @@ const SingleMicMenu = ({
                   ? appTheme === appThemes.DARK
                     ? "#3F4046"
                     : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.three
-                    : "#6D6E71"
+                      ? theme.palette.lightTheme.three
+                      : "#6D6E71"
                   : "",
             }}
             classes={{
@@ -1173,8 +1174,8 @@ const SingleMicMenu = ({
                 appTheme === appThemes.LIGHT
                   ? classes.popoverHover
                   : appTheme === appThemes.DARK
-                  ? classes.popoverHoverDark
-                  : classes.popoverHoverDefault,
+                    ? classes.popoverHoverDark
+                    : classes.popoverHoverDefault,
             }}
           >
             {deviceId === selectMicDeviceId && <SelectedIcon />}
@@ -1189,8 +1190,8 @@ const SingleMicMenu = ({
                     ? appTheme === appThemes.DARK
                       ? "#3F4046"
                       : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.three
-                      : "#6D6E71"
+                        ? theme.palette.lightTheme.three
+                        : "#6D6E71"
                     : "",
               }}
               key={`mics_${deviceId}`}
@@ -1205,8 +1206,8 @@ const SingleMicMenu = ({
                   appTheme === appThemes.LIGHT
                     ? classes.menuItemHover
                     : appTheme === appThemes.DARK
-                    ? classes.menuItemDark
-                    : classes.menuItemDefault,
+                      ? classes.menuItemDark
+                      : classes.menuItemDefault,
                 gutters:
                   deviceId === selectMicDeviceId
                     ? classes.menuItemGuttersAfterSelect
@@ -1259,8 +1260,8 @@ const MicMenu = ({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.two
-              : "",
+                ? theme.palette.lightTheme.two
+                : "",
         }}
       >
         <SingleMicMenu
@@ -1314,14 +1315,14 @@ const MicMenu = ({
                     appTheme === appThemes.DARK
                       ? theme.palette.darkTheme.slightLighter
                       : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.two
-                      : "",
+                        ? theme.palette.lightTheme.two
+                        : "",
                   color:
                     appTheme === appThemes.DARK
                       ? theme.palette.common.white
                       : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.contrastText
-                      : "",
+                        ? theme.palette.lightTheme.contrastText
+                        : "",
                 }}
               >
                 <Box
@@ -1334,8 +1335,8 @@ const MicMenu = ({
                       ? appTheme === appThemes.DARK
                         ? "#3F4046"
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.three
-                        : "#6D6E71"
+                          ? theme.palette.lightTheme.three
+                          : "#6D6E71"
                       : "",
                   }}
                   classes={{
@@ -1343,8 +1344,8 @@ const MicMenu = ({
                       appTheme === appThemes.LIGHT
                         ? classes.popoverHover
                         : appTheme === appThemes.DARK
-                        ? classes.popoverHoverDark
-                        : classes.popoverHoverDefault,
+                          ? classes.popoverHoverDark
+                          : classes.popoverHoverDefault,
                   }}
                 >
                   {isNoiseRemovalChecked ? (
@@ -1368,8 +1369,8 @@ const MicMenu = ({
                         ? appTheme === appThemes.DARK
                           ? "#3F4046"
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.three
-                          : "#6D6E71"
+                            ? theme.palette.lightTheme.three
+                            : "#6D6E71"
                         : "",
                     }}
                     key={`noise_removal`}
@@ -1383,8 +1384,8 @@ const MicMenu = ({
                         appTheme === appThemes.LIGHT
                           ? classes.menuItemHover
                           : appTheme === appThemes.DARK
-                          ? classes.menuItemDark
-                          : classes.menuItemDefault,
+                            ? classes.menuItemDark
+                            : classes.menuItemDefault,
                       gutters: isNoiseRemovalChecked
                         ? classes.singleMenuItemGuttersAfterSelect
                         : classes.singleMenuItemGutters,
@@ -1432,6 +1433,9 @@ const WebcamBTN = () => {
 
   const tollTipEl = useRef();
 
+  const [configIndex, setConfigIndex] = useState(0)
+
+
   return (
     <Box
       style={{
@@ -1446,8 +1450,49 @@ const WebcamBTN = () => {
         tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
-        onClick={() => {
-          toggleWebcam();
+        // onClick={() => {
+        //   toggleWebcam();
+        // }}
+
+        onClick={async () => {
+          if (localWebcamOn) {
+            toggleWebcam();
+          } else {
+            const availableEncodingConfigs = [
+              "h90p_w160p",
+              "h180p_w320p",
+              "h216p_w384p",
+              "h360p_w640p",
+              "h540p_w960p",
+              "h720p_w1280p",
+              "h1080p_w1920p",
+              "h1440p_w2560p",
+              "h2160p_w3840p",
+              "h120p_w160p",
+              "h180p_w240p",
+              "h240p_w320p",
+              "h360p_w480p",
+              "h480p_w640p",
+              "h540p_w720p",
+              "h720p_w960p",
+              "h1080p_w1440p",
+              "h1440p_w1920p",
+            ]
+
+            const track = await createCameraVideoTrack({
+              encoderConfig:
+                availableEncodingConfigs[configIndex]
+                  ? availableEncodingConfigs[configIndex]
+                  : availableEncodingConfigs[availableEncodingConfigs.length - 1],
+              // cameraId: "dc4991f7de6c2689f869872ae6ca91d86c15fdd10ae0d87e4084905e9313c4aa"
+            });
+
+            toggleWebcam(track);
+
+            setTimeout(() => {
+              setConfigIndex(s => s + 1)
+            }, 3000);
+          }
         }}
         focusBGColor={
           appTheme === appThemes.LIGHT
@@ -1471,7 +1516,7 @@ const WebcamBTN = () => {
                     color: localWebcamOn
                       ? "white"
                       : appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
+                      theme.palette.lightTheme.contrastText,
                   }}
                 />
               </IconButton>
@@ -1499,14 +1544,14 @@ const WebcamBTN = () => {
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.two
-                : "",
+                  ? theme.palette.lightTheme.two
+                  : "",
             color:
               appTheme === appThemes.DARK
                 ? theme.palette.common.white
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.contrastText
-                : "",
+                  ? theme.palette.lightTheme.contrastText
+                  : "",
           }}
         >
           {webcams.map(({ deviceId, label }, index) => (
@@ -1523,8 +1568,8 @@ const WebcamBTN = () => {
                   appTheme === appThemes.LIGHT
                     ? classes.popoverHover
                     : appTheme === appThemes.DARK
-                    ? classes.popoverHoverDark
-                    : "",
+                      ? classes.popoverHoverDark
+                      : "",
               }}
             >
               {label || `Webcam ${index + 1}`}
@@ -1641,8 +1686,8 @@ const MicBTN = () => {
           isNoiseRemovalChecked
             ? "Noise Removal Activated"
             : localMicOn
-            ? "Turn off mic"
-            : "Turn on mic"
+              ? "Turn off mic"
+              : "Turn on mic"
         }
         isFocused={localMicOn}
         Icon={localMicOn ? MicOn : MicOffIcon}
@@ -1671,7 +1716,7 @@ const MicBTN = () => {
                     color: localMicOn
                       ? "white"
                       : appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
+                      theme.palette.lightTheme.contrastText,
                   }}
                 />
               </IconButton>
@@ -1746,8 +1791,8 @@ const EndCallBTN = () => {
             ? "End Call"
             : participantCanEndMeeting &&
               meetingMode === meetingModes.CONFERENCE
-            ? "Open popup"
-            : "Leave Call"
+              ? "Open popup"
+              : "Leave Call"
         }
         bgColor={theme.palette.error.main}
         color={theme.palette.common.white}
@@ -1758,8 +1803,8 @@ const EndCallBTN = () => {
             ? setIsEndMeeting(true)
             : participantCanEndMeeting &&
               meetingMode === meetingModes.CONFERENCE
-            ? handleClick(e)
-            : leave();
+              ? handleClick(e)
+              : leave();
         }}
       />
       {participantCanEndMeeting && (
@@ -1787,14 +1832,14 @@ const EndCallBTN = () => {
                   appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.slightLighter
                     : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.two
-                    : "",
+                      ? theme.palette.lightTheme.two
+                      : "",
                 color:
                   appTheme === appThemes.DARK
                     ? theme.palette.common.white
                     : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.contrastText
-                    : "",
+                      ? theme.palette.lightTheme.contrastText
+                      : "",
               }}
             >
               <MenuItem
@@ -1808,8 +1853,8 @@ const EndCallBTN = () => {
                     appTheme === appThemes.LIGHT
                       ? classes.popoverHover
                       : appTheme === appThemes.DARK
-                      ? classes.popoverHoverDark
-                      : "",
+                        ? classes.popoverHoverDark
+                        : "",
                 }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
@@ -1819,8 +1864,8 @@ const EndCallBTN = () => {
                         appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.seven
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.three
-                          : theme.palette.common.sidePanel,
+                            ? theme.palette.lightTheme.three
+                            : theme.palette.common.sidePanel,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1865,8 +1910,8 @@ const EndCallBTN = () => {
                           appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.four
                             : appTheme === appThemes.LIGHT
-                            ? theme.palette.lightTheme.five
-                            : "",
+                              ? theme.palette.lightTheme.five
+                              : "",
                       }}
                     >
                       Only you will leave the call.
@@ -1885,8 +1930,8 @@ const EndCallBTN = () => {
                     appTheme === appThemes.LIGHT
                       ? classes.popoverHover
                       : appTheme === appThemes.DARK
-                      ? classes.popoverHoverDark
-                      : "",
+                        ? classes.popoverHoverDark
+                        : "",
                 }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
@@ -1896,8 +1941,8 @@ const EndCallBTN = () => {
                         appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.seven
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.three
-                          : theme.palette.common.sidePanel,
+                            ? theme.palette.lightTheme.three
+                            : theme.palette.common.sidePanel,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1939,8 +1984,8 @@ const EndCallBTN = () => {
                           appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.four
                             : appTheme === appThemes.LIGHT
-                            ? theme.palette.lightTheme.five
-                            : "",
+                              ? theme.palette.lightTheme.five
+                              : "",
                       }}
                       color={"textSecondary"}
                     >
@@ -1981,6 +2026,8 @@ const TopBar = ({ topBarHeight }) => {
   const [open, setOpen] = useState(false);
 
   const [defaultBrandLogoUrl, setDefaultBrandLogoUrl] = useState(null);
+
+  const { disableWebcam, toggleWebcam } = useMeeting()
 
   const {
     chatEnabled,
@@ -2239,8 +2286,8 @@ const TopBar = ({ topBarHeight }) => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
       }}
     >
       {firstFourElements.map((icon, i) => {
@@ -2304,8 +2351,8 @@ const TopBar = ({ topBarHeight }) => {
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
           }}
         >
           {excludeFirstFourElements.map((icon, i) => {
@@ -2422,13 +2469,12 @@ const TopBar = ({ topBarHeight }) => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
-        borderBottom: `1px solid ${
-          appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.outlineColor
-            : "#ffffff33"
-        }`,
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
+        borderBottom: `1px solid ${appTheme === appThemes.LIGHT
+          ? theme.palette.lightTheme.outlineColor
+          : "#ffffff33"
+          }`,
         position: "relative",
         top: topBarVisible ? 0 : -topBarHeight,
         transition: `all ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -2518,7 +2564,42 @@ const TopBar = ({ topBarHeight }) => {
         )}
       </Box>
 
-      <Box className={classes.row} p={2}>
+
+      <div style={{ flex: 1, display: "flex", flexWrap: "wrap" }}>
+        {
+
+          [
+            "h90p_w160p",
+            "h180p_w320p",
+            "h216p_w384p",
+            "h360p_w640p",
+            "h540p_w960p",
+            "h720p_w1280p",
+            "h1080p_w1920p",
+            "h1440p_w2560p",
+            "h2160p_w3840p",
+            "h120p_w160p",
+            "h180p_w240p",
+            "h240p_w320p",
+            "h360p_w480p",
+            "h480p_w640p",
+            "h540p_w720p",
+            "h720p_w960p",
+            "h1080p_w1440p",
+            "h1440p_w1920p",
+          ].map((q) => {
+            return <button onClick={async () => {
+              const track = await createCameraVideoTrack({
+                encoderConfig: q
+              });
+
+              toggleWebcam(track);
+
+            }}>{q}</button>
+          })}
+        <button onClick={disableWebcam}>DISABLE WEBCAM</button>
+      </div>
+      {/* <Box className={classes.row} p={2}>
         {topBarIcons.map((row, i) => {
           return (
             <React.Fragment key={`topbar_controls_i_${i}`}>
@@ -2579,7 +2660,7 @@ const TopBar = ({ topBarHeight }) => {
             </React.Fragment>
           );
         })}
-      </Box>
+      </Box> */}
     </Box>
   );
 };

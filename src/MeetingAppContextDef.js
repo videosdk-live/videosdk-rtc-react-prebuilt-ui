@@ -190,6 +190,9 @@ export const MeetingAppProvider = ({
     //   isActive: false,
     // },
   ]);
+  const [s_layer, set_s_layer] = useState()
+  const [t_layer, set_t_layer] = useState()
+
 
   const [createdPolls, setCreatedPolls] = useState([]);
   const [endedPolls, setEndedPolls] = useState([]);
@@ -224,13 +227,13 @@ export const MeetingAppProvider = ({
       ? appMeetingLayout.type === meetingLayouts.SPOTLIGHT
         ? meetingLayouts.SPOTLIGHT
         : appMeetingLayout.type === meetingLayouts.SIDEBAR
-        ? meetingLayouts.SIDEBAR
-        : meetingLayouts.GRID
+          ? meetingLayouts.SIDEBAR
+          : meetingLayouts.GRID
       : appMeetingLayout.type === meetingLayouts.SPOTLIGHT
-      ? meetingLayouts.UNPINNED_SPOTLIGHT
-      : appMeetingLayout.type === meetingLayouts.SIDEBAR
-      ? meetingLayouts.UNPINNED_SIDEBAR
-      : meetingLayouts.GRID;
+        ? meetingLayouts.UNPINNED_SPOTLIGHT
+        : appMeetingLayout.type === meetingLayouts.SIDEBAR
+          ? meetingLayouts.UNPINNED_SIDEBAR
+          : meetingLayouts.GRID;
   }, [appMeetingLayout, meetingLayouts]);
 
   const videoProcessor = new VirtualBackgroundProcessor();
@@ -369,6 +372,10 @@ export const MeetingAppProvider = ({
         setSelectWebcamDeviceId,
 
         videoProcessor,
+
+
+        s_layer, set_s_layer,
+        t_layer, set_t_layer
       }}
     >
       <SnackbarProvider
@@ -379,8 +386,8 @@ export const MeetingAppProvider = ({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.main
-              : "",
+                ? theme.palette.lightTheme.main
+                : "",
           color:
             appTheme === appThemes.LIGHT &&
             theme.palette.lightTheme.contrastText,
