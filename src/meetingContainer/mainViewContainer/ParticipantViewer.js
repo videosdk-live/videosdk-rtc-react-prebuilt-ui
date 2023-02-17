@@ -398,188 +398,193 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {(webcamStream || micStream || screenShareStream) && networkBarEnabled && (
-        <Box>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClick(e);
-            }}
-            style={{
-              position: "absolute",
-              top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
-              right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
-              transform: `scale(${show ? 1 : 0})`,
-              transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
-              transitionTimingFunction: "linear",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: isMobile ? 3 : isTab ? 4 : 5,
-              backgroundColor:
-                score > 7 ? "#3BA55D" : score > 4 ? "#faa713" : "#FF5D5D",
-              borderRadius: 4,
-              cursor: "pointer",
-            }}
-          >
-            <NetworkIcon
-              color1={"#ffffff"}
-              color2={"#ffffff"}
-              color3={"#ffffff"}
-              color4={"#ffffff"}
-              style={{
-                height: analyzerSize * 0.6,
-                width: analyzerSize * 0.6,
-              }}
-            />
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
-              right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
-            }}
-          >
-            <Popover
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              anchorEl={downArrow}
-              open={Boolean(downArrow)}
-              onClose={(e) => {
+      {(webcamStream || micStream || screenShareStream) &&
+        networkBarEnabled && (
+          <Box>
+            <div
+              onClick={(e) => {
                 e.stopPropagation();
-                handleClose();
+                handleClick(e);
+              }}
+              style={{
+                position: "absolute",
+                top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
+                right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
+                transform: `scale(${show ? 1 : 0})`,
+                transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
+                transitionTimingFunction: "linear",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: isMobile ? 3 : isTab ? 4 : 5,
+                backgroundColor:
+                  score > 7 ? "#3BA55D" : score > 4 ? "#faa713" : "#FF5D5D",
+                borderRadius: 4,
+                cursor: "pointer",
               }}
             >
-              <Box>
-                <Box
-                  style={{
-                    padding: 9,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    backgroundColor:
-                      score > 7 ? "#3BA55D" : score > 4 ? "#faa713" : "#FF5D5D",
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    style={{ fontWeight: 600 }}
-                  >{`Quality Score : ${
-                    score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
-                  }`}</Typography>
-
-                  <IconButton
-                    size="small"
-                    style={{ cursor: "pointer" }}
-                    onClick={handleClose}
+              <NetworkIcon
+                color1={"#ffffff"}
+                color2={"#ffffff"}
+                color3={"#ffffff"}
+                color4={"#ffffff"}
+                style={{
+                  height: analyzerSize * 0.6,
+                  width: analyzerSize * 0.6,
+                }}
+              />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: show ? (isMobile ? 4 : isTab ? 8 : 12) : -32,
+                right: show ? (isMobile ? 4 : isTab ? 8 : 12) : -42,
+              }}
+            >
+              <Popover
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                anchorEl={downArrow}
+                open={Boolean(downArrow)}
+                onClose={(e) => {
+                  e.stopPropagation();
+                  handleClose();
+                }}
+              >
+                <Box>
+                  <Box
+                    style={{
+                      padding: 9,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      backgroundColor:
+                        score > 7
+                          ? "#3BA55D"
+                          : score > 4
+                          ? "#faa713"
+                          : "#FF5D5D",
+                    }}
                   >
-                    <CloseOutlined style={{ height: 16, width: 16 }} />
-                  </IconButton>
-                </Box>
-                <Box style={{ display: "flex" }}>
-                  <Box style={{ display: "flex", flexDirection: "column" }}>
-                    {qualityStateArray.map((item, index) => {
-                      return (
-                        <Box
-                          style={{
-                            display: "flex",
-                            borderBottom:
-                              index === qualityStateArray.length - 1
-                                ? ""
-                                : `1px solid ${
-                                    appTheme === appThemes.LIGHT
-                                      ? theme.palette.lightTheme.outlineColor
-                                      : "#ffffff33"
-                                  }`,
-                          }}
-                        >
+                    <Typography
+                      variant="body2"
+                      style={{ fontWeight: 600 }}
+                    >{`Quality Score : ${
+                      score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
+                    }`}</Typography>
+
+                    <IconButton
+                      size="small"
+                      style={{ cursor: "pointer" }}
+                      onClick={handleClose}
+                    >
+                      <CloseOutlined style={{ height: 16, width: 16 }} />
+                    </IconButton>
+                  </Box>
+                  <Box style={{ display: "flex" }}>
+                    <Box style={{ display: "flex", flexDirection: "column" }}>
+                      {qualityStateArray.map((item, index) => {
+                        return (
                           <Box
                             style={{
                               display: "flex",
-                              flex: 1,
-                              width: 120,
-                              alignItems: "center",
+                              borderBottom:
+                                index === qualityStateArray.length - 1
+                                  ? ""
+                                  : `1px solid ${
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.outlineColor
+                                        : "#ffffff33"
+                                    }`,
                             }}
                           >
-                            {index !== 0 && (
+                            <Box
+                              style={{
+                                display: "flex",
+                                flex: 1,
+                                width: 120,
+                                alignItems: "center",
+                              }}
+                            >
+                              {index !== 0 && (
+                                <Typography
+                                  style={{
+                                    fontSize: 12,
+                                    marginTop: 6,
+                                    marginBottom: 6,
+                                    marginLeft: 8,
+                                  }}
+                                >
+                                  {item.label}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Box
+                              style={{
+                                display: "flex",
+                                flex: 1,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderLeft: `1px solid ${
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.outlineColor
+                                    : "#ffffff33"
+                                }`,
+                              }}
+                            >
                               <Typography
                                 style={{
                                   fontSize: 12,
                                   marginTop: 6,
                                   marginBottom: 6,
-                                  marginLeft: 8,
+                                  width: 65,
+                                  textAlign: "center",
                                 }}
                               >
-                                {item.label}
+                                {item.audio}
                               </Typography>
-                            )}
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              flex: 1,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              borderLeft: `1px solid ${
-                                appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.outlineColor
-                                  : "#ffffff33"
-                              }`,
-                            }}
-                          >
-                            <Typography
+                            </Box>
+                            <Box
                               style={{
-                                fontSize: 12,
-                                marginTop: 6,
-                                marginBottom: 6,
-                                width: 65,
-                                textAlign: "center",
+                                display: "flex",
+                                flex: 1,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderLeft: `1px solid ${
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.outlineColor
+                                    : "#ffffff33"
+                                }`,
                               }}
                             >
-                              {item.audio}
-                            </Typography>
+                              <Typography
+                                style={{
+                                  fontSize: 12,
+                                  marginTop: 6,
+                                  marginBottom: 6,
+                                  width: 65,
+                                  textAlign: "center",
+                                }}
+                              >
+                                {item.video}
+                              </Typography>
+                            </Box>
                           </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              flex: 1,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              borderLeft: `1px solid ${
-                                appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.outlineColor
-                                  : "#ffffff33"
-                              }`,
-                            }}
-                          >
-                            <Typography
-                              style={{
-                                fontSize: 12,
-                                marginTop: 6,
-                                marginBottom: 6,
-                                width: 65,
-                                textAlign: "center",
-                              }}
-                            >
-                              {item.video}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      );
-                    })}
+                        );
+                      })}
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Popover>
-          </div>
-        </Box>
-      )}
+              </Popover>
+            </div>
+          </Box>
+        )}
     </>
   );
 };
@@ -602,6 +607,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     maintainVideoAspectRatio,
     maintainLandscapeVideoAspectRatio,
     appTheme,
+    isMirrorViewChecked,
   } = useMeetingAppContext();
 
   const onStreamEnabled = (stream) => {
@@ -647,7 +653,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   useEffect(() => {
     if (!quality || isRecorder) return;
 
-    setQuality("high");
+    setQuality(quality);
   }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
@@ -805,7 +811,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               //
               height={"100%"}
               width={"100%"}
-              style={flipStyle}
+              style={!isMirrorViewChecked && flipStyle}
               onError={(err) => {
                 console.log(err, "participant video error");
               }}

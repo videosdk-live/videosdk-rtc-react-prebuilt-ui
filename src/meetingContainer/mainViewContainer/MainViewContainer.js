@@ -7,6 +7,7 @@ import {
   getGridForMainParticipants,
   calcQuality,
   localAndPinnedOnTop,
+  meetingResolutions,
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
@@ -216,6 +217,7 @@ const MainViewContainer = ({
     reduceEdgeSpacing,
     mode,
     appTheme,
+    meetingResolution,
   } = useMeetingAppContext();
 
   const lastActiveParticipantId = useMemo(
@@ -608,7 +610,11 @@ const MainViewContainer = ({
                   {...{
                     participantId: mainLayoutParticipantId,
                     gutter,
-                    quality: "high",
+                    quality: meetingResolution
+                      ? meetingResolution === meetingResolutions.SD
+                        ? "s1t2"
+                        : meetingResolution === meetingResolutions.HD && "s2t2"
+                      : "s2t2",
                     relativeHeight: 100,
                     relativeWidth: 100,
                     relativeTop: 0,
@@ -683,7 +689,13 @@ const MainViewContainer = ({
             >
               {singleRow.map((c) => (
                 <MemoizedMotionParticipant
-                  quality={calcQuality(mainViewParticipants?.length || 1)}
+                  quality={
+                    meetingResolution
+                      ? meetingResolution === meetingResolutions.SD
+                        ? "s1t2"
+                        : meetingResolution === meetingResolutions.HD && "s2t2"
+                      : calcQuality(mainViewParticipants?.length || 1)
+                  }
                   key={`main_participant_${c.participantId}`}
                   {...c}
                   gutter={gutter}

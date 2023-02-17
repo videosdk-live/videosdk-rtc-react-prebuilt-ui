@@ -25,6 +25,10 @@ import PinParticipantLightIcon from "../../icons/PinParticipantLightIcon";
 import GridLightIcon from "../../icons/GridLightIcon";
 import SideBarLightIcon from "../../icons/SideBarLightIcon";
 import SpotlightLightIcon from "../../icons/SpotlightLightIcon";
+import SDLightIcon from "../../icons/SDLightIcon";
+import SDDarkIcon from "../../icons/SDDarkIcon";
+import HDLightIcon from "../../icons/HDLightIcon";
+import HDDarkIcon from "../../icons/HDDarkIcon";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -50,7 +54,12 @@ function ConfigTabPanel() {
   const theme = useTheme();
   const classes = useStyles();
 
-  const { appMeetingLayout, appTheme } = useMeetingAppContext();
+  const {
+    appMeetingLayout,
+    appTheme,
+    setMeetingResolution,
+    meetingResolution,
+  } = useMeetingAppContext();
 
   const { type, priority, gridSize } = useMemo(
     () => ({
@@ -108,6 +117,17 @@ function ConfigTabPanel() {
 
   const marks = Array.from({ length: 25 }, (_, i) => i + 1);
 
+  const resolutionArr = [
+    {
+      type: "SD",
+      Icon: appTheme === appThemes.LIGHT ? SDLightIcon : SDDarkIcon,
+    },
+    {
+      type: "HD",
+      Icon: appTheme === appThemes.LIGHT ? HDLightIcon : HDDarkIcon,
+    },
+  ];
+
   const layoutArr = [
     {
       type: "Spotlight",
@@ -148,6 +168,12 @@ function ConfigTabPanel() {
   }
 
   //handlers
+
+  const _handleChangeResolution = (event) => {
+    const resolution = event.currentTarget.value.toUpperCase();
+    setMeetingResolution(resolution);
+  };
+
   const _handleChangeLayout = (event) => {
     const type = event.currentTarget.value.toUpperCase() || typeRef.current;
     publishToPubSub({ type });
@@ -277,7 +303,12 @@ function ConfigTabPanel() {
     );
   };
 
-  let Div = ({ heading, onLayoutChange, onPriorityChange }) => {
+  let Div = ({
+    heading,
+    onLayoutChange,
+    onPriorityChange,
+    onResolutionChange,
+  }) => {
     return (
       <Box
         style={{
@@ -306,7 +337,28 @@ function ConfigTabPanel() {
             marginBottom: 24,
           }}
         >
-          {heading === "Layout" ? (
+          {heading === "Video Resolution" ? (
+            <>
+              {resolutionArr.map((resolutionObj) => {
+                return resolutionObj.type.toUpperCase() ===
+                  meetingResolution ? (
+                  <Card
+                    onClick={onResolutionChange}
+                    isActive={true}
+                    title={resolutionObj.type}
+                    Icon={resolutionObj.Icon}
+                  />
+                ) : (
+                  <Card
+                    onClick={onResolutionChange}
+                    isActive={false}
+                    title={resolutionObj.type}
+                    Icon={resolutionObj.Icon}
+                  />
+                );
+              })}
+            </>
+          ) : heading === "Layout" ? (
             <>
               {layoutArr.map((layoutObj) => {
                 return layoutObj.type.toUpperCase() === type ? (
@@ -375,6 +427,10 @@ function ConfigTabPanel() {
         flexDirection: "column",
       }}
     >
+      <Div
+        onResolutionChange={_handleChangeResolution}
+        heading={"Video Resolution"}
+      />
       <Div onLayoutChange={_handleChangeLayout} heading="Layout" />
       <Div onPriorityChange={_handleChangePriority} heading="Priority" />
       {type === "GRID" ? (
