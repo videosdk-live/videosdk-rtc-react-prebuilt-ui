@@ -47,6 +47,7 @@ import { useTheme } from "@material-ui/core/styles";
 import PollsListner from "../components/PollListner";
 import RecordingLoader from "../components/RecordingLoader";
 import useCustomTrack from "../utils/useCustomTrack";
+import ResolutionListner from "../components/ResolutionListner";
 
 const getPinMsg = ({
   localParticipant,
@@ -593,7 +594,7 @@ const MeetingContainer = () => {
     }
   };
 
-  function onMeetingStateChanged(data) {
+  const _handleOnMeetingStateChanged = (data) => {
     const { state } = data;
 
     enqueueSnackbar(
@@ -611,7 +612,7 @@ const MeetingContainer = () => {
         ? "Meeting connection closed"
         : ""
     );
-  }
+  };
 
   const _handleOnHlsStateChanged = (data) => {
     //
@@ -740,7 +741,7 @@ const MeetingContainer = () => {
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
     onError: _handleOnError,
-    onMeetingStateChanged,
+    onMeetingStateChanged: _handleOnMeetingStateChanged,
     onRecordingStateChanged: _handleOnRecordingStateChanged,
     onLivestreamStateChanged: _handleOnLivestreamStateChanged,
     onHlsStateChanged: _handleOnHlsStateChanged,
@@ -823,6 +824,7 @@ const MeetingContainer = () => {
             <ModeListner />
             <PollsListner />
             <PauseInvisibleParticipants />
+            <ResolutionListner />
 
             <div
               style={{

@@ -73,6 +73,7 @@ function ConfigTabPanel() {
   const typeRef = useRef(type);
   const priorityRef = useRef(priority);
   const gridSizeRef = useRef(gridSize);
+  const resolutionRef = useRef(meetingResolution);
 
   useEffect(() => {
     typeRef.current = type;
@@ -86,6 +87,10 @@ function ConfigTabPanel() {
     gridSizeRef.current = gridSize;
   }, [gridSize]);
 
+  useEffect(() => {
+    resolutionRef.current = meetingResolution;
+  }, [meetingResolution]);
+
   const { publish: livestreamPublish } = usePubSub(
     meetingLayoutTopics.LIVE_STREAM_LAYOUT
   );
@@ -96,11 +101,13 @@ function ConfigTabPanel() {
   const { publish: meetingPublish } = usePubSub(
     meetingLayoutTopics.MEETING_LAYOUT
   );
+  const { publish: resolutionPublish } = usePubSub("CHANGE_RESOLUTION");
 
   const livestreamPublishRef = useRef(livestreamPublish);
   const recordingPublishRef = useRef(recordingPublish);
   const hlsPublishRef = useRef(hlsPublish);
   const meetingPublishRef = useRef(meetingPublish);
+  const resolutionPublishRef = useRef(resolutionPublish);
 
   useEffect(() => {
     livestreamPublishRef.current = livestreamPublish;
@@ -114,6 +121,9 @@ function ConfigTabPanel() {
   useEffect(() => {
     meetingPublishRef.current = meetingPublish;
   }, [meetingPublish]);
+  useEffect(() => {
+    resolutionPublishRef.current = resolutionPublish;
+  }, [resolutionPublish]);
 
   const marks = Array.from({ length: 25 }, (_, i) => i + 1);
 
@@ -171,7 +181,7 @@ function ConfigTabPanel() {
 
   const _handleChangeResolution = (event) => {
     const resolution = event.currentTarget.value.toUpperCase();
-    setMeetingResolution(resolution);
+    publishToPubSub({ resolution });
   };
 
   const _handleChangeLayout = (event) => {
@@ -194,10 +204,12 @@ function ConfigTabPanel() {
     type: _type,
     gridSize: _gridSize,
     priority: _priority,
+    resolution: _resolution,
   }) {
     const type = _type || typeRef.current;
     const gridSize = _gridSize || gridSizeRef.current;
     const priority = _priority || priorityRef.current;
+    const resolution = _resolution || resolutionRef.current;
 
     const layout = { type, gridSize, priority };
 
@@ -205,6 +217,7 @@ function ConfigTabPanel() {
     hlsPublishRef.current({ layout }, { persist: true });
     meetingPublishRef.current({ layout }, { persist: true });
     recordingPublishRef.current({ layout }, { persist: true });
+    resolutionPublishRef.current({ resolution }, { persist: true });
   },
   500);
 
@@ -337,7 +350,7 @@ function ConfigTabPanel() {
             marginBottom: 24,
           }}
         >
-          {heading === "Video Resolution" ? (
+          {heading === "Incoming video resolution" ? (
             <>
               {resolutionArr.map((resolutionObj) => {
                 return resolutionObj.type.toUpperCase() ===
@@ -429,7 +442,7 @@ function ConfigTabPanel() {
     >
       <Div
         onResolutionChange={_handleChangeResolution}
-        heading={"Video Resolution"}
+        heading={"Incoming video resolution"}
       />
       <Div onLayoutChange={_handleChangeLayout} heading="Layout" />
       <Div onPriorityChange={_handleChangePriority} heading="Priority" />
