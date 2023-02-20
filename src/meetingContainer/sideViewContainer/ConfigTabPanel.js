@@ -29,6 +29,7 @@ import SDLightIcon from "../../icons/SDLightIcon";
 import SDDarkIcon from "../../icons/SDDarkIcon";
 import HDLightIcon from "../../icons/HDLightIcon";
 import HDDarkIcon from "../../icons/HDDarkIcon";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -49,7 +50,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function ConfigTabPanel() {
+function ConfigTabPanel({ panelHeight }) {
   const isMobile = useIsMobile(375);
   const theme = useTheme();
   const classes = useStyles();
@@ -60,6 +61,7 @@ function ConfigTabPanel() {
     setMeetingResolution,
     meetingResolution,
   } = useMeetingAppContext();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { type, priority, gridSize } = useMemo(
     () => ({
@@ -181,7 +183,11 @@ function ConfigTabPanel() {
 
   const _handleChangeResolution = (event) => {
     const resolution = event.currentTarget.value.toUpperCase();
-    publishToPubSub({ resolution });
+    // publishToPubSub({ resolution });
+    setMeetingResolution(resolution);
+    enqueueSnackbar(
+      `Video resolution of all participants changed to ${resolution}.`
+    );
   };
 
   const _handleChangeLayout = (event) => {
@@ -438,6 +444,8 @@ function ConfigTabPanel() {
         maxWidth: "100%",
         marginLeft: 12,
         flexDirection: "column",
+        height: panelHeight,
+        overflowY: "auto",
       }}
     >
       <Div
@@ -484,6 +492,7 @@ function ConfigTabPanel() {
             step={1}
             style={{
               marginTop: 32,
+              marginBottom: 24,
               color:
                 appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.contrastText
