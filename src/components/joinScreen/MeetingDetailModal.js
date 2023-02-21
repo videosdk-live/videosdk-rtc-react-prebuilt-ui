@@ -17,6 +17,7 @@ import { Keyboard } from "@material-ui/icons";
 import { CopyIcon } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
 import { appThemes } from "../../MeetingAppContextDef";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(() => ({
   textFieldLight: {
@@ -48,6 +49,7 @@ export default function MeetingDetailModal({
   meetingUrl,
   appTheme,
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
   const [descriptionBoxHeight, setDescriptionBoxHeight] = useState(0);
@@ -243,7 +245,7 @@ export default function MeetingDetailModal({
       <Box mt={meetingTitle || meetingUrl ? 2 : 0} style={{ width: "100%" }}>
         <TextField
           id={"inputJoin"}
-          placeholder="Enter your name"
+          placeholder={t("Enter your name")}
           variant="outlined"
           fullWidth
           value={name}
@@ -297,7 +299,7 @@ export default function MeetingDetailModal({
                   }}
                   id={"btnJoin"}
                 >
-                  Join
+                  {t("Join")}
                 </Button>
               </InputAdornment>
             ),
@@ -317,7 +319,9 @@ export default function MeetingDetailModal({
         >
           {nameErr
             ? "Enter Minimum 3 Characters"
-            : "Your name will help everyone identify you in the meeting"}
+            : `${t(
+                "Your name will help everyone identify you in the meeting"
+              )}`}
         </p>
       </Box>
     </Box>

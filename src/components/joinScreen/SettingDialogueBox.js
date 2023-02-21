@@ -19,6 +19,7 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import useWindowSize from "../../utils/useWindowSize";
 import ConfirmBox from "../ConfirmBox";
 import { appThemes } from "../../MeetingAppContextDef";
+import { useTranslation } from "react-i18next";
 
 const AudioAnalyser = ({ audioTrack }) => {
   const theme = useTheme();
@@ -208,6 +209,7 @@ export default function SettingDialogueBox({
   participantCanToggleSelfWebcam,
   appTheme,
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const classes = useStyles();
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
@@ -296,7 +298,7 @@ export default function SettingDialogueBox({
                       theme.palette.lightTheme.contrastText,
                   }}
                 >
-                  Settings
+                  {t("Settings")}
                 </Typography>
               </Box>
               <Box
@@ -395,7 +397,7 @@ export default function SettingDialogueBox({
                                     theme.palette.lightTheme.contrastText,
                                 }}
                               >
-                                Microphone
+                                {t("Microphone")}
                               </Typography>
                             </Box>
 
@@ -525,7 +527,7 @@ export default function SettingDialogueBox({
                                     theme.palette.lightTheme.contrastText,
                                 }}
                               >
-                                Camera
+                                {t("Camera")}
                               </Typography>
                             </Box>
                             <FormControl

@@ -27,6 +27,8 @@ import { version as prebuiltSDKVersion } from "../package.json";
 import { meetingModes } from "./CONSTS";
 import animationData from "./animations/meeting-left.json";
 import lightThemeAnimationData from "./animations/meeting_left_white.json";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -70,6 +72,7 @@ const App = () => {
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
       theme: "theme",
+      language: "language",
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
@@ -384,6 +387,9 @@ const App = () => {
     if (!paramKeys.theme || typeof paramKeys.theme !== "string") {
       paramKeys.theme = "DEFAULT";
     }
+    if (!paramKeys.language || typeof paramKeys.language !== "string") {
+      paramKeys.language = "en";
+    }
     if (
       !paramKeys.recordingTheme ||
       typeof paramKeys.recordingTheme !== "string"
@@ -530,6 +536,31 @@ const App = () => {
       };
     }
   }, [isXStoSM]);
+
+  useEffect(() => {
+    i18n.use(initReactI18next).init({
+      resources: {
+        es: {
+          translation: {
+            "Check your audio and video": "Revisa tu audio y video",
+            Join: "Unirse",
+            "Enter Minimum 3 Characters": "Ingrese un mínimo de 3 caracteres",
+            "Your name will help everyone identify you in the meeting":
+              "Tu nombre ayudará a que todos te identifiquen en la reunión.",
+            "Enter your name": "Introduzca su nombre",
+            Settings: "Ajustes",
+            Camera: "Cámara",
+            Microphone: "Micrófono",
+          },
+        },
+      },
+      lng: paramKeys.language, // if you're using a language detector, do not define the lng option
+      fallbackLng: "en",
+      interpolation: {
+        escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+      },
+    });
+  }, []);
 
   return (
     <>
@@ -684,6 +715,7 @@ const App = () => {
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
             appTheme: paramKeys.theme,
+            language: paramKeys.language,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
