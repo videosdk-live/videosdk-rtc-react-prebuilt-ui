@@ -824,7 +824,7 @@ const MeetingContainer = () => {
             <ModeListner />
             <PollsListner />
             <PauseInvisibleParticipants />
-            <ResolutionListner />
+            {/* <ResolutionListner /> */}
 
             <div
               style={{
