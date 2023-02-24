@@ -27,6 +27,7 @@ const useStyles = makeStyles(() => ({
     },
     "& .MuiInputBase-input": {
       color: "#404B53",
+      textAlign: "center",
     },
     border: "1px solid #70707033",
     borderRadius: "4px",
@@ -34,6 +35,7 @@ const useStyles = makeStyles(() => ({
   textField: {
     "& .MuiInputBase-input": {
       color: "white",
+      textAlign: "center",
     },
   },
 }));
@@ -250,79 +252,94 @@ export default function MeetingDetailModal({
           fullWidth
           value={name}
           error={nameErr}
+          style={{ textAlign: "center" }}
           classes={{
             root:
               appTheme === appThemes.LIGHT
                 ? classes.textFieldLight
                 : classes.textField,
           }}
-          // helperText={
-          //   nameErr
-          //     ? "Enter Minimum 3 Characters"
-          //     : "Your name will help everyone identify you in the meeting"
-          // }
           onChange={(ev) => {
             setName(ev.target.value);
           }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton>
-                  <Keyboard
-                    style={{
-                      color:
-                        appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.contrastText
-                          : theme.palette.primary.contrastText,
-                    }}
-                  />
-                </IconButton>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <Button
-                  color="primary"
-                  style={{
-                    backgroundColor:
-                      appTheme === appThemes.LIGHT ||
-                      appTheme === appThemes.DARK
-                        ? theme.palette.lightTheme.primaryMain
-                        : theme.palette.primary.main,
-                  }}
-                  variant="contained"
-                  onClick={(e) => {
-                    const isValid = handleValidation();
-                    if (isValid) {
-                      startMeeting(e);
-                    }
-                  }}
-                  id={"btnJoin"}
-                >
-                  {t("Join")}
-                </Button>
-              </InputAdornment>
-            ),
-          }}
+          // InputProps={{
+          //   startAdornment: (
+          //     <InputAdornment position="start">
+          //       <IconButton>
+          //         <Keyboard
+          //           style={{
+          //             color:
+          //               appTheme === appThemes.LIGHT
+          //                 ? theme.palette.lightTheme.contrastText
+          //                 : theme.palette.primary.contrastText,
+          //           }}
+          //         />
+          //       </IconButton>
+          //     </InputAdornment>
+          //   ),
+          //   endAdornment: (
+          //     <InputAdornment position="end">
+          //       <Button
+          //         color="primary"
+          //         style={{
+          //           backgroundColor:
+          //             appTheme === appThemes.LIGHT ||
+          //             appTheme === appThemes.DARK
+          //               ? theme.palette.lightTheme.primaryMain
+          //               : theme.palette.primary.main,
+          //         }}
+          //         variant="contained"
+          //         onClick={(e) => {
+          //           const isValid = handleValidation();
+          //           if (isValid) {
+          //             startMeeting(e);
+          //           }
+          //         }}
+          //         id={"btnJoin"}
+          //       >
+          //         {t("Join")}
+          //       </Button>
+          //     </InputAdornment>
+          //   ),
+          // }}
         />
         <p
           style={{
             marginTop: 3,
             marginBottom: 0,
             fontSize: 12,
-            marginLeft: 14,
+            marginLeft: 10,
             color:
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.four
                 : "#8F927A",
           }}
         >
-          {nameErr
-            ? "Enter Minimum 3 Characters"
-            : `${t(
-                "Your name will help everyone identify you in the meeting"
-              )}`}
+          {nameErr && "Enter Minimum 3 Characters"}
         </p>
+
+        <Button
+          color="primary"
+          fullWidth
+          style={{
+            marginTop: 12,
+            padding: 12,
+            backgroundColor:
+              appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                ? theme.palette.lightTheme.primaryMain
+                : theme.palette.primary.main,
+          }}
+          variant="contained"
+          onClick={(e) => {
+            const isValid = handleValidation();
+            if (isValid) {
+              startMeeting(e);
+            }
+          }}
+          id={"btnJoin"}
+        >
+          {t("Join Now")}
+        </Button>
       </Box>
     </Box>
   );

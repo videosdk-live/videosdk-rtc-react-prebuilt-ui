@@ -543,10 +543,8 @@ const App = () => {
         es: {
           translation: {
             "Check your audio and video": "Revisa tu audio y video",
-            Join: "Unirse",
+            "Join Now": "Únete ahora",
             "Enter Minimum 3 Characters": "Ingrese un mínimo de 3 caracteres",
-            "Your name will help everyone identify you in the meeting":
-              "Tu nombre ayudará a que todos te identifiquen en la reunión.",
             "Enter your name": "Introduzca su nombre",
             Settings: "Ajustes",
             Camera: "Cámara",
