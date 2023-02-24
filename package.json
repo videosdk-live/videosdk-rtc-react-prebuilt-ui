@@ -1,15 +1,15 @@
 {
   "name": "videosdk-rtc-react-prebuilt-ui",
-  "version": "0.3.26",
+  "version": "0.3.27",
   "private": true,
-  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.26/",
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.27/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@videosdk.live/react-sdk": "^0.1.58",
+    "@videosdk.live/react-sdk": "^0.1.66",
     "@videosdk.live/videosdk-media-processor-web": "^0.0.12",
     "compressorjs": "^1.1.1",
     "emoji-mart": "^3.0.1",

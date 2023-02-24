@@ -4,15 +4,11 @@ import SideViewContainer from "./sideViewContainer/SideViewContainer";
 import TopBar from "./TopBar";
 import {
   meetingLayouts,
-  sideBarNestedModes,
   appThemes,
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
 import useSortActiveParticipants from "./useSortActiveParticipants";
-import {
-  createMicrophoneAudioTrack,
-  useMeeting,
-} from "@videosdk.live/react-sdk";
+import { useMeeting } from "@videosdk.live/react-sdk";
 import useIsTab from "../utils/useIsTab";
 import useIsMobile from "../utils/useIsMobile";
 import { usePubSub, Constants } from "@videosdk.live/react-sdk";
@@ -50,6 +46,8 @@ import { Box, CircularProgress } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import PollsListner from "../components/PollListner";
 import RecordingLoader from "../components/RecordingLoader";
+import useCustomTrack from "../utils/useCustomTrack";
+import ResolutionListner from "../components/ResolutionListner";
 
 const getPinMsg = ({
   localParticipant,
@@ -187,6 +185,8 @@ const MeetingContainer = () => {
     hlsTheme,
     liveStreamTheme,
   } = useMeetingAppContext();
+
+  const { getCustomAudioTrack, getCustomVideoTrack } = useCustomTrack();
 
   const topBarHeight = topbarEnabled ? 60 : 0;
 
@@ -361,8 +361,9 @@ const MeetingContainer = () => {
     if (joinScreenWebCam && selectedWebcam.id) {
       await new Promise((resolve) => {
         disableWebcam();
-        setTimeout(() => {
-          changeWebcam(selectedWebcam.id);
+        setTimeout(async () => {
+          const track = await getCustomVideoTrack(selectedWebcam.id);
+          changeWebcam(track);
           resolve();
         }, 500);
       });
@@ -372,10 +373,7 @@ const MeetingContainer = () => {
       await new Promise((resolve) => {
         muteMic();
         setTimeout(async () => {
-          const audioTrack = await createMicrophoneAudioTrack({
-            encoderConfig: "speech_standard",
-            microphoneId: selectedMic.id,
-          });
+          const audioTrack = await getCustomAudioTrack(selectedMic.id);
           changeMic(audioTrack);
           // changeMic(selectedMic.id);
           resolve();
@@ -596,6 +594,26 @@ const MeetingContainer = () => {
     }
   };
 
+  const _handleOnMeetingStateChanged = (data) => {
+    const { state } = data;
+
+    enqueueSnackbar(
+      state === "CONNECTED"
+        ? "Meeting is connected"
+        : state === "CONNECTING"
+        ? "Meeting is connecting"
+        : state === "FAILED"
+        ? "Meeting connection failed"
+        : state === "DISCONNECTED"
+        ? "Meeting connection disconnected abruptly"
+        : state === "CLOSING"
+        ? "Meeting is closing"
+        : state === "CLOSED"
+        ? "Meeting connection closed"
+        : ""
+    );
+  };
+
   const _handleOnHlsStateChanged = (data) => {
     //
     if (
@@ -723,6 +741,7 @@ const MeetingContainer = () => {
     onEntryResponded: _handleOnEntryResponded,
     onPinStateChanged: _handleOnPinStateChanged,
     onError: _handleOnError,
+    onMeetingStateChanged: _handleOnMeetingStateChanged,
     onRecordingStateChanged: _handleOnRecordingStateChanged,
     onLivestreamStateChanged: _handleOnLivestreamStateChanged,
     onHlsStateChanged: _handleOnHlsStateChanged,
@@ -805,6 +824,7 @@ const MeetingContainer = () => {
             <ModeListner />
             <PollsListner />
             <PauseInvisibleParticipants />
+            <ResolutionListner />
 
             <div
               style={{

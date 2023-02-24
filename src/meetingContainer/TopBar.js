@@ -11,18 +11,10 @@ import {
   Link,
   SwipeableDrawer,
   Grid,
-  Radio,
-  FormGroup,
-  FormControlLabel,
   Checkbox,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import {
-  Constants,
-  createMicrophoneAudioTrack,
-  useMeeting,
-  usePubSub,
-} from "@videosdk.live/react-sdk";
+import { Constants, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import {
   sideBarModes,
   appThemes,
@@ -74,6 +66,7 @@ import SpeakerMenuIcon from "../icons/SpeakerMenuIcon";
 import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
+import useCustomTrack from "../utils/useCustomTrack";
 
 const BpIcon = styled("span")(({ theme }) => ({
   borderRadius: 12,
@@ -452,8 +445,16 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const theme = useTheme();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
-  const toggleScreenShare = mMeeting?.toggleScreenShare;
   const presenterId = mMeeting?.presenterId;
+
+  const { getCustomScreenShareTrack } = useCustomTrack();
+
+  const toggleScreenShare = async () => {
+    let track;
+    if (!localScreenShareOn) track = await getCustomScreenShareTrack();
+    // console.log("screneshare ", track);
+    mMeeting?.toggleScreenShare(track);
+  };
 
   return isMobile || isTab ? (
     <MobileIconButton
@@ -1402,19 +1403,150 @@ const MicMenu = ({
   );
 };
 
+const MirrorView = ({
+  isMirrorViewChecked,
+  _handleMirrorClick,
+  localWebcamOn,
+  handleClose,
+  appTheme,
+  theme,
+}) => {
+  const classes = useStyles();
+
+  return (
+    localWebcamOn && (
+      <>
+        <Box
+          style={{
+            height: 1,
+            width: "100%",
+            borderTop: "1px solid #9FA0A7",
+          }}
+        ></Box>
+        <Box>
+          <MenuList
+            disableRipple
+            disableFocusRipple
+            style={{
+              backgroundColor:
+                appTheme === appThemes.DARK
+                  ? theme.palette.darkTheme.slightLighter
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.two
+                  : "",
+              color:
+                appTheme === appThemes.DARK
+                  ? theme.palette.common.white
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "",
+            }}
+          >
+            <Box
+              style={{
+                display: "flex",
+                alignItems: "center",
+                paddingLeft: isMirrorViewChecked ? 12 : 6,
+                paddingRight: 6,
+                backgroundColor: isMirrorViewChecked
+                  ? appTheme === appThemes.DARK
+                    ? "#3F4046"
+                    : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.three
+                    : "#6D6E71"
+                  : "",
+              }}
+              classes={{
+                root:
+                  appTheme === appThemes.LIGHT
+                    ? classes.popoverHover
+                    : appTheme === appThemes.DARK
+                    ? classes.popoverHoverDark
+                    : classes.popoverHoverDefault,
+              }}
+            >
+              {isMirrorViewChecked ? (
+                <SelectedIcon />
+              ) : (
+                <BpCheckbox
+                  value={isMirrorViewChecked}
+                  checked={isMirrorViewChecked}
+                  onClick={(e) => {
+                    _handleMirrorClick({ e });
+                  }}
+                />
+              )}
+
+              <MenuItem
+                disableRipple
+                style={{
+                  display: "flex",
+                  flex: 1,
+                  backgroundColor: isMirrorViewChecked
+                    ? appTheme === appThemes.DARK
+                      ? "#3F4046"
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.three
+                      : "#6D6E71"
+                    : "",
+                }}
+                key={`mirror_view`}
+                selected={isMirrorViewChecked}
+                onClick={(e) => {
+                  handleClose();
+                  _handleMirrorClick({ e });
+                }}
+                classes={{
+                  root:
+                    appTheme === appThemes.LIGHT
+                      ? classes.menuItemHover
+                      : appTheme === appThemes.DARK
+                      ? classes.menuItemDark
+                      : classes.menuItemDefault,
+                  gutters: isMirrorViewChecked
+                    ? classes.singleMenuItemGuttersAfterSelect
+                    : classes.singleMenuItemGutters,
+                }}
+              >
+                Mirror View
+              </MenuItem>
+            </Box>
+          </MenuList>
+        </Box>
+      </>
+    )
+  );
+};
+
 const WebcamBTN = () => {
   const theme = useTheme();
   const classes = useStyles();
   const mMeeting = useMeeting({});
-  const { appTheme, selectWebcamDeviceId, setSelectWebcamDeviceId } =
-    useMeetingAppContext();
+  const {
+    appTheme,
+    selectWebcamDeviceId,
+    setSelectWebcamDeviceId,
+    notificationSoundEnabled,
+    notificationAlertsEnabled,
+    isMirrorViewChecked,
+    setIsMirrorViewChecked,
+  } = useMeetingAppContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const { getCustomVideoTrack } = useCustomTrack();
 
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = mMeeting?.toggleWebcam;
-  const changeWebcam = mMeeting?.changeWebcam;
+  const toggleWebcam = async () => {
+    let track;
+    if (!localWebcamOn) track = await getCustomVideoTrack(selectWebcamDeviceId);
+    mMeeting?.toggleWebcam(track);
+  };
+  const changeWebcam = async (deviceId) => {
+    const track = await getCustomVideoTrack(deviceId);
+    mMeeting?.changeWebcam(track ? track : deviceId);
+  };
 
   const handleClick = (event) => {
     setDownArrow(event.currentTarget);
@@ -1431,6 +1563,29 @@ const WebcamBTN = () => {
   };
 
   const tollTipEl = useRef();
+
+  const _handleMirrorClick = async ({ e }) => {
+    e.stopPropagation();
+    var _isMirrorViewChecked;
+
+    setIsMirrorViewChecked((s) => {
+      const notS = !s;
+      _isMirrorViewChecked = notS;
+      return notS;
+    });
+
+    if (_isMirrorViewChecked) {
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar("Camera mirror view enabled.");
+      }
+    }
+  };
 
   return (
     <Box
@@ -1531,6 +1686,15 @@ const WebcamBTN = () => {
             </MenuItem>
           ))}
         </MenuList>
+
+        <MirrorView
+          isMirrorViewChecked={isMirrorViewChecked}
+          localWebcamOn={localWebcamOn}
+          _handleMirrorClick={_handleMirrorClick}
+          handleClose={handleClose}
+          appTheme={appTheme}
+          theme={theme}
+        />
       </Popover>
     </Box>
   );
@@ -1552,6 +1716,7 @@ const MicBTN = () => {
   const theme = useTheme();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const { getCustomAudioTrack } = useCustomTrack();
 
   const handleClick = (event) => {
     setDownArrow(event.currentTarget);
@@ -1563,14 +1728,9 @@ const MicBTN = () => {
 
   const localMicOn = mMeeting?.localMicOn;
   const toggleMic = async () => {
-    if (localMicOn) {
-      mMeeting?.toggleMic();
-    } else {
-      const audioTrack = await createMicrophoneAudioTrack({
-        encoderConfig: "speech_standard",
-      });
-      mMeeting?.toggleMic(audioTrack);
-    }
+    let track;
+    if (!localMicOn) track = await getCustomAudioTrack(selectMicDeviceId);
+    mMeeting?.toggleMic(track);
   };
   const changeMic = mMeeting?.changeMic;
 
@@ -1601,9 +1761,7 @@ const MicBTN = () => {
     try {
       const processor = new VideoSDKNoiseSuppressor();
 
-      const stream = await createMicrophoneAudioTrack({
-        microphoneId: selectMicDeviceId,
-      });
+      const stream = await getCustomAudioTrack(selectMicDeviceId);
       const processedStream = await processor.getNoiseSuppressedAudioStream(
         stream
       );

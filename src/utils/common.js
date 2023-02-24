@@ -5,6 +5,11 @@ export const maxParticipantGridCount_tab = 9;
 export const maxParticipantGridCount_desktop = 16;
 export const maxParticipantGridCount_large_desktop = 25;
 
+export const meetingResolutions = {
+  SD: "SD",
+  HD: "HD",
+};
+
 export const getGridRowsAndColumns = ({
   participantsCount,
   isMobile,

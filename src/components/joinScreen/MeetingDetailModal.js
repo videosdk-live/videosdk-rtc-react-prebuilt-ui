@@ -315,7 +315,7 @@ export default function MeetingDetailModal({
                 : "#8F927A",
           }}
         >
-          {nameErr && "Enter Minimum 3 Characters"}
+          {nameErr && `${t("Enter Minimum 3 Characters")}`}
         </p>
 
         <Button
