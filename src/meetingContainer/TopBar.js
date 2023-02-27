@@ -1,5 +1,5 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {makeStyles, styled, useTheme} from '@material-ui/core/styles';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { makeStyles, styled, useTheme } from "@material-ui/core/styles";
 import {
   IconButton,
   Box,
@@ -15,18 +15,28 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-} from '@material-ui/core';
-import OutlineIconButton from '../components/OutlineIconButton';
-import {Constants, createMicrophoneAudioTrack, useMeeting, usePubSub} from '@videosdk.live/react-sdk';
-import {sideBarModes, appThemes, useMeetingAppContext, sideBarNestedModes} from '../MeetingAppContextDef';
-import useIsTab from '../utils/useIsTab';
-import useIsMobile from '../utils/useIsMobile';
-import recordingBlink from '../animations/recording-blink.json';
-import liveBlink from '../animations/live-blink.json';
-import liveHLS from '../animations/live-hls.json';
-import stoppingHLS from '../animations/hls_stop_blink.json';
-import LiveIcon from '../icons/LiveIcon';
-import RaiseHand from '../icons/RaiseHand';
+} from "@material-ui/core";
+import OutlineIconButton from "../components/OutlineIconButton";
+import {
+  Constants,
+  createMicrophoneAudioTrack,
+  useMeeting,
+  usePubSub,
+} from "@videosdk.live/react-sdk";
+import {
+  sideBarModes,
+  appThemes,
+  useMeetingAppContext,
+  sideBarNestedModes,
+} from "../MeetingAppContextDef";
+import useIsTab from "../utils/useIsTab";
+import useIsMobile from "../utils/useIsMobile";
+import recordingBlink from "../animations/recording-blink.json";
+import liveBlink from "../animations/live-blink.json";
+import liveHLS from "../animations/live-hls.json";
+import stoppingHLS from "../animations/hls_stop_blink.json";
+import LiveIcon from "../icons/LiveIcon";
+import RaiseHand from "../icons/RaiseHand";
 import {
   Activities,
   Chat,
@@ -37,43 +47,50 @@ import {
   LeaveMeetingIcon,
   EndCallIcon,
   MicOn,
-} from '../icons';
-import {MoreHoriz as MoreHorizIcon, ArrowDropDown as ArrowDropDownIcon, Gesture} from '@material-ui/icons';
-import {isMobile as RDDIsMobile, isTablet as RDDIsTablet} from 'react-device-detect';
-import ConfirmBox from '../components/ConfirmBox';
-import OutlineIconTextButton from '../components/OutlineIconTextButton';
-import MobileIconButton from '../components/MobileIconButton';
-import AddLiveStreamIcon from '../icons/AddLiveStreamIcon';
-import useIsLivestreaming from './useIsLivestreaming';
-import useIsRecording from './useIsRecording';
-import useIsHls from './useIsHls';
-import {meetingModes} from '../CONSTS';
-import WebCamOnIcon from '../icons/WebCamOnIcon';
-import WebCamOffIcon from '../icons/WebCamOffIcon';
-import ConfigIcon from '../icons/ConfigIcon';
-import MicOffIcon from '../icons/MicOffIcon';
-import MicrophoneIcon from '../icons/MicrophoneIcon';
-import SpeakerMenuIcon from '../icons/SpeakerMenuIcon';
-import SelectedIcon from '../icons/SelectedIcon';
-import {useSnackbar} from 'notistack';
-import {VideoSDKNoiseSuppressor} from '@videosdk.live/videosdk-media-processor-web';
+} from "../icons";
+import {
+  MoreHoriz as MoreHorizIcon,
+  ArrowDropDown as ArrowDropDownIcon,
+  Gesture,
+} from "@material-ui/icons";
+import {
+  isMobile as RDDIsMobile,
+  isTablet as RDDIsTablet,
+} from "react-device-detect";
+import ConfirmBox from "../components/ConfirmBox";
+import OutlineIconTextButton from "../components/OutlineIconTextButton";
+import MobileIconButton from "../components/MobileIconButton";
+import AddLiveStreamIcon from "../icons/AddLiveStreamIcon";
+import useIsLivestreaming from "./useIsLivestreaming";
+import useIsRecording from "./useIsRecording";
+import useIsHls from "./useIsHls";
+import { meetingModes } from "../CONSTS";
+import WebCamOnIcon from "../icons/WebCamOnIcon";
+import WebCamOffIcon from "../icons/WebCamOffIcon";
+import ConfigIcon from "../icons/ConfigIcon";
+import MicOffIcon from "../icons/MicOffIcon";
+import MicrophoneIcon from "../icons/MicrophoneIcon";
+import SpeakerMenuIcon from "../icons/SpeakerMenuIcon";
+import SelectedIcon from "../icons/SelectedIcon";
+import { useSnackbar } from "notistack";
+import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
 
-const BpIcon = styled('span')(({theme}) => ({
+const BpIcon = styled("span")(({ theme }) => ({
   borderRadius: 12,
   padding: 0,
   margin: 0,
   width: 10,
   height: 10,
   border: `2px solid ${theme.palette.text.secondary}`,
-  'input:disabled ~ &': {
-    boxShadow: 'none',
+  "input:disabled ~ &": {
+    boxShadow: "none",
     background: theme.palette.text.secondary,
   },
 }));
 
 const BpCheckedIcon = styled(SelectedIcon)({
-  '&:before': {
-    display: 'block',
+  "&:before": {
+    display: "block",
     width: 10,
     height: 10,
     backgroundImage:
@@ -85,8 +102,8 @@ const BpCheckedIcon = styled(SelectedIcon)({
 });
 
 const BpCheckedLightIcon = styled(SelectedIcon)({
-  '&:before': {
-    display: 'block',
+  "&:before": {
+    display: "block",
     width: 10,
     height: 10,
     backgroundImage:
@@ -98,14 +115,18 @@ const BpCheckedLightIcon = styled(SelectedIcon)({
 });
 
 function BpCheckbox(CheckboxProps) {
-  const {appTheme} = useMeetingAppContext();
+  const { appTheme } = useMeetingAppContext();
   return (
     <Checkbox
       disableRipple
       disableFocusRipple
-      color='default'
+      color="default"
       checkedIcon={
-        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? <BpCheckedLightIcon /> : <BpCheckedIcon />
+        appTheme === appThemes.LIGHT || appTheme === appThemes.DARK ? (
+          <BpCheckedLightIcon />
+        ) : (
+          <BpCheckedIcon />
+        )
       }
       icon={<BpIcon />}
       style={{
@@ -114,7 +135,7 @@ function BpCheckbox(CheckboxProps) {
         marginTop: 0,
         marginBottom: 0,
         marginLeft: 0,
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
       }}
       {...CheckboxProps}
     />
@@ -122,90 +143,100 @@ function BpCheckbox(CheckboxProps) {
 }
 
 const useStyles = makeStyles({
-  row: {display: 'flex', alignItems: 'center'},
-  borderRight: {borderRight: '1ps solid #ffffff33'},
-  popover: {backgroundColor: 'transparent'},
+  row: { display: "flex", alignItems: "center" },
+  borderRight: { borderRight: "1ps solid #ffffff33" },
+  popover: { backgroundColor: "transparent" },
   popoverBorder: {
-    borderRadius: '12px',
-    backgroundColor: '#212032',
+    borderRadius: "12px",
+    backgroundColor: "#212032",
     marginTop: 8,
     width: 300,
   },
   popoverHover: {
-    '&:hover': {
-      backgroundColor: '#CCD2D899',
+    "&:hover": {
+      backgroundColor: "#CCD2D899",
     },
   },
   popoverHoverDark: {
-    '&:hover': {
-      backgroundColor: '#2B303499',
+    "&:hover": {
+      backgroundColor: "#2B303499",
     },
   },
   popoverHoverDefault: {
-    '&:hover': {
-      backgroundColor: '#43425399',
+    "&:hover": {
+      backgroundColor: "#43425399",
     },
   },
   menuItemHover: {
-    '&:hover': {
-      backgroundColor: 'transparent',
+    "&:hover": {
+      backgroundColor: "transparent",
     },
   },
   menuItemDark: {
-    '&:hover': {
-      backgroundColor: 'transparent',
+    "&:hover": {
+      backgroundColor: "transparent",
     },
   },
   menuItemDefault: {
-    '&:hover': {
-      backgroundColor: 'transparent',
+    "&:hover": {
+      backgroundColor: "transparent",
     },
   },
   singleMenuItemGutters: {
-    padding: '6px 2px',
+    padding: "6px 2px",
   },
   singleMenuItemGuttersAfterSelect: {
-    padding: '6px 12px',
+    padding: "6px 12px",
   },
   menuItemGutters: {
-    padding: '6px 28px',
+    padding: "6px 28px",
   },
   menuItemGuttersAfterSelect: {
-    padding: '6px 12px',
+    padding: "6px 12px",
   },
 });
 
-const RaiseHandBTN = ({onClick, isMobile, isTab}) => {
-  const {publish} = usePubSub('RAISE_HAND');
+const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
+  const { publish } = usePubSub("RAISE_HAND");
   const classes = useStyles();
   const onRaiseHand = () => {
     if (isMobile || isTab) {
       onClick();
-      typeof onClick === 'function' && onClick();
-      publish('Raise Hand');
+      typeof onClick === "function" && onClick();
+      publish("Raise Hand");
     } else {
-      publish('Raise Hand');
+      publish("Raise Hand");
     }
   };
 
   return isMobile || isTab ? (
     <Tooltip>
       <MobileIconButton
-        id='RaiseHandBTN'
-        tooltipTitle={'Raise hand'}
+        id="RaiseHandBTN"
+        tooltipTitle={"Raise hand"}
         Icon={RaiseHand}
         onClick={onRaiseHand}
-        buttonText={'Raise Hand'}
+        buttonText={"Raise Hand"}
       />
     </Tooltip>
   ) : (
     <Tooltip>
-      <OutlineIconButton tooltipTitle={'Raise hand'} Icon={RaiseHand} onClick={onRaiseHand} />
+      <OutlineIconButton
+        tooltipTitle={"Raise hand"}
+        Icon={RaiseHand}
+        onClick={onRaiseHand}
+      />
     </Tooltip>
   );
 };
-const ParticipantsBTN = ({onClick, isMobile, isTab}) => {
-  const {sideBarMode, setSideBarMode, meetingMode, canToggleParticipantTab, appTheme} = useMeetingAppContext();
+const ParticipantsBTN = ({ onClick, isMobile, isTab }) => {
+  const {
+    sideBarMode,
+    setSideBarMode,
+    meetingMode,
+    canToggleParticipantTab,
+    appTheme,
+  } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
   const theme = useTheme();
@@ -214,125 +245,157 @@ const ParticipantsBTN = ({onClick, isMobile, isTab}) => {
 
   return isMobile || isTab ? (
     <MobileIconButton
-      tooltipTitle={'Participants'}
+      tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
-      buttonText={'Participants'}
+      buttonText={"Participants"}
       disabledOpacity={1}
       Icon={Participants}
       disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
-        typeof onClick === 'function' && onClick();
-        setSideBarMode(s => (s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS));
+        typeof onClick === "function" && onClick();
+        setSideBarMode((s) =>
+          s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
+        );
       }}
       badge={participantsCount}
     />
   ) : (
     <OutlineIconButton
-      tooltipTitle={'Participants'}
+      tooltipTitle={"Participants"}
       isFocused={sideBarMode === sideBarModes.PARTICIPANTS}
       Icon={Participants}
       disabledOpacity={1}
-      focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       disabled={meetingMode === meetingModes.VIEWER || !canToggleParticipantTab}
       onClick={() => {
-        typeof onClick === 'function' && onClick();
-        setSideBarMode(s => (s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS));
+        typeof onClick === "function" && onClick();
+        setSideBarMode((s) =>
+          s === sideBarModes.PARTICIPANTS ? null : sideBarModes.PARTICIPANTS
+        );
       }}
       badge={participantsCount}
     />
   );
 };
-const ConfigBTN = ({isMobile, isTab}) => {
-  const {sideBarMode, setSideBarMode, appTheme, setSideBarNestedMode} = useMeetingAppContext();
+const ConfigBTN = ({ isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode, appTheme, setSideBarNestedMode } =
+    useMeetingAppContext();
   const theme = useTheme();
 
   return isMobile || isTab ? (
     <MobileIconButton
-      tooltipTitle={'Configuration'}
-      buttonText={'Configuration'}
+      tooltipTitle={"Configuration"}
+      buttonText={"Configuration"}
       Icon={ConfigIcon}
       isFocused={sideBarMode === sideBarModes.CONFIGURATION}
       onClick={() => {
         setSideBarNestedMode(null);
-        setSideBarMode(s => (s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION));
+        setSideBarMode((s) =>
+          s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION
+        );
       }}
     />
   ) : (
     <OutlineIconButton
-      tooltipTitle={'Configuration'}
+      tooltipTitle={"Configuration"}
       Icon={ConfigIcon}
-      focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       isFocused={sideBarMode === sideBarModes.CONFIGURATION}
       onClick={() => {
         setSideBarNestedMode(null);
-        setSideBarMode(s => (s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION));
+        setSideBarMode((s) =>
+          s === sideBarModes.CONFIGURATION ? null : sideBarModes.CONFIGURATION
+        );
       }}
     />
   );
 };
-const ChatBTN = ({isMobile, isTab}) => {
-  const {sideBarMode, setSideBarMode, appTheme, setSideBarNestedMode} = useMeetingAppContext();
+const ChatBTN = ({ isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode, appTheme, setSideBarNestedMode } =
+    useMeetingAppContext();
   const theme = useTheme();
 
   return isMobile || isTab ? (
     <MobileIconButton
-      tooltipTitle={'Chat'}
-      buttonText={'Chat'}
+      tooltipTitle={"Chat"}
+      buttonText={"Chat"}
       Icon={Chat}
       isFocused={sideBarMode === sideBarModes.CHAT}
       onClick={() => {
         setSideBarNestedMode(null);
-        setSideBarMode(s => (s === sideBarModes.CHAT ? null : sideBarModes.CHAT));
+        setSideBarMode((s) =>
+          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
+        );
       }}
     />
   ) : (
     <OutlineIconButton
-      tooltipTitle={'Chat'}
+      tooltipTitle={"Chat"}
       Icon={Chat}
-      focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       isFocused={sideBarMode === sideBarModes.CHAT}
       onClick={() => {
         setSideBarNestedMode(null);
-        setSideBarMode(s => (s === sideBarModes.CHAT ? null : sideBarModes.CHAT));
+        setSideBarMode((s) =>
+          s === sideBarModes.CHAT ? null : sideBarModes.CHAT
+        );
       }}
     />
   );
 };
-const ActivitiesBTN = ({onClick, isMobile, isTab}) => {
-  const {sideBarMode, setSideBarMode, setSideBarNestedMode, appTheme} = useMeetingAppContext();
+const ActivitiesBTN = ({ onClick, isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode, setSideBarNestedMode, appTheme } =
+    useMeetingAppContext();
   const theme = useTheme();
 
   return isMobile || isTab ? (
     <MobileIconButton
       Icon={Activities}
-      tooltipTitle={'More Options'}
-      buttonText={'More Options'}
+      tooltipTitle={"More Options"}
+      buttonText={"More Options"}
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
-        typeof onClick === 'function' && onClick();
+        typeof onClick === "function" && onClick();
 
-        setSideBarMode(s => (s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES));
+        setSideBarMode((s) =>
+          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
+        );
 
         setSideBarNestedMode(null);
       }}
     />
   ) : (
     <OutlineIconButton
-      tooltipTitle={'More Options'}
+      tooltipTitle={"More Options"}
       Icon={Activities}
-      focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       isFocused={sideBarMode === sideBarModes.ACTIVITIES}
       onClick={() => {
-        typeof onClick === 'function' && onClick();
+        typeof onClick === "function" && onClick();
 
-        setSideBarMode(s => (s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES));
+        setSideBarMode((s) =>
+          s === sideBarModes.ACTIVITIES ? null : sideBarModes.ACTIVITIES
+        );
         setSideBarNestedMode(null);
       }}
     />
   );
 };
-const WhiteBoardBTN = ({onClick, isMobile, isTab}) => {
-  const {whiteboardStarted, whiteboardEnabled, canToggleWhiteboard, appTheme} = useMeetingAppContext();
+const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
+  const {
+    whiteboardStarted,
+    whiteboardEnabled,
+    canToggleWhiteboard,
+    appTheme,
+  } = useMeetingAppContext();
   const theme = useTheme();
 
   const mMeeting = useMeeting({});
@@ -345,37 +408,47 @@ const WhiteBoardBTN = ({onClick, isMobile, isTab}) => {
         (isMobile || isTab ? (
           <MobileIconButton
             disabled={presenterId || !canToggleWhiteboard}
-            tooltipTitle={'Whiteboard'}
-            buttonText={'Whiteboard'}
+            tooltipTitle={"Whiteboard"}
+            buttonText={"Whiteboard"}
             Icon={Gesture}
             isFocused={whiteboardStarted}
-            focusIconColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+            focusIconColor={
+              appTheme === appThemes.LIGHT &&
+              theme.palette.lightTheme.contrastText
+            }
             onClick={() => {
-              typeof onClick === 'function' && onClick();
+              typeof onClick === "function" && onClick();
 
-              whiteboardStarted ? mMeeting.meeting.stopWhiteboard() : mMeeting.meeting.startWhiteboard();
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
             }}
           />
         ) : (
           <OutlineIconButton
             disabled={presenterId || !canToggleWhiteboard}
-            tooltipTitle={'Whiteboard'}
+            tooltipTitle={"Whiteboard"}
             Icon={Gesture}
             isFocused={whiteboardStarted}
-            focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+            focusBGColor={
+              appTheme === appThemes.LIGHT &&
+              theme.palette.lightTheme.contrastText
+            }
             onClick={() => {
-              typeof onClick === 'function' && onClick();
+              typeof onClick === "function" && onClick();
 
-              whiteboardStarted ? mMeeting.meeting.stopWhiteboard() : mMeeting.meeting.startWhiteboard();
+              whiteboardStarted
+                ? mMeeting.meeting.stopWhiteboard()
+                : mMeeting.meeting.startWhiteboard();
             }}
           />
         ))}
     </>
   );
 };
-const ScreenShareBTN = ({onClick, isMobile, isTab}) => {
+const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const {whiteboardStarted, appTheme} = useMeetingAppContext();
+  const { whiteboardStarted, appTheme } = useMeetingAppContext();
   const theme = useTheme();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
@@ -384,12 +457,24 @@ const ScreenShareBTN = ({onClick, isMobile, isTab}) => {
 
   return isMobile || isTab ? (
     <MobileIconButton
-      tooltipTitle={presenterId ? (localScreenShareOn ? 'Stop Presenting' : null) : 'Present Screen'}
-      buttonText={presenterId ? (localScreenShareOn ? 'Stop Presenting' : null) : 'Present Screen'}
+      tooltipTitle={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
+      buttonText={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
       isFocused={localScreenShareOn}
       Icon={ScreenShare}
       onClick={() => {
-        typeof onClick === 'function' && onClick();
+        typeof onClick === "function" && onClick();
         toggleScreenShare();
       }}
       disabled={
@@ -406,12 +491,20 @@ const ScreenShareBTN = ({onClick, isMobile, isTab}) => {
     />
   ) : (
     <OutlineIconButton
-      tooltipTitle={presenterId ? (localScreenShareOn ? 'Stop Presenting' : null) : 'Present Screen'}
+      tooltipTitle={
+        presenterId
+          ? localScreenShareOn
+            ? "Stop Presenting"
+            : null
+          : "Present Screen"
+      }
       isFocused={localScreenShareOn}
-      focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       Icon={ScreenShare}
       onClick={() => {
-        typeof onClick === 'function' && onClick();
+        typeof onClick === "function" && onClick();
         toggleScreenShare();
       }}
       disabled={
@@ -428,31 +521,39 @@ const ScreenShareBTN = ({onClick, isMobile, isTab}) => {
     />
   );
 };
-const AddLiveStreamBTN = ({isMobile, isTab}) => {
-  const {sideBarMode, setSideBarMode} = useMeetingAppContext();
+const AddLiveStreamBTN = ({ isMobile, isTab }) => {
+  const { sideBarMode, setSideBarMode } = useMeetingAppContext();
 
   return isMobile || isTab ? (
     <MobileIconButton
-      tooltipTitle={'Add Live Streams'}
+      tooltipTitle={"Add Live Streams"}
       Icon={AddLiveStreamIcon}
-      buttonText={'Add Live Streams'}
+      buttonText={"Add Live Streams"}
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
-        setSideBarMode(s => (s === sideBarModes.ADD_LIVE_STREAM ? null : sideBarModes.ADD_LIVE_STREAM));
+        setSideBarMode((s) =>
+          s === sideBarModes.ADD_LIVE_STREAM
+            ? null
+            : sideBarModes.ADD_LIVE_STREAM
+        );
       }}
     />
   ) : (
     <OutlineIconTextButton
-      tooltipTitle={'Add Live Streams'}
-      buttonText='Add Live Streams'
+      tooltipTitle={"Add Live Streams"}
+      buttonText="Add Live Streams"
       isFocused={sideBarMode === sideBarModes.ADD_LIVE_STREAM}
       onClick={() => {
-        setSideBarMode(s => (s === sideBarModes.ADD_LIVE_STREAM ? null : sideBarModes.ADD_LIVE_STREAM));
+        setSideBarMode((s) =>
+          s === sideBarModes.ADD_LIVE_STREAM
+            ? null
+            : sideBarModes.ADD_LIVE_STREAM
+        );
       }}
     />
   );
 };
-const RecordingBTN = ({isMobile, isTab}) => {
+const RecordingBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
   const theme = useTheme();
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
@@ -463,13 +564,13 @@ const RecordingBTN = ({isMobile, isTab}) => {
 
   const isRecording = useIsRecording();
 
-  const {isRequestProcessing} = useMemo(
+  const { isRequestProcessing } = useMemo(
     () => ({
       isRequestProcessing:
         recordingState === Constants.recordingEvents.RECORDING_STARTING ||
         recordingState === Constants.recordingEvents.RECORDING_STOPPING,
     }),
-    [recordingState],
+    [recordingState]
   );
 
   const {
@@ -481,13 +582,13 @@ const RecordingBTN = ({isMobile, isTab}) => {
     appTheme,
   } = useMeetingAppContext();
 
-  const {type, priority, gridSize} = useMemo(
+  const { type, priority, gridSize } = useMemo(
     () => ({
       type: appMeetingLayout.type,
       priority: appMeetingLayout.priority,
       gridSize: appMeetingLayout.gridSize,
     }),
-    [appMeetingLayout],
+    [appMeetingLayout]
   );
 
   const typeRef = useRef(type);
@@ -516,7 +617,7 @@ const RecordingBTN = ({isMobile, isTab}) => {
     autoplay: true,
     animationData: recordingBlink,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
+      preserveAspectRatio: "xMidYMid slice",
     },
     height: 64,
     width: 160,
@@ -527,7 +628,7 @@ const RecordingBTN = ({isMobile, isTab}) => {
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
-    const layout = {type, priority, gridSize};
+    const layout = { type, priority, gridSize };
 
     startRecording(recordingWebhookUrl, recordingAWSDirPath, {
       layout,
@@ -553,14 +654,14 @@ const RecordingBTN = ({isMobile, isTab}) => {
           onClick={_handleClick}
           tooltipTitle={
             recordingState === Constants.recordingEvents.RECORDING_STARTED
-              ? 'Stop Recording'
+              ? "Stop Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? 'Starting Recording'
+              ? "Starting Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-              ? 'Start Recording'
+              ? "Start Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? 'Stopping Recording'
-              : 'Start Recording'
+              ? "Stopping Recording"
+              : "Start Recording"
           }
           isFocused={isRecording}
           disabled={!participantCanToggleRecording}
@@ -568,19 +669,20 @@ const RecordingBTN = ({isMobile, isTab}) => {
           bgColor={
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
-              recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
-            '#EEF0F2'
+              recordingState ===
+                Constants.recordingEvents.RECORDING_STOPPING) &&
+            "#EEF0F2"
           }
           buttonText={
             recordingState === Constants.recordingEvents.RECORDING_STARTED
-              ? 'Stop Recording'
+              ? "Stop Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? 'Starting Recording'
+              ? "Starting Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-              ? 'Start Recording'
+              ? "Start Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? 'Stopping Recording'
-              : 'Start Recording'
+              ? "Stopping Recording"
+              : "Start Recording"
           }
           isRequestProcessing={isRequestProcessing}
         />
@@ -588,49 +690,59 @@ const RecordingBTN = ({isMobile, isTab}) => {
         <OutlineIconButton
           Icon={ScreenRecording}
           onClick={_handleClick}
-          focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+          focusBGColor={
+            appTheme === appThemes.LIGHT &&
+            theme.palette.lightTheme.contrastText
+          }
           tooltipTitle={
             recordingState === Constants.recordingEvents.RECORDING_STARTED
-              ? 'Stop Recording'
+              ? "Stop Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? 'Starting Recording'
+              ? "Starting Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPED
-              ? 'Start Recording'
+              ? "Start Recording"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? 'Stopping Recording'
-              : 'Start Recording'
+              ? "Stopping Recording"
+              : "Start Recording"
           }
-          isFocused={isRecording && recordingState === Constants.recordingEvents.RECORDING_STARTED}
+          isFocused={
+            isRecording &&
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+          }
           bgColor={
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
-              recordingState === Constants.recordingEvents.RECORDING_STOPPING) &&
-            '#EEF0F2'
+              recordingState ===
+                Constants.recordingEvents.RECORDING_STOPPING) &&
+            "#EEF0F2"
           }
           disabled={!participantCanToggleRecording}
           lottieOption={
-            isRecording && recordingState === Constants.recordingEvents.RECORDING_STARTED ? defaultOptions : null
+            isRecording &&
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
+              ? defaultOptions
+              : null
           }
           buttonText={
             recordingState === Constants.recordingEvents.RECORDING_STARTING
-              ? 'Starting'
+              ? "Starting"
               : recordingState === Constants.recordingEvents.RECORDING_STOPPING
-              ? 'Stopping'
-              : ''
+              ? "Stopping"
+              : ""
           }
           isRequestProcessing={isRequestProcessing}
         />
       )}
       <ConfirmBox
-        title={'Start Recording'}
-        subTitle={'Are you sure you want to start recording?'}
+        title={"Start Recording"}
+        subTitle={"Are you sure you want to start recording?"}
         open={showConfirmationPopup}
-        successText={'Yes'}
+        successText={"Yes"}
         onSuccess={() => {
           _handleStartRecording();
           setShowConfirmationPopup(false);
         }}
-        rejectText={'No'}
+        rejectText={"No"}
         onReject={() => {
           setShowConfirmationPopup(false);
         }}
@@ -638,7 +750,7 @@ const RecordingBTN = ({isMobile, isTab}) => {
     </>
   );
 };
-const GoLiveBTN = ({isMobile, isTab}) => {
+const GoLiveBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
 
   const [isPopupShown, setIsPopupShown] = useState(false);
@@ -649,13 +761,13 @@ const GoLiveBTN = ({isMobile, isTab}) => {
 
   const isLiveStreaming = useIsLivestreaming();
 
-  const {isRequestProcessing} = useMemo(
+  const { isRequestProcessing } = useMemo(
     () => ({
       isRequestProcessing:
         livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTING ||
         livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPING,
     }),
-    [livestreamState],
+    [livestreamState]
   );
 
   const {
@@ -667,13 +779,13 @@ const GoLiveBTN = ({isMobile, isTab}) => {
     liveStreamTheme,
   } = useMeetingAppContext();
 
-  const {type, priority, gridSize} = useMemo(
+  const { type, priority, gridSize } = useMemo(
     () => ({
       type: appMeetingLayout.type,
       priority: appMeetingLayout.priority,
       gridSize: appMeetingLayout.gridSize,
     }),
-    [appMeetingLayout],
+    [appMeetingLayout]
   );
 
   const typeRef = useRef(type);
@@ -707,7 +819,7 @@ const GoLiveBTN = ({isMobile, isTab}) => {
     autoplay: true,
     animationData: liveBlink,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
+      preserveAspectRatio: "xMidYMid slice",
     },
     height: 64,
     width: 170,
@@ -718,9 +830,9 @@ const GoLiveBTN = ({isMobile, isTab}) => {
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
-    const layout = {type, priority, gridSize};
+    const layout = { type, priority, gridSize };
 
-    startLivestream(liveStreamConfig, {layout, theme: liveStreamTheme});
+    startLivestream(liveStreamConfig, { layout, theme: liveStreamTheme });
   };
 
   const _handleClick = () => {
@@ -741,30 +853,36 @@ const GoLiveBTN = ({isMobile, isTab}) => {
     <>
       {isMobile || isTab ? (
         <MobileIconButton
-          bgColor={'#D32F2F'}
+          bgColor={"#D32F2F"}
           onClick={_handleClick}
           tooltipTitle={
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
-              ? 'Stop Live'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTING
-              ? 'Starting Livestream'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPED
-              ? 'Go Live'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPING
-              ? 'Stopping Livestream'
-              : 'Go Live'
+              ? "Stop Live"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STARTING
+              ? "Starting Livestream"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPED
+              ? "Go Live"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPING
+              ? "Stopping Livestream"
+              : "Go Live"
           }
           Icon={LiveIcon}
           buttonText={
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
-              ? 'Stop Live'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTING
-              ? 'Starting Livestream'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPED
-              ? 'Go Live'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPING
-              ? 'Stopping Livestream'
-              : 'Go Live'
+              ? "Stop Live"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STARTING
+              ? "Starting Livestream"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPED
+              ? "Go Live"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPING
+              ? "Stopping Livestream"
+              : "Go Live"
           }
           isFocused={isLiveStreaming}
           lottieOption={isLiveStreaming ? defaultOptions : null}
@@ -773,21 +891,24 @@ const GoLiveBTN = ({isMobile, isTab}) => {
         />
       ) : (
         <OutlineIconTextButton
-          bgColor={'#D32F2F'}
+          bgColor={"#D32F2F"}
           onClick={_handleClick}
           tooltipTitle={
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
-              ? 'Stop Live'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTING
-              ? 'Starting Livestream'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPED
-              ? 'Go Live'
-              : livestreamState === Constants.livestreamEvents.LIVESTREAM_STOPPING
-              ? 'Stopping Livestream'
-              : 'Go Live'
+              ? "Stop Live"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STARTING
+              ? "Starting Livestream"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPED
+              ? "Go Live"
+              : livestreamState ===
+                Constants.livestreamEvents.LIVESTREAM_STOPPING
+              ? "Stopping Livestream"
+              : "Go Live"
           }
-          buttonText='Go Live'
-          textColor='#fff'
+          buttonText="Go Live"
+          textColor="#fff"
           lottieOption={isLiveStreaming ? defaultOptions : null}
           disabled={!participantCanToggleLivestream}
           isRequestProcessing={isRequestProcessing}
@@ -795,15 +916,17 @@ const GoLiveBTN = ({isMobile, isTab}) => {
       )}
       <ConfirmBox
         open={isPopupShown}
-        title={'Add live stream configuration'}
-        subTitle={'Please add live stream configuration to start live streaming'}
-        successText={'Proceed'}
+        title={"Add live stream configuration"}
+        subTitle={
+          "Please add live stream configuration to start live streaming"
+        }
+        successText={"Proceed"}
         onSuccess={() => {
-          setSideBarMode(s => sideBarModes.ACTIVITIES);
-          setSideBarNestedMode(s => sideBarNestedModes.ADD_LIVE_STREAM);
+          setSideBarMode((s) => sideBarModes.ACTIVITIES);
+          setSideBarNestedMode((s) => sideBarNestedModes.ADD_LIVE_STREAM);
           setIsPopupShown(false);
         }}
-        rejectText={'Cancel'}
+        rejectText={"Cancel"}
         onReject={() => {
           setIsPopupShown(false);
         }}
@@ -811,7 +934,7 @@ const GoLiveBTN = ({isMobile, isTab}) => {
     </>
   );
 };
-const HlsBTN = ({isMobile, isTab}) => {
+const HlsBTN = ({ isMobile, isTab }) => {
   const mMeeting = useMeeting({});
   const theme = useTheme();
 
@@ -821,23 +944,25 @@ const HlsBTN = ({isMobile, isTab}) => {
 
   const isHls = useIsHls();
 
-  const {isRequestProcessing} = useMemo(
+  const { isRequestProcessing } = useMemo(
     () => ({
       isRequestProcessing:
-        hlsState === Constants.hlsEvents.HLS_STARTING || hlsState === Constants.hlsEvents.HLS_STOPPING,
+        hlsState === Constants.hlsEvents.HLS_STARTING ||
+        hlsState === Constants.hlsEvents.HLS_STOPPING,
     }),
-    [hlsState],
+    [hlsState]
   );
 
-  const {appMeetingLayout, participantCanToggleHls, hlsTheme, appTheme} = useMeetingAppContext();
+  const { appMeetingLayout, participantCanToggleHls, hlsTheme, appTheme } =
+    useMeetingAppContext();
 
-  const {type, priority, gridSize} = useMemo(
+  const { type, priority, gridSize } = useMemo(
     () => ({
       type: appMeetingLayout.type,
       priority: appMeetingLayout.priority,
       gridSize: appMeetingLayout.gridSize,
     }),
-    [appMeetingLayout],
+    [appMeetingLayout]
   );
 
   const typeRef = useRef(type);
@@ -866,7 +991,7 @@ const HlsBTN = ({isMobile, isTab}) => {
     autoplay: true,
     animationData: liveHLS,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
+      preserveAspectRatio: "xMidYMid slice",
     },
     height: 64,
     width: 170,
@@ -877,7 +1002,7 @@ const HlsBTN = ({isMobile, isTab}) => {
     autoplay: true,
     animationData: stoppingHLS,
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
+      preserveAspectRatio: "xMidYMid slice",
     },
     height: 64,
     width: 170,
@@ -888,9 +1013,9 @@ const HlsBTN = ({isMobile, isTab}) => {
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
-    const layout = {type, priority, gridSize};
+    const layout = { type, priority, gridSize };
 
-    startHls({layout, theme: hlsTheme});
+    startHls({ layout, theme: hlsTheme });
   };
 
   const _handleClick = () => {
@@ -906,34 +1031,37 @@ const HlsBTN = ({isMobile, isTab}) => {
   return isMobile || isTab ? (
     <MobileIconButton
       onClick={_handleClick}
-      focusBGColor={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+      focusBGColor={
+        appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
+      }
       tooltipTitle={
         hlsState === Constants.hlsEvents.HLS_STARTED
-          ? 'Stop HLS'
+          ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? 'Starting HLS'
+          ? "Starting HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? 'Start HLS'
+          ? "Start HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? 'Stopping HLS'
-          : 'Start HLS'
+          ? "Stopping HLS"
+          : "Start HLS"
       }
       Icon={LiveIcon}
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED
-          ? 'Stop HLS'
+          ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? 'Starting HLS'
+          ? "Starting HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? 'Start HLS'
+          ? "Start HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? 'Stopping HLS'
-          : 'Start HLS'
+          ? "Stopping HLS"
+          : "Start HLS"
       }
       bgColor={
         appTheme === appThemes.LIGHT &&
-        (hlsState === Constants.hlsEvents.HLS_STARTED || hlsState === Constants.hlsEvents.HLS_STOPPING) &&
-        '#EEF0F2'
+        (hlsState === Constants.hlsEvents.HLS_STARTED ||
+          hlsState === Constants.hlsEvents.HLS_STOPPING) &&
+        "#EEF0F2"
       }
       isFocused={isHls}
       disabled={!participantCanToggleHls}
@@ -945,25 +1073,25 @@ const HlsBTN = ({isMobile, isTab}) => {
       onClick={_handleClick}
       tooltipTitle={
         hlsState === Constants.hlsEvents.HLS_STARTED
-          ? 'Stop HLS'
+          ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? 'Starting HLS'
+          ? "Starting HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? 'Start HLS'
+          ? "Start HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? 'Stopping HLS'
-          : 'Start HLS'
+          ? "Stopping HLS"
+          : "Start HLS"
       }
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED
-          ? 'Stop HLS'
+          ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
-          ? 'Starting HLS'
+          ? "Starting HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPED
-          ? 'Start HLS'
+          ? "Start HLS"
           : hlsState === Constants.hlsEvents.HLS_STOPPING
-          ? 'Stopping HLS'
-          : 'Start HLS'
+          ? "Stopping HLS"
+          : "Start HLS"
       }
       lottieOption={isHls ? defaultOptions : null}
       disabled={!participantCanToggleHls}
@@ -988,8 +1116,8 @@ const SingleMicMenu = ({
     <Box>
       <Box
         style={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           padding: 12,
           paddingBottom: 0,
         }}
@@ -1015,30 +1143,30 @@ const SingleMicMenu = ({
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.two
-              : '',
+              : "",
           color:
             appTheme === appThemes.DARK
               ? theme.palette.common.white
               : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.contrastText
-              : '',
+              : "",
         }}
       >
-        {micArr.map(({deviceId, label}, index) => (
+        {micArr.map(({ deviceId, label }, index) => (
           <Box
             style={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               paddingLeft: 12,
               paddingRight: 12,
               backgroundColor:
                 deviceId === selectMicDeviceId
                   ? appTheme === appThemes.DARK
-                    ? '#3F4046'
+                    ? "#3F4046"
                     : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.three
-                    : '#6D6E71'
-                  : '',
+                    : "#6D6E71"
+                  : "",
             }}
             classes={{
               root:
@@ -1054,16 +1182,16 @@ const SingleMicMenu = ({
             <MenuItem
               disableRipple
               style={{
-                display: 'flex',
+                display: "flex",
                 flex: 1,
                 backgroundColor:
                   deviceId === selectMicDeviceId
                     ? appTheme === appThemes.DARK
-                      ? '#3F4046'
+                      ? "#3F4046"
                       : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.three
-                      : '#6D6E71'
-                    : '',
+                      : "#6D6E71"
+                    : "",
               }}
               key={`mics_${deviceId}`}
               selected={deviceId === selectMicDeviceId}
@@ -1079,7 +1207,10 @@ const SingleMicMenu = ({
                     : appTheme === appThemes.DARK
                     ? classes.menuItemDark
                     : classes.menuItemDefault,
-                gutters: deviceId === selectMicDeviceId ? classes.menuItemGuttersAfterSelect : classes.menuItemGutters,
+                gutters:
+                  deviceId === selectMicDeviceId
+                    ? classes.menuItemGuttersAfterSelect
+                    : classes.menuItemGutters,
               }}
             >
               {label || `Mic ${index + 1}`}
@@ -1111,12 +1242,12 @@ const MicMenu = ({
     <Popover
       container={tollTipEl.current}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
+        vertical: "bottom",
+        horizontal: "center",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
+        vertical: "top",
+        horizontal: "center",
       }}
       anchorEl={tollTipEl.current}
       open={Boolean(downArrow)}
@@ -1129,12 +1260,12 @@ const MicMenu = ({
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.two
-              : '',
+              : "",
         }}
       >
         <SingleMicMenu
           micArr={mics}
-          label={'MICROPHONE'}
+          label={"MICROPHONE"}
           Icon={MicrophoneIcon}
           selectMicDeviceId={selectMicDeviceId}
           setSelectMicDeviceId={setSelectMicDeviceId}
@@ -1170,8 +1301,8 @@ const MicMenu = ({
             <Box
               style={{
                 height: 1,
-                width: '100%',
-                borderTop: '1px solid #9FA0A7',
+                width: "100%",
+                borderTop: "1px solid #9FA0A7",
               }}
             ></Box>
             <Box>
@@ -1184,28 +1315,28 @@ const MicMenu = ({
                       ? theme.palette.darkTheme.slightLighter
                       : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.two
-                      : '',
+                      : "",
                   color:
                     appTheme === appThemes.DARK
                       ? theme.palette.common.white
                       : appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
-                      : '',
+                      : "",
                 }}
               >
                 <Box
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                     paddingLeft: isNoiseRemovalChecked ? 12 : 6,
                     paddingRight: 6,
                     backgroundColor: isNoiseRemovalChecked
                       ? appTheme === appThemes.DARK
-                        ? '#3F4046'
+                        ? "#3F4046"
                         : appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.three
-                        : '#6D6E71'
-                      : '',
+                        : "#6D6E71"
+                      : "",
                   }}
                   classes={{
                     root:
@@ -1222,8 +1353,8 @@ const MicMenu = ({
                     <BpCheckbox
                       value={isNoiseRemovalChecked}
                       checked={isNoiseRemovalChecked}
-                      onClick={e => {
-                        _handleNoiseClick({e, selectMicDeviceId});
+                      onClick={(e) => {
+                        _handleNoiseClick({ e, selectMicDeviceId });
                       }}
                     />
                   )}
@@ -1231,21 +1362,21 @@ const MicMenu = ({
                   <MenuItem
                     disableRipple
                     style={{
-                      display: 'flex',
+                      display: "flex",
                       flex: 1,
                       backgroundColor: isNoiseRemovalChecked
                         ? appTheme === appThemes.DARK
-                          ? '#3F4046'
+                          ? "#3F4046"
                           : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.three
-                          : '#6D6E71'
-                        : '',
+                          : "#6D6E71"
+                        : "",
                     }}
                     key={`noise_removal`}
                     selected={isNoiseRemovalChecked}
-                    onClick={e => {
+                    onClick={(e) => {
                       handleClose();
-                      _handleNoiseClick({e, selectMicDeviceId});
+                      _handleNoiseClick({ e, selectMicDeviceId });
                     }}
                     classes={{
                       root:
@@ -1275,7 +1406,8 @@ const WebcamBTN = () => {
   const theme = useTheme();
   const classes = useStyles();
   const mMeeting = useMeeting({});
-  const {appTheme, selectWebcamDeviceId, setSelectWebcamDeviceId} = useMeetingAppContext();
+  const { appTheme, selectWebcamDeviceId, setSelectWebcamDeviceId } =
+    useMeetingAppContext();
 
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
@@ -1284,7 +1416,7 @@ const WebcamBTN = () => {
   const toggleWebcam = mMeeting?.toggleWebcam;
   const changeWebcam = mMeeting?.changeWebcam;
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setDownArrow(event.currentTarget);
   };
 
@@ -1292,7 +1424,7 @@ const WebcamBTN = () => {
     setDownArrow(null);
   };
 
-  const getWebcams = async mGetWebcams => {
+  const getWebcams = async (mGetWebcams) => {
     const webcams = await mGetWebcams();
 
     webcams && webcams?.length && setWebcams(webcams);
@@ -1303,38 +1435,43 @@ const WebcamBTN = () => {
   return (
     <Box
       style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
       ref={tollTipEl}
     >
       <OutlineIconButton
-        btnID={'btnWebcam'}
-        tooltipTitle={localWebcamOn ? 'Turn off webcam' : 'Turn on webcam'}
+        btnID={"btnWebcam"}
+        tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
         onClick={() => {
           toggleWebcam();
         }}
-        focusBGColor={appTheme === appThemes.LIGHT ? theme.palette.lightTheme.contrastText : '#ffffff33'}
+        focusBGColor={
+          appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.contrastText
+            : "#ffffff33"
+        }
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
-            <Tooltip placement='bottom' title={'Change webcam'}>
+            <Tooltip placement="bottom" title={"Change webcam"}>
               <IconButton
-                onClick={e => {
+                onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
                 }}
-                size={'small'}
+                size={"small"}
               >
                 <ArrowDropDownIcon
-                  fontSize={'small'}
+                  fontSize={"small"}
                   style={{
                     color: localWebcamOn
-                      ? 'white'
-                      : appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText,
+                      ? "white"
+                      : appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
                   }}
                 />
               </IconButton>
@@ -1345,12 +1482,12 @@ const WebcamBTN = () => {
       <Popover
         container={tollTipEl.current}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
+          vertical: "bottom",
+          horizontal: "center",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
+          vertical: "top",
+          horizontal: "center",
         }}
         anchorEl={tollTipEl.current}
         open={Boolean(downArrow)}
@@ -1363,16 +1500,16 @@ const WebcamBTN = () => {
                 ? theme.palette.darkTheme.slightLighter
                 : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.two
-                : '',
+                : "",
             color:
               appTheme === appThemes.DARK
                 ? theme.palette.common.white
                 : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.contrastText
-                : '',
+                : "",
           }}
         >
-          {webcams.map(({deviceId, label}, index) => (
+          {webcams.map(({ deviceId, label }, index) => (
             <MenuItem
               key={`output_webcams_${deviceId}`}
               selected={deviceId === selectWebcamDeviceId}
@@ -1387,7 +1524,7 @@ const WebcamBTN = () => {
                     ? classes.popoverHover
                     : appTheme === appThemes.DARK
                     ? classes.popoverHoverDark
-                    : '',
+                    : "",
               }}
             >
               {label || `Webcam ${index + 1}`}
@@ -1399,8 +1536,13 @@ const WebcamBTN = () => {
   );
 };
 const MicBTN = () => {
-  const {appTheme, notificationSoundEnabled, notificationAlertsEnabled, selectMicDeviceId, setSelectMicDeviceId} =
-    useMeetingAppContext();
+  const {
+    appTheme,
+    notificationSoundEnabled,
+    notificationAlertsEnabled,
+    selectMicDeviceId,
+    setSelectMicDeviceId,
+  } = useMeetingAppContext();
 
   const [isNoiseRemovalChecked, setIsNoiseRemovalChecked] = useState(false);
   const [downArrow, setDownArrow] = useState(null);
@@ -1409,9 +1551,9 @@ const MicBTN = () => {
   const mMeeting = useMeeting({});
   const theme = useTheme();
   const classes = useStyles();
-  const {enqueueSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setDownArrow(event.currentTarget);
   };
 
@@ -1425,14 +1567,14 @@ const MicBTN = () => {
       mMeeting?.toggleMic();
     } else {
       const audioTrack = await createMicrophoneAudioTrack({
-        encoderConfig: 'speech_standard',
+        encoderConfig: "speech_standard",
       });
       mMeeting?.toggleMic(audioTrack);
     }
   };
   const changeMic = mMeeting?.changeMic;
 
-  const getMics = async mGetMics => {
+  const getMics = async (mGetMics) => {
     const mics = await mGetMics();
 
     mics && mics?.length && setMics(mics);
@@ -1442,15 +1584,15 @@ const MicBTN = () => {
 
   const getOutputDevices = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const outputMics = devices.filter(d => d.kind === 'audiooutput');
+    const outputMics = devices.filter((d) => d.kind === "audiooutput");
 
     outputMics && outputMics?.length && setOutputMics(outputMics);
   };
 
-  const _handleNoiseClick = async ({e, selectMicDeviceId}) => {
+  const _handleNoiseClick = async ({ e, selectMicDeviceId }) => {
     e.stopPropagation();
     let _isNoiseRemovalChecked;
-    setIsNoiseRemovalChecked(s => {
+    setIsNoiseRemovalChecked((s) => {
       const notS = !s;
       _isNoiseRemovalChecked = notS;
       return notS;
@@ -1462,7 +1604,9 @@ const MicBTN = () => {
       const stream = await createMicrophoneAudioTrack({
         microphoneId: selectMicDeviceId,
       });
-      const processedStream = await processor.getNoiseSuppressedAudioStream(stream);
+      const processedStream = await processor.getNoiseSuppressedAudioStream(
+        stream
+      );
 
       changeMic(processedStream);
     } catch (error) {
@@ -1471,11 +1615,13 @@ const MicBTN = () => {
 
     if (_isNoiseRemovalChecked) {
       if (notificationSoundEnabled) {
-        new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
       }
 
       if (notificationAlertsEnabled) {
-        enqueueSnackbar('Noise removal activated');
+        enqueueSnackbar("Noise removal activated");
       }
     }
   };
@@ -1484,35 +1630,48 @@ const MicBTN = () => {
     <Box
       ref={tollTipEl}
       style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <OutlineIconButton
-        btnID={'btnMic'}
-        tooltipTitle={isNoiseRemovalChecked ? 'Noise Removal Activated' : localMicOn ? 'Turn off mic' : 'Turn on mic'}
+        btnID={"btnMic"}
+        tooltipTitle={
+          isNoiseRemovalChecked
+            ? "Noise Removal Activated"
+            : localMicOn
+            ? "Turn off mic"
+            : "Turn on mic"
+        }
         isFocused={localMicOn}
         Icon={localMicOn ? MicOn : MicOffIcon}
         onClick={toggleMic}
-        focusBGColor={appTheme === appThemes.LIGHT ? theme.palette.lightTheme.contrastText : '#ffffff33'}
-        focusBorderColor={isNoiseRemovalChecked && localMicOn ? '#7dcc7d' : ''}
+        focusBGColor={
+          appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.contrastText
+            : "#ffffff33"
+        }
+        focusBorderColor={isNoiseRemovalChecked && localMicOn ? "#7dcc7d" : ""}
         focusIconColor={theme.palette.common.white}
         renderRightComponent={() => {
           return (
-            <Tooltip placement='bottom' title={'Change microphone'}>
+            <Tooltip placement="bottom" title={"Change microphone"}>
               <IconButton
-                onClick={e => {
+                onClick={(e) => {
                   getMics(mMeeting.getMics);
                   getOutputDevices();
                   handleClick(e);
                 }}
-                size={'small'}
+                size={"small"}
               >
                 <ArrowDropDownIcon
-                  fontSize={'small'}
+                  fontSize={"small"}
                   style={{
-                    color: localMicOn ? 'white' : appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText,
+                    color: localMicOn
+                      ? "white"
+                      : appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText,
                   }}
                 />
               </IconButton>
@@ -1544,8 +1703,13 @@ const EndCallBTN = () => {
   const classes = useStyles();
 
   const [isEndMeeting, setIsEndMeeting] = useState(false);
-  const {endCallContainerRef, participantCanEndMeeting, participantCanLeave, meetingMode, appTheme} =
-    useMeetingAppContext();
+  const {
+    endCallContainerRef,
+    participantCanEndMeeting,
+    participantCanLeave,
+    meetingMode,
+    appTheme,
+  } = useMeetingAppContext();
 
   const sendChatMessage = mMeeting?.sendChatMessage;
 
@@ -1558,7 +1722,7 @@ const EndCallBTN = () => {
 
   const [downArrow, setDownArrow] = useState(null);
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setDownArrow(event.currentTarget);
   };
 
@@ -1570,28 +1734,30 @@ const EndCallBTN = () => {
     <Box
       ref={tollTipEl}
       style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <OutlineIconButton
         ref={endCallContainerRef}
         tooltipTitle={
           !participantCanLeave && meetingMode === meetingModes.CONFERENCE
-            ? 'End Call'
-            : participantCanEndMeeting && meetingMode === meetingModes.CONFERENCE
-            ? 'Open popup'
-            : 'Leave Call'
+            ? "End Call"
+            : participantCanEndMeeting &&
+              meetingMode === meetingModes.CONFERENCE
+            ? "Open popup"
+            : "Leave Call"
         }
         bgColor={theme.palette.error.main}
         color={theme.palette.common.white}
         Icon={EndCall}
-        onClick={e => {
+        onClick={(e) => {
           window.onbeforeunload = null;
           !participantCanLeave && meetingMode === meetingModes.CONFERENCE
             ? setIsEndMeeting(true)
-            : participantCanEndMeeting && meetingMode === meetingModes.CONFERENCE
+            : participantCanEndMeeting &&
+              meetingMode === meetingModes.CONFERENCE
             ? handleClick(e)
             : leave();
         }}
@@ -1601,12 +1767,12 @@ const EndCallBTN = () => {
           <Popover
             container={tollTipEl.current}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
+              vertical: "bottom",
+              horizontal: "center",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             }}
             anchorEl={tollTipEl.current}
             open={Boolean(downArrow)}
@@ -1622,13 +1788,13 @@ const EndCallBTN = () => {
                     ? theme.palette.darkTheme.slightLighter
                     : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
-                    : '',
+                    : "",
                 color:
                   appTheme === appThemes.DARK
                     ? theme.palette.common.white
                     : appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
-                    : '',
+                    : "",
               }}
             >
               <MenuItem
@@ -1643,10 +1809,10 @@ const EndCallBTN = () => {
                       ? classes.popoverHover
                       : appTheme === appThemes.DARK
                       ? classes.popoverHoverDark
-                      : '',
+                      : "",
                 }}
               >
-                <Box style={{display: 'flex', flexDirection: 'row'}}>
+                <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
                     style={{
                       backgroundColor:
@@ -1655,9 +1821,9 @@ const EndCallBTN = () => {
                           : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.three
                           : theme.palette.common.sidePanel,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       height: 42,
                       width: 42,
                       borderRadius: 4,
@@ -1666,36 +1832,41 @@ const EndCallBTN = () => {
                     <LeaveMeetingIcon
                       height={22}
                       width={22}
-                      fill={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText}
+                      fill={
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText
+                      }
                     />
                   </Box>
                   <Box
                     style={{
-                      display: 'flex',
+                      display: "flex",
                       flex: 1,
-                      flexDirection: 'column',
+                      flexDirection: "column",
                       marginLeft: 12,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                     }}
                   >
                     <Typography
                       style={{
                         fontSize: 14,
-                        color: appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText,
+                        color:
+                          appTheme === appThemes.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
                       }}
                     >
                       Leave
                     </Typography>
                     <Typography
-                      color={'textSecondary'}
+                      color={"textSecondary"}
                       style={{
-                        fontSize: '0.9rem',
+                        fontSize: "0.9rem",
                         color:
                           appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.four
                             : appTheme === appThemes.LIGHT
                             ? theme.palette.lightTheme.five
-                            : '',
+                            : "",
                       }}
                     >
                       Only you will leave the call.
@@ -1704,7 +1875,7 @@ const EndCallBTN = () => {
                 </Box>
               </MenuItem>
               <MenuItem
-                style={{marginTop: 4}}
+                style={{ marginTop: 4 }}
                 key={`end`}
                 onClick={() => {
                   setIsEndMeeting(true);
@@ -1715,10 +1886,10 @@ const EndCallBTN = () => {
                       ? classes.popoverHover
                       : appTheme === appThemes.DARK
                       ? classes.popoverHoverDark
-                      : '',
+                      : "",
                 }}
               >
-                <Box style={{display: 'flex', flexDirection: 'row'}}>
+                <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
                     style={{
                       backgroundColor:
@@ -1727,44 +1898,51 @@ const EndCallBTN = () => {
                           : appTheme === appThemes.LIGHT
                           ? theme.palette.lightTheme.three
                           : theme.palette.common.sidePanel,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       height: 42,
                       width: 42,
                       borderRadius: 4,
                     }}
                   >
-                    <EndCallIcon fill={appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText} />
+                    <EndCallIcon
+                      fill={
+                        appTheme === appThemes.LIGHT &&
+                        theme.palette.lightTheme.contrastText
+                      }
+                    />
                   </Box>
                   <Box
                     style={{
-                      display: 'flex',
+                      display: "flex",
                       marginLeft: 12,
-                      flexDirection: 'column',
-                      justifyContent: 'center',
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
                   >
                     <Typography
                       style={{
                         fontSize: 14,
                         lineHeight: 1.5,
-                        color: appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText,
+                        color:
+                          appTheme === appThemes.LIGHT &&
+                          theme.palette.lightTheme.contrastText,
                       }}
                     >
                       End
                     </Typography>
                     <Typography
                       style={{
-                        fontSize: '0.9rem',
+                        fontSize: "0.9rem",
                         color:
                           appTheme === appThemes.DARK
                             ? theme.palette.darkTheme.four
                             : appTheme === appThemes.LIGHT
                             ? theme.palette.lightTheme.five
-                            : '',
+                            : "",
                       }}
-                      color={'textSecondary'}
+                      color={"textSecondary"}
                     >
                       End call for all participants.
                     </Typography>
@@ -1776,16 +1954,18 @@ const EndCallBTN = () => {
 
           <ConfirmBox
             open={isEndMeeting}
-            title={'Are you sure to end this call for everyone?'}
-            successText={'End Call'}
+            title={"Are you sure to end this call for everyone?"}
+            successText={"End Call"}
             onSuccess={() => {
-              sendChatMessage(JSON.stringify({buttonType: 'END_CALL', data: {}}));
+              sendChatMessage(
+                JSON.stringify({ buttonType: "END_CALL", data: {} })
+              );
               setTimeout(() => {
                 window.onbeforeunload = null;
                 end();
               }, 1000);
             }}
-            rejectText='Cancel'
+            rejectText="Cancel"
             onReject={() => {
               setIsEndMeeting(false);
             }}
@@ -1796,7 +1976,7 @@ const EndCallBTN = () => {
   );
 };
 
-const TopBar = ({topBarHeight}) => {
+const TopBar = ({ topBarHeight }) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -1841,187 +2021,204 @@ const TopBar = ({topBarHeight}) => {
 
   const topBarButtonTypes = useMemo(
     () => ({
-      END_CALL: 'END_CALL',
-      ACTIVITIES: 'ACTIVITIES',
-      CHAT: 'CHAT',
-      PARTICIPANTS: 'PARTICIPANTS',
-      SCREEN_SHARE: 'SCREEN_SHARE',
-      WEBCAM: 'WEBCAM',
-      MIC: 'MIC',
-      RAISE_HAND: 'RAISE_HAND',
-      RECORDING: 'RECORDING',
-      HLS: 'HLS',
-      WHITEBOARD: 'WHITEBOARD',
-      ADD_LIVE_STREAM: 'ADD_LIVE_STREAM',
-      CONFIGURATION: 'CONFIGURATION',
-      GO_LIVE: 'GO_LIVE',
+      END_CALL: "END_CALL",
+      ACTIVITIES: "ACTIVITIES",
+      CHAT: "CHAT",
+      PARTICIPANTS: "PARTICIPANTS",
+      SCREEN_SHARE: "SCREEN_SHARE",
+      WEBCAM: "WEBCAM",
+      MIC: "MIC",
+      RAISE_HAND: "RAISE_HAND",
+      RECORDING: "RECORDING",
+      HLS: "HLS",
+      WHITEBOARD: "WHITEBOARD",
+      ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
+      CONFIGURATION: "CONFIGURATION",
+      GO_LIVE: "GO_LIVE",
     }),
-    [],
+    []
   );
 
-  const {topBarIcons, firstFourElements, excludeFirstFourElements} = useMemo(() => {
-    const arr = [];
-    const mobileIconArr = [];
+  const { topBarIcons, firstFourElements, excludeFirstFourElements } =
+    useMemo(() => {
+      const arr = [];
+      const mobileIconArr = [];
 
-    if (participantCanLeave || participantCanEndMeeting) {
-      arr.unshift([topBarButtonTypes.END_CALL]);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.END_CALL,
-        priority: 1,
-      });
-    }
+      if (participantCanLeave || participantCanEndMeeting) {
+        arr.unshift([topBarButtonTypes.END_CALL]);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.END_CALL,
+          priority: 1,
+        });
+      }
 
-    const arrSideBar = [];
+      const arrSideBar = [];
 
-    if (canChangeLayout && meetingMode === meetingModes.CONFERENCE) {
-      arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.CONFIGURATION,
-        priority: 7,
-      });
-    }
-    if (chatEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.CHAT);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.CHAT,
-        priority: 5,
-      });
-    }
-    if (participantTabPanelEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.PARTICIPANTS,
-        priority: 10,
-      });
-    }
+      if (canChangeLayout && meetingMode === meetingModes.CONFERENCE) {
+        arrSideBar.unshift(topBarButtonTypes.CONFIGURATION);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CONFIGURATION,
+          priority: 7,
+        });
+      }
+      if (chatEnabled) {
+        arrSideBar.unshift(topBarButtonTypes.CHAT);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CHAT,
+          priority: 5,
+        });
+      }
+      if (participantTabPanelEnabled) {
+        arrSideBar.unshift(topBarButtonTypes.PARTICIPANTS);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.PARTICIPANTS,
+          priority: 10,
+        });
+      }
 
-    if (pollEnabled || whiteboardEnabled) {
+      // if (pollEnabled || whiteboardEnabled) {
       arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
       mobileIconArr.unshift({
         buttonType: topBarButtonTypes.ACTIVITIES,
-        priority: 10,
+        // priority: 10,
       });
-    }
+      // }
 
-    arr.unshift(arrSideBar);
+      arr.unshift(arrSideBar);
 
-    const arrMedia = [];
+      const arrMedia = [];
 
-    if (screenShareEnabled && meetingMode === meetingModes.CONFERENCE) {
-      arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.SCREEN_SHARE,
-        priority: 6,
-      });
-    }
-    if (participantCanToggleSelfWebcam && meetingMode === meetingModes.CONFERENCE) {
-      arrMedia.unshift(topBarButtonTypes.WEBCAM);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.WEBCAM,
-        priority: 2,
-      });
-    }
-    if (participantCanToggleSelfMic && meetingMode === meetingModes.CONFERENCE) {
-      arrMedia.unshift(topBarButtonTypes.MIC);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.MIC,
-        priority: 3,
-      });
-    }
+      if (screenShareEnabled && meetingMode === meetingModes.CONFERENCE) {
+        arrMedia.unshift(topBarButtonTypes.SCREEN_SHARE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.SCREEN_SHARE,
+          priority: 6,
+        });
+      }
+      if (
+        participantCanToggleSelfWebcam &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
+        arrMedia.unshift(topBarButtonTypes.WEBCAM);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.WEBCAM,
+          priority: 2,
+        });
+      }
+      if (
+        participantCanToggleSelfMic &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
+        arrMedia.unshift(topBarButtonTypes.MIC);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.MIC,
+          priority: 3,
+        });
+      }
 
-    if (arrMedia.length) {
-      arr.unshift(arrMedia);
-    }
+      if (arrMedia.length) {
+        arr.unshift(arrMedia);
+      }
 
-    const utilsArr = [];
+      const utilsArr = [];
 
-    if (raiseHandEnabled) {
-      utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.RAISE_HAND,
-        priority: 13,
-      });
-    }
+      if (raiseHandEnabled) {
+        utilsArr.unshift(topBarButtonTypes.RAISE_HAND);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.RAISE_HAND,
+          priority: 13,
+        });
+      }
 
-    if (recordingEnabled && meetingMode === meetingModes.CONFERENCE) {
-      utilsArr.unshift(topBarButtonTypes.RECORDING);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.RECORDING,
-        priority: 4,
-      });
-    }
+      if (recordingEnabled && meetingMode === meetingModes.CONFERENCE) {
+        utilsArr.unshift(topBarButtonTypes.RECORDING);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.RECORDING,
+          priority: 4,
+        });
+      }
 
-    // if (whiteboardEnabled && meetingMode === meetingModes.CONFERENCE) {
-    //   utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
-    //   mobileIconArr.unshift({
-    //     buttonType: topBarButtonTypes.WHITEBOARD,
-    //     priority: 11,
-    //   });
-    // }
+      // if (whiteboardEnabled && meetingMode === meetingModes.CONFERENCE) {
+      //   utilsArr.unshift(topBarButtonTypes.WHITEBOARD);
+      //   mobileIconArr.unshift({
+      //     buttonType: topBarButtonTypes.WHITEBOARD,
+      //     priority: 11,
+      //   });
+      // }
 
-    if (liveStreamEnabled && !participantCanToggleLivestream && meetingMode === meetingModes.CONFERENCE) {
-      utilsArr.unshift(topBarButtonTypes.GO_LIVE);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.GO_LIVE,
-        priority: 9,
-      });
-    }
+      if (
+        liveStreamEnabled &&
+        !participantCanToggleLivestream &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
+        utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.GO_LIVE,
+          priority: 9,
+        });
+      }
 
-    if (hlsEnabled && meetingMode === meetingModes.CONFERENCE) {
-      utilsArr.unshift(topBarButtonTypes.HLS);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.HLS,
-        priority: 14,
-      });
-    }
+      if (hlsEnabled && meetingMode === meetingModes.CONFERENCE) {
+        utilsArr.unshift(topBarButtonTypes.HLS);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.HLS,
+          priority: 14,
+        });
+      }
 
-    if (participantCanToggleLivestream && liveStreamEnabled && meetingMode === meetingModes.CONFERENCE) {
-      //liveStreamIcon
-      utilsArr.unshift(topBarButtonTypes.GO_LIVE);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.GO_LIVE,
-        priority: 9,
-      });
-      //AddLiveStreamIcon
-      // utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
-      // mobileIconArr.unshift({
-      //   buttonType: topBarButtonTypes.ADD_LIVE_STREAM,
-      //   priority: 8,
-      // });
-    }
+      if (
+        participantCanToggleLivestream &&
+        liveStreamEnabled &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
+        //liveStreamIcon
+        utilsArr.unshift(topBarButtonTypes.GO_LIVE);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.GO_LIVE,
+          priority: 9,
+        });
+        //AddLiveStreamIcon
+        // utilsArr.unshift(topBarButtonTypes.ADD_LIVE_STREAM);
+        // mobileIconArr.unshift({
+        //   buttonType: topBarButtonTypes.ADD_LIVE_STREAM,
+        //   priority: 8,
+        // });
+      }
 
-    if (participantCanToggleLivestream && !liveStreamEnabled) {
-    }
+      if (participantCanToggleLivestream && !liveStreamEnabled) {
+      }
 
-    if (utilsArr.length) {
-      arr.unshift(utilsArr);
-    }
+      if (utilsArr.length) {
+        arr.unshift(utilsArr);
+      }
 
-    //sorting mobile icon
-    mobileIconArr.sort((iconA, iconB) => iconA.priority - iconB.priority).map(icon => icon.buttonType);
+      //sorting mobile icon
+      mobileIconArr
+        .sort((iconA, iconB) => iconA.priority - iconB.priority)
+        .map((icon) => icon.buttonType);
 
-    const firstFourElements = mobileIconArr.slice(0, 4);
+      const firstFourElements = mobileIconArr.slice(0, 4);
 
-    const excludeFirstFourElements = mobileIconArr.slice(4);
+      const excludeFirstFourElements = mobileIconArr.slice(4);
 
-    return {
-      topBarIcons: arr,
-      mobileIcons: mobileIconArr,
-      firstFourElements,
-      excludeFirstFourElements,
-    };
-  }, [
-    participantCanToggleSelfMic,
-    participantCanToggleSelfWebcam,
-    screenShareEnabled,
-    pollEnabled,
-    whiteboardEnabled,
-    chatEnabled,
-    raiseHandEnabled,
-    topBarButtonTypes,
-    recordingEnabled,
-    meetingMode,
-  ]);
+      return {
+        topBarIcons: arr,
+        mobileIcons: mobileIconArr,
+        firstFourElements,
+        excludeFirstFourElements,
+      };
+    }, [
+      participantCanToggleSelfMic,
+      participantCanToggleSelfWebcam,
+      screenShareEnabled,
+      pollEnabled,
+      whiteboardEnabled,
+      chatEnabled,
+      raiseHandEnabled,
+      topBarButtonTypes,
+      recordingEnabled,
+      meetingMode,
+    ]);
 
   const [topBarVisible, setTopBarVisible] = useState(false);
 
@@ -2035,9 +2232,9 @@ const TopBar = ({topBarHeight}) => {
     <Box
       style={{
         height: topBarHeight,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         backgroundColor:
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
@@ -2094,11 +2291,11 @@ const TopBar = ({topBarHeight}) => {
       )}
 
       <SwipeableDrawer
-        anchor={'bottom'}
+        anchor={"bottom"}
         open={Boolean(open)}
         onClose={handleCloseFAB}
         onOpen={handleClickFAB}
-        style={{paddingBottom: '100px'}}
+        style={{ paddingBottom: "100px" }}
       >
         <Grid
           container
@@ -2118,39 +2315,95 @@ const TopBar = ({topBarHeight}) => {
                 xs={4}
                 sm={3}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {icon.buttonType === topBarButtonTypes.RAISE_HAND ? (
-                  <RaiseHandBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <RaiseHandBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.MIC ? (
-                  <MicBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <MicBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.WEBCAM ? (
-                  <WebcamBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <WebcamBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.SCREEN_SHARE ? (
-                  <ScreenShareBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <ScreenShareBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.PARTICIPANTS ? (
-                  <ParticipantsBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <ParticipantsBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.CHAT ? (
-                  <ChatBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <ChatBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.ACTIVITIES ? (
-                  <ActivitiesBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <ActivitiesBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
-                  <EndCallBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <EndCallBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
-                  <RecordingBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <RecordingBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.HLS ? (
-                  <HlsBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <HlsBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.GO_LIVE ? (
-                  <GoLiveBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <GoLiveBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.WHITEBOARD ? (
-                  <WhiteBoardBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <WhiteBoardBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.ADD_LIVE_STREAM ? (
-                  <AddLiveStreamBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <AddLiveStreamBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.CONFIGURATION ? (
-                  <ConfigBTN onClick={handleCloseFAB} isMobile={isMobile} isTab={isTab} />
+                  <ConfigBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : null}
               </Grid>
             );
@@ -2162,59 +2415,69 @@ const TopBar = ({topBarHeight}) => {
     <Box
       style={{
         height: topBarHeight,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
         backgroundColor:
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : theme.palette.background.default,
-        borderBottom: `1px solid ${appTheme === appThemes.LIGHT ? theme.palette.lightTheme.outlineColor : '#ffffff33'}`,
-        position: 'relative',
+        borderBottom: `1px solid ${
+          appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.outlineColor
+            : "#ffffff33"
+        }`,
+        position: "relative",
         top: topBarVisible ? 0 : -topBarHeight,
         transition: `all ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
-        transitionTimingFunction: 'ease-in-out',
+        transitionTimingFunction: "ease-in-out",
       }}
     >
       <Box
         style={{
-          display: 'flex',
+          display: "flex",
           height: topBarHeight,
           paddingLeft: theme.spacing(2),
-          position: 'relative',
-          alignItems: 'center',
+          position: "relative",
+          alignItems: "center",
         }}
       >
         {brandingEnabled && (
           <>
             <img
-              alt={'App Logo'}
+              alt={"App Logo"}
               style={{
-                display: 'inline-block',
+                display: "inline-block",
                 height: topBarHeight - theme.spacing(2),
               }}
               src={
-                defaultBrandLogoUrl || brandLogoURL || `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
+                defaultBrandLogoUrl ||
+                brandLogoURL ||
+                `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
               }
               onError={() => {
-                setDefaultBrandLogoUrl(`https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`);
+                setDefaultBrandLogoUrl(
+                  `https://static.videosdk.live/prebuilt/videosdk_logo_circle.png`
+                );
               }}
             />
             <Box
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
               }}
               ml={1}
             >
               <Typography
                 style={{
-                  fontSize: '1.2rem',
-                  fontWeight: '600',
-                  color: appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText,
+                  fontSize: "1.2rem",
+                  fontWeight: "600",
+                  color:
+                    appTheme === appThemes.LIGHT &&
+                    theme.palette.lightTheme.contrastText,
                 }}
               >
                 {brandName}
@@ -2222,21 +2485,27 @@ const TopBar = ({topBarHeight}) => {
               {poweredBy ? (
                 <Typography
                   style={{
-                    fontSize: '0.9rem',
-                    wordBreak: 'break-all',
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText,
+                    fontSize: "0.9rem",
+                    wordBreak: "break-all",
+                    display: "flex",
+                    alignItems: "center",
+                    color:
+                      appTheme === appThemes.LIGHT &&
+                      theme.palette.lightTheme.contrastText,
                   }}
-                  color={'textSecondary'}
+                  color={"textSecondary"}
                 >
                   Powered by&nbsp;
-                  <Link style={{textDecorationColor: '#fa3a57'}} target={'_blank'} href={'https://videosdk.live'}>
+                  <Link
+                    style={{ textDecorationColor: "#fa3a57" }}
+                    target={"_blank"}
+                    href={"https://videosdk.live"}
+                  >
                     <Typography
                       style={{
-                        color: '#fa3a57',
-                        textTransform: 'lowercase',
-                        fontSize: '0.9rem',
+                        color: "#fa3a57",
+                        textTransform: "lowercase",
+                        fontSize: "0.9rem",
                       }}
                     >
                       videosdk.live
@@ -2256,14 +2525,21 @@ const TopBar = ({topBarHeight}) => {
               {i !== 0 && (
                 <Box
                   style={{
-                    backgroundColor: appTheme === appThemes.LIGHT ? theme.palette.lightTheme.outlineColor : '#ffffff33',
+                    backgroundColor:
+                      appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.outlineColor
+                        : "#ffffff33",
                     width: 1,
                     height: topBarHeight - theme.spacing(1.5),
                     flex: 1,
                   }}
                 />
               )}
-              <Box ml={i === 0 ? 0 : 2} mr={i === topBarIcons.length - 1 ? 0 : 2} className={classes.row}>
+              <Box
+                ml={i === 0 ? 0 : 2}
+                mr={i === topBarIcons.length - 1 ? 0 : 2}
+                className={classes.row}
+              >
                 {row.map((buttonType, j) => {
                   return (
                     <Box key={`topbar_controls_j_${j}`} ml={j === 0 ? 0 : 1.5}>
