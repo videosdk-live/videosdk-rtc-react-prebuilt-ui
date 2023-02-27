@@ -167,6 +167,7 @@ const App = () => {
       networkBarEnabled: "networkBarEnabled",
 
       cameraResolution: "cameraResolution",
+      cameraMultiStream: "cameraMultiStream",
       cameraOptimizationMode: "cameraOptimizationMode",
       screenShareResolution: "screenShareResolution",
       screenShareOptimizationMode: "screenShareOptimizationMode",
@@ -445,6 +446,12 @@ const App = () => {
       typeof paramKeys.cameraResolution !== "string"
     ) {
       paramKeys.cameraResolution = "h360p_w640p";
+    }
+    if (
+      !paramKeys.cameraMultiStream ||
+      typeof paramKeys.cameraMultiStream !== "string"
+    ) {
+      paramKeys.cameraMultiStream = "true";
     }
     if (
       !paramKeys.cameraOptimizationMode ||
@@ -764,6 +771,7 @@ const App = () => {
               paramKeys.maintainLandscapeVideoAspectRatio === "true",
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
             cameraResolution: paramKeys.cameraResolution,
+            cameraMultiStream: paramKeys.cameraMultiStream === "true",
             cameraOptimizationMode: paramKeys.cameraOptimizationMode,
             screenShareResolution: paramKeys.screenShareResolution,
             screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
@@ -787,6 +795,7 @@ const App = () => {
               preferredProtocol: paramKeys.preferredProtocol,
               autoConsume: false,
               mode: paramKeys.mode,
+              multiStream: paramKeys.multiStream === "true",
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction

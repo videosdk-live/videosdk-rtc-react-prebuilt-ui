@@ -148,6 +148,7 @@ export const MeetingAppProvider = ({
 
   cameraResolution,
   cameraOptimizationMode,
+  cameraMultiStream,
   screenShareResolution,
   screenShareOptimizationMode,
   micQuality,
@@ -327,6 +328,7 @@ export const MeetingAppProvider = ({
 
         cameraResolution,
         cameraOptimizationMode,
+        cameraMultiStream,
         screenShareResolution,
         screenShareOptimizationMode,
         micQuality,
