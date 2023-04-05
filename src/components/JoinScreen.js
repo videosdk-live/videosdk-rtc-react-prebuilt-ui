@@ -19,6 +19,7 @@ import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
 import { appThemes } from "../MeetingAppContextDef";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -432,6 +433,8 @@ export default function JoinMeeting({
   const isSMOnly = useMediaQuery(theme.breakpoints.only("sm"));
   const isXLOnly = useMediaQuery(theme.breakpoints.only("xl"));
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Box
@@ -614,7 +617,7 @@ export default function JoinMeeting({
                                       theme.palette.lightTheme.contrastText,
                                   }}
                                 >
-                                  Check your audio and video
+                                  {t("Check your audio and video")}
                                 </Typography>
                               </Box>
                             </Box>

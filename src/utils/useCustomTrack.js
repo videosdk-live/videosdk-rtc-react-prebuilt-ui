@@ -9,6 +9,7 @@ const useCustomTrack = () => {
   const {
     cameraResolution,
     cameraOptimizationMode,
+    cameraMultiStream,
     micQuality,
     screenShareResolution,
     screenShareOptimizationMode,
@@ -19,6 +20,7 @@ const useCustomTrack = () => {
       cameraId: deviceId,
       encoderConfig: cameraResolution,
       optimizationMode: cameraOptimizationMode,
+      multiStream: cameraMultiStream,
     }).catch((error) => {
       console.log("Unable to create custom video Track", error);
     });

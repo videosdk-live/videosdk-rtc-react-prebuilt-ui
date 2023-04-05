@@ -27,6 +27,8 @@ import { version as prebuiltSDKVersion } from "../package.json";
 import { meetingModes } from "./CONSTS";
 import animationData from "./animations/meeting-left.json";
 import lightThemeAnimationData from "./animations/meeting_left_white.json";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
 const App = () => {
   const [meetingIdValidation, setMeetingIdValidation] = useState({
@@ -70,6 +72,7 @@ const App = () => {
       whiteboardEnabled: "whiteboardEnabled",
       raiseHandEnabled: "raiseHandEnabled",
       theme: "theme",
+      language: "language",
       //
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
@@ -164,6 +167,7 @@ const App = () => {
       networkBarEnabled: "networkBarEnabled",
 
       cameraResolution: "cameraResolution",
+      cameraMultiStream: "cameraMultiStream",
       cameraOptimizationMode: "cameraOptimizationMode",
       screenShareResolution: "screenShareResolution",
       screenShareOptimizationMode: "screenShareOptimizationMode",
@@ -390,6 +394,9 @@ const App = () => {
     if (!paramKeys.theme || typeof paramKeys.theme !== "string") {
       paramKeys.theme = "DEFAULT";
     }
+    if (!paramKeys.language || typeof paramKeys.language !== "string") {
+      paramKeys.language = "en";
+    }
     if (
       !paramKeys.recordingTheme ||
       typeof paramKeys.recordingTheme !== "string"
@@ -439,6 +446,12 @@ const App = () => {
       typeof paramKeys.cameraResolution !== "string"
     ) {
       paramKeys.cameraResolution = "h360p_w640p";
+    }
+    if (
+      !paramKeys.cameraMultiStream ||
+      typeof paramKeys.cameraMultiStream !== "string"
+    ) {
+      paramKeys.cameraMultiStream = "true";
     }
     if (
       !paramKeys.cameraOptimizationMode ||
@@ -566,6 +579,29 @@ const App = () => {
       };
     }
   }, [isXStoSM]);
+
+  useEffect(() => {
+    i18n.use(initReactI18next).init({
+      resources: {
+        es: {
+          translation: {
+            "Check your audio and video": "Revisa tu audio y video",
+            "Join Now": "Únete ahora",
+            "Enter Minimum 3 Characters": "Ingrese un mínimo de 3 caracteres",
+            "Enter your name": "Introduzca su nombre",
+            Settings: "Ajustes",
+            Camera: "Cámara",
+            Microphone: "Micrófono",
+          },
+        },
+      },
+      lng: paramKeys.language, // if you're using a language detector, do not define the lng option
+      fallbackLng: "en",
+      interpolation: {
+        escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+      },
+    });
+  }, []);
 
   return (
     <>
@@ -720,6 +756,7 @@ const App = () => {
             reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
             isRecorder: paramKeys.isRecorder === "true",
             appTheme: paramKeys.theme,
+            language: paramKeys.language,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
@@ -734,6 +771,7 @@ const App = () => {
               paramKeys.maintainLandscapeVideoAspectRatio === "true",
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
             cameraResolution: paramKeys.cameraResolution,
+            cameraMultiStream: paramKeys.cameraMultiStream === "true",
             cameraOptimizationMode: paramKeys.cameraOptimizationMode,
             screenShareResolution: paramKeys.screenShareResolution,
             screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
@@ -757,6 +795,7 @@ const App = () => {
               preferredProtocol: paramKeys.preferredProtocol,
               autoConsume: false,
               mode: paramKeys.mode,
+              multiStream: paramKeys.multiStream === "true",
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction

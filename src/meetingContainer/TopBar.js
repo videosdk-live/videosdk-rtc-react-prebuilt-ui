@@ -1582,7 +1582,7 @@ const WebcamBTN = () => {
       }
 
       if (notificationAlertsEnabled) {
-        enqueueSnackbar("Camera view mirrored");
+        enqueueSnackbar("Camera mirror view enabled.");
       }
     }
   };
