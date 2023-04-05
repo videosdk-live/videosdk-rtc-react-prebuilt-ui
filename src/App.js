@@ -162,6 +162,12 @@ const App = () => {
       maintainVideoAspectRatio: "maintainVideoAspectRatio",
       maintainLandscapeVideoAspectRatio: "maintainLandscapeVideoAspectRatio",
       networkBarEnabled: "networkBarEnabled",
+
+      cameraResolution: "cameraResolution",
+      cameraOptimizationMode: "cameraOptimizationMode",
+      screenShareResolution: "screenShareResolution",
+      screenShareOptimizationMode: "screenShareOptimizationMode",
+      micQuality: "micQuality",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -426,6 +432,36 @@ const App = () => {
       default:
         paramKeys.mode = meetingModes.CONFERENCE;
         break;
+    }
+
+    if (
+      !paramKeys.cameraResolution ||
+      typeof paramKeys.cameraResolution !== "string"
+    ) {
+      paramKeys.cameraResolution = "h360p_w640p";
+    }
+    if (
+      !paramKeys.cameraOptimizationMode ||
+      typeof paramKeys.cameraOptimizationMode !== "string"
+    ) {
+      paramKeys.cameraOptimizationMode = "motion";
+    }
+
+    if (
+      !paramKeys.screenShareResolution ||
+      typeof paramKeys.screenShareResolution !== "string"
+    ) {
+      paramKeys.screenShareResolution = "h720p_15fps";
+    }
+    if (
+      !paramKeys.screenShareOptimizationMode ||
+      typeof paramKeys.screenShareOptimizationMode !== "string"
+    ) {
+      paramKeys.screenShareOptimizationMode = "motion";
+    }
+
+    if (!paramKeys.micQuality || typeof paramKeys.micQuality !== "string") {
+      paramKeys.micQuality = "speech_standard";
     }
 
     return paramKeys;
@@ -697,6 +733,11 @@ const App = () => {
             maintainLandscapeVideoAspectRatio:
               paramKeys.maintainLandscapeVideoAspectRatio === "true",
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
+            cameraResolution: paramKeys.cameraResolution,
+            cameraOptimizationMode: paramKeys.cameraOptimizationMode,
+            screenShareResolution: paramKeys.screenShareResolution,
+            screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
+            micQuality: paramKeys.micQuality,
           }}
         >
           <MeetingProvider

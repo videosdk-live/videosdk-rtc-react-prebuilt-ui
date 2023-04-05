@@ -38,6 +38,7 @@ import ParticipantVideoOffIcon from "../../icons/ParticipantVideoOffIcon";
 import ParticipantPinIcon from "../../icons/ParticipantPinIcon";
 import ParticipantRemoveIcon from "../../icons/ParticipantRemoveIcon";
 import useIsHls from "../useIsHls";
+import useCustomTrack from "../../utils/useCustomTrack";
 
 const useStyles = makeStyles(() => ({
   textField: {
@@ -103,6 +104,8 @@ function ParticipantListItem({ raisedHand, participantId }) {
     meetingMode,
     appTheme,
   } = useMeetingAppContext();
+
+  const { getCustomVideoTrack, getCustomAudioTrack } = useCustomTrack();
 
   const isParticipantPresenting = useMemo(() => {
     return presenterId === participantId;
@@ -266,11 +269,12 @@ function ParticipantListItem({ raisedHand, participantId }) {
                       participantMode === meetingModes.VIEWER
                     }
                     style={{ padding: 0 }}
-                    onClick={() => {
+                    onClick={async () => {
                       if (micOn) {
                         disableMic();
                       } else {
-                        enableMic();
+                        const track = await getCustomAudioTrack();
+                        enableMic(track);
                       }
                     }}
                   >
@@ -308,11 +312,12 @@ function ParticipantListItem({ raisedHand, participantId }) {
                       participantMode === meetingModes.VIEWER
                     }
                     style={{ padding: 0 }}
-                    onClick={() => {
+                    onClick={async () => {
                       if (webcamOn) {
                         disableWebcam();
                       } else {
-                        enableWebcam();
+                        const track = await getCustomVideoTrack();
+                        enableWebcam(track);
                       }
                     }}
                   >

@@ -107,7 +107,8 @@ const SingleImage = ({
 };
 
 const BackgroundSelection = ({ padding, theme }) => {
-  const { appTheme, videoProcessor } = useMeetingAppContext();
+  const { appTheme, videoProcessor, isMirrorViewChecked } =
+    useMeetingAppContext();
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
   const isXSOnly = useMediaQuery(theme.breakpoints.only("xs"));
   const videoPlayer = useRef();
@@ -281,7 +282,7 @@ const BackgroundSelection = ({ padding, theme }) => {
                   //
                   height={"100%"}
                   width={"100%"}
-                  style={flipStyle}
+                  style={!isMirrorViewChecked && flipStyle}
                   onError={(err) => {
                     console.log(err, "participant video error");
                   }}

@@ -9,6 +9,7 @@ import {
   getGridForMainParticipants,
   getGridRowsAndColumns,
   localAndPinnedOnTop,
+  meetingResolutions,
 } from "../../utils/common";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import useIsMobile from "../../utils/useIsMobile";
@@ -37,6 +38,7 @@ const PinnedLayoutViewContainer = ({
     isRecorder,
     layoutGridSize,
     appTheme,
+    meetingResolution,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting();
@@ -368,7 +370,11 @@ const PinnedLayoutViewContainer = ({
                 {...{
                   participantId: spotlightParticipantId,
                   gutter,
-                  quality: "high",
+                  quality: meetingResolution
+                    ? meetingResolution === meetingResolutions.SD
+                      ? "s1t2"
+                      : meetingResolution === meetingResolutions.HD && "s2t2"
+                    : "s2t2",
                   relativeHeight: 100,
                   relativeWidth: 100,
                   relativeTop: 0,
@@ -475,7 +481,13 @@ const PinnedLayoutViewContainer = ({
             {singleRow.map((c) => (
               <MemoizedMotionParticipant
                 {...c}
-                quality={calcQuality(singleRow?.length)}
+                quality={
+                  meetingResolution
+                    ? meetingResolution === meetingResolutions.SD
+                      ? "s1t2"
+                      : meetingResolution === meetingResolutions.HD && "s2t2"
+                    : calcQuality(singleRow?.length)
+                }
                 key={`pinned_${c.participantId}`}
                 gutter={gutter}
                 useVisibilitySensor={presenterId ? true : false}

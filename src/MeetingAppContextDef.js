@@ -145,6 +145,12 @@ export const MeetingAppProvider = ({
   networkBarEnabled,
   hlsPlayerControlsVisible,
   appTheme,
+
+  cameraResolution,
+  cameraOptimizationMode,
+  screenShareResolution,
+  screenShareOptimizationMode,
+  micQuality,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -178,6 +184,8 @@ export const MeetingAppProvider = ({
   const [downstreamUrl, setDownstreamUrl] = useState(null);
   const [afterMeetingJoinedHLSState, setAfterMeetingJoinedHLSState] =
     useState(null);
+  const [isMirrorViewChecked, setIsMirrorViewChecked] = useState(false);
+  const [meetingResolution, setMeetingResolution] = useState(null);
 
   const [draftPolls, setDraftPolls] = useState([]);
   const [optionArr, setOptionArr] = useState([
@@ -317,6 +325,12 @@ export const MeetingAppProvider = ({
         networkBarEnabled,
         appTheme,
 
+        cameraResolution,
+        cameraOptimizationMode,
+        screenShareResolution,
+        screenShareOptimizationMode,
+        micQuality,
+
         // states
         sideBarMode,
         activeSortedParticipants,
@@ -344,6 +358,8 @@ export const MeetingAppProvider = ({
         afterMeetingJoinedHLSState,
         selectMicDeviceId,
         selectWebcamDeviceId,
+        isMirrorViewChecked,
+        meetingResolution,
 
         // setters
         setSideBarMode,
@@ -367,6 +383,8 @@ export const MeetingAppProvider = ({
         setAfterMeetingJoinedHLSState,
         setSelectMicDeviceId,
         setSelectWebcamDeviceId,
+        setIsMirrorViewChecked,
+        setMeetingResolution,
 
         videoProcessor,
       }}
