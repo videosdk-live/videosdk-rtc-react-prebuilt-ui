@@ -630,18 +630,18 @@ const MeetingContainer = () => {
       );
     }
 
-    if (
-      data.status === Constants.hlsEvents.HLS_STARTED ||
-      data.status === Constants.hlsEvents.HLS_STOPPED
-    ) {
-      setDownstreamUrl(
-        data.status === Constants.hlsEvents.HLS_STARTED
-          ? data.downstreamUrl
-          : null
-      );
-    }
+    // if (
+    //   data.status === Constants.hlsEvents.HLS_STARTED ||
+    //   data.status === Constants.hlsEvents.HLS_STOPPED
+    // ) {
+    //   setDownstreamUrl(
+    //     data.status === Constants.hlsEvents.HLS_STARTED
+    //       ? data.downstreamUrl
+    //       : null
+    //   );
+    // }
 
-    if (data.status === Constants.hlsEvents.HLS_STARTED) {
+    if (data.status === Constants.hlsEvents.HLS_PLAYABLE) {
       setAfterMeetingJoinedHLSState("STARTED");
     }
 

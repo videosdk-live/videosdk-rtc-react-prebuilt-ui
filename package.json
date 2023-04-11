@@ -9,7 +9,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@videosdk.live/react-sdk": "^0.1.66",
+    "@videosdk.live/react-sdk": "^0.1.69",
     "@videosdk.live/videosdk-media-processor-web": "^0.0.12",
     "compressorjs": "^1.1.1",
     "emoji-mart": "^3.0.1",
