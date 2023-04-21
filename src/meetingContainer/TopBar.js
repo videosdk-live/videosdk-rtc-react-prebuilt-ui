@@ -1036,7 +1036,8 @@ const HlsBTN = ({ isMobile, isTab }) => {
         appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       tooltipTitle={
-        hlsState === Constants.hlsEvents.HLS_STARTED
+        hlsState === Constants.hlsEvents.HLS_STARTED ||
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
           ? "Starting HLS"
@@ -1048,7 +1049,8 @@ const HlsBTN = ({ isMobile, isTab }) => {
       }
       Icon={LiveIcon}
       buttonText={
-        hlsState === Constants.hlsEvents.HLS_STARTED
+        hlsState === Constants.hlsEvents.HLS_STARTED ||
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
           ? "Starting HLS"
@@ -1073,7 +1075,8 @@ const HlsBTN = ({ isMobile, isTab }) => {
     <OutlineIconTextButton
       onClick={_handleClick}
       tooltipTitle={
-        hlsState === Constants.hlsEvents.HLS_STARTED
+        hlsState === Constants.hlsEvents.HLS_STARTED ||
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
           ? "Starting HLS"
@@ -1084,7 +1087,8 @@ const HlsBTN = ({ isMobile, isTab }) => {
           : "Start HLS"
       }
       buttonText={
-        hlsState === Constants.hlsEvents.HLS_STARTED
+        hlsState === Constants.hlsEvents.HLS_STARTED ||
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
           ? "Starting HLS"

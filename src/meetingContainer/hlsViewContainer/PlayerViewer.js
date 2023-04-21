@@ -1,5 +1,5 @@
 import { Box, useTheme } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Lottie from "react-lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
@@ -9,6 +9,7 @@ import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import Hls from "hls.js";
 import useIsMobile from "../../utils/useIsMobile";
 import { useRef } from "react";
+import { Constants, useMeeting } from "@videosdk.live/react-sdk";
 
 export async function sleep(ms) {
   return new Promise((resolve) => {
@@ -18,16 +19,19 @@ export async function sleep(ms) {
 
 const PlayerViewer = () => {
   const theme = useTheme();
-  const [canPlay, setCanPlay] = useState(false);
   const isMobile = useIsMobile();
   const playerRef = useRef();
 
-  const {
-    downstreamUrl,
-    hlsPlayerControlsVisible,
-    afterMeetingJoinedHLSState,
-    appTheme,
-  } = useMeetingAppContext();
+  const { hlsPlayerControlsVisible, afterMeetingJoinedHLSState, appTheme } =
+    useMeetingAppContext();
+  const { hlsUrls, hlsState } = useMeeting();
+  const playHls = useMemo(() => {
+    return (
+      hlsUrls.downstreamUrl &&
+      (hlsState == Constants.hlsEvents.HLS_PLAYABLE ||
+        hlsState == Constants.hlsEvents.HLS_STOPPING)
+    );
+  }, [hlsUrls, hlsState]);
 
   const lottieSize = useResponsiveSize({
     xl: 240,
@@ -55,53 +59,8 @@ const PlayerViewer = () => {
     },
   };
 
-  async function waitForHLSPlayable(downstreamUrl, maxRetry) {
-    return new Promise(async (resolve, reject) => {
-      if (maxRetry < 1) {
-        return reject(false);
-      }
-
-      let status;
-
-      try {
-        const res = await fetch(downstreamUrl, {
-          method: "GET",
-        });
-        status = res.status;
-      } catch (err) {}
-
-      if (status === 200) {
-        return resolve(true);
-      }
-
-      await sleep(1000);
-
-      return resolve(
-        await waitForHLSPlayable(downstreamUrl, maxRetry - 1).catch((err) => {})
-      );
-    });
-  }
-
-  const checkHLSPlayable = async (downstreamUrl) => {
-    const canPlay = await waitForHLSPlayable(downstreamUrl, 20);
-
-    if (canPlay) {
-      setCanPlay(true);
-    } else {
-      setCanPlay(false);
-    }
-  };
-
-  useEffect(async () => {
-    if (downstreamUrl) {
-      checkHLSPlayable(downstreamUrl);
-    } else {
-      setCanPlay(false);
-    }
-  }, [downstreamUrl]);
-
   useEffect(() => {
-    if (downstreamUrl && canPlay) {
+    if (hlsUrls?.downstreamUrl && playHls) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           capLevelToPlayerSize: true,
@@ -113,7 +72,7 @@ const PlayerViewer = () => {
 
         let player = document.querySelector("#hlsPlayer");
 
-        hls.loadSource(downstreamUrl);
+        hls.loadSource(hlsUrls?.downstreamUrl);
         hls.attachMedia(player);
         hls.on(Hls.Events.MANIFEST_PARSED, function () {});
         hls.on(Hls.Events.ERROR, function (err) {
@@ -121,13 +80,13 @@ const PlayerViewer = () => {
         });
       } else {
         if (typeof playerRef.current?.play === "function") {
-          playerRef.current.src = downstreamUrl;
+          playerRef.current.src = hlsUrls?.downstreamUrl;
           playerRef.current.play();
         }
         // console.error("HLS is not supported");
       }
     }
-  }, [downstreamUrl, canPlay]);
+  }, [hlsUrls, playHls]);
 
   return (
     <div
@@ -148,7 +107,7 @@ const PlayerViewer = () => {
         eventEmitter.emit(appEvents["toggle-full-screen"]);
       }}
     >
-      {downstreamUrl && canPlay ? (
+      {hlsUrls?.downstreamUrl && playHls ? (
         <Box
           style={{
             display: "flex",
