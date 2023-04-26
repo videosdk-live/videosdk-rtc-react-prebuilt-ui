@@ -145,6 +145,7 @@ export const MeetingAppProvider = ({
   networkBarEnabled,
   hlsPlayerControlsVisible,
   appTheme,
+  token,
 
   cameraResolution,
   cameraOptimizationMode,
@@ -325,6 +326,7 @@ export const MeetingAppProvider = ({
         maintainLandscapeVideoAspectRatio,
         networkBarEnabled,
         appTheme,
+        token,
 
         cameraResolution,
         cameraOptimizationMode,
