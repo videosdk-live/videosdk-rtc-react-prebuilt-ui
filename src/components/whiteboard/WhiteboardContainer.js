@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
-import { Box, Chip, IconButton, useTheme } from "@material-ui/core";
+import { Box, IconButton, useTheme } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -59,6 +59,7 @@ function WhiteboardContainer({
     notificationAlertsEnabled,
     notificationSoundEnabled,
     appTheme,
+    token,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -74,6 +75,7 @@ function WhiteboardContainer({
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
     whiteboardState.state.config?.bgColor || "#f5f7f9"
   );
+  const [uploading, setUploading] = useState(false);
 
   const [tool, _setTool] = useState(null);
   const toolRef = useRef(tool);
@@ -559,6 +561,7 @@ function WhiteboardContainer({
   }
 
   async function uploadImageAndGetUrl(event) {
+    setUploading(true);
     return new Promise((resolve, reject) => {
       new Compressor(event.target.files[0], {
         quality: 0.8,
@@ -571,6 +574,9 @@ function WhiteboardContainer({
 
           var requestOptions = {
             method: "POST",
+            headers: {
+              Authorization: token,
+            },
             body: formdata,
             redirect: "follow",
           };
@@ -599,18 +605,35 @@ function WhiteboardContainer({
   async function addImage(event) {
     const url = await uploadImageAndGetUrl(event);
 
-    new fabric.Image.fromURL(url, async function (myImg) {
-      //create an extra var for to change some image properties
-      var img1 = myImg.set({
-        left: whiteboardSpacing,
-        top: 42,
-      });
+    fetch(url, { headers: { Authorization: token } }).then(async (res) => {
+      // Create a new image element
+      const image = new Image();
+      image.onload = () => {
+        const fabricImage = new fabric.Image(image);
 
-      myImg.scaleToWidth(imageWidth);
+        //create an extra var for to change some image properties
+        var image1 = fabricImage.set({
+          left: whiteboardSpacing,
+          top: 42,
+        });
 
-      fabricRef.current.add(img1);
-      fabricRef.current.setActiveObject(img1);
-      fabricRef.current.renderAll();
+        fabricImage.scaleToWidth(imageWidth);
+
+        fabricRef.current.add(image1);
+        fabricRef.current.setActiveObject(image1);
+        fabricRef.current.renderAll();
+      };
+      const binaryData = await res.arrayBuffer();
+
+      //converting array buffer to string
+      const base64Data = window.btoa(
+        new Uint8Array(binaryData).reduce(function (data, byte) {
+          return data + String.fromCharCode(byte);
+        }, "")
+      );
+
+      image.src = `data:image/*;base64,${base64Data}`;
+      setUploading(false);
     });
   }
 
@@ -945,6 +968,31 @@ function WhiteboardContainer({
           )}
         </Box>
 
+        {uploading && (
+          <Box
+            style={{
+              position: "absolute",
+              top: 16,
+              left: "40%",
+              zIndex: 999,
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              backgroundColor: "black",
+              borderRadius: "4px",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "16px",
+                marginBottom: "8px",
+                marginTop: "8px",
+                color: "white",
+              }}
+            >
+              Uploading Image ...
+            </p>
+          </Box>
+        )}
         <Box style={{ position: "absolute", top: 16, right: 16, zIndex: 999 }}>
           <IconButton
             onClick={() => {

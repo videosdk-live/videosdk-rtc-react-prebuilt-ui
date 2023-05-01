@@ -757,6 +757,7 @@ const App = () => {
             isRecorder: paramKeys.isRecorder === "true",
             appTheme: paramKeys.theme,
             language: paramKeys.language,
+            token: paramKeys.token,
             //
             // recordingLayoutType: paramKeys.recordingLayoutType,
             // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
