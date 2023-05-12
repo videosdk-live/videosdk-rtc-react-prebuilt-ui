@@ -1,5 +1,6 @@
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef } from "react";
+import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
 const ParticipantAudioPlayer = ({ participantId }) => {
   const {
@@ -9,6 +10,8 @@ const ParticipantAudioPlayer = ({ participantId }) => {
     consumeMicStreams,
     stopConsumingMicStreams,
   } = useParticipant(participantId);
+
+  const { selectedOutputDeviceId } = useMeetingAppContext();
   const audioPlayer = useRef();
 
   useEffect(() => {
@@ -26,6 +29,11 @@ const ParticipantAudioPlayer = ({ participantId }) => {
       mediaStream.addTrack(micStream.track);
 
       audioPlayer.current.srcObject = mediaStream;
+      try {
+        audioPlayer.current.setSinkId(selectedOutputDeviceId);
+      } catch (error) {
+        console.log("error", error);
+      }
       audioPlayer.current.play().catch((err) => {
         if (
           err.message ===
@@ -37,7 +45,7 @@ const ParticipantAudioPlayer = ({ participantId }) => {
     } else {
       audioPlayer.current.srcObject = null;
     }
-  }, [micStream, micOn, isLocal, participantId]);
+  }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
 
   return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
 };

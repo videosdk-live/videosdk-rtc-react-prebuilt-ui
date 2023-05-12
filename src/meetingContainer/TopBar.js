@@ -1112,6 +1112,7 @@ const SingleMicMenu = ({
   classes,
   selectMicDeviceId,
   setSelectMicDeviceId,
+  isOutputMics,
   changeMic,
   appTheme,
   theme,
@@ -1203,7 +1204,9 @@ const SingleMicMenu = ({
               onClick={() => {
                 handleClose();
                 setSelectMicDeviceId(deviceId);
-                changeMic(deviceId);
+                if (!isOutputMics) {
+                  changeMic(deviceId);
+                }
               }}
               classes={{
                 root:
@@ -1230,6 +1233,8 @@ const SingleMicMenu = ({
 const MicMenu = ({
   selectMicDeviceId,
   setSelectMicDeviceId,
+  selectedOutputDeviceId,
+  setSelectedOutputDeviceId,
   localMicOn,
   downArrow,
   mics,
@@ -1280,7 +1285,7 @@ const MicMenu = ({
           theme={theme}
           handleClose={handleClose}
         />
-        {/* <Box
+        <Box
           style={{
             height: 1,
             width: "100%",
@@ -1292,14 +1297,15 @@ const MicMenu = ({
           micArr={outputmics}
           label={"SPEAKER"}
           Icon={SpeakerMenuIcon}
-          selectMicDeviceId={selectMicDeviceId}
-          setSelectMicDeviceId={setSelectMicDeviceId}
+          selectMicDeviceId={selectedOutputDeviceId}
+          setSelectMicDeviceId={setSelectedOutputDeviceId}
+          isOutputMics={true}
           classes={classes}
           changeMic={changeMic}
           appTheme={appTheme}
           theme={theme}
           handleClose={handleClose}
-        /> */}
+        />
 
         {localMicOn && (
           <>
@@ -1710,6 +1716,8 @@ const MicBTN = () => {
     notificationAlertsEnabled,
     selectMicDeviceId,
     setSelectMicDeviceId,
+    selectedOutputDeviceId,
+    setSelectedOutputDeviceId,
   } = useMeetingAppContext();
 
   const [isNoiseRemovalChecked, setIsNoiseRemovalChecked] = useState(false);
@@ -1748,7 +1756,12 @@ const MicBTN = () => {
 
   const getOutputDevices = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const outputMics = devices.filter((d) => d.kind === "audiooutput");
+    const outputMics = devices.filter(
+      (d) =>
+        d.kind === "audiooutput" &&
+        d.deviceId !== "default" &&
+        d.deviceId !== "communications"
+    );
 
     outputMics && outputMics?.length && setOutputMics(outputMics);
   };
@@ -1844,6 +1857,8 @@ const MicBTN = () => {
       <MicMenu
         selectMicDeviceId={selectMicDeviceId}
         setSelectMicDeviceId={setSelectMicDeviceId}
+        selectedOutputDeviceId={selectedOutputDeviceId}
+        setSelectedOutputDeviceId={setSelectedOutputDeviceId}
         isNoiseRemovalChecked={isNoiseRemovalChecked}
         localMicOn={localMicOn}
         theme={theme}

@@ -118,6 +118,7 @@ const App = () => {
       canRemoveOtherParticipant: "canRemoveOtherParticipant",
       canDrawOnWhiteboard: "canDrawOnWhiteboard",
       canToggleWhiteboard: "canToggleWhiteboard",
+      canToggleVirtualBackground: "canToggleVirtualBackground",
       canCreatePoll: "canCreatePoll",
       canToggleParticipantTab: "canToggleParticipantTab",
       //
@@ -739,6 +740,8 @@ const App = () => {
               paramKeys.participantCanEndMeeting === "true",
             canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
             canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
+            canToggleVirtualBackground:
+              paramKeys.canToggleVirtualBackground === "true",
             canCreatePoll: paramKeys.canCreatePoll === "true",
             canToggleParticipantTab:
               paramKeys.canToggleParticipantTab === "true",

@@ -117,6 +117,7 @@ export const MeetingAppProvider = ({
   joinScreenWebCam,
   joinScreenMic,
   canToggleWhiteboard,
+  canToggleVirtualBackground,
   canDrawOnWhiteboard,
   meetingLeft,
   setMeetingLeft,
@@ -165,6 +166,9 @@ export const MeetingAppProvider = ({
     selectedWebcam.id
   );
   const [selectMicDeviceId, setSelectMicDeviceId] = useState(selectedMic.id);
+  const [selectedOutputDeviceId, setSelectedOutputDeviceId] = useState(
+    selectedMic.id
+  );
   const [activeSortedParticipants, setActiveSortedParticipants] = useState([]);
   const [mainViewParticipants, setMainViewParticipants] = useState([]);
   const [overlaidInfoVisible, setOverlaidInfoVisible] = useState(true);
@@ -303,6 +307,7 @@ export const MeetingAppProvider = ({
         canRemoveOtherParticipant,
         notificationSoundEnabled,
         canToggleWhiteboard,
+        canToggleVirtualBackground,
         canDrawOnWhiteboard,
         canCreatePoll,
         canToggleParticipantTab,
@@ -362,6 +367,7 @@ export const MeetingAppProvider = ({
         afterMeetingJoinedHLSState,
         selectMicDeviceId,
         selectWebcamDeviceId,
+        selectedOutputDeviceId,
         isMirrorViewChecked,
         meetingResolution,
 
@@ -387,6 +393,7 @@ export const MeetingAppProvider = ({
         setAfterMeetingJoinedHLSState,
         setSelectMicDeviceId,
         setSelectWebcamDeviceId,
+        setSelectedOutputDeviceId,
         setIsMirrorViewChecked,
         setMeetingResolution,
 

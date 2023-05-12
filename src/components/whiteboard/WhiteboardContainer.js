@@ -56,6 +56,7 @@ function WhiteboardContainer({
     whiteboardState,
     canDrawOnWhiteboard,
     animationsEnabled,
+    canToggleWhiteboard,
     notificationAlertsEnabled,
     notificationSoundEnabled,
     appTheme,
@@ -993,29 +994,33 @@ function WhiteboardContainer({
             </p>
           </Box>
         )}
-        <Box style={{ position: "absolute", top: 16, right: 16, zIndex: 999 }}>
-          <IconButton
-            onClick={() => {
-              mMeeting.meeting.stopWhiteboard();
-            }}
-            style={{
-              cursor: "pointer",
-              backgroundColor: theme.palette.lightTheme.three,
-              padding: 8,
-              margin: 0,
-            }}
+        {canToggleWhiteboard && (
+          <Box
+            style={{ position: "absolute", top: 16, right: 16, zIndex: 999 }}
           >
-            <CloseIcon
-              fontSize={"small"}
-              style={{
-                color:
-                  appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
-                    ? theme.palette.lightTheme.contrastText
-                    : theme.palette.common.black,
+            <IconButton
+              onClick={() => {
+                mMeeting.meeting.stopWhiteboard();
               }}
-            />
-          </IconButton>
-        </Box>
+              style={{
+                cursor: "pointer",
+                backgroundColor: theme.palette.lightTheme.three,
+                padding: 8,
+                margin: 0,
+              }}
+            >
+              <CloseIcon
+                fontSize={"small"}
+                style={{
+                  color:
+                    appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
+                      ? theme.palette.lightTheme.contrastText
+                      : theme.palette.common.black,
+                }}
+              />
+            </IconButton>
+          </Box>
+        )}
       </Box>
     </Box>
   );
