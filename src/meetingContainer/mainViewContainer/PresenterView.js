@@ -40,6 +40,7 @@ const PresenterView = ({ presenterId }) => {
 
   const isMobile = useIsMobile();
   const {
+    selectedOutputDeviceId,
     setOverlaidInfoVisible,
     mainViewParticipants,
     meetingLayout,
@@ -105,6 +106,11 @@ const PresenterView = ({ presenterId }) => {
       mediaStream.addTrack(screenShareAudioStream.track);
 
       audioPlayer.current.srcObject = mediaStream;
+      try {
+        audioPlayer.current.setSinkId(selectedOutputDeviceId);
+      } catch (error) {
+        console.log("error", error);
+      }
       audioPlayer.current.play().catch((err) => {
         if (
           err.message ===
@@ -116,7 +122,7 @@ const PresenterView = ({ presenterId }) => {
     } else {
       audioPlayer.current.srcObject = null;
     }
-  }, [screenShareAudioStream, screenShareOn, isLocal]);
+  }, [screenShareAudioStream, screenShareOn, isLocal, selectedOutputDeviceId]);
 
   return (
     <div

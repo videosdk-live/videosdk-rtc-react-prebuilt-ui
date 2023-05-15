@@ -47,6 +47,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     appTheme,
     whiteboardEnabled,
     canToggleWhiteboard,
+    canToggleVirtualBackground,
     participantCanToggleLivestream,
     pollEnabled,
   } = useMeetingAppContext();
@@ -54,6 +55,58 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
   const mMeeting = useMeeting({});
 
   const presenterId = mMeeting?.presenterId;
+
+  const moreOptionArr = [
+    {
+      Icon: WhiteboardIcon,
+      primary: "Whiteboard",
+      secondary: "Brainstorm, share idea & collaborate ",
+      disabled: presenterId || !canToggleWhiteboard,
+      displayed:
+        whiteboardEnabled && meetingMode === meetingModes.CONFERENCE
+          ? true
+          : false,
+      onClick: () => {
+        mMeeting.meeting.startWhiteboard();
+        setSideBarMode((s) => s === sideBarModes.ACTIVITIES && null);
+        setSideBarNestedMode(null);
+      },
+    },
+    {
+      Icon: PollIcon,
+      primary: "Polls",
+      displayed: pollEnabled,
+      secondary: "Find out participant’s opinion.",
+      disabled: false,
+      onClick: () => {
+        setSideBarNestedMode(sideBarNestedModes.POLLS);
+      },
+    },
+
+    {
+      Icon: AddLiveStreamsIcon,
+      primary: "Add Live Streams",
+      secondary: "Broadcast live stream to other platforms",
+      disabled: !participantCanToggleLivestream,
+      displayed: true,
+      onClick: () => {
+        setSideBarNestedMode(sideBarNestedModes.ADD_LIVE_STREAM);
+      },
+    },
+  ];
+
+  if (canToggleVirtualBackground) {
+    moreOptionArr.unshift({
+      Icon: VirtualBackgroundIcon,
+      primary: "Virtual Background (BETA)",
+      secondary: "Add custom background to meetings",
+      disabled: false,
+      displayed: true,
+      onClick: () => {
+        setSideBarNestedMode(sideBarNestedModes.VIRTUAL_BACKGROUND);
+      },
+    });
+  }
 
   return sideBarNestedMode === sideBarNestedModes.POLLS ? (
     canCreatePoll && meetingMode !== meetingModes.VIEWER ? (
@@ -73,54 +126,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     <VirtualBackgroundContainer {...{ panelHeight }} />
   ) : (
     <List style={{ padding: listPadding }}>
-      {[
-        {
-          Icon: VirtualBackgroundIcon,
-          primary: "Virtual Background (BETA)",
-          secondary: "Add custom background to meetings",
-          disabled: false,
-          displayed: true,
-          onClick: () => {
-            setSideBarNestedMode(sideBarNestedModes.VIRTUAL_BACKGROUND);
-          },
-        },
-        {
-          Icon: WhiteboardIcon,
-          primary: "Whiteboard",
-          secondary: "Brainstorm, share idea & collaborate ",
-          disabled: presenterId || !canToggleWhiteboard,
-          displayed:
-            whiteboardEnabled && meetingMode === meetingModes.CONFERENCE
-              ? true
-              : false,
-          onClick: () => {
-            mMeeting.meeting.startWhiteboard();
-            setSideBarMode((s) => s === sideBarModes.ACTIVITIES && null);
-            setSideBarNestedMode(null);
-          },
-        },
-        {
-          Icon: PollIcon,
-          primary: "Polls",
-          displayed: pollEnabled,
-          secondary: "Find out participant’s opinion.",
-          disabled: false,
-          onClick: () => {
-            setSideBarNestedMode(sideBarNestedModes.POLLS);
-          },
-        },
-
-        {
-          Icon: AddLiveStreamsIcon,
-          primary: "Add Live Streams",
-          secondary: "Broadcast live stream to other platforms",
-          disabled: !participantCanToggleLivestream,
-          displayed: true,
-          onClick: () => {
-            setSideBarNestedMode(sideBarNestedModes.ADD_LIVE_STREAM);
-          },
-        },
-      ].map(
+      {moreOptionArr.map(
         ({ Icon, primary, secondary, disabled, displayed, onClick }, i) =>
           displayed && (
             <ButtonBase
