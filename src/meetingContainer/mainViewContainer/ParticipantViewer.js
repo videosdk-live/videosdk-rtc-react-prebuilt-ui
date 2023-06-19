@@ -254,7 +254,7 @@ export const CornerDisplayName = ({
 
   useEffect(() => {
     if (networkBarEnabled) {
-      if (webcamStream || micStream) {
+      if (webcamStream || micStream || screenShareStream) {
         updateStats();
 
         if (statsIntervalIdRef.current) {
@@ -274,7 +274,7 @@ export const CornerDisplayName = ({
           clearInterval(statsIntervalIdRef.current);
       };
     }
-  }, [webcamStream, micStream, networkBarEnabled]);
+  }, [webcamStream, micStream, screenShareStream, networkBarEnabled]);
 
   return (
     <>
