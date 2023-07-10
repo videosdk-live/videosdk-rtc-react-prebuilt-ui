@@ -30,6 +30,7 @@ import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import ReactPlayer from "react-player";
 import NetworkIcon from "../../icons/NetworkIcon";
 import { CloseOutlined } from "@material-ui/icons";
+import { useMediaQuery } from "react-responsive";
 
 const useStyles = makeStyles({
   popoverHover: {
@@ -56,6 +57,8 @@ export const CornerDisplayName = ({
   pin,
   unpin,
   mouseOver,
+  isRecorder,
+  isPortrait
 }) => {
   const theme = useTheme();
 
@@ -308,6 +311,7 @@ export const CornerDisplayName = ({
           variant={isLGDesktop ? "subtitle1" : "subtitle2"}
           style={{
             justifyContent: "center",
+            fontSize: isRecorder? isMobile && isPortrait ? 24 : 12: null,
             display: "flex",
             alignItems: "center",
             // lineHeight: 1,
@@ -352,8 +356,8 @@ export const CornerDisplayName = ({
                 <MicOff
                   style={{
                     color: theme.palette.common.white,
-                    height: (analyzerSize * 2) / 3,
-                    width: (analyzerSize * 2) / 3,
+                    height: isRecorder?isMobile && isPortrait?((analyzerSize * 2) / 3)*2:((analyzerSize * 2) / 3):((analyzerSize * 2) / 3),
+                    width: isRecorder?isMobile && isPortrait?((analyzerSize * 2) / 3)*2:((analyzerSize * 2) / 3):((analyzerSize * 2) / 3),
                   }}
                 />
               )
@@ -515,7 +519,7 @@ export const CornerDisplayName = ({
                               {index !== 0 && (
                                 <Typography
                                   style={{
-                                    fontSize: 12,
+                                    fontSize: isMobile? 24 : 12,
                                     marginTop: 6,
                                     marginBottom: 6,
                                     marginLeft: 8,
@@ -540,7 +544,7 @@ export const CornerDisplayName = ({
                             >
                               <Typography
                                 style={{
-                                  fontSize: 12,
+                                  fontSize: isMobile? 24 : 12,
                                   marginTop: 6,
                                   marginBottom: 6,
                                   width: 65,
@@ -565,7 +569,7 @@ export const CornerDisplayName = ({
                             >
                               <Typography
                                 style={{
-                                  fontSize: 12,
+                                  fontSize: isMobile? 24 : 12,
                                   marginTop: 6,
                                   marginBottom: 6,
                                   width: 65,
@@ -609,6 +613,8 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     appTheme,
     isMirrorViewChecked,
   } = useMeetingAppContext();
+
+  const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
   const onStreamEnabled = (stream) => {
     // console.log(participantId, stream.kind, " Stream started ");
@@ -896,6 +902,8 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             pinState,
             participantId,
             mouseOver,
+            isRecorder,
+            isPortrait
           }}
         />
       </div>
