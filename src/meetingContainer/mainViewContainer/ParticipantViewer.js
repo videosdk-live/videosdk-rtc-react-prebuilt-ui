@@ -333,7 +333,7 @@ export const CornerDisplayName = ({
             onClick={(e) => {
               e.stopPropagation();
             }}
-            style={{
+            style={ isRecorder?null:{
               padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
               backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
               display: "flex",
@@ -352,7 +352,7 @@ export const CornerDisplayName = ({
                 isClickToPauseDisabled
               />
             ) : (
-              !micOn && (
+              !isRecorder && !micOn && (
                 <MicOff
                   style={{
                     color: theme.palette.common.white,
@@ -365,8 +365,7 @@ export const CornerDisplayName = ({
           </div>
         )}
       </div>
-
-      {canPin && (
+      {canPin && !isRecorder && (
         <div
           className="pinClass"
           style={{
@@ -402,7 +401,7 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {(webcamStream || micStream || screenShareStream) &&
+      {!isRecorder && (webcamStream || micStream || screenShareStream) &&
         networkBarEnabled && (
           <Box>
             <div
@@ -789,7 +788,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               : theme.palette.background.paper,
           position: "relative",
           overflow: "hidden",
-          borderRadius: theme.spacing(1),
+          borderRadius: isRecorder?null:theme.spacing(1),
         }}
         className={`${
           maintainLandscapeVideoAspectRatio && !portrait
