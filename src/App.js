@@ -167,6 +167,7 @@ const App = () => {
       maintainLandscapeVideoAspectRatio: "maintainLandscapeVideoAspectRatio",
       networkBarEnabled: "networkBarEnabled",
 
+      cameraId: "cameraId",
       cameraResolution: "cameraResolution",
       cameraMultiStream: "cameraMultiStream",
       cameraOptimizationMode: "cameraOptimizationMode",
@@ -180,7 +181,6 @@ const App = () => {
         ? decodeURIComponent(urlParams.get(key))
         : null;
     });
-
     // required options
     let configErr;
 
@@ -442,6 +442,12 @@ const App = () => {
         break;
     }
 
+    if(
+      !paramKeys.cameraId ||
+      typeof paramKeys.cameraId !== "string"
+    ) {
+      paramKeys.cameraId = null
+    }
     if (
       !paramKeys.cameraResolution ||
       typeof paramKeys.cameraResolution !== "string"
@@ -851,6 +857,7 @@ const App = () => {
           }
           mode={paramKeys.mode}
           appTheme={paramKeys.theme}
+          cameraId={paramKeys.cameraId}
         />
       ) : (
         <ClickAnywhereToContinue
