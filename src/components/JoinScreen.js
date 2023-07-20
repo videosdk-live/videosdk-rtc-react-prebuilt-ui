@@ -285,25 +285,32 @@ export default function JoinMeeting({
 
   const getDevices = async ({ micEnabled, webcamEnabled }) => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
+      await navigator.mediaDevices
+        .getUserMedia({ audio: true, video: true })
+        .then((s) => {
+          navigator.mediaDevices.enumerateDevices().then((devices) => {
+            const webcams = devices.filter((d) => d.kind === "videoinput");
+            const mics = devices.filter((d) => d.kind === "audioinput");
 
-      const webcams = devices.filter((d) => d.kind === "videoinput");
-      const mics = devices.filter((d) => d.kind === "audioinput");
+            const hasMic = mics.length > 0;
+            const hasWebcam = webcams.length > 0;
 
-      const hasMic = mics.length > 0;
-      const hasWebcam = webcams.length > 0;
+            setDevices({ webcams, mics });
 
-      setDevices({ webcams, mics, devices });
+            if (hasMic) {
+              startMuteListener();
+            }
 
-      if (hasMic) {
-        startMuteListener();
-      }
-
-      getDefaultMediaTracks({
-        mic: hasMic && micEnabled,
-        webcam: hasWebcam && webcamEnabled,
-        firstTime: true,
-      });
+            getDefaultMediaTracks({
+              mic: hasMic && micEnabled,
+              webcam: hasWebcam && webcamEnabled,
+              firstTime: true,
+            });
+          });
+        })
+        .catch((error) => {
+          console.log("Error :", error);
+        });
     } catch (err) {
       console.log(err);
     }
