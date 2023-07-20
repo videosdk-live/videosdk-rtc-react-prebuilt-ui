@@ -435,7 +435,7 @@ export default function SettingDialogueBox({
                                   changeMic(e.target.value);
                                 }}
                               >
-                                {mics?.map((item) => {
+                                {mics?.map((item, i) => {
                                   return item?.kind === "audioinput" ? (
                                     <MenuItem
                                       className={
@@ -450,7 +450,9 @@ export default function SettingDialogueBox({
                                         }));
                                       }}
                                     >
-                                      {item?.label}
+                                      {item?.label
+                                        ? item.label
+                                        : `Mic ${i + 1}`}
                                     </MenuItem>
                                   ) : null;
                                 })}
@@ -564,7 +566,7 @@ export default function SettingDialogueBox({
                                     theme.palette.lightTheme.contrastText,
                                 }}
                               >
-                                {webcams?.map((item) => {
+                                {webcams?.map((item, i) => {
                                   return item?.kind === "videoinput" ? (
                                     <MenuItem
                                       className={
@@ -579,7 +581,9 @@ export default function SettingDialogueBox({
                                         }));
                                       }}
                                     >
-                                      {item?.label}
+                                      {item?.label
+                                        ? item.label
+                                        : `Webcam ${i + 1}`}
                                     </MenuItem>
                                   ) : null;
                                 })}
