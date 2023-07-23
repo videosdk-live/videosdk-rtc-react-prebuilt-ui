@@ -58,7 +58,7 @@ export const CornerDisplayName = ({
   unpin,
   mouseOver,
   isRecorder,
-  isPortrait
+  isPortrait,
 }) => {
   const theme = useTheme();
 
@@ -311,7 +311,7 @@ export const CornerDisplayName = ({
           variant={isLGDesktop ? "subtitle1" : "subtitle2"}
           style={{
             justifyContent: "center",
-            fontSize: isRecorder? isMobile && isPortrait ? 24 : 12: null,
+            fontSize: isRecorder ? (isMobile && isPortrait ? 24 : 12) : null,
             display: "flex",
             alignItems: "center",
             // lineHeight: 1,
@@ -333,15 +333,19 @@ export const CornerDisplayName = ({
             onClick={(e) => {
               e.stopPropagation();
             }}
-            style={ isRecorder?null:{
-              padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
-              backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 24,
-              marginLeft: 6,
-            }}
+            style={
+              isRecorder
+                ? null
+                : {
+                    padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
+                    backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 24,
+                    marginLeft: 6,
+                  }
+            }
           >
             {isActiveSpeaker ? (
               <Lottie
@@ -352,12 +356,21 @@ export const CornerDisplayName = ({
                 isClickToPauseDisabled
               />
             ) : (
-              !isRecorder && !micOn && (
+              !isRecorder &&
+              !micOn && (
                 <MicOff
                   style={{
                     color: theme.palette.common.white,
-                    height: isRecorder?isMobile && isPortrait?((analyzerSize * 2) / 3)*2:((analyzerSize * 2) / 3):((analyzerSize * 2) / 3),
-                    width: isRecorder?isMobile && isPortrait?((analyzerSize * 2) / 3)*2:((analyzerSize * 2) / 3):((analyzerSize * 2) / 3),
+                    height: isRecorder
+                      ? isMobile && isPortrait
+                        ? ((analyzerSize * 2) / 3) * 2
+                        : (analyzerSize * 2) / 3
+                      : (analyzerSize * 2) / 3,
+                    width: isRecorder
+                      ? isMobile && isPortrait
+                        ? ((analyzerSize * 2) / 3) * 2
+                        : (analyzerSize * 2) / 3
+                      : (analyzerSize * 2) / 3,
                   }}
                 />
               )
@@ -401,7 +414,8 @@ export const CornerDisplayName = ({
           </IconButton>
         </div>
       )}
-      {!isRecorder && (webcamStream || micStream || screenShareStream) &&
+      {!isRecorder &&
+        (webcamStream || micStream || screenShareStream) &&
         networkBarEnabled && (
           <Box>
             <div
@@ -518,7 +532,7 @@ export const CornerDisplayName = ({
                               {index !== 0 && (
                                 <Typography
                                   style={{
-                                    fontSize: isMobile? 24 : 12,
+                                    fontSize: isMobile ? 24 : 12,
                                     marginTop: 6,
                                     marginBottom: 6,
                                     marginLeft: 8,
@@ -543,7 +557,7 @@ export const CornerDisplayName = ({
                             >
                               <Typography
                                 style={{
-                                  fontSize: isMobile? 24 : 12,
+                                  fontSize: isMobile ? 24 : 12,
                                   marginTop: 6,
                                   marginBottom: 6,
                                   width: 65,
@@ -568,7 +582,7 @@ export const CornerDisplayName = ({
                             >
                               <Typography
                                 style={{
-                                  fontSize: isMobile? 24 : 12,
+                                  fontSize: isMobile ? 24 : 12,
                                   marginTop: 6,
                                   marginBottom: 6,
                                   width: 65,
@@ -788,7 +802,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
               : theme.palette.background.paper,
           position: "relative",
           overflow: "hidden",
-          borderRadius: isRecorder?null:theme.spacing(1),
+          borderRadius: isRecorder ? null : theme.spacing(1),
         }}
         className={`${
           maintainLandscapeVideoAspectRatio && !portrait
@@ -902,7 +916,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             participantId,
             mouseOver,
             isRecorder,
-            isPortrait
+            isPortrait,
           }}
         />
       </div>
