@@ -532,7 +532,8 @@ export const CornerDisplayName = ({
                               {index !== 0 && (
                                 <Typography
                                   style={{
-                                    fontSize: isMobile ? 24 : 12,
+                                    fontSize:
+                                      isRecorder && isPortrait ? 24 : 12,
                                     marginTop: 6,
                                     marginBottom: 6,
                                     marginLeft: 8,
@@ -557,7 +558,7 @@ export const CornerDisplayName = ({
                             >
                               <Typography
                                 style={{
-                                  fontSize: isMobile ? 24 : 12,
+                                  fontSize: isRecorder && isPortrait ? 24 : 12,
                                   marginTop: 6,
                                   marginBottom: 6,
                                   width: 65,
@@ -582,7 +583,7 @@ export const CornerDisplayName = ({
                             >
                               <Typography
                                 style={{
-                                  fontSize: isMobile ? 24 : 12,
+                                  fontSize: isRecorder && isPortrait ? 24 : 12,
                                   marginTop: 6,
                                   marginBottom: 6,
                                   width: 65,
