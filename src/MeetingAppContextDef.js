@@ -149,6 +149,7 @@ export const MeetingAppProvider = ({
   token,
 
   cameraResolution,
+  cameraId,
   cameraOptimizationMode,
   cameraMultiStream,
   screenShareResolution,
@@ -163,7 +164,7 @@ export const MeetingAppProvider = ({
   const [sideBarMode, setSideBarMode] = useState(null);
   const [sideBarNestedMode, setSideBarNestedMode] = useState(null);
   const [selectWebcamDeviceId, setSelectWebcamDeviceId] = useState(
-    selectedWebcam.id
+    cameraId ? cameraId : selectedWebcam.id
   );
   const [selectMicDeviceId, setSelectMicDeviceId] = useState(selectedMic.id);
   const [selectedOutputDeviceId, setSelectedOutputDeviceId] = useState(
@@ -334,6 +335,7 @@ export const MeetingAppProvider = ({
         token,
 
         cameraResolution,
+        cameraId,
         cameraOptimizationMode,
         cameraMultiStream,
         screenShareResolution,
@@ -398,8 +400,7 @@ export const MeetingAppProvider = ({
         setMeetingResolution,
 
         videoProcessor,
-      }}
-    >
+      }}>
       <SnackbarProvider
         className={classes.container}
         autoHideDuration={5000}
@@ -418,8 +419,7 @@ export const MeetingAppProvider = ({
         anchorOrigin={{
           vertical: isTab || isMobile ? "top" : "bottom",
           horizontal: "left",
-        }}
-      >
+        }}>
         {children}
       </SnackbarProvider>
     </MeetingAppContext.Provider>
