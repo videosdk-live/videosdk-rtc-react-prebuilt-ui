@@ -129,6 +129,7 @@ export default function JoinMeeting({
   setSelectedWebcam,
   mode,
   appTheme,
+  cameraId,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -226,7 +227,12 @@ export default function JoinMeeting({
 
     setAudioTrack(audioTrack);
   };
-  const getDefaultMediaTracks = async ({ mic, webcam, firstTime }) => {
+  const getDefaultMediaTracks = async ({
+    mic,
+    webcam,
+    firstTime,
+    cameraId,
+  }) => {
     if (mic) {
       const audioConstraints = {
         audio: true,
@@ -252,6 +258,7 @@ export default function JoinMeeting({
         video: {
           width: 1280,
           height: 720,
+          deviceId: cameraId,
         },
       };
 
@@ -283,7 +290,7 @@ export default function JoinMeeting({
     }
   }
 
-  const getDevices = async ({ micEnabled, webcamEnabled }) => {
+  const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
       await navigator.mediaDevices
         .getUserMedia({ audio: true, video: true })
@@ -295,7 +302,7 @@ export default function JoinMeeting({
             const hasMic = mics.length > 0;
             const hasWebcam = webcams.length > 0;
 
-            setDevices({ webcams, mics });
+            setDevices({ webcams, mics, devices });
 
             if (hasMic) {
               startMuteListener();
@@ -305,6 +312,7 @@ export default function JoinMeeting({
               mic: hasMic && micEnabled,
               webcam: hasWebcam && webcamEnabled,
               firstTime: true,
+              cameraId: cameraId,
             });
           });
         })
@@ -328,7 +336,7 @@ export default function JoinMeeting({
     const videoTrack = videoTrackRef.current;
 
     if (!videoTrack) {
-      getDefaultMediaTracks({ mic: false, webcam: true });
+      getDefaultMediaTracks({ mic: false, webcam: true, cameraId: cameraId });
     }
   };
 
@@ -401,7 +409,7 @@ export default function JoinMeeting({
   }, [audioTrack]);
 
   useEffect(() => {
-    getDevices({ micEnabled, webcamEnabled });
+    getDevices({ micEnabled, webcamEnabled, cameraId });
   }, []);
 
   const padding = useResponsiveSize({

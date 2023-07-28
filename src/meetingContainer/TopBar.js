@@ -1540,6 +1540,7 @@ const WebcamBTN = () => {
     notificationAlertsEnabled,
     isMirrorViewChecked,
     setIsMirrorViewChecked,
+    cameraId,
   } = useMeetingAppContext();
   const { enqueueSnackbar } = useSnackbar();
   const { getCustomVideoTrack } = useCustomTrack();
@@ -1550,10 +1551,14 @@ const WebcamBTN = () => {
   const localWebcamOn = mMeeting?.localWebcamOn;
   const toggleWebcam = async () => {
     let track;
-    if (!localWebcamOn) track = await getCustomVideoTrack(selectWebcamDeviceId);
+    if (!localWebcamOn)
+      track = await getCustomVideoTrack(
+        cameraId === selectWebcamDeviceId ? cameraId : selectWebcamDeviceId
+      );
     mMeeting?.toggleWebcam(track);
   };
   const changeWebcam = async (deviceId) => {
+    console.log("deviceId", deviceId);
     const track = await getCustomVideoTrack(deviceId);
     mMeeting?.changeWebcam(track ? track : deviceId);
   };

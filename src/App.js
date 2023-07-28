@@ -167,6 +167,7 @@ const App = () => {
       maintainLandscapeVideoAspectRatio: "maintainLandscapeVideoAspectRatio",
       networkBarEnabled: "networkBarEnabled",
 
+      cameraId: "cameraId",
       cameraResolution: "cameraResolution",
       cameraMultiStream: "cameraMultiStream",
       cameraOptimizationMode: "cameraOptimizationMode",
@@ -180,7 +181,6 @@ const App = () => {
         ? decodeURIComponent(urlParams.get(key))
         : null;
     });
-
     // required options
     let configErr;
 
@@ -442,6 +442,9 @@ const App = () => {
         break;
     }
 
+    if (!paramKeys.cameraId || typeof paramKeys.cameraId !== "string") {
+      paramKeys.cameraId = null;
+    }
     if (
       !paramKeys.cameraResolution ||
       typeof paramKeys.cameraResolution !== "string"
@@ -650,8 +653,7 @@ const App = () => {
                 : paramKeys.theme === appThemes.LIGHT
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
-          }}
-        >
+          }}>
           <CircularProgress size={"4rem"} />
         </Box>
       ) : meetingIdValidation.reqError ? (
@@ -775,13 +777,13 @@ const App = () => {
               paramKeys.maintainLandscapeVideoAspectRatio === "true",
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
             cameraResolution: paramKeys.cameraResolution,
+            cameraId: paramKeys.cameraId,
             cameraMultiStream: paramKeys.cameraMultiStream === "true",
             cameraOptimizationMode: paramKeys.cameraOptimizationMode,
             screenShareResolution: paramKeys.screenShareResolution,
             screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
             micQuality: paramKeys.micQuality,
-          }}
-        >
+          }}>
           <MeetingProvider
             config={{
               meetingId: meetingIdValidation.meetingId,
@@ -810,8 +812,7 @@ const App = () => {
                 paramKeys.rawUserAgent || typeof window !== "undefined"
                   ? window?.navigator?.userAgent
                   : null,
-            }}
-          >
+            }}>
             <MeetingContainer />
           </MeetingProvider>
         </MeetingAppProvider>
@@ -851,19 +852,20 @@ const App = () => {
           }
           mode={paramKeys.mode}
           appTheme={paramKeys.theme}
+          cameraId={paramKeys.cameraId}
         />
       ) : (
         <ClickAnywhereToContinue
           onClick={() => {
             setUserHasInteracted(true);
           }}
-          title="Click anywhere to continue"
+          title='Click anywhere to continue'
           brandLogoURL={paramKeys.brandLogoURL}
         />
       )}
       <ConfirmBox
         open={meetingError.isVisible}
-        successText="OKAY"
+        successText='OKAY'
         onSuccess={() => {
           setMeetingError(({ message }) => {
             throw new Error(message);
