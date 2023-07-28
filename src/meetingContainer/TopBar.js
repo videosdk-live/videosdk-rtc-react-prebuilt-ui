@@ -1558,6 +1558,7 @@ const WebcamBTN = () => {
     mMeeting?.toggleWebcam(track);
   };
   const changeWebcam = async (deviceId) => {
+    console.log("deviceId", deviceId);
     const track = await getCustomVideoTrack(deviceId);
     mMeeting?.changeWebcam(track ? track : deviceId);
   };
