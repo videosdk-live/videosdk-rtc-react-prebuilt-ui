@@ -50,6 +50,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     canToggleVirtualBackground,
     participantCanToggleLivestream,
     pollEnabled,
+    liveStreamEnabled,
   } = useMeetingAppContext();
 
   const mMeeting = useMeeting({});
@@ -82,17 +83,6 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
         setSideBarNestedMode(sideBarNestedModes.POLLS);
       },
     },
-
-    {
-      Icon: AddLiveStreamsIcon,
-      primary: "Add Live Streams",
-      secondary: "Broadcast live stream to other platforms",
-      disabled: !participantCanToggleLivestream,
-      displayed: true,
-      onClick: () => {
-        setSideBarNestedMode(sideBarNestedModes.ADD_LIVE_STREAM);
-      },
-    },
   ];
 
   if (canToggleVirtualBackground) {
@@ -104,6 +94,19 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
       displayed: true,
       onClick: () => {
         setSideBarNestedMode(sideBarNestedModes.VIRTUAL_BACKGROUND);
+      },
+    });
+  }
+
+  if (liveStreamEnabled && meetingMode === meetingModes.CONFERENCE) {
+    moreOptionArr.push({
+      Icon: AddLiveStreamsIcon,
+      primary: "Add Live Streams",
+      secondary: "Broadcast live stream to other platforms",
+      disabled: !participantCanToggleLivestream,
+      displayed: true,
+      onClick: () => {
+        setSideBarNestedMode(sideBarNestedModes.ADD_LIVE_STREAM);
       },
     });
   }
