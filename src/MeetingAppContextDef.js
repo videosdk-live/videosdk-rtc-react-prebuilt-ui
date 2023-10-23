@@ -155,6 +155,8 @@ export const MeetingAppProvider = ({
   screenShareResolution,
   screenShareOptimizationMode,
   micQuality,
+  joinWithoutUserInteraction,
+  webcamEnabled,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -341,6 +343,8 @@ export const MeetingAppProvider = ({
         screenShareResolution,
         screenShareOptimizationMode,
         micQuality,
+        joinWithoutUserInteraction,
+        webcamEnabled,
 
         // states
         sideBarMode,
@@ -400,7 +404,8 @@ export const MeetingAppProvider = ({
         setMeetingResolution,
 
         videoProcessor,
-      }}>
+      }}
+    >
       <SnackbarProvider
         className={classes.container}
         autoHideDuration={5000}
@@ -419,7 +424,8 @@ export const MeetingAppProvider = ({
         anchorOrigin={{
           vertical: isTab || isMobile ? "top" : "bottom",
           horizontal: "left",
-        }}>
+        }}
+      >
         {children}
       </SnackbarProvider>
     </MeetingAppContext.Provider>

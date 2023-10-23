@@ -166,6 +166,8 @@ const MeetingContainer = () => {
     selectedWebcam,
     joinScreenWebCam,
     joinScreenMic,
+    joinWithoutUserInteraction,
+    webcamEnabled,
     canDrawOnWhiteboard,
     setMeetingLeft,
     appMeetingLayout,
@@ -186,6 +188,11 @@ const MeetingContainer = () => {
     liveStreamTheme,
     cameraId,
   } = useMeetingAppContext();
+
+  const joinWithoutUserInteractionValue =
+    joinWithoutUserInteraction === "true" ? true : false;
+
+  const webcamEnabledValue = webcamEnabled === "true" ? true : false;
 
   const { getCustomAudioTrack, getCustomVideoTrack } = useCustomTrack();
 
@@ -359,7 +366,11 @@ const MeetingContainer = () => {
       }
     }, 3000);
 
-    if (joinScreenWebCam && (cameraId || selectedWebcam.id)) {
+    if (
+      joinWithoutUserInteractionValue
+        ? webcamEnabledValue
+        : joinScreenWebCam && (cameraId || selectedWebcam.id)
+    ) {
       await new Promise((resolve) => {
         disableWebcam();
         setTimeout(async () => {
@@ -809,10 +820,11 @@ const MeetingContainer = () => {
             : appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : theme.palette.background.default,
-      }}>
+      }}
+    >
       <ConfirmBox
         open={meetingError}
-        successText='OKAY'
+        successText="OKAY"
         onSuccess={() => {
           setMeetingError(false);
         }}
@@ -833,14 +845,16 @@ const MeetingContainer = () => {
                 display: "flex",
                 flex: 1,
                 flexDirection: isTab || isMobile ? "column-reverse" : "column",
-              }}>
+              }}
+            >
               {topbarEnabled && <TopBar {...{ topBarHeight }} />}
               <div
                 style={{
                   display: "flex",
                   height: containerHeight - topBarHeight,
                   position: "relative",
-                }}>
+                }}
+              >
                 {meetingMode === meetingModes.CONFERENCE ? (
                   <>
                     {mMeeting?.pinnedParticipants.size > 0 &&
@@ -907,10 +921,10 @@ const MeetingContainer = () => {
             </div>
           </>
         ) : (
-          <ClickAnywhereToContinue title='Entry denied!' />
+          <ClickAnywhereToContinue title="Entry denied!" />
         )
       ) : askJoin ? (
-        <ClickAnywhereToContinue title='Waiting to join...' />
+        <ClickAnywhereToContinue title="Waiting to join..." />
       ) : !mMeeting.isMeetingJoined ? (
         isRecorder ? (
           <Box
@@ -927,7 +941,8 @@ const MeetingContainer = () => {
                   : appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.two
                   : theme.palette.background.default,
-            }}>
+            }}
+          >
             <RecordingLoader {...{ meetingLayout, appTheme }} />
           </Box>
         ) : (
