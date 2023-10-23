@@ -106,6 +106,7 @@ export const MeetingAppProvider = ({
   participantCanToggleOtherWebcam,
   partcipantCanToogleOtherScreenShare,
   participantTabPanelEnabled,
+  moreOptionsEnabled,
   participantCanToggleOtherMode,
   canRemoveOtherParticipant,
   notificationSoundEnabled,
@@ -273,6 +274,7 @@ export const MeetingAppProvider = ({
         participantCanToggleSelfWebcam,
         participantCanToggleSelfMic,
         participantTabPanelEnabled,
+        moreOptionsEnabled,
         raiseHandEnabled,
         recordingEnabled,
         meetingLayoutTopic,
@@ -400,7 +402,8 @@ export const MeetingAppProvider = ({
         setMeetingResolution,
 
         videoProcessor,
-      }}>
+      }}
+    >
       <SnackbarProvider
         className={classes.container}
         autoHideDuration={5000}
@@ -419,7 +422,8 @@ export const MeetingAppProvider = ({
         anchorOrigin={{
           vertical: isTab || isMobile ? "top" : "bottom",
           horizontal: "left",
-        }}>
+        }}
+      >
         {children}
       </SnackbarProvider>
     </MeetingAppContext.Provider>

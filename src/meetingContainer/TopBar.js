@@ -2186,6 +2186,7 @@ const TopBar = ({ topBarHeight }) => {
     animationsEnabled,
     meetingMode,
     participantTabPanelEnabled,
+    moreOptionsEnabled,
     appTheme,
   } = useMeetingAppContext();
 
@@ -2258,13 +2259,13 @@ const TopBar = ({ topBarHeight }) => {
         });
       }
 
-      // if (pollEnabled || whiteboardEnabled) {
-      arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
-      mobileIconArr.unshift({
-        buttonType: topBarButtonTypes.ACTIVITIES,
-        // priority: 10,
-      });
-      // }
+      if (moreOptionsEnabled) {
+        arrSideBar.unshift(topBarButtonTypes.ACTIVITIES);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.ACTIVITIES,
+          // priority: 10,
+        });
+      }
 
       arr.unshift(arrSideBar);
 
