@@ -789,13 +789,15 @@ const App = () => {
             screenShareResolution: paramKeys.screenShareResolution,
             screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
             micQuality: paramKeys.micQuality,
+            joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
+            webcamEnabled: paramKeys.webcamEnabled,
           }}
         >
           <MeetingProvider
             config={{
               meetingId: meetingIdValidation.meetingId,
               micEnabled: joinScreenMic,
-              webcamEnabled: joinScreenWebCam,
+              webcamEnabled: false,
               name: name,
               maxResolution:
                 paramKeys.isRecorder === "true"

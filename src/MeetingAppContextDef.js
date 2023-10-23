@@ -156,6 +156,8 @@ export const MeetingAppProvider = ({
   screenShareResolution,
   screenShareOptimizationMode,
   micQuality,
+  joinWithoutUserInteraction,
+  webcamEnabled,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -343,6 +345,8 @@ export const MeetingAppProvider = ({
         screenShareResolution,
         screenShareOptimizationMode,
         micQuality,
+        joinWithoutUserInteraction,
+        webcamEnabled,
 
         // states
         sideBarMode,
