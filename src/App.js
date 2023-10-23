@@ -653,7 +653,8 @@ const App = () => {
                 : paramKeys.theme === appThemes.LIGHT
                 ? theme.palette.lightTheme.main
                 : theme.palette.background.default,
-          }}>
+          }}
+        >
           <CircularProgress size={"4rem"} />
         </Box>
       ) : meetingIdValidation.reqError ? (
@@ -783,12 +784,15 @@ const App = () => {
             screenShareResolution: paramKeys.screenShareResolution,
             screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
             micQuality: paramKeys.micQuality,
-          }}>
+            joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
+            webcamEnabled: paramKeys.webcamEnabled,
+          }}
+        >
           <MeetingProvider
             config={{
               meetingId: meetingIdValidation.meetingId,
               micEnabled: joinScreenMic,
-              webcamEnabled: joinScreenWebCam,
+              webcamEnabled: false,
               name: name,
               maxResolution:
                 paramKeys.isRecorder === "true"
@@ -812,7 +816,8 @@ const App = () => {
                 paramKeys.rawUserAgent || typeof window !== "undefined"
                   ? window?.navigator?.userAgent
                   : null,
-            }}>
+            }}
+          >
             <MeetingContainer />
           </MeetingProvider>
         </MeetingAppProvider>
@@ -859,13 +864,13 @@ const App = () => {
           onClick={() => {
             setUserHasInteracted(true);
           }}
-          title='Click anywhere to continue'
+          title="Click anywhere to continue"
           brandLogoURL={paramKeys.brandLogoURL}
         />
       )}
       <ConfirmBox
         open={meetingError.isVisible}
-        successText='OKAY'
+        successText="OKAY"
         onSuccess={() => {
           setMeetingError(({ message }) => {
             throw new Error(message);
