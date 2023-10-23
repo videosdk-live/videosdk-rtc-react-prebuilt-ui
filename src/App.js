@@ -77,6 +77,7 @@ const App = () => {
       participantCanToggleSelfWebcam: "participantCanToggleSelfWebcam",
       participantCanToggleSelfMic: "participantCanToggleSelfMic",
       participantTabPanelEnabled: "participantTabPanelEnabled",
+      moreOptionsEnabled: "moreOptionsEnabled",
       participantCanToggleRecording: "participantCanToggleRecording",
       participantCanLeave: "participantCanLeave",
       participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
@@ -236,6 +237,9 @@ const App = () => {
     }
     if (typeof paramKeys.participantTabPanelEnabled !== "string") {
       paramKeys.participantTabPanelEnabled = "true";
+    }
+    if (typeof paramKeys.moreOptionsEnabled !== "string") {
+      paramKeys.moreOptionsEnabled = "true";
     }
     if (typeof paramKeys.raiseHandEnabled !== "string") {
       paramKeys.raiseHandEnabled = "true";
@@ -678,6 +682,7 @@ const App = () => {
               paramKeys.participantCanToggleSelfMic === "true",
             participantTabPanelEnabled:
               paramKeys.participantTabPanelEnabled === "true",
+            moreOptionsEnabled: paramKeys.moreOptionsEnabled === "true",
             raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
             canChangeLayout: paramKeys.canChangeLayout === "true",
             meetingLayoutTopic: paramKeys.meetingLayoutTopic,
