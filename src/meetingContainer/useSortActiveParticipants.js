@@ -1,4 +1,4 @@
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { Constants, useMeeting } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsMobile from "../utils/useIsMobile";
@@ -111,6 +111,11 @@ const useSortActiveParticipants = () => {
   const _handleOnParticipantJoined = (participant) => {
     const participantId = participant.id;
 
+    // filter out viewer mode participant
+    if (participant.mode == Constants.modes.VIEWER) {
+      return;
+    }
+
     const activeParticipants = activeSortedParticipantsRef.current;
     const mainViewParticipants = mainViewParticipantsRef.current;
     const maxParticipantInMainView = maxParticipantInMainViewRef.current;
@@ -199,7 +204,18 @@ const useSortActiveParticipants = () => {
   const _sortOnInit = () => {
     const participants = participantsRef.current;
     const maxParticipantInMainView = maxParticipantInMainViewRef.current;
-    const participantIds = [...new Map(participants).keys()];
+    const conferenceParticipantsArray = [...participants.values()].filter(
+      (participant) => participant.mode === Constants.modes.CONFERENCE
+    );
+
+    const conferenceParticipantsMap = new Map(
+      conferenceParticipantsArray.map((participant) => [
+        participant.id,
+        participant,
+      ])
+    );
+
+    const participantIds = [...conferenceParticipantsMap.keys()];
 
     const activeParticipants = [];
 
@@ -237,6 +253,18 @@ const useSortActiveParticipants = () => {
   });
 
   const participants = mMeeting?.participants;
+
+  const conferenceParticipantsArray = [...participants.values()].filter(
+    (participant) => participant.mode === Constants.modes.CONFERENCE
+  );
+
+  const conferenceParticipantsMap = new Map(
+    conferenceParticipantsArray.map((participant) => [
+      participant.id,
+      participant,
+    ])
+  );
+
   const mPresenterId = mMeeting?.presenterId;
   const localParticipantId = mMeeting?.localParticipant?.id;
 
@@ -289,8 +317,8 @@ const useSortActiveParticipants = () => {
   }, [maxParticipantInMainView]);
 
   useEffect(() => {
-    participantsRef.current = participants;
-  }, [participants]);
+    participantsRef.current = conferenceParticipantsMap;
+  }, [conferenceParticipantsMap]);
 
   useEffect(() => {
     localParticipantIdRef.current = localParticipantId;

@@ -1,4 +1,5 @@
 import {
+  Constants,
   useMeeting,
   useParticipant,
   usePubSub,
@@ -26,6 +27,8 @@ const ModeListner = () => {
     setSideBarMode,
     notificationSoundEnabled,
     notificationAlertsEnabled,
+    mainViewParticipants,
+    setMainViewParticipants,
   } = useMeetingAppContext();
 
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
@@ -38,6 +41,7 @@ const ModeListner = () => {
   );
 
   const participantRef = useRef();
+  const mainViewParticipantsRef = useRef();
   const publishRef = useRef();
   const notificationSoundEnabledRef = useRef();
   const notificationAlertsEnabledRef = useRef();
@@ -53,6 +57,10 @@ const ModeListner = () => {
   useEffect(() => {
     participantRef.current = participant;
   }, [participant]);
+
+  useEffect(() => {
+    mainViewParticipantsRef.current = [...mainViewParticipants];
+  }, [mainViewParticipants]);
 
   useEffect(() => {
     notificationSoundEnabledRef.current = notificationSoundEnabled;
@@ -141,6 +149,17 @@ const ModeListner = () => {
     onParticipantModeChanged: ({ mode, participantId }) => {
       if (participantId === localParticipantId) {
         setMeetingMode(mode);
+      }
+      const mainViewParticipants = mainViewParticipantsRef.current;
+
+      if (mode == Constants.modes.CONFERENCE) {
+        if (!mainViewParticipants.includes(participantId)) {
+          setMainViewParticipants([...mainViewParticipants, participantId]);
+        }
+      } else {
+        setMainViewParticipants(
+          mainViewParticipants.filter((pID) => pID !== participantId)
+        );
       }
     },
   });
