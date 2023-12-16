@@ -191,7 +191,7 @@ export const MeetingAppProvider = ({
     liveStreamOutputs || []
   );
   const [meetingMode, setMeetingMode] = useState(mode);
-  const [downstreamUrl, setDownstreamUrl] = useState(null);
+  const [playbackHlsUrl, setPlaybackHlsUrl] = useState(null);
   const [afterMeetingJoinedHLSState, setAfterMeetingJoinedHLSState] =
     useState(null);
   const [isMirrorViewChecked, setIsMirrorViewChecked] = useState(false);
@@ -363,7 +363,7 @@ export const MeetingAppProvider = ({
         meetingLeft,
         liveStreamConfig,
         meetingMode,
-        downstreamUrl,
+        playbackHlsUrl,
         optionArr,
         polls,
         draftPolls,
@@ -391,7 +391,7 @@ export const MeetingAppProvider = ({
         setLiveStreamConfig,
         setAppMeetingLayout,
         setMeetingMode,
-        setDownstreamUrl,
+        setPlaybackHlsUrl,
         setOptionArr,
         setDraftPolls,
         setSideBarNestedMode,

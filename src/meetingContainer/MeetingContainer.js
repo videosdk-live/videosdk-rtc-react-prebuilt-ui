@@ -180,7 +180,7 @@ const MeetingContainer = () => {
     liveStreamConfig,
     meetingMode,
     isRecorder,
-    setDownstreamUrl,
+    setPlaybackHlsUrl,
     setAfterMeetingJoinedHLSState,
     appTheme,
     recordingTheme,
@@ -648,9 +648,9 @@ const MeetingContainer = () => {
     //   data.status === Constants.hlsEvents.HLS_STARTED ||
     //   data.status === Constants.hlsEvents.HLS_STOPPED
     // ) {
-    //   setDownstreamUrl(
+    //   setPlaybackHlsUrl(
     //     data.status === Constants.hlsEvents.HLS_STARTED
-    //       ? data.downstreamUrl
+    //       ? data.playbackHlsUrl
     //       : null
     //   );
     // }
