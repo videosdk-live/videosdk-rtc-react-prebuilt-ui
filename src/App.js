@@ -797,7 +797,7 @@ const App = () => {
             config={{
               meetingId: meetingIdValidation.meetingId,
               micEnabled: joinScreenMic,
-              webcamEnabled: false,
+              webcamEnabled: joinScreenWebCam,
               name: name,
               maxResolution:
                 paramKeys.isRecorder === "true"
