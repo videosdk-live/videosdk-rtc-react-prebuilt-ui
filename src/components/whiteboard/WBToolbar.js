@@ -168,8 +168,8 @@ const CustomColorPicker = ({
               color={color}
               onChange={(ev) => {
                 setColor(ev.hex);
-                if(changeBrushColor){
-                  changeBrushColor(ev.hex)
+                if (changeBrushColor) {
+                  changeBrushColor(ev.hex);
                 }
               }}
               onChangeComplete={(ev) => {
@@ -219,7 +219,7 @@ const CustomImagePicker = ({ addImage, setTool }) => {
               }}
               onClick={() => {
                 imageInputRef.current.click();
-                setTool("select")
+                setTool("select");
               }}
             >
               <input
@@ -488,7 +488,7 @@ const WBToolbar = ({
             color: color,
             setParentColor: setParentColor,
             whiteboardToolbarWidth: whiteboardToolbarWidth,
-            changeBrushColor:changeBrushColor,
+            changeBrushColor: changeBrushColor,
             whiteboardSpacing: whiteboardSpacing,
             Icon: FormatColorFill,
           }}
@@ -497,7 +497,10 @@ const WBToolbar = ({
         <ToolBarIcon
           {...{
             Icon: ZoomInIcon,
-            onClick: () => zoomIn(),
+            onClick: () => {
+              setTool("pan")
+              zoomIn();
+            },
             title: "Zoom In",
             isSelected: tool === "zoom",
             whiteboardToolbarWidth,
@@ -506,7 +509,10 @@ const WBToolbar = ({
         <ToolBarIcon
           {...{
             Icon: ZoomOutIcon,
-            onClick: () => zoomOut(),
+            onClick: () => {
+             setTool("pan")
+              zoomOut();
+            },
             title: "Zoom Out",
             isSelected: tool === "zoom",
             whiteboardToolbarWidth,
@@ -526,7 +532,7 @@ const WBToolbar = ({
             Icon: Palette,
           }}
         />
-        <CustomImagePicker addImage={addImage} setTool={setTool}/>
+        <CustomImagePicker addImage={addImage} setTool={setTool} />
         <ToolBarIcon
           {...{
             Icon: UndoIcon,

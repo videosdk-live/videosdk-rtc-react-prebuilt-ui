@@ -329,14 +329,12 @@ function WhiteboardContainer({
           fabricRef.current.clear();
           return;
         } else {
-          setIsLoadingCanvasData(true)
+          setIsLoadingCanvasData(true);
           await onChatMessage({ event: message.event, data: message.data });
-          setIsLoadingCanvasData(false)
+          setIsLoadingCanvasData(false);
         }
       }
-
-    }
-    
+    },
   });
 
   // Action on chat message
@@ -349,8 +347,10 @@ function WhiteboardContainer({
       }
 
       case "ZOOM": {
-        const newZoom = convertZoomFrom800(data);
-        fabricRef.current.setZoom(newZoom);
+        const zoomLevel = data;
+        if(zoomLevel >= 1){
+        fabricRef.current.zoomToPoint(new fabric.Point(fabricRef.current.getWidth()/2, fabricRef.current.getHeight()/2), zoomLevel)
+        }
         break;
       }
 
@@ -732,18 +732,14 @@ function WhiteboardContainer({
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom + 0.2;
     fabricRef.current.fire("exitText", {});
-    fabricRef.current.setZoom(newZoom);
-    const newCalculatedZoom800 = convertZoomTo800();
-    sendData({ event: "ZOOM", data: newCalculatedZoom800 });
+    sendData({ event: "ZOOM", data:newZoom  });
   }
 
   function zoomOut() {
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom - 0.2;
     fabricRef.current.fire("exitText", {});
-    fabricRef.current.setZoom(newZoom);
-    const newCalculatedZoom800 = convertZoomTo800();
-    sendData({ event: "ZOOM", data: newCalculatedZoom800 });
+    sendData({ event: "ZOOM", data:newZoom });
   }
 
   function openPdf(url) {
