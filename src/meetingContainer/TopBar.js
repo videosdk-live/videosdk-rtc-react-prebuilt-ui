@@ -441,19 +441,52 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
 };
 const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const mMeeting = useMeeting({});
-  const { whiteboardStarted, appTheme } = useMeetingAppContext();
+  const {
+    whiteboardStarted,
+    appTheme,
+    notificationSoundEnabled,
+    notificationAlertsEnabled,
+  } = useMeetingAppContext();
+  const { enqueueSnackbar } = useSnackbar();
+
   const theme = useTheme();
 
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const presenterId = mMeeting?.presenterId;
+  const presenterIdRef = useRef(presenterId);
+
+  useEffect(() => {
+    presenterIdRef.current = presenterId;
+  }, [presenterId]);
 
   const { getCustomScreenShareTrack } = useCustomTrack();
 
   const toggleScreenShare = async () => {
     let track;
     if (!localScreenShareOn) track = await getCustomScreenShareTrack();
-    // console.log("screneshare ", track);
-    mMeeting?.toggleScreenShare(track);
+
+    if (presenterIdRef.current) {
+      let participantName = null;
+      mMeeting.participants.forEach((participant) => {
+        if (participant.id === presenterIdRef.current) {
+          participantName = participant.displayName;
+        }
+      });
+
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+
+      if (notificationAlertsEnabled) {
+        enqueueSnackbar(
+          `Screen sharing unavailable: ${participantName} is currently presenting.`
+        );
+      }
+    } else {
+      mMeeting?.toggleScreenShare(track);
+    }
   };
 
   return isMobile || isTab ? (
@@ -474,9 +507,9 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       }
       isFocused={localScreenShareOn}
       Icon={ScreenShare}
-      onClick={() => {
+      onClick={async () => {
+        await toggleScreenShare();
         typeof onClick === "function" && onClick();
-        toggleScreenShare();
       }}
       disabled={
         RDDIsMobile || RDDIsTablet
@@ -2195,6 +2228,7 @@ const TopBar = ({ topBarHeight }) => {
   };
 
   const handleCloseFAB = () => {
+    console.log("asdas");
     setOpen(false);
   };
 
