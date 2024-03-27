@@ -465,7 +465,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
     let track;
     if (!localScreenShareOn) track = await getCustomScreenShareTrack();
 
-    if (presenterIdRef.current) {
+    if (presenterIdRef.current && !localScreenShareOn) {
       let participantName = null;
       mMeeting.participants.forEach((participant) => {
         if (participant.id === presenterIdRef.current) {
