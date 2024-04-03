@@ -20,6 +20,8 @@ import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
 import { appThemes } from "../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
+import { useMediaDevice } from "@videosdk.live/react-sdk";
+import useMediaStream from "../utils/useMediaStream";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -189,6 +191,12 @@ export default function JoinMeeting({
 
   const { width: windowWidth } = useWindowSize();
 
+  const { getCameras, getMicrophones } = useMediaDevice({
+    onDeviceChanged,
+  });
+
+  const { getAudioTrack, getVideoTrack } = useMediaStream();
+
   useEffect(() => {
     if (
       videoPlayerRef.current &&
@@ -205,9 +213,7 @@ export default function JoinMeeting({
       currentvideoTrack.stop();
     }
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId },
-    });
+    const stream = await getVideoTrack({webcamId:deviceId})   
     const videoTracks = stream.getVideoTracks();
 
     const videoTrack = videoTracks.length ? videoTracks[0] : null;
@@ -217,9 +223,7 @@ export default function JoinMeeting({
   const changeMic = async (deviceId) => {
     const currentAudioTrack = audioTrackRef.current;
     currentAudioTrack && currentAudioTrack.stop();
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { deviceId },
-    });
+    const stream = await getAudioTrack({micId:deviceId});
     const audioTracks = stream.getAudioTracks();
 
     const audioTrack = audioTracks.length ? audioTracks[0] : null;
@@ -234,17 +238,10 @@ export default function JoinMeeting({
     cameraId,
   }) => {
     if (mic) {
-      const audioConstraints = {
-        audio: true,
-      };
+      const stream = await getAudioTrack();
 
-      const stream = await navigator.mediaDevices.getUserMedia(
-        audioConstraints
-      );
-      const audioTracks = stream.getAudioTracks();
-
+      const audioTracks = stream?.getAudioTracks();
       const audioTrack = audioTracks.length ? audioTracks[0] : null;
-
       setAudioTrack(audioTrack);
       if (firstTime) {
         setSelectedMic({
@@ -254,19 +251,11 @@ export default function JoinMeeting({
     }
 
     if (webcam) {
-      const videoConstraints = {
-        video: {
-          width: 1280,
-          height: 720,
-          deviceId: cameraId,
-        },
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(
-        videoConstraints
-      );
-      const videoTracks = stream.getVideoTracks();
-
+      const stream = await getVideoTrack({
+        webcamId: cameraId,
+        encoderConfig:"h720p_w1280p"
+      });
+      const videoTracks = stream?.getVideoTracks();
       const videoTrack = videoTracks.length ? videoTracks[0] : null;
       setVideoTrack(videoTrack);
       if (firstTime) {
@@ -290,35 +279,60 @@ export default function JoinMeeting({
     }
   }
 
+  const getCameraDevices = async () => {
+    try {
+      let webcams = await getCameras();
+
+      setDevices((devices) => {
+        return { ...devices, webcams };
+      });
+    } catch (err) {
+      console.log("Error in getting camera devices", err);
+    }
+  };
+
+  const getAudioDevices = async () => {
+    try {
+      let mics = await getMicrophones();
+
+      const hasMic = mics.length > 0;
+      if (hasMic) {
+        startMuteListener();
+      }
+
+      setDevices((devices) => {
+        return { ...devices, mics };
+      });
+    } catch (err) {
+      console.log("Error in getting audio devices", err);
+    }
+  };
+
+  function onDeviceChanged() {
+    getCameraDevices();
+    getAudioDevices();
+  }
+
   const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
-      await navigator.mediaDevices
-        .getUserMedia({ audio: true, video: true })
-        .then((s) => {
-          navigator.mediaDevices.enumerateDevices().then((devices) => {
-            const webcams = devices.filter((d) => d.kind === "videoinput");
-            const mics = devices.filter((d) => d.kind === "audioinput");
+      const webcams = await getCameras();
+      const mics = await getMicrophones();
 
-            const hasMic = mics.length > 0;
-            const hasWebcam = webcams.length > 0;
+      setDevices({ webcams, mics });
 
-            setDevices({ webcams, mics, devices });
+      const hasMic = mics.length > 0;
+      const hasWebcam = webcams.length > 0;
 
-            if (hasMic) {
-              startMuteListener();
-            }
+      if (hasMic) {
+        startMuteListener();
+      }
 
-            getDefaultMediaTracks({
-              mic: hasMic && micEnabled,
-              webcam: hasWebcam && webcamEnabled,
-              firstTime: true,
-              cameraId: cameraId,
-            });
-          });
-        })
-        .catch((error) => {
-          console.log("Error :", error);
-        });
+      getDefaultMediaTracks({
+        mic: hasMic && micEnabled,
+        webcam: hasWebcam && webcamEnabled,
+        firstTime: true,
+        cameraId: cameraId,
+      });
     } catch (err) {
       console.log(err);
     }

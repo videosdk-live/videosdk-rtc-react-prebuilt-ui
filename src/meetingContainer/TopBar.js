@@ -14,7 +14,7 @@ import {
   Checkbox,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { Constants, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import { Constants, useMediaDevice, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import {
   sideBarModes,
   appThemes,
@@ -1767,6 +1767,22 @@ const MicBTN = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { getCustomAudioTrack } = useCustomTrack();
+  const {getPlaybackDevices} = useMediaDevice({onDeviceChanged})
+
+  const getSpeakers = async () =>{
+    const devices = await getPlaybackDevices();
+    const outputMics = devices.filter(
+      (d) =>
+        d.deviceId !== "default" &&
+        d.deviceId !== "communications"
+    );
+
+    outputMics && outputMics?.length && setOutputMics(outputMics);
+  }
+
+  function onDeviceChanged() {
+   getSpeakers()
+  }
 
   const handleClick = (event) => {
     setDownArrow(event.currentTarget);
@@ -1793,15 +1809,7 @@ const MicBTN = () => {
   const tollTipEl = useRef();
 
   const getOutputDevices = async () => {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const outputMics = devices.filter(
-      (d) =>
-        d.kind === "audiooutput" &&
-        d.deviceId !== "default" &&
-        d.deviceId !== "communications"
-    );
-
-    outputMics && outputMics?.length && setOutputMics(outputMics);
+   await getSpeakers()
   };
 
   const _handleNoiseClick = async ({ e, selectMicDeviceId }) => {
