@@ -329,6 +329,8 @@ const App = () => {
 
     if (typeof paramKeys.metaData === "string") {
       paramKeys.metaData = JSON.parse(paramKeys.metaData ?? "");
+    } else {
+      paramKeys.metaData = {};
     }
 
     switch (paramKeys?.layoutType?.toUpperCase()) {
