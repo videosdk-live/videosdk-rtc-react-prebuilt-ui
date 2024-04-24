@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
 import { Box, IconButton, useTheme } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
@@ -68,6 +68,7 @@ function WhiteboardContainer({
   //
   const [pages, setpages] = useState(0);
   const [currentPageNo, setCurrentPageNo] = useState(1);
+  const { publish } = usePubSub(`WB`);
   const [color, setColor] = useState(
     appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
       ? theme.palette.lightTheme.primaryMain
@@ -77,6 +78,7 @@ function WhiteboardContainer({
     whiteboardState.state.config?.bgColor || "#f5f7f9"
   );
   const [uploading, setUploading] = useState(false);
+  const [isLoadingCanvasData, setIsLoadingCanvasData] = useState(false);
 
   const [tool, _setTool] = useState(null);
   const toolRef = useRef(tool);
@@ -114,7 +116,6 @@ function WhiteboardContainer({
         fabricRef.current.isDragging = false;
         break;
       }
-
       case "text": {
         fabricRef.current.isDrawingMode = false;
         fabricRef.current.isDragging = false;
@@ -302,7 +303,6 @@ function WhiteboardContainer({
         oId: Date.now(),
         pId: mMeeting.localParticipant.id,
       });
-
       sendData({
         event: "OBJ_ADD",
         data: options.target.toJSON(["oId", "pId"]),
@@ -317,21 +317,25 @@ function WhiteboardContainer({
     });
   }, []);
 
-  //   Event Listner for chat messages
-  useEffect(() => {
-    mMeeting.meeting.on("chat-message", (message) => {
-      const { senderId, text } = message;
-
-      const { type, data: msgData } = JSON.parse(text);
-      if (type !== "WB") return;
-
-      const isLocal = senderId === mMeeting.localParticipant.id;
-
-      if (isLocal) return;
-
-      onChatMessage(msgData);
-    });
-  }, []);
+  usePubSub(`WB`, {
+    onMessageReceived: ({ message }) => {
+      const { event, data } = message;
+      onChatMessage({ event: event, data: data });
+    },
+    onOldMessagesReceived: async (messages) => {
+      for (let msg of messages) {
+        const { message } = msg;
+        if (message.event === "CLEAR") {
+          fabricRef.current.clear();
+          return;
+        } else {
+          setIsLoadingCanvasData(true);
+          await onChatMessage({ event: message.event, data: message.data });
+          setIsLoadingCanvasData(false);
+        }
+      }
+    },
+  });
 
   // Action on chat message
   async function onChatMessage({ event, data }) {
@@ -343,8 +347,10 @@ function WhiteboardContainer({
       }
 
       case "ZOOM": {
-        const newZoom = convertZoomFrom800(data);
-        fabricRef.current.setZoom(newZoom);
+        const zoomLevel = data;
+        if(zoomLevel >= 1){
+        fabricRef.current.zoomToPoint(new fabric.Point(fabricRef.current.getWidth()/2, fabricRef.current.getHeight()/2), zoomLevel)
+        }
         break;
       }
 
@@ -375,16 +381,18 @@ function WhiteboardContainer({
         const exists = fabricRef.current
           .getObjects()
           .some((o) => o.oId === data.oId);
-
         if (!exists) {
-          fabric.util.enlivenObjects([data], function (objects) {
-            const origRenderOnAddRemove = fabricRef.current.renderOnAddRemove;
-            fabricRef.current.renderOnAddRemove = false;
+          await new Promise((accept, reject) => {
+            fabric.util.enlivenObjects([data], function (objects) {
+              const origRenderOnAddRemove = fabricRef.current.renderOnAddRemove;
+              fabricRef.current.renderOnAddRemove = false;
 
-            fabricRef.current.add(objects[0]);
+              fabricRef.current.add(objects[0]);
 
-            fabricRef.current.renderOnAddRemove = origRenderOnAddRemove;
-            fabricRef.current.renderAll();
+              fabricRef.current.renderOnAddRemove = origRenderOnAddRemove;
+              fabricRef.current.renderAll();
+              accept();
+            });
           });
         }
 
@@ -419,6 +427,11 @@ function WhiteboardContainer({
         break;
       }
 
+      case "BRUSH_COLOR": {
+        setColor(data);
+        break;
+      }
+
       case "PDF_OPEN": {
         openPdf(data);
         break;
@@ -445,13 +458,11 @@ function WhiteboardContainer({
   }, []);
 
   function sendData({ event, data }) {
-    mMeeting.sendChatMessage(
-      JSON.stringify({ type: "WB", data: { event, data } })
-    );
+    publish({ event, data }, { persist: true });
   }
 
   useEffect(() => {
-    sendData({ event: "BG_COLOR", data: canvasBackgroundColor });
+    // sendData({ event: "BG_COLOR", data: canvasBackgroundColor });
     setTool("pencil");
   }, []);
 
@@ -473,7 +484,7 @@ function WhiteboardContainer({
       fontFamily: "sans-serif",
     });
 
-    //fire this event if pan started
+    // fire this event if pan started
     fabricRef.current.on("exitText", (e) => {
       text.exitEditing();
     });
@@ -481,15 +492,15 @@ function WhiteboardContainer({
     fabricRef.current.add(text);
     fabricRef.current.renderAll();
 
-    text.enterEditing();
-    text.selectAll();
+    // text.enterEditing();
+    // text.selectAll();
   }
 
   function addCircle(ev) {
     var pointer = fabricRef.current.getPointer(ev);
     var object = new fabric.Circle({
       radius: 15,
-      fill: fabricRef.current.freeDrawingBrush.color,
+      fill: "rgba(0,0,0,0)",
       left: pointer.x,
       top: pointer.y,
       stroke: fabricRef.current.freeDrawingBrush.color,
@@ -558,20 +569,46 @@ function WhiteboardContainer({
 
   function clearCanvas() {
     fabricRef.current.clear();
-    sendData({ event: "CLEAR", data: mMeeting.localParticipant.id });
+    sendData({
+      event: "CLEAR",
+      data: mMeeting.localParticipant.id,
+    });
   }
 
-  async function uploadImageAndGetUrl(event) {
+  // // Update the selected object color when the color changes
+  useEffect(() => {
+    const activeObject = fabricRef.current.getActiveObject();
+
+    if (activeObject) {
+      if (activeObject.fill && activeObject.fill !== "rgba(0,0,0,0)") {
+        activeObject.set({ fill: color });
+      }
+
+      // Check if the object has a stroke property
+      if (activeObject.stroke) {
+        activeObject.set({ stroke: color });
+      }
+      fabricRef.current.renderAll();
+      sendData({
+        event: "OBJ_MOD",
+        data: activeObject.toJSON(["oId", "pId"]),
+      });
+    }
+  }, [color]);
+
+  async function uploadImageAndGetUrl({ event, image }) {
     setUploading(true);
     return new Promise((resolve, reject) => {
-      new Compressor(event.target.files[0], {
+      let imageData = image ? image : event.target.files[0];
+
+      new Compressor(imageData, {
         quality: 0.8,
         maxHeight: 1024,
         maxWidth: 1024,
 
         async success(result) {
           var formdata = new FormData();
-          formdata.append("file", result, event.target.files[0].name);
+          formdata.append("file", result, imageData.name);
 
           var requestOptions = {
             method: "POST",
@@ -604,8 +641,7 @@ function WhiteboardContainer({
   }
 
   async function addImage(event) {
-    const url = await uploadImageAndGetUrl(event);
-
+    const url = await uploadImageAndGetUrl({ event: event });
     fetch(url, { headers: { Authorization: token } }).then(async (res) => {
       // Create a new image element
       const image = new Image();
@@ -617,47 +653,93 @@ function WhiteboardContainer({
           left: whiteboardSpacing,
           top: 42,
         });
-
         fabricImage.scaleToWidth(imageWidth);
-
         fabricRef.current.add(image1);
         fabricRef.current.setActiveObject(image1);
         fabricRef.current.renderAll();
       };
       const binaryData = await res.arrayBuffer();
-
       //converting array buffer to string
       const base64Data = window.btoa(
         new Uint8Array(binaryData).reduce(function (data, byte) {
           return data + String.fromCharCode(byte);
         }, "")
       );
-
       image.src = `data:image/*;base64,${base64Data}`;
       setUploading(false);
     });
   }
 
+  async function addImageFromPaste(event) {
+    if (event.clipboardData && event.clipboardData.items) {
+      for (let i = 0; i < event.clipboardData.items.length; i++) {
+        let item = event.clipboardData.items[i];
+        if (item.type.indexOf("image") !== -1) {
+          const image = item.getAsFile();
+          const url = await uploadImageAndGetUrl({ image: image });
+          setTool("select");
+          fetch(url, { headers: { Authorization: token } }).then(
+            async (res) => {
+              const image = new Image();
+              image.onload = () => {
+                const fabricImage = new fabric.Image(image);
+                var image1 = fabricImage.set({
+                  left: whiteboardSpacing,
+                  top: 42,
+                });
+                fabricImage.scaleToWidth(imageWidth);
+                if (fabricRef.current) {
+                  fabricRef.current.add(image1);
+                  fabricRef.current.setActiveObject(image1);
+                  fabricRef.current.renderAll();
+                }
+              };
+              const binaryData = await res.arrayBuffer();
+              const base64Data = window.btoa(
+                new Uint8Array(binaryData).reduce(function (data, byte) {
+                  return data + String.fromCharCode(byte);
+                }, "")
+              );
+              image.src = `data:image/*;base64,${base64Data}`;
+              setUploading(false);
+            }
+          );
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    const handlePaste = function (event) {
+      addImageFromPaste(event);
+    };
+    document.addEventListener("paste", handlePaste);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, []);
+
   function changeCanvasBackgroundColor(color) {
     sendData({ event: "BG_COLOR", data: color });
+  }
+
+  function changeBrushColor(color) {
+    sendData({ event: "BRUSH_COLOR", data: color });
   }
 
   function zoomIn() {
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom + 0.2;
     fabricRef.current.fire("exitText", {});
-    fabricRef.current.setZoom(newZoom);
-    const newCalculatedZoom800 = convertZoomTo800();
-    sendData({ event: "ZOOM", data: newCalculatedZoom800 });
+    sendData({ event: "ZOOM", data:newZoom  });
   }
 
   function zoomOut() {
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom - 0.2;
     fabricRef.current.fire("exitText", {});
-    fabricRef.current.setZoom(newZoom);
-    const newCalculatedZoom800 = convertZoomTo800();
-    sendData({ event: "ZOOM", data: newCalculatedZoom800 });
+    sendData({ event: "ZOOM", data:newZoom });
   }
 
   function openPdf(url) {
@@ -822,6 +904,25 @@ function WhiteboardContainer({
     }
   }, [tool]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Check if Ctrl (or Command on Mac) key is pressed along with Z key
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        // Prevent the default undo behavior (like browser navigation)
+        e.preventDefault();
+        undo();
+      }
+    };
+
+    // Add event listener for keydown
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <Box
       id={"main-canvas-container"}
@@ -849,6 +950,7 @@ function WhiteboardContainer({
             downloadCanvas,
             clearCanvas,
             changeCanvasBackgroundColor,
+            changeBrushColor,
             undo,
             zoomOut,
             zoomIn,
@@ -968,6 +1070,32 @@ function WhiteboardContainer({
             ></div>
           )}
         </Box>
+
+        {isLoadingCanvasData && (
+          <Box
+            style={{
+              position: "absolute",
+              top: 16,
+              left: "40%",
+              zIndex: 999,
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              backgroundColor: "black",
+              borderRadius: "4px",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "16px",
+                marginBottom: "8px",
+                marginTop: "8px",
+                color: "white",
+              }}
+            >
+              Loading Canvas Data...
+            </p>
+          </Box>
+        )}
 
         {uploading && (
           <Box

@@ -85,6 +85,7 @@ const CustomColorPicker = ({
   setColor,
   setParentColor,
   changeCanvasBackgroundColor,
+  changeBrushColor,
   whiteboardToolbarWidth,
   whiteboardSpacing,
   Icon,
@@ -156,6 +157,9 @@ const CustomColorPicker = ({
               color={color}
               onChange={(ev) => {
                 setColor(ev.hex);
+                if (changeBrushColor) {
+                  changeBrushColor(ev.hex);
+                }
               }}
               onChangeComplete={(ev) => {
                 setParentColor(ev.hex);
@@ -171,7 +175,7 @@ const CustomColorPicker = ({
   );
 };
 
-const CustomImagePicker = ({ addImage }) => {
+const CustomImagePicker = ({ addImage, setTool }) => {
   const imageInputRef = useRef();
   const theme = useTheme();
 
@@ -205,6 +209,7 @@ const CustomImagePicker = ({ addImage }) => {
               }}
               onClick={() => {
                 imageInputRef.current.click();
+                setTool("select");
               }}
             >
               <input
@@ -234,6 +239,7 @@ const WBToolbar = ({
   downloadCanvas,
   clearCanvas,
   changeCanvasBackgroundColor,
+  changeBrushColor,
   undo,
   zoomOut,
   zoomIn,
@@ -469,6 +475,7 @@ const WBToolbar = ({
             color: color,
             setParentColor: setParentColor,
             whiteboardToolbarWidth: whiteboardToolbarWidth,
+            changeBrushColor: changeBrushColor,
             whiteboardSpacing: whiteboardSpacing,
             Icon: FormatColorFill,
           }}
@@ -477,7 +484,10 @@ const WBToolbar = ({
         <ToolBarIcon
           {...{
             Icon: ZoomInIcon,
-            onClick: () => zoomIn(),
+            onClick: () => {
+              setTool("pan")
+              zoomIn();
+            },
             title: "Zoom In",
             isSelected: tool === "zoom",
             whiteboardToolbarWidth,
@@ -486,7 +496,10 @@ const WBToolbar = ({
         <ToolBarIcon
           {...{
             Icon: ZoomOutIcon,
-            onClick: () => zoomOut(),
+            onClick: () => {
+             setTool("pan")
+              zoomOut();
+            },
             title: "Zoom Out",
             isSelected: tool === "zoom",
             whiteboardToolbarWidth,
@@ -506,7 +519,7 @@ const WBToolbar = ({
             Icon: Palette,
           }}
         />
-        <CustomImagePicker addImage={addImage} />
+        <CustomImagePicker addImage={addImage} setTool={setTool} />
         <ToolBarIcon
           {...{
             Icon: UndoIcon,
