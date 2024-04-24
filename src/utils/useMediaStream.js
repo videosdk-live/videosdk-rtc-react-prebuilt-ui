@@ -2,7 +2,7 @@ import { createCameraVideoTrack , createMicrophoneAudioTrack } from "@videosdk.l
 
 const useMediaStream = () => {
 
-  const getVideoTrack = async ({ webcamId, encoderConfig }) => {
+  const getVideoTrack = async ({ webcamId, encoderConfig }={}) => {
     try {
       const track = await createCameraVideoTrack({
         cameraId: webcamId ,
@@ -17,7 +17,7 @@ const useMediaStream = () => {
     }
   };
 
-  const getAudioTrack = async ({micId}) => {
+  const getAudioTrack = async ({micId}={}) => {
     try{
       const track = await createMicrophoneAudioTrack({
         microphoneId: micId
