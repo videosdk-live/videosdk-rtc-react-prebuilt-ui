@@ -1,4 +1,4 @@
-import { useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
 import { appThemes, meetingLayouts } from "../MeetingAppContextDef";
 
 export default function RecordingLoader({ meetingLayout, appTheme }) {

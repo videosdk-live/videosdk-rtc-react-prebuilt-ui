@@ -3,7 +3,7 @@ import {
   useParticipant,
   usePubSub,
 } from "@videosdk.live/react-sdk";
-import { MoreVert, SearchOutlined } from "@material-ui/icons";
+import { MoreVert, SearchOutlined } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -12,13 +12,11 @@ import {
   TextField,
   Typography,
   useTheme,
-  Fade,
   Tooltip,
-  makeStyles,
   MenuList,
   MenuItem,
   Popover,
-} from "@material-ui/core";
+} from "@mui/material";
 import React, { useMemo, useState } from "react";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import { RaiseHand } from "../../icons";
@@ -39,42 +37,8 @@ import ParticipantPinIcon from "../../icons/ParticipantPinIcon";
 import ParticipantRemoveIcon from "../../icons/ParticipantRemoveIcon";
 import useIsHls from "../useIsHls";
 import useCustomTrack from "../../utils/useCustomTrack";
-
-const useStyles = makeStyles(() => ({
-  textField: {
-    "&:hover": {
-      border: "1px solid #70707033",
-      borderRadius: "6px",
-    },
-    "& .MuiInputBase-input": {
-      color: "#404B53",
-    },
-    border: "1px solid #70707033",
-    borderRadius: "6px",
-  },
-  input: {
-    "& .MuiOutlinedInput-input": {
-      padding: "16px 12px",
-    },
-  },
-  popover: { backgroundColor: "transparent" },
-  popoverBorder: {
-    borderRadius: "12px",
-    backgroundColor: "#212032",
-    marginTop: 8,
-    width: 300,
-  },
-  popoverHover: {
-    "&:hover": {
-      backgroundColor: "#CCD2D899",
-    },
-  },
-  popoverHoverDark: {
-    "&:hover": {
-      backgroundColor: "#2B303499",
-    },
-  },
-}));
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
 function ParticipantListItem({ raisedHand, participantId }) {
   const { presenterId } = useMeeting();
@@ -129,7 +93,7 @@ function ParticipantListItem({ raisedHand, participantId }) {
 
   const isHls = useIsHls();
 
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const theme = useTheme();
 
@@ -199,8 +163,9 @@ function ParticipantListItem({ raisedHand, participantId }) {
               overflow: "hidden",
               whiteSpace: "pre-wrap",
               color:
-                appTheme === appThemes.LIGHT &&
-                theme.palette.lightTheme.contrastText,
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
             }}
             variant="body1"
             noWrap
@@ -422,8 +387,9 @@ function ParticipantListItem({ raisedHand, participantId }) {
                       height: 18,
                       width: 18,
                       color:
-                        appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
                     }}
                   />
                 </Box>
@@ -462,14 +428,6 @@ function ParticipantListItem({ raisedHand, participantId }) {
                           e.stopPropagation();
                           setIsParticipantKickoutVisible(true);
                           handleClose();
-                        }}
-                        classes={{
-                          root:
-                            appTheme === appThemes.LIGHT
-                              ? classes.popoverHover
-                              : appTheme === appThemes.DARK
-                              ? classes.popoverHoverDark
-                              : "",
                         }}
                       >
                         <Box style={{ display: "flex", flexDirection: "row" }}>
@@ -528,14 +486,6 @@ function ParticipantListItem({ raisedHand, participantId }) {
                           setScreenShareOn: !isParticipantPresenting,
                         });
                         handleClose();
-                      }}
-                      classes={{
-                        root:
-                          appTheme === appThemes.LIGHT
-                            ? classes.popoverHover
-                            : appTheme === appThemes.DARK
-                            ? classes.popoverHoverDark
-                            : "",
                       }}
                       disabled={
                         !(
@@ -746,7 +696,51 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   const { width } = useWindowSize();
   const isTab = useIsTab();
   const isMobile = useIsMobile();
-  const classes = useStyles();
+  const outerTheme = useTheme();
+
+  const customTheme = (outerTheme) =>
+    createTheme({
+      palette: {
+        mode: outerTheme.palette.mode,
+      },
+      components: {
+        MuiTextField: {
+          styleOverrides: {
+            root: {
+              "--TextField-brandBorderColor": "#70707033",
+              "--TextField-brandBorderHoverColor": "#70707033",
+              "--TextField-brandBorderFocusedColor": "#70707033",
+              "& label.Mui-focused": {
+                color: "var(--TextField-brandBorderFocusedColor)",
+              },
+            },
+          },
+        },
+        MuiOutlinedInput: {
+          styleOverrides: {
+            notchedOutline: {
+              borderColor: appTheme !== appThemes.LIGHT && "#404B53",
+            },
+            root: {
+              [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? "var(--TextField-brandBorderHoverColor)"
+                    : "white",
+              },
+              [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? "var(--TextField-brandBorderFocusedColor)"
+                    : "white",
+                borderWidth: "1px",
+              },
+              color: appTheme === appThemes.LIGHT ? "#404B53" : "white",
+            },
+          },
+        },
+      },
+    });
 
   return (
     <Box
@@ -758,35 +752,34 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
       }}
     >
       <Box>
-        <TextField
-          variant="outlined"
-          fullWidth
-          placeholder="Search Participants"
-          classes={{
-            root: appTheme === appThemes.LIGHT && classes.textField,
-          }}
-          style={{
-            color:
-              appTheme === appThemes.LIGHT &&
-              theme.palette.lightTheme.contrastText,
-            borderRadius: "6px",
-          }}
-          onChange={(e) => setFilterQuery(e.target.value)}
-          InputProps={{
-            classes: { root: classes.input },
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchOutlined
-                  style={{
-                    color:
-                      appTheme === appThemes.LIGHT &&
-                      theme.palette.lightTheme.contrastText,
-                  }}
-                />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <ThemeProvider theme={customTheme(outerTheme)}>
+          <TextField
+            variant="outlined"
+            fullWidth
+            placeholder="Search Participants"
+            style={{
+              color:
+                appTheme === appThemes.LIGHT &&
+                theme.palette.lightTheme.contrastText,
+              borderRadius: "6px",
+            }}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchOutlined
+                    style={{
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
+                    }}
+                  />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </ThemeProvider>
       </Box>
 
       <Box style={{ overflowY: "auto" }}>

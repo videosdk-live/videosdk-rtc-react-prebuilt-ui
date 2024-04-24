@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import robot from "../animations/robot.json";
 import Lottie from "react-lottie";
-import { Typography, Box, Button } from "@material-ui/core";
+import { Typography, Box, Button } from "@mui/material";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import useWindowSize from "../utils/useWindowSize";
 
@@ -130,7 +130,7 @@ const ClickAnywhereToContinue = ({ onClick, title, brandLogoURL }) => {
               JOIN THE MEETING
             </Button>
           ) : (
-            <Typography variant="h4">{title}</Typography>
+            <Typography variant="h4" color="white" >{title}</Typography>
           )}
         </Box>
       </div>

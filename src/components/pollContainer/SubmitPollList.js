@@ -1,4 +1,4 @@
-import { Box, Tooltip, Typography, useTheme } from "@material-ui/core";
+import { Box, Tooltip, Typography, useTheme } from "@mui/material";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import AnswerSubmittedIcon from "../../icons/AnswerSubmittedIcon";

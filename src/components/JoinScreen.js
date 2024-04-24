@@ -7,10 +7,10 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
-} from "@material-ui/core";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Videocam, Mic, MicOff, VideocamOff } from "@material-ui/icons";
-import { red } from "@material-ui/core/colors";
+} from "@mui/material";
+import { useTheme } from "@mui/system";
+import { Videocam, Mic, MicOff, VideocamOff } from "@mui/icons-material";
+import { red } from "@mui/material/colors";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import ConfirmBox from "../components/ConfirmBox";
 import { CheckboxIcon } from "../icons";
@@ -22,40 +22,6 @@ import { appThemes } from "../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
 import { useMediaDevice } from "@videosdk.live/react-sdk";
 import useMediaStream from "../utils/useMediaStream";
-
-const useStyles = makeStyles((theme) => ({
-  input: {
-    margin: theme.spacing(2, 1),
-    width: "500px",
-    "@media only screen and (max-width: 959.9px)": {
-      width: "340px",
-    },
-  },
-
-  video: {
-    borderRadius: "10px",
-    backgroundColor: "#1c1c1c",
-    height: "100%",
-    width: "100%",
-    objectFit: "cover",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  toggleButton: {
-    borderRadius: "100%",
-    minWidth: "auto",
-    width: "44px",
-    height: "44px",
-  },
-
-  previewBox: {
-    width: "100%",
-    height: "45vh",
-    position: "relative",
-  },
-}));
 
 export const DotsBoxContainer = ({ type }) => {
   const theme = useTheme();
@@ -133,7 +99,6 @@ export default function JoinMeeting({
   appTheme,
   cameraId,
 }) {
-  const classes = useStyles();
   const theme = useTheme();
 
   const [nameErr, setNameErr] = useState(false);
@@ -213,7 +178,7 @@ export default function JoinMeeting({
       currentvideoTrack.stop();
     }
 
-    const stream = await getVideoTrack({webcamId:deviceId})   
+    const stream = await getVideoTrack({ webcamId: deviceId });
     const videoTracks = stream.getVideoTracks();
 
     const videoTrack = videoTracks.length ? videoTracks[0] : null;
@@ -223,7 +188,7 @@ export default function JoinMeeting({
   const changeMic = async (deviceId) => {
     const currentAudioTrack = audioTrackRef.current;
     currentAudioTrack && currentAudioTrack.stop();
-    const stream = await getAudioTrack({micId:deviceId});
+    const stream = await getAudioTrack({ micId: deviceId });
     const audioTracks = stream.getAudioTracks();
 
     const audioTrack = audioTracks.length ? audioTracks[0] : null;
@@ -253,7 +218,7 @@ export default function JoinMeeting({
     if (webcam) {
       const stream = await getVideoTrack({
         webcamId: cameraId,
-        encoderConfig:"h720p_w1280p"
+        encoderConfig: "h720p_w1280p",
       });
       const videoTracks = stream?.getVideoTracks();
       const videoTrack = videoTracks.length ? videoTracks[0] : null;
@@ -397,13 +362,21 @@ export default function JoinMeeting({
 
       if (videoPlayerRef.current) {
         videoPlayerRef.current.srcObject = videoSrcObject;
-        videoPlayerRef.current.play();
+        try {
+          videoPlayerRef.current.play();
+        } catch (err) {
+          console.log("error in video play", err);
+        }
       }
 
       setTimeout(() => {
         if (popupVideoPlayerRef.current) {
           popupVideoPlayerRef.current.srcObject = videoSrcObject;
-          popupVideoPlayerRef.current.play();
+          try {
+            popupVideoPlayerRef.current.play();
+          } catch (err) {
+            console.log("error in video play", err);
+          }
         }
       }, 1000);
     } else {
@@ -443,11 +416,11 @@ export default function JoinMeeting({
   });
 
   const spacingHorizontalTopicsObject = {
-    xl: 60,
-    lg: 40,
-    md: 40,
-    sm: 40,
-    xs: 32,
+    xl: 32,
+    lg: 32,
+    md: 32,
+    sm: 16,
+    xs: 16,
   };
 
   const spacingHorizontalTopics = useResponsiveSize(
@@ -556,14 +529,29 @@ export default function JoinMeeting({
                   </Box>
 
                   <Box>
-                    <Box className={classes.previewBox}>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "45vh",
+                        position: "relative",
+                      }}
+                    >
                       <video
                         autoPlay
                         playsInline
                         muted
                         ref={videoPlayerRef}
                         controls={false}
-                        className={classes.video + " flip"}
+                        style={{
+                          borderRadius: "10px",
+                          backgroundColor: "#1c1c1c",
+                          height: "100%",
+                          width: "100%",
+                          objectFit: "cover",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       />
 
                       {!isXSOnly ? (
@@ -582,13 +570,19 @@ export default function JoinMeeting({
                           >
                             {participantCanToggleSelfWebcam === "false" &&
                             !webcamOn ? (
-                              <Typography variant={isXLOnly ? "h5" : "h6"}>
+                              <Typography
+                                color={"#fff"}
+                                variant={isXLOnly ? "h5" : "h6"}
+                              >
                                 {mode === meetingModes.VIEWER
                                   ? "You are not permitted to use your microphone and camera."
                                   : "You are not allowed to turn on your camera"}
                               </Typography>
                             ) : !webcamOn ? (
-                              <Typography variant={isXLOnly ? "h4" : "h6"}>
+                              <Typography
+                                color={"#fff"}
+                                variant={isXLOnly ? "h4" : "h6"}
+                              >
                                 The camera is off
                               </Typography>
                             ) : null}
@@ -642,8 +636,9 @@ export default function JoinMeeting({
                                   style={{
                                     marginLeft: 4,
                                     color:
-                                      appTheme === appThemes.LIGHT &&
-                                      theme.palette.lightTheme.contrastText,
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.contrastText
+                                        : "#fff",
                                   }}
                                 >
                                   {t("Check your audio and video")}
@@ -683,71 +678,97 @@ export default function JoinMeeting({
                       <Box
                         position="absolute"
                         bottom={theme.spacing(2)}
-                        left="0"
-                        right="0"
+                        left={0}
+                        right={0}
+                        width={"100%"}
+                        display={"flex"}
+                        alignItems={"center"}
+                        justifyContent={"center"}
                       >
-                        <Grid
-                          container
-                          alignItems="center"
-                          justify="center"
-                          spacing={2}
+                        <Box
+                          display={"flex"}
+                          alignItems={"center"}
+                          alignContent={"center"}
                         >
-                          {participantCanToggleSelfMic === "true" ? (
-                            <Grid item>
-                              <Tooltip
-                                title={micOn ? "Turn off mic" : "Turn on mic"}
-                                arrow
-                                placement="top"
-                              >
-                                <Button
-                                  onClick={() => _handleToggleMic()}
-                                  variant="contained"
-                                  style={
-                                    micOn
-                                      ? {}
-                                      : {
-                                          backgroundColor: red[500],
-                                          color: "white",
-                                        }
-                                  }
-                                  className={classes.toggleButton}
+                          <Grid
+                            container
+                            alignItems="center"
+                            justify="center"
+                            spacing={2}
+                          >
+                            {participantCanToggleSelfMic === "true" ? (
+                              <Grid item>
+                                <Tooltip
+                                  title={micOn ? "Turn off mic" : "Turn on mic"}
+                                  arrow
+                                  placement="top"
                                 >
-                                  {micOn ? <Mic /> : <MicOff />}
-                                </Button>
-                              </Tooltip>
-                            </Grid>
-                          ) : null}
+                                  <Button
+                                    onClick={() => _handleToggleMic()}
+                                    variant="contained"
+                                    style={
+                                      micOn
+                                        ? {
+                                            backgroundColor: "white",
+                                            color: "black",
+                                          }
+                                        : {
+                                            backgroundColor: red[500],
+                                            color: "white",
+                                          }
+                                    }
+                                    sx={{
+                                      borderRadius: "100%",
+                                      minWidth: "auto",
+                                      width: "44px",
+                                      height: "44px",
+                                    }}
+                                  >
+                                    {micOn ? <Mic /> : <MicOff />}
+                                  </Button>
+                                </Tooltip>
+                              </Grid>
+                            ) : null}
 
-                          {participantCanToggleSelfWebcam === "true" ? (
-                            <Grid item>
-                              <Tooltip
-                                title={
-                                  webcamOn
-                                    ? "Turn off camera"
-                                    : "Turn on camera"
-                                }
-                                arrow
-                                placement="top"
-                              >
-                                <Button
-                                  onClick={() => _toggleWebcam()}
-                                  variant="contained"
-                                  style={
+                            {participantCanToggleSelfWebcam === "true" ? (
+                              <Grid item>
+                                <Tooltip
+                                  title={
                                     webcamOn
-                                      ? {}
-                                      : {
-                                          backgroundColor: red[500],
-                                          color: "white",
-                                        }
+                                      ? "Turn off camera"
+                                      : "Turn on camera"
                                   }
-                                  className={classes.toggleButton}
+                                  arrow
+                                  placement="top"
                                 >
-                                  {webcamOn ? <Videocam /> : <VideocamOff />}
-                                </Button>
-                              </Tooltip>
-                            </Grid>
-                          ) : null}
-                        </Grid>
+                                  <Button
+                                    onClick={() => _toggleWebcam()}
+                                    variant="contained"
+                                    sx={{
+                                      borderRadius: "100%",
+                                      minWidth: "auto",
+                                      width: "44px",
+                                      height: "44px",
+                                    }}
+                                    style={
+                                      webcamOn
+                                        ? {
+                                            backgroundColor: "white",
+                                            color: "black",
+                                          }
+                                        : {
+                                            backgroundColor: red[500],
+                                            color: "white",
+                                          }
+                                    }
+                                  >
+                                    {webcamOn ? <Videocam /> : <VideocamOff />}
+                                  </Button>
+                                </Tooltip>
+                              </Grid>
+                            ) : null}
+                          </Grid>
+                        </Box>
                       </Box>
                     </Box>
                   </Box>

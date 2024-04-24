@@ -1,7 +1,6 @@
-import { Box, Button, Link, Typography, useTheme } from "@material-ui/core";
+import { Box, Button, Link, Typography } from "@mui/material";
 import React from "react";
 import Lottie from "react-lottie";
-
 import useIsLGDesktop from "../utils/useIsLGDesktop";
 import useIsSMDesktop from "../utils/useIsSMDesktop";
 import useResponsiveSize from "../utils/useResponsiveSize";

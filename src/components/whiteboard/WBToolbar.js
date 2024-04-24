@@ -1,12 +1,12 @@
 import {
   Box,
   ButtonBase,
-  makeStyles,
   Popover,
   Tooltip,
+  styled,
   useTheme,
-} from "@material-ui/core";
-import { Palette, FormatColorFill } from "@material-ui/icons";
+} from "@mui/material";
+import { Palette, FormatColorFill } from "@mui/icons-material";
 import React, { useEffect, useRef, useState } from "react";
 import {
   CircleFilledIcon,
@@ -27,39 +27,26 @@ import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import { SketchPicker } from "react-color";
 import UploadImageIcon from "../../icons/UploadImageIcon";
 
-const useStyles = makeStyles((theme) => ({
-  btnTool: {
-    padding: theme.spacing(1),
-    marginTop: theme.spacing(1 / 4),
-    marginBottom: theme.spacing(1 / 4),
-  },
-  iColorPicker: {
-    width: "24px",
-    height: "26px",
-    padding: "0px",
-    backgroundColor: "transparent",
-    border: "none",
-    cursor: "pointer",
-  },
-  popover: {
-    backgroundColor: "transparent",
-    boxShadow: "none",
-  },
-  paper: {
-    backgroundColor: "transparent",
-    boxShadow: "none",
-  },
-}));
+const CustomPopover = styled(Popover)`
+  & .MuiPaper-root {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  & .MuiPopover-root {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+`;
 
 const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const theme = useTheme();
   const { appTheme } = useMeetingAppContext();
 
   return (
     <Tooltip title={title} arrow placement="right">
       <ButtonBase
-        className={classes.btnTool}
         color="inherit"
         style={{
           backgroundColor: isSelected
@@ -70,6 +57,9 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
               : "#D5E8FF"
             : "",
           borderRadius: 6,
+          padding: theme.spacing(1),
+          marginTop: theme.spacing(1 / 4),
+          marginBottom: theme.spacing(1 / 4),
         }}
         onClick={onClick}
       >
@@ -99,14 +89,14 @@ const CustomColorPicker = ({
   whiteboardSpacing,
   Icon,
 }) => {
-  const classes = useStyles();
   const { appTheme } = useMeetingAppContext();
+  const theme = useTheme();
 
   return (
     <>
       <Tooltip title={title} arrow placement="right">
         <ButtonBase
-          className={classes.btnTool}
+          // className={classes.btnTool}
           color="inherit"
           component="span"
           onClick={(e) => {
@@ -116,6 +106,9 @@ const CustomColorPicker = ({
             backgroundColor:
               appTheme === appThemes.LIGHT ? "#596BFF33" : `#D5E8FF`,
             borderRadius: 6,
+            padding: theme.spacing(1),
+            marginTop: theme.spacing(1 / 4),
+            marginBottom: theme.spacing(1 / 4),
           }}
         >
           <Icon
@@ -127,11 +120,7 @@ const CustomColorPicker = ({
         </ButtonBase>
       </Tooltip>
 
-      <Popover
-        className={classes.popover}
-        classes={{
-          paper: classes.paper,
-        }}
+      <CustomPopover
         open={Boolean(colorPicker)}
         anchorEl={colorPicker}
         anchorOrigin={{
@@ -177,15 +166,14 @@ const CustomColorPicker = ({
             />
           </Box>
         </Box>
-      </Popover>
+      </CustomPopover>
     </>
   );
 };
 
 const CustomImagePicker = ({ addImage }) => {
   const imageInputRef = useRef();
-
-  const classes = useStyles();
+  const theme = useTheme();
 
   return (
     <>
@@ -206,12 +194,14 @@ const CustomImagePicker = ({ addImage }) => {
             }}
           >
             <ButtonBase
-              className={classes.btnTool}
               color="inherit"
               style={{
                 borderRadius: 6,
                 position: "relative",
                 cursor: "pointer",
+                padding: theme.spacing(1),
+                marginTop: theme.spacing(1 / 4),
+                marginBottom: theme.spacing(1 / 4),
               }}
               onClick={() => {
                 imageInputRef.current.click();
@@ -256,7 +246,6 @@ const WBToolbar = ({
   whiteboardSpacing,
   addImage,
 }) => {
-  const classes = useStyles();
 
   const [color, setColor] = useState(parentColor);
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
@@ -332,7 +321,6 @@ const WBToolbar = ({
         />
         <>
           <ButtonBase
-            className={classes.btnTool}
             onMouseEnter={handlePopoverOpen}
             style={{
               backgroundColor:
@@ -345,6 +333,9 @@ const WBToolbar = ({
                     : "#D5E8FF"
                   : "",
               borderRadius: 6,
+              padding: theme.spacing(1),
+              marginTop: theme.spacing(1 / 4),
+              marginBottom: theme.spacing(1 / 4),
             }}
           >
             {tool === "square" ? (
@@ -384,11 +375,7 @@ const WBToolbar = ({
             )}
           </ButtonBase>
 
-          <Popover
-            className={classes.popover}
-            classes={{
-              paper: classes.paper,
-            }}
+          <CustomPopover
             open={open}
             anchorEl={anchorEl}
             anchorOrigin={{
@@ -461,7 +448,7 @@ const WBToolbar = ({
                 </Box>
               </Box>
             </Box>
-          </Popover>
+          </CustomPopover>
         </>
         <ToolBarIcon
           {...{

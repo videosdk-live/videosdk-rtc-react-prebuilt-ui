@@ -1,4 +1,5 @@
-import { makeStyles, useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
+
 import { SnackbarProvider } from "notistack";
 import {
   useContext,
@@ -34,12 +35,6 @@ export const sideBarNestedModes = {
   VIRTUAL_BACKGROUND: "VIRTUAL_BACKGROUND",
 };
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.text.primary,
-  },
-}));
 
 export const meetingLayouts = {
   SPOTLIGHT: "SPOTLIGHT",
@@ -163,7 +158,6 @@ export const MeetingAppProvider = ({
   const endCallContainerRef = useRef();
   const theme = useTheme();
 
-  const classes = useStyles();
   const [sideBarMode, setSideBarMode] = useState(null);
   const [sideBarNestedMode, setSideBarNestedMode] = useState(null);
   const [selectWebcamDeviceId, setSelectWebcamDeviceId] = useState(
@@ -409,7 +403,6 @@ export const MeetingAppProvider = ({
       }}
     >
       <SnackbarProvider
-        className={classes.container}
         autoHideDuration={5000}
         style={{
           backgroundColor:

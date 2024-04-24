@@ -5,7 +5,7 @@ import {
   ListItem,
   ListItemAvatar,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import PollIcon from "../../icons/PollIcon";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import CreatePoll from "../../components/pollContainer/CreatePoll";

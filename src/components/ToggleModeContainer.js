@@ -1,10 +1,9 @@
 import {
   Box,
-  makeStyles,
   MenuItem,
   Typography,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   useMeeting,
   useParticipant,
@@ -12,29 +11,15 @@ import {
 } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useState } from "react";
 import { meetingModes } from "../CONSTS";
-import AddCohostIcon from "../icons/AddCohostIcon";
 import ParticipantAddHostIcon from "../icons/ParticipantAddHostIcon";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
-const useStyles = makeStyles(() => ({
-  popoverHover: {
-    "&:hover": {
-      backgroundColor: "#CCD2D899",
-    },
-  },
-  popoverHoverDark: {
-    "&:hover": {
-      backgroundColor: "#2B303499",
-    },
-  },
-}));
 const ToggleModeContainer = ({
   participantId,
   participantMode,
   handleClose,
 }) => {
   const mMeetingRef = useRef();
-  const classes = useStyles();
 
   const [isHoverOnCohost, setIsHoverOnCohost] = useState(false);
 
@@ -63,14 +48,6 @@ const ToggleModeContainer = ({
                 : meetingModes.CONFERENCE,
           });
           handleClose();
-        }}
-        classes={{
-          root:
-            appTheme === appThemes.LIGHT
-              ? classes.popoverHover
-              : appTheme === appThemes.DARK
-              ? classes.popoverHoverDark
-              : "",
         }}
       >
         <Box style={{ display: "flex", flexDirection: "row" }}>

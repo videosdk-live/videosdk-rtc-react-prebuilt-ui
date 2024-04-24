@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import animationData from "../../src/animations/join_meeting.json";
 import Lottie from "react-lottie";
-import { Box, useTheme } from "@material-ui/core";
+import { Box, useTheme } from "@mui/material";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 const WaitingToJoin = () => {

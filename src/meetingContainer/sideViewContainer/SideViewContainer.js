@@ -6,9 +6,8 @@ import {
   Slide,
   Typography,
   useTheme,
-  Fade,
-  makeStyles,
-} from "@material-ui/core";
+  Fade
+} from "@mui/material";
 import React, { useMemo } from "react";
 import {
   sideBarModes,
@@ -18,7 +17,7 @@ import {
 } from "../../MeetingAppContextDef";
 import ChatTabPanel from "./ChatTabPanel";
 import ParticipantsTabPanel from "./ParticipantsTabPanel";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@mui/icons-material/Close";
 import useIsTab from "../../utils/useIsTab";
 import useIsMobile from "../../utils/useIsMobile";
 import ActivitiesTabPanel from "./ActivitiesTabPanel";
@@ -26,32 +25,9 @@ import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import LiveStreamConfigTabPanel from "./LivestreamConfigTabPanel";
 import ConfigTabPanel from "./ConfigTabPanel";
-import { NavigateBeforeOutlined } from "@material-ui/icons";
+import { NavigateBeforeOutlined } from "@mui/icons-material";
 import { meetingModes } from "../../CONSTS";
-
-const useStyles = makeStyles(() => ({
-  iconbutton: {
-    "&:hover ": {
-      background: "transparent",
-    },
-  },
-  iconContainer: {
-    "&:hover $icon": {
-      color: "white",
-      background: "transparent",
-    },
-  },
-  iconContainerLight: {
-    "&:hover $icon": {
-      color: "#404B53",
-      background: "transparent",
-    },
-  },
-  icon: {
-    color: "#9FA0A7",
-    background: "transparent",
-  },
-}));
+import { styled } from "@mui/material/styles";
 
 const SideBarTabView = ({ width, height }) => {
   const {
@@ -65,6 +41,19 @@ const SideBarTabView = ({ width, height }) => {
     meetingMode,
     appTheme,
   } = useMeetingAppContext();
+
+  const CustomIconButton = styled(IconButton)`
+    &:hover {
+      background: transparent;
+    }
+    &:hover .MuiSvgIcon-root {
+      color: ${appTheme === appThemes.LIGHT ? `#404B53` : `white`};
+    }
+    & .MuiSvgIcon-root {
+      color: #9fa0a7;
+    }
+  `;
+
   const { participants } = useMeeting();
   const value =
     sideBarMode === sideBarModes.PARTICIPANTS
@@ -106,7 +95,6 @@ const SideBarTabView = ({ width, height }) => {
   };
 
   const theme = useTheme();
-  const classes = useStyles();
 
   return (
     <div
@@ -162,7 +150,7 @@ const SideBarTabView = ({ width, height }) => {
                       sideBarNestedMode === "CREATE_POLL" ||
                       sideBarNestedMode === "ADD_LIVE_STREAM" ||
                       sideBarNestedMode === "VIRTUAL_BACKGROUND") && (
-                      <IconButton
+                      <CustomIconButton
                         onClick={() => {
                           setSideBarNestedMode(null);
                         }}
@@ -175,27 +163,20 @@ const SideBarTabView = ({ width, height }) => {
                           padding: 0,
                           marginLeft: -4,
                         }}
-                        className={classes.iconbutton}
-                        classes={{
-                          root:
-                            appTheme === appThemes.LIGHT
-                              ? classes.iconContainerLight
-                              : classes.iconContainer,
-                        }}
                       >
                         <NavigateBeforeOutlined
                           fontSize="medium"
-                          className={classes.icon}
                         />
-                      </IconButton>
+                      </CustomIconButton>
                     )}
                   <Typography
                     variant={"body1"}
                     style={{
                       fontWeight: "bold",
                       color:
-                        appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
                     }}
                   >
                     {sideBarMode === "PARTICIPANTS"
@@ -229,22 +210,17 @@ const SideBarTabView = ({ width, height }) => {
                   </Typography>
                 </Box>
                 <Box>
-                  <IconButton
+                  <CustomIconButton
                     onClick={handleClose}
                     disableFocusRipple
                     disableRipple
                     disableTouchRipple
-                    className={classes.iconbutton}
-                    classes={{
-                      root:
-                        appTheme === appThemes.LIGHT
-                          ? classes.iconContainerLight
-                          : classes.iconContainer,
-                    }}
                     style={{ padding: 0, margin: 0 }}
                   >
-                    <CloseIcon fontSize={"small"} className={classes.icon} />
-                  </IconButton>
+                    <CloseIcon
+                      fontSize={"small"}
+                    />
+                  </CustomIconButton>
                 </Box>
               </Box>
             )}
