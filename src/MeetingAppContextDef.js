@@ -410,7 +410,7 @@ export const MeetingAppProvider = ({
               ? theme.palette.darkTheme.seven
               : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.main
-              : "",
+              : theme.palette.background.paper,
           color:
             appTheme === appThemes.LIGHT &&
             theme.palette.lightTheme.contrastText,
