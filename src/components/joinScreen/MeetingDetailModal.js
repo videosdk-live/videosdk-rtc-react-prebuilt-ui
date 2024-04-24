@@ -3,42 +3,21 @@ import {
   Button,
   Card,
   IconButton,
-  InputAdornment,
-  makeStyles,
   TextField,
   Tooltip,
   Typography,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import LinesEllipsis from "react-lines-ellipsis";
 import useCopyClipboard from "react-use-clipboard";
-import { Keyboard } from "@material-ui/icons";
 import { CopyIcon } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
 import { appThemes } from "../../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 
-const useStyles = makeStyles(() => ({
-  textFieldLight: {
-    "&:hover": {
-      border: "1px solid #70707033",
-      borderRadius: "4px",
-    },
-    "& .MuiInputBase-input": {
-      color: "#404B53",
-      textAlign: "center",
-    },
-    border: "1px solid #70707033",
-    borderRadius: "4px",
-  },
-  textField: {
-    "& .MuiInputBase-input": {
-      color: "white",
-      textAlign: "center",
-    },
-  },
-}));
 
 export default function MeetingDetailModal({
   internalPadding,
@@ -51,9 +30,53 @@ export default function MeetingDetailModal({
   meetingUrl,
   appTheme,
 }) {
+
+  const customTheme = (outerTheme) =>
+  createTheme({
+    palette: {
+      mode: outerTheme.palette.mode,
+    },
+    components: {
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '--TextField-brandBorderColor': '#3F4346',
+            '--TextField-brandBorderHoverColor': '#70707033',
+            '--TextField-brandBorderFocusedColor': '#70707033',
+            '& label.Mui-focused': {
+              color: 'var(--TextField-brandBorderFocusedColor)',
+            },
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          notchedOutline: {
+            borderColor: 'var(--TextField-brandBorderColor)',
+          },
+          root: {
+            [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: appTheme === appThemes.LIGHT ? 'var(--TextField-brandBorderHoverColor)' : "white"  ,
+            },
+            [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: appTheme === appThemes.LIGHT ? 'var(--TextField-brandBorderFocusedColor)' :"white",
+              borderWidth:"1px"
+            },
+           color: appTheme  === appThemes.LIGHT ?  "black":"white"
+          },
+          input:{
+            textAlign:"center",
+           
+          }
+        },
+      },
+     
+   
+    },
+  });
   const { t } = useTranslation();
+  const outerTheme = useTheme();
   const theme = useTheme();
-  const classes = useStyles();
   const [descriptionBoxHeight, setDescriptionBoxHeight] = useState(0);
   const [copyBoxHeight, setCopyBoxHeight] = useState(0);
 
@@ -245,6 +268,7 @@ export default function MeetingDetailModal({
       ) : null}
 
       <Box mt={meetingTitle || meetingUrl ? 2 : 0} style={{ width: "100%" }}>
+      <ThemeProvider theme={customTheme(outerTheme)}>
         <TextField
           id={"inputJoin"}
           placeholder={t("Enter your name")}
@@ -252,13 +276,6 @@ export default function MeetingDetailModal({
           fullWidth
           value={name}
           error={nameErr}
-          style={{ textAlign: "center" }}
-          classes={{
-            root:
-              appTheme === appThemes.LIGHT
-                ? classes.textFieldLight
-                : classes.textField,
-          }}
           onChange={(ev) => {
             setName(ev.target.value);
           }}
@@ -303,6 +320,7 @@ export default function MeetingDetailModal({
           //   ),
           // }}
         />
+        </ThemeProvider>
         <p
           style={{
             marginTop: 3,

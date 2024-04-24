@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
-import { Box, IconButton, useTheme } from "@material-ui/core";
+import { Box, IconButton, useTheme } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -11,7 +11,7 @@ import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import Compressor from "compressorjs";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@mui/icons-material/Close";
 
 export const convertHWAspectRatio = ({
   height: containerHeight,

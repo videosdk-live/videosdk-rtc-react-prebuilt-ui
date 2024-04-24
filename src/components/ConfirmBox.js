@@ -4,20 +4,39 @@ import {
   DialogTitle,
   Typography,
   DialogActions,
-  Button,
-  useTheme,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
+import Button from "@mui/material/Button";
 import React from "react";
+import { styled, useTheme } from "@mui/material/styles";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
-const useStyles = makeStyles(() => ({
-  button: {
-    "&:hover": {
-      backgroundColor: "#EEF0F2",
-    },
-  },
-}));
+const DarkCustomButton = styled(Button)`
+  &:hover {
+    color: white;
+    background: #2b2e32;
+  }
+`;
+
+const DarkOutlinedButton = styled(Button)`
+  &:hover {
+    color: white;
+    background: #2b2e32;
+    border: 1px solid white !important;
+  }
+`;
+
+const LightCustomButton = styled(Button)`
+  &:hover {
+    background: #eef0f2;
+  }
+`;
+
+const LightOutlinedButton = styled(Button)`
+  &:hover {
+    background: #eef0f2;
+    border: 1px solid #404b53 !important;
+  }
+`;
 const ConfirmBox = ({
   successText,
   rejectText,
@@ -30,13 +49,22 @@ const ConfirmBox = ({
   appTheme,
 }) => {
   const v = useMeetingAppContext();
-  const classes = useStyles();
 
   const theme = useTheme();
 
   if (v && v?.isRecorder) {
     return <></>;
   }
+
+  const ButtonElement =
+    ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+      ? LightCustomButton
+      : DarkCustomButton;
+
+  const OutlinedButtonElememt =
+    ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
+      ? LightOutlinedButton
+      : DarkOutlinedButton;
 
   return (
     <Dialog
@@ -94,7 +122,6 @@ const ConfirmBox = ({
                 }}
               >
                 {title}
-                {/* {`Allow participant entry?`} */}
               </Typography>
               <Typography
                 variant="subtitle1"
@@ -108,44 +135,27 @@ const ConfirmBox = ({
                 }}
               >
                 {subTitle}
-                {/* {`${name} wants to join meeting.`} */}
               </Typography>
             </DialogTitle>
           </Box>
         </Box>
         <Box>
           <DialogActions>
-            <Button
+            <ButtonElement
               onClick={onReject}
-              color={"white"}
-              classes={{
-                root:
-                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT &&
-                  classes.button,
-              }}
-              style={{
+              sx={{
                 color:
                   ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : "white",
               }}
-              size="medium"
             >
               {rejectText}
-            </Button>
+            </ButtonElement>
 
-            <Button
-              size="medium"
+            <OutlinedButtonElememt
               onClick={onSuccess}
-              color="white"
-              autoFocus
-              variant="outlined"
-              classes={{
-                root:
-                  ((v && v?.appTheme) || appTheme) === appThemes.LIGHT &&
-                  classes.button,
-              }}
-              style={{
+              sx={{
                 color:
                   ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
@@ -155,9 +165,11 @@ const ConfirmBox = ({
                     ? theme.palette.lightTheme.contrastText
                     : "white",
               }}
+              autoFocus
+              variant="outlined"
             >
               {successText}
-            </Button>
+            </OutlinedButtonElememt>
           </DialogActions>
         </Box>
       </Box>

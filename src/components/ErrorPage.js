@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography } from "@mui/material";
 import React from "react";
 import Error_400 from "../errorCodes/Error_400";
 import Error_401 from "../errorCodes/Error_401";

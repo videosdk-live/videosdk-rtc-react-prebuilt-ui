@@ -113,3 +113,6 @@ input[type="time"]:focus-visible{
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
 }
+.MuiInputBase-input.Mui-disabled {
+  -webkit-text-fill-color: #9EA1A3 !important;
+}

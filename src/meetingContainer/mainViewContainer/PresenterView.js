@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ScreenShare } from "@material-ui/icons";
+import { ScreenShare } from "@mui/icons-material";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
-import { Box, Button, Typography, useTheme } from "@material-ui/core";
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import ParticipantViewer, { CornerDisplayName } from "./ParticipantViewer";
 import useIsMobile from "../../utils/useIsMobile";
 import {

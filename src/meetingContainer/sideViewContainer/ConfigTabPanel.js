@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import {
-  Box,
-  Typography,
-  Slider,
-  ButtonBase,
-  useTheme,
-  makeStyles,
-} from "@material-ui/core";
+import { Box, Typography, Slider, ButtonBase, useTheme } from "@mui/material";
 import {
   meetingLayoutTopics,
   appThemes,
@@ -31,29 +24,9 @@ import HDLightIcon from "../../icons/HDLightIcon";
 import HDDarkIcon from "../../icons/HDDarkIcon";
 import { useSnackbar } from "notistack";
 
-const useStyles = makeStyles(() => ({
-  root: {
-    "& .MuiSlider-valueLabel": {
-      "& *": {
-        background: "transparent",
-        color: "#fff",
-      },
-    },
-  },
-  rootLight: {
-    "& .MuiSlider-valueLabel": {
-      "& *": {
-        background: "transparent",
-        color: "#404B53",
-      },
-    },
-  },
-}));
-
 function ConfigTabPanel({ panelHeight }) {
   const isMobile = useIsMobile(375);
   const theme = useTheme();
-  const classes = useStyles();
 
   const {
     appMeetingLayout,
@@ -342,8 +315,9 @@ function ConfigTabPanel({ panelHeight }) {
             fontSize: "16px",
             marginTop: 24,
             color:
-              appTheme === appThemes.LIGHT &&
-              theme.palette.lightTheme.contrastText,
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "white",
           }}
           variant="body1"
         >
@@ -469,38 +443,44 @@ function ConfigTabPanel({ panelHeight }) {
               fontSize: "16px",
               marginTop: 24,
               color:
-                appTheme === appThemes.LIGHT &&
-                theme.palette.lightTheme.contrastText,
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
             }}
             variant="body1"
           >
             Participants On Screen
           </Typography>
 
-          <Slider
-            getAriaValueText={valuetext}
-            min={1}
-            max={25}
-            defaultValue={gridSize}
-            onChange={(_, newValue) => {
-              _handleGridSize(newValue);
+          <Box
+            sx={{
+              paddingLeft: theme.spacing(2),
+              paddingRight: theme.spacing(2),
             }}
-            className={
-              appTheme === appThemes.LIGHT ? classes.rootLight : classes.root
-            }
-            valueLabelDisplay="on"
-            step={1}
-            style={{
-              marginTop: 32,
-              marginBottom: 24,
-              color:
-                appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.contrastText
-                  : "#ffffff",
-            }}
-            area-label="default"
-            marks={marks}
-          />
+          >
+            <Slider
+              getAriaValueText={valuetext}
+              min={1}
+              max={25}
+              size="small"
+              defaultValue={gridSize}
+              onChange={(_, newValue) => {
+                _handleGridSize(newValue);
+              }}
+              valueLabelDisplay="auto"
+              step={1}
+              style={{
+                marginTop: 32,
+                marginBottom: 24,
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "#ffffff",
+              }}
+              area-label="default"
+              marks={marks}
+            />
+          </Box>
         </Box>
       ) : null}
     </Box>

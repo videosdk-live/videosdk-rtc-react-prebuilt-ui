@@ -6,30 +6,18 @@ import {
   OutlinedInput as Input,
   InputAdornment,
   Popover,
-  makeStyles,
-} from "@material-ui/core";
+} from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import Linkify from "react-linkify";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
-import SendIcon from "@material-ui/icons/Send";
-import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
-import { Picker } from "emoji-mart";
-import "emoji-mart/css/emoji-mart.css";
+import SendIcon from "@mui/icons-material/Send";
+import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
+import Picker from "@emoji-mart/react";
 import { formatAMPM, json_verify, nameTructed } from "../../utils/common";
 import { toArray } from "react-emoji-render";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
-
-const useStyles = makeStyles(() => ({
-  textField: {
-    "&:hover": {
-      border: "1px solid #70707033",
-      borderRadius: "4px",
-    },
-    border: "1px solid #70707033",
-    borderRadius: "4px",
-    color: "#404B53",
-  },
-}));
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
 const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   const mMeeting = useMeeting();
@@ -95,8 +83,9 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               wordBreak: "break-word",
               textAlign: "right",
               color:
-                appTheme === appThemes.LIGHT &&
-                theme.palette.lightTheme.contrastText,
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
             }}
           >
             {toArray(text).map((t, i) => (
@@ -198,12 +187,56 @@ const ChatMessageInput = ({ inputHeight }) => {
 
   const input = useRef();
   const inputContainer = useRef();
-  const classes = useStyles();
 
   const { publish } = usePubSub("CHAT");
   const theme = useTheme();
+  const outerTheme = useTheme();
 
   const { appTheme } = useMeetingAppContext();
+
+  const customTheme = (outerTheme) =>
+    createTheme({
+      palette: {
+        mode: outerTheme.palette.mode,
+      },
+      components: {
+        MuiTextField: {
+          styleOverrides: {
+            root: {
+              "--TextField-brandBorderColor": "#70707033",
+              "--TextField-brandBorderHoverColor": "#70707033",
+              "--TextField-brandBorderFocusedColor": "#70707033",
+              "& label.Mui-focused": {
+                color: "var(--TextField-brandBorderFocusedColor)",
+              },
+            },
+          },
+        },
+        MuiOutlinedInput: {
+          styleOverrides: {
+            notchedOutline: {
+              borderColor: appTheme !== appThemes.LIGHT && "#404B53",
+            },
+            root: {
+              [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? "var(--TextField-brandBorderHoverColor)"
+                    : "white",
+              },
+              [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? "var(--TextField-brandBorderFocusedColor)"
+                    : "white",
+                borderWidth: "1px",
+              },
+              color: appTheme === appThemes.LIGHT ? "#404B53" : "white",
+            },
+          },
+        },
+      },
+    });
 
   return (
     <Box
@@ -251,88 +284,86 @@ const ChatMessageInput = ({ inputHeight }) => {
               ? theme.palette.lightTheme.primaryMain
               : theme.palette.primary.main
           }
-          onSelect={(e) => {
+          onEmojiSelect={(e) => {
             setMessageText((s) => `${s}${e.native}`);
           }}
         />
       </Popover>
 
-      <Input
-        style={{ paddingRight: 0 }}
-        rows={1}
-        rowsMax={2}
-        multiline
-        ref={input}
-        classes={{
-          root: appTheme === appThemes.LIGHT && classes.textField,
-        }}
-        placeholder="Write your message"
-        fullWidth
-        value={messageText}
-        onKeyPress={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            const message = messageText.trim();
+      <ThemeProvider theme={customTheme(outerTheme)}>
+        <Input
+          sx={{ marginTop: 1 }}
+          rows={1}
+          rowsMax={2}
+          multiline
+          ref={input}
+          placeholder="Write your message"
+          fullWidth
+          value={messageText}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              const message = messageText.trim();
 
-            if (message.length > 0) {
-              publish(message, { persist: true });
-              setTimeout(() => {
-                setMessageText("");
-              }, 100);
-              input.current?.focus();
+              if (message.length > 0) {
+                publish(message, { persist: true });
+                setTimeout(() => {
+                  setMessageText("");
+                }, 100);
+                input.current?.focus();
+              }
             }
+          }}
+          onChange={(e) => {
+            const v = e.target.value;
+            setMessageText(v);
+          }}
+          endAdornment={
+            <InputAdornment>
+              <Box style={{ display: "flex" }}>
+                <Box>
+                  <IconButton
+                    onClick={() => {
+                      setEmojiOpen(true);
+                    }}
+                  >
+                    <InsertEmoticonIcon
+                      fontSize={"small"}
+                      sx={{
+                        color:
+                          appTheme === appThemes.LIGHT
+                            ? theme.palette.lightTheme.contrastText
+                            : "white",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+                <Box>
+                  <IconButton
+                    disabled={!messageText.trim().length}
+                    onClick={() => {
+                      const message = messageText.trim();
+                      if (message.length > 0) {
+                        publish(message, { persist: true });
+                        setTimeout(() => {
+                          setMessageText("");
+                        }, 100);
+                        input.current?.focus();
+                      }
+                    }}
+                  >
+                    <SendIcon
+                      fontSize={"small"}
+                      style={{
+                        color: theme.palette.lightTheme.contrastText,
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+              </Box>
+            </InputAdornment>
           }
-        }}
-        onChange={(e) => {
-          const v = e.target.value;
-          setMessageText(v);
-        }}
-        endAdornment={
-          <InputAdornment>
-            <Box style={{ display: "flex" }}>
-              <Box>
-                <IconButton
-                  onClick={() => {
-                    setEmojiOpen(true);
-                  }}
-                >
-                  <InsertEmoticonIcon
-                    fontSize={"small"}
-                    style={{
-                      color:
-                        appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
-                    }}
-                  />
-                </IconButton>
-              </Box>
-              <Box>
-                <IconButton
-                  disabled={!messageText.trim().length}
-                  onClick={() => {
-                    const message = messageText.trim();
-                    if (message.length > 0) {
-                      publish(message, { persist: true });
-                      setTimeout(() => {
-                        setMessageText("");
-                      }, 100);
-                      input.current?.focus();
-                    }
-                  }}
-                >
-                  <SendIcon
-                    fontSize={"small"}
-                    style={{
-                      color:
-                        appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
-                    }}
-                  />
-                </IconButton>
-              </Box>
-            </Box>
-          </InputAdornment>
-        }
-      ></Input>
+        ></Input>
+      </ThemeProvider>
     </Box>
   );
 };

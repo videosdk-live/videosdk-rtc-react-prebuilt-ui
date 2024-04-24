@@ -1,4 +1,4 @@
-import { useTheme } from "@material-ui/styles";
+import { useTheme } from "@mui/system";
 import * as React from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 

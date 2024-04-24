@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button,
-  makeStyles,
-  Typography,
-  useTheme,
-} from "@material-ui/core";
+import { Box, Button, Typography, useTheme } from "@mui/material";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -25,19 +19,11 @@ export const secondsToMinutes = (time) => {
   return minutes + " : " + seconds;
 };
 
-const useStyles = makeStyles(() => ({
-  button: {
-    "&:hover": {
-      backgroundColor: "#EEF0F2",
-    },
-  },
-}));
-
 const Poll = ({ poll, isDraft, publishDraftPoll }) => {
   const timerIntervalRef = useRef();
   const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const padding = useResponsiveSize({
     xl: 12,
@@ -376,9 +362,6 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                 }}
-                classes={{
-                  root: appTheme === appThemes.LIGHT && classes.button,
-                }}
               >
                 Launch
               </Button>
@@ -387,9 +370,6 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               <Button
                 variant="outlined"
                 size="small"
-                classes={{
-                  root: appTheme === appThemes.LIGHT && classes.button,
-                }}
                 style={{
                   marginTop: equalSpacing + 2,
                   color:

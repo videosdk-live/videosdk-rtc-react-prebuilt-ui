@@ -1,4 +1,4 @@
-import { useTheme } from "@material-ui/core";
+import { useTheme } from "@mui/material";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import React, { useMemo } from "react";
 import { useMediaQuery } from "react-responsive";

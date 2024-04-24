@@ -1,14 +1,13 @@
 import {
   Box,
-  makeStyles,
   Popover,
   Typography,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
-import { IconButton } from "@material-ui/core";
+import { IconButton } from "@mui/material";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import {
   invertColor,
@@ -29,21 +28,9 @@ import { Pin } from "../../icons";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
 import ReactPlayer from "react-player";
 import NetworkIcon from "../../icons/NetworkIcon";
-import { CloseOutlined } from "@material-ui/icons";
+import { CloseOutlined } from "@mui/icons-material";
 import { useMediaQuery } from "react-responsive";
 
-const useStyles = makeStyles({
-  popoverHover: {
-    "&:hover": {
-      backgroundColor: "#CCD2D899",
-    },
-  },
-  popoverHoverDark: {
-    "&:hover": {
-      backgroundColor: "#2B303499",
-    },
-  },
-});
 
 export const CornerDisplayName = ({
   participantId,
@@ -316,8 +303,8 @@ export const CornerDisplayName = ({
             alignItems: "center",
             // lineHeight: 1,
             color:
-              appTheme === appThemes.LIGHT &&
-              theme.palette.lightTheme.contrastText,
+              appTheme === appThemes.LIGHT ?
+              theme.palette.lightTheme.contrastText : "white",
           }}
         >
           {isPresenting
@@ -359,6 +346,7 @@ export const CornerDisplayName = ({
               !isRecorder &&
               !micOn && (
                 <MicOff
+                color={appTheme !== appTheme.LIGHT && "white"}
                   style={{
                     color: theme.palette.common.white,
                     height: isRecorder

@@ -4,7 +4,7 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import React, { useState, useRef, useEffect } from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";

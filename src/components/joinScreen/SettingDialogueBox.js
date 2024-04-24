@@ -5,21 +5,59 @@ import {
   FormControl,
   Grid,
   IconButton,
-  makeStyles,
   MenuItem,
   Select,
-  ThemeProvider,
   Typography,
   useMediaQuery,
   useTheme,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import useWindowSize from "../../utils/useWindowSize";
 import ConfirmBox from "../ConfirmBox";
 import { appThemes } from "../../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
+import { styled, ThemeProvider, createTheme } from "@mui/material/styles";
+
+const CustomMenuItem = styled(MenuItem)`
+  &:hover {
+    background: #2b303499;
+  }
+  &.Mui-selected {
+    background: #3f4045 !important;
+  }
+  &.Mui-selected:hover {
+    background: #3f4045;
+  }
+`;
+
+const CustomLightMenuItem = styled(MenuItem)`
+  &:hover {
+    background: #ccd2d899;
+  }
+  &.Mui-selected {
+    background: #d3d7da !important;
+  }
+  &.Mui-selected:hover {
+    background: #d3d7da;
+  }
+  &.MuiMenuItem-root {
+    color: #404B53;
+  }
+`;
+
+const CustomDeafultMenuItem = styled(MenuItem)`
+  &:hover {
+    background: #43425399;
+  }
+  &.Mui-selected {
+    background: #545362 !important;
+  }
+  &.Mui-selected:hover {
+    background: #545362;
+  }
+`;
 
 const AudioAnalyser = ({ audioTrack }) => {
   const theme = useTheme();
@@ -142,54 +180,11 @@ const AudioAnalyser = ({ audioTrack }) => {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  selectIcon: {
-    color: "#404B53",
-  },
-  menuRoot: {
-    color: "#404B53 !important",
-    backgroundColor: "#EEF0F2 !important",
-  },
-  paperDark: {
-    background: "#232830",
-    color: "#fff",
-  },
-  paperLight: {
-    background: "#EFF0F2",
-    color: "#404B53",
-  },
-  listItem: {
-    "&:hover ": {
-      backgroundColor: "#404B531a !important",
-    },
-  },
-
-  // toggleSelected: {
-  //   backgroundColor: "#1178F8",
-  //   color: "#fff",
-  // },
-  video: {
-    borderRadius: "6px",
-    backgroundColor: "#1c1c1c",
-    height: "100%",
-    width: "100%",
-    objectFit: "cover",
-  },
-  previewBox: {
-    height: "50vh",
-    position: "relative",
-  },
-  button: {
-    "&:hover": {
-      backgroundColor: "#1178F8",
-    },
-  },
-  buttonLight: {
-    "&:hover": {
-      backgroundColor: "#596BFF",
-    },
-  },
-}));
+const CustomizedSelect = styled(Select)`
+  & .MuiSelect-icon {
+    color: #404b53;
+  }
+`;
 
 export default function SettingDialogueBox({
   open,
@@ -209,9 +204,47 @@ export default function SettingDialogueBox({
   participantCanToggleSelfWebcam,
   appTheme,
 }) {
+  const MenuElement =
+    appTheme === appThemes.LIGHT
+      ? CustomLightMenuItem
+      : appTheme === appThemes.DARK
+      ? CustomMenuItem
+      : CustomDeafultMenuItem;
+
+  const selectTheme = createTheme({
+    components: {
+      MuiSelect: {
+        styleOverrides: {
+          root: {
+            color: "#fff",
+          },
+        },
+      },
+      MuiMenu: {
+        styleOverrides: {
+          paper: {
+            background:
+              appTheme === appThemes.LIGHT
+                ? "#EFF0F2"
+                : appTheme === appThemes.DARK
+                ? "#202124"
+                : "#333244",
+            color: appTheme === appThemes.LIGHT ? "#404B53" : "#fff",
+          },
+        },
+      },
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            color: appTheme === appThemes.LIGHT ? "#EFF0F2" : "#fff",
+          },
+        },
+      },
+    },
+  });
+
   const { t } = useTranslation();
   const theme = useTheme();
-  const classes = useStyles();
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
 
   const isXSOnly = useMediaQuery(theme.breakpoints.only("xs"));
@@ -283,8 +316,9 @@ export default function SettingDialogueBox({
                     <CloseIcon
                       style={{
                         color:
-                          appTheme === appThemes.LIGHT &&
-                          theme.palette.lightTheme.contrastText,
+                          appTheme === appThemes.LIGHT
+                            ? theme.palette.lightTheme.contrastText
+                            : "white",
                       }}
                     ></CloseIcon>
                   </IconButton>
@@ -321,43 +355,28 @@ export default function SettingDialogueBox({
                       (participantCanToggleSelfWebcam === "true" &&
                         label === "Video") ? (
                         <Button
-                          classes={{
-                            root:
-                              setting === value
-                                ? appTheme === appThemes.LIGHT ||
-                                  appTheme === appThemes.DARK
-                                  ? classes.buttonLight
-                                  : classes.button
-                                : undefined,
-                          }}
                           style={{
-                            borderRadius: 0,
+                            backgroundColor:
+                              setting === value &&
+                              (appTheme === appThemes.LIGHT ||
+                                appTheme === appThemes.DARK) &&
+                              theme.palette.lightTheme.primaryMain,
                             color:
                               appTheme === appThemes.LIGHT
                                 ? setting === value
                                   ? "white"
                                   : theme.palette.lightTheme.contrastText
                                 : "white",
+                            borderRadius: 0,
+                            borderWidth: "1px",
                             borderColor:
                               appTheme === appThemes.LIGHT
                                 ? theme.palette.lightTheme.three
                                 : "white",
-                            backgroundColor:
-                              setting === value &&
-                              (appTheme === appThemes.LIGHT ||
-                                appTheme === appThemes.DARK) &&
-                              theme.palette.lightTheme.primaryMain,
                           }}
                           variant={setting === value ? "contained" : "outlined"}
                           disableElevation
                           disableRipple
-                          color={
-                            setting === value
-                              ? "primary"
-                              : appTheme === appThemes.LIGHT
-                              ? theme.palette.lightTheme.contrastText
-                              : "white"
-                          }
                           size={"large"}
                           onClick={() => {
                             handleSetting(null, value);
@@ -404,59 +423,44 @@ export default function SettingDialogueBox({
                             <FormControl
                               style={{ width: "100%", marginTop: 8 }}
                             >
-                              <Select
-                                fullWidth
-                                variant="outlined"
-                                value={audioTrack?.getSettings()?.deviceId}
-                                MenuProps={{
-                                  classes: {
-                                    paper:
+                              <ThemeProvider theme={selectTheme}>
+                                <CustomizedSelect
+                                  fullWidth
+                                  variant="outlined"
+                                  value={audioTrack?.getSettings()?.deviceId}
+                                  style={{
+                                    border: `1px solid ${
                                       appTheme === appThemes.LIGHT
-                                        ? classes.paperLight
-                                        : appTheme === appThemes.DARK
-                                        ? classes.paperDark
-                                        : "",
-                                  },
-                                }}
-                                classes={{
-                                  icon: classes.selectIcon,
-                                }}
-                                style={{
-                                  border: `1px solid ${
-                                    appTheme === appThemes.LIGHT
-                                      ? theme.palette.lightTheme.three
-                                      : "white"
-                                  }`,
-                                  color:
-                                    appTheme === appThemes.LIGHT &&
-                                    theme.palette.lightTheme.contrastText,
-                                }}
-                                onChange={(e) => {
-                                  changeMic(e.target.value);
-                                }}
-                              >
-                                {mics?.map((item, i) => {
-                                  return item?.kind === "audioinput" ? (
-                                    <MenuItem
-                                      className={
-                                        appTheme === appThemes.LIGHT &&
-                                        classes.listItem
-                                      }
-                                      value={item?.deviceId}
-                                      onClick={(e) => {
-                                        setSelectedMic((s) => ({
-                                          ...s,
-                                          id: item?.deviceId,
-                                        }));
-                                      }}
-                                    >
-                                      {item?.label
-                                        ? item.label
-                                        : `Mic ${i + 1}`}
-                                    </MenuItem>
-                                  ) : null;
-                                })}
-                              </Select>
+                                        ? theme.palette.lightTheme.three
+                                        : "white"
+                                    }`,
+                                    color:
+                                      appTheme === appThemes.LIGHT &&
+                                      theme.palette.lightTheme.contrastText,
+                                  }}
+                                  onChange={(e) => {
+                                    changeMic(e.target.value);
+                                  }}
+                                >
+                                  {mics?.map((item, i) => {
+                                    return item?.kind === "audioinput" ? (
+                                      <MenuElement
+                                        value={item?.deviceId}
+                                        onClick={(e) => {
+                                          setSelectedMic((s) => ({
+                                            ...s,
+                                            id: item?.deviceId,
+                                          }));
+                                        }}
+                                      >
+                                        {item?.label
+                                          ? item.label
+                                          : `Mic ${i + 1}`}
+                                      </MenuElement>
+                                    ) : null;
+                                  })}
+                                </CustomizedSelect>
+                              </ThemeProvider>
                             </FormControl>
                           </Box>
                         </Box>
@@ -535,59 +539,44 @@ export default function SettingDialogueBox({
                             <FormControl
                               style={{ width: "100%", marginTop: 8 }}
                             >
-                              <Select
-                                fullWidth
-                                variant="outlined"
-                                value={videoTrack?.getSettings()?.deviceId}
-                                onChange={(e) => {
-                                  changeWebcam(e.target.value);
-                                }}
-                                MenuProps={{
-                                  classes: {
-                                    paper:
+                              <ThemeProvider theme={selectTheme}>
+                                <CustomizedSelect
+                                  fullWidth
+                                  variant="outlined"
+                                  value={videoTrack?.getSettings()?.deviceId}
+                                  onChange={(e) => {
+                                    changeWebcam(e.target.value);
+                                  }}
+                                  style={{
+                                    border: `1px solid ${
                                       appTheme === appThemes.LIGHT
-                                        ? classes.paperLight
-                                        : appTheme === appThemes.DARK
-                                        ? classes.paperDark
-                                        : "",
-                                  },
-                                }}
-                                classes={{
-                                  icon: classes.selectIcon,
-                                }}
-                                style={{
-                                  border: `1px solid ${
-                                    appTheme === appThemes.LIGHT
-                                      ? theme.palette.lightTheme.three
-                                      : "white"
-                                  }`,
-                                  color:
-                                    appTheme === appThemes.LIGHT &&
-                                    theme.palette.lightTheme.contrastText,
-                                }}
-                              >
-                                {webcams?.map((item, i) => {
-                                  return item?.kind === "videoinput" ? (
-                                    <MenuItem
-                                      className={
-                                        appTheme === appThemes.LIGHT &&
-                                        classes.listItem
-                                      }
-                                      value={item?.deviceId}
-                                      onClick={() => {
-                                        setSelectedWebcam((s) => ({
-                                          ...s,
-                                          id: item?.deviceId,
-                                        }));
-                                      }}
-                                    >
-                                      {item?.label
-                                        ? item.label
-                                        : `Webcam ${i + 1}`}
-                                    </MenuItem>
-                                  ) : null;
-                                })}
-                              </Select>
+                                        ? theme.palette.lightTheme.three
+                                        : "white"
+                                    }`,
+                                    color:
+                                      appTheme === appThemes.LIGHT &&
+                                      theme.palette.lightTheme.contrastText,
+                                  }}
+                                >
+                                  {webcams?.map((item, i) => {
+                                    return item?.kind === "videoinput" ? (
+                                      <MenuElement
+                                        value={item?.deviceId}
+                                        onClick={() => {
+                                          setSelectedWebcam((s) => ({
+                                            ...s,
+                                            id: item?.deviceId,
+                                          }));
+                                        }}
+                                      >
+                                        {item?.label
+                                          ? item.label
+                                          : `Webcam ${i + 1}`}
+                                      </MenuElement>
+                                    ) : null;
+                                  })}
+                                </CustomizedSelect>
+                              </ThemeProvider>
                             </FormControl>
                           </Box>
                         </Box>
@@ -630,7 +619,13 @@ export default function SettingDialogueBox({
                                 muted
                                 ref={popupVideoPlayerRef}
                                 controls={false}
-                                className={classes.video + " flip"}
+                                style={{
+                                  borderRadius: "6px",
+                                  backgroundColor: "#1c1c1c",
+                                  height: "100%",
+                                  width: "100%",
+                                  objectFit: "cover",
+                                }}
                               />
                             </Box>
                           </Box>
