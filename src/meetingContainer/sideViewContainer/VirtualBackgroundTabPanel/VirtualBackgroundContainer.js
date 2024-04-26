@@ -4,7 +4,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   createCameraVideoTrack,
   useMeeting,

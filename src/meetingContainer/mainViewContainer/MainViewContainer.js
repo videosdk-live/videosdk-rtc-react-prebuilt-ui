@@ -18,8 +18,8 @@ import {
   appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
-import { Motion as TransitionMotion, spring } from "react-motion";
-import { useTheme } from "@material-ui/core";
+import { useSpring, animated } from 'react-spring';
+import { useTheme } from "@mui/material";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMediaQuery } from "react-responsive";
 import WhiteboardContainer, {
@@ -61,48 +61,52 @@ const MotionParticipant = ({
     };
   }, []);
 
-  const animeConfig = { stiffness: 180, damping: 22 };
-
   const { animationsEnabled } = useMeetingAppContext();
 
+
+  const animeConfig = { tension: 180, friction: 22 };
+
+  const animatedProps = useSpring({
+    top: relativeTop,
+    left: relativeLeft,
+    height: relativeHeight,
+    width: relativeWidth,
+    scale: mounted ? 1 : (animationsEnabled ? 0 : 0.5),
+    config: animeConfig,
+  });
+
+  if (!animatedProps) {
+    return null; 
+  }
+
   return (
-    <TransitionMotion
+    <animated.div
       style={{
-        top: spring(relativeTop, animeConfig),
-        left: spring(relativeLeft, animeConfig),
-        height: spring(relativeHeight, animeConfig),
-        width: spring(relativeWidth, animeConfig),
-        scale: spring(mounted ? 1 : animationsEnabled ? 0 : 0.5, animeConfig),
+        position: 'absolute',
+        top: animatedProps.top.interpolate((val) => `${val}%`),
+        left: animatedProps.left.interpolate((val) => `${val}%`),
+        height: animatedProps.height.interpolate((val) => `${val}%`),
+        width: animatedProps.width.interpolate((val) => `${val}%`),
+        paddingTop: gutter,
+        paddingBottom: gutter,
+        paddingRight: gutter,
+        paddingLeft: gutter,
+        transform: animatedProps.scale.interpolate((val) => `scale(${val})`),
       }}
     >
-      {({ top, left, height, width, scale }) => (
-        <div
-          style={{
-            position: "absolute",
-            top: `${top}%`,
-            left: `${left}%`,
-            height: `${height}%`,
-            width: `${width}%`,
-            paddingTop: gutter,
-            paddingBottom: gutter,
-            paddingRight: gutter,
-            paddingLeft: gutter,
-            transform: `scale(${scale})`,
-          }}
-        >
-          <div
-            style={{
-              height: `calc(100% - ${2 * gutter}px)`,
-              width: `calc(100% - ${2 * gutter}px)`,
-            }}
-          >
-            <MemoizedParticipant
-              {...{ participantId, quality, useVisibilitySensor }}
-            />
-          </div>
-        </div>
-      )}
-    </TransitionMotion>
+      <div
+        style={{
+          height: `calc(100% - ${2 * gutter}px)`,
+          width: `calc(100% - ${2 * gutter}px)`,
+        }}
+      >
+        <MemoizedParticipant
+          participantId={participantId}
+          quality={quality}
+          useVisibilitySensor={useVisibilitySensor}
+        />
+      </div>
+    </animated.div>
   );
 };
 

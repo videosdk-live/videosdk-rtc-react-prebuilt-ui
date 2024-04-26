@@ -1,4 +1,4 @@
-import { SvgIcon, useTheme } from "@material-ui/core";
+import { SvgIcon, useTheme } from "@mui/material";
 import React from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 

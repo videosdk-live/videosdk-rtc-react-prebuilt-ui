@@ -1,5 +1,5 @@
-import { responsiveFontSizes } from "@material-ui/core/styles";
-import { createTheme } from "@material-ui/core/styles";
+import { responsiveFontSizes } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 
 export default function generateMuiTheme(type, primary, secondary) {
   return responsiveFontSizes(
@@ -7,7 +7,6 @@ export default function generateMuiTheme(type, primary, secondary) {
       typography: {
         fontFamily: ["Roboto,sans-serif"].join(","),
       },
-
       palette: {
         type: "dark",
         text: { primary: "#fff", secondary: "#9fa0a7" },

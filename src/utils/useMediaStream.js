@@ -4,7 +4,7 @@ import {
 } from "@videosdk.live/react-sdk";
 
 const useMediaStream = () => {
-  const getVideoTrack = async ({ webcamId, encoderConfig }) => {
+  const getVideoTrack = async ({ webcamId, encoderConfig } = {}) => {
     try {
       const track = await createCameraVideoTrack({
         cameraId: webcamId,

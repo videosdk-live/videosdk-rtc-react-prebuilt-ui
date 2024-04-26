@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { makeStyles, styled, useTheme } from "@material-ui/core/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import {
   IconButton,
   Box,
@@ -12,7 +12,7 @@ import {
   SwipeableDrawer,
   Grid,
   Checkbox,
-} from "@material-ui/core";
+} from "@mui/material";
 import OutlineIconButton from "../components/OutlineIconButton";
 import {
   Constants,
@@ -76,6 +76,54 @@ import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
 import useCustomTrack from "../utils/useCustomTrack";
 import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
+
+const CustomBox = styled(Box)`
+  &:hover {
+    background: #2b303499;
+  }
+`;
+
+const CustomBoxLight = styled(Box)`
+  &:hover {
+    background: #ccd2d899;
+  }
+`;
+const CustomBoxDefault = styled(Box)`
+  &:hover {
+    background: #43425399;
+  }
+`;
+
+const CustomMenuItem = styled(MenuItem)`
+  &:hover {
+    background: transparent;
+  }
+  &.MuiMenuItem-gutters {
+    padding: 6px 28px;
+  }
+  &.Mui-selected {
+    padding: 6px 12px;
+  }
+`;
+
+const CustomWebcamMenuItem = styled(MenuItem)`
+  &:hover {
+    background: transparent !important;
+  }
+  &.MuiMenuItem-gutters {
+    padding: 6px 18px;
+  }
+  &.Mui-selected {
+    padding: 6px 18px;
+    background: transparent;
+  }
+`;
+
+const CustomIconButton = styled(IconButton)`
+  &.MuiIconButton-root {
+    padding: 3px;
+  }
+`;
 
 const BpIcon = styled("span")(({ theme }) => ({
   borderRadius: 12,
@@ -144,63 +192,63 @@ function BpCheckbox(CheckboxProps) {
   );
 }
 
-const useStyles = makeStyles({
-  row: { display: "flex", alignItems: "center" },
-  borderRight: { borderRight: "1ps solid #ffffff33" },
-  popover: { backgroundColor: "transparent" },
-  popoverBorder: {
-    borderRadius: "12px",
-    backgroundColor: "#212032",
-    marginTop: 8,
-    width: 300,
-  },
-  popoverHover: {
-    "&:hover": {
-      backgroundColor: "#CCD2D899",
-    },
-  },
-  popoverHoverDark: {
-    "&:hover": {
-      backgroundColor: "#2B303499",
-    },
-  },
-  popoverHoverDefault: {
-    "&:hover": {
-      backgroundColor: "#43425399",
-    },
-  },
-  menuItemHover: {
-    "&:hover": {
-      backgroundColor: "transparent",
-    },
-  },
-  menuItemDark: {
-    "&:hover": {
-      backgroundColor: "transparent",
-    },
-  },
-  menuItemDefault: {
-    "&:hover": {
-      backgroundColor: "transparent",
-    },
-  },
-  singleMenuItemGutters: {
-    padding: "6px 2px",
-  },
-  singleMenuItemGuttersAfterSelect: {
-    padding: "6px 12px",
-  },
-  menuItemGutters: {
-    padding: "6px 28px",
-  },
-  menuItemGuttersAfterSelect: {
-    padding: "6px 12px",
-  },
-});
+// const useStyles = makeStyles({
+//   row: { display: "flex", alignItems: "center" },
+//   borderRight: { borderRight: "1ps solid #ffffff33" },
+//   popover: { backgroundColor: "transparent" },
+//   popoverBorder: {
+//     borderRadius: "12px",
+//     backgroundColor: "#212032",
+//     marginTop: 8,
+//     width: 300,
+//   },
+//   popoverHover: {
+//     "&:hover": {
+//       backgroundColor: "#CCD2D899",
+//     },
+//   },
+//   popoverHoverDark: {
+//     "&:hover": {
+//       backgroundColor: "#2B303499",
+//     },
+//   },
+//   popoverHoverDefault: {
+//     "&:hover": {
+//       backgroundColor: "#43425399",
+//     },
+//   },
+//   menuItemHover: {
+//     "&:hover": {
+//       backgroundColor: "transparent",
+//     },
+//   },
+//   menuItemDark: {
+//     "&:hover": {
+//       backgroundColor: "transparent",
+//     },
+//   },
+//   menuItemDefault: {
+//     "&:hover": {
+//       backgroundColor: "transparent",
+//     },
+//   },
+//   singleMenuItemGutters: {
+//     padding: "6px 2px",
+//   },
+//   singleMenuItemGuttersAfterSelect: {
+//     padding: "6px 12px",
+//   },
+//   menuItemGutters: {
+//     padding: "6px 28px",
+//   },
+//   menuItemGuttersAfterSelect: {
+//     padding: "6px 12px",
+//   },
+// });
 
 const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const { publish } = usePubSub("RAISE_HAND");
-  const classes = useStyles();
+  // const classes = useStyles();
   const onRaiseHand = () => {
     if (isMobile || isTab) {
       onClick();
@@ -1275,7 +1323,7 @@ const SingleMicMenu = ({
   micArr,
   Icon,
   label,
-  classes,
+  // classes,
   selectMicDeviceId,
   setSelectMicDeviceId,
   isOutputMics,
@@ -1284,6 +1332,13 @@ const SingleMicMenu = ({
   theme,
   handleClose,
 }) => {
+  const BoxElement =
+    appTheme === appThemes.LIGHT
+      ? CustomBoxLight
+      : appTheme === appThemes.DARK
+      ? CustomBox
+      : CustomBoxDefault;
+
   return (
     <Box>
       <Box
@@ -1325,7 +1380,7 @@ const SingleMicMenu = ({
         }}
       >
         {micArr.map(({ deviceId, label }, index) => (
-          <Box
+          <BoxElement
             style={{
               display: "flex",
               alignItems: "center",
@@ -1340,18 +1395,10 @@ const SingleMicMenu = ({
                     : "#6D6E71"
                   : "",
             }}
-            classes={{
-              root:
-                appTheme === appThemes.LIGHT
-                  ? classes.popoverHover
-                  : appTheme === appThemes.DARK
-                  ? classes.popoverHoverDark
-                  : classes.popoverHoverDefault,
-            }}
           >
             {deviceId === selectMicDeviceId && <SelectedIcon />}
 
-            <MenuItem
+            <CustomMenuItem
               disableRipple
               style={{
                 display: "flex",
@@ -1374,22 +1421,10 @@ const SingleMicMenu = ({
                   changeMic(deviceId);
                 }
               }}
-              classes={{
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.menuItemHover
-                    : appTheme === appThemes.DARK
-                    ? classes.menuItemDark
-                    : classes.menuItemDefault,
-                gutters:
-                  deviceId === selectMicDeviceId
-                    ? classes.menuItemGuttersAfterSelect
-                    : classes.menuItemGutters,
-              }}
             >
               {label || `Mic ${index + 1}`}
-            </MenuItem>
-          </Box>
+            </CustomMenuItem>
+          </BoxElement>
         ))}
       </MenuList>
     </Box>
@@ -1405,7 +1440,7 @@ const MicMenu = ({
   downArrow,
   mics,
   outputmics,
-  classes,
+  // classes,
   _handleNoiseClick,
   handleClose,
   isNoiseRemovalChecked,
@@ -1414,6 +1449,12 @@ const MicMenu = ({
   tollTipEl,
   changeMic,
 }) => {
+  const BoxElement =
+    appTheme === appThemes.LIGHT
+      ? CustomBoxLight
+      : appTheme === appThemes.DARK
+      ? CustomBox
+      : CustomBoxDefault;
   return (
     <Popover
       container={tollTipEl.current}
@@ -1446,7 +1487,7 @@ const MicMenu = ({
           selectMicDeviceId={selectMicDeviceId}
           setSelectMicDeviceId={setSelectMicDeviceId}
           changeMic={changeMic}
-          classes={classes}
+          // classes={classes}
           appTheme={appTheme}
           theme={theme}
           handleClose={handleClose}
@@ -1466,7 +1507,7 @@ const MicMenu = ({
           selectMicDeviceId={selectedOutputDeviceId}
           setSelectMicDeviceId={setSelectedOutputDeviceId}
           isOutputMics={true}
-          classes={classes}
+          // classes={classes}
           changeMic={changeMic}
           appTheme={appTheme}
           theme={theme}
@@ -1501,7 +1542,7 @@ const MicMenu = ({
                       : "",
                 }}
               >
-                <Box
+                <BoxElement
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -1515,14 +1556,14 @@ const MicMenu = ({
                         : "#6D6E71"
                       : "",
                   }}
-                  classes={{
-                    root:
-                      appTheme === appThemes.LIGHT
-                        ? classes.popoverHover
-                        : appTheme === appThemes.DARK
-                        ? classes.popoverHoverDark
-                        : classes.popoverHoverDefault,
-                  }}
+                  // classes={{
+                  //   root:
+                  //     appTheme === appThemes.LIGHT
+                  //       ? classes.popoverHover
+                  //       : appTheme === appThemes.DARK
+                  //       ? classes.popoverHoverDark
+                  //       : classes.popoverHoverDefault,
+                  // }}
                 >
                   {isNoiseRemovalChecked ? (
                     <SelectedIcon />
@@ -1555,21 +1596,21 @@ const MicMenu = ({
                       handleClose();
                       _handleNoiseClick({ e, selectMicDeviceId });
                     }}
-                    classes={{
-                      root:
-                        appTheme === appThemes.LIGHT
-                          ? classes.menuItemHover
-                          : appTheme === appThemes.DARK
-                          ? classes.menuItemDark
-                          : classes.menuItemDefault,
-                      gutters: isNoiseRemovalChecked
-                        ? classes.singleMenuItemGuttersAfterSelect
-                        : classes.singleMenuItemGutters,
-                    }}
+                    // classes={{
+                    //   root:
+                    //     appTheme === appThemes.LIGHT
+                    //       ? classes.menuItemHover
+                    //       : appTheme === appThemes.DARK
+                    //       ? classes.menuItemDark
+                    //       : classes.menuItemDefault,
+                    //   gutters: isNoiseRemovalChecked
+                    //     ? classes.singleMenuItemGuttersAfterSelect
+                    //     : classes.singleMenuItemGutters,
+                    // }}
                   >
                     AI Noise Removal
                   </MenuItem>
-                </Box>
+                </BoxElement>
               </MenuList>
             </Box>
           </>
@@ -1587,7 +1628,14 @@ const MirrorView = ({
   appTheme,
   theme,
 }) => {
-  const classes = useStyles();
+  // const classes = useStyles();
+
+  const BoxElement =
+    appTheme === appThemes.LIGHT
+      ? CustomBoxLight
+      : appTheme === appThemes.DARK
+      ? CustomBox
+      : CustomBoxDefault;
 
   return (
     localWebcamOn && (
@@ -1618,7 +1666,7 @@ const MirrorView = ({
                   : "",
             }}
           >
-            <Box
+            <BoxElement
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -1632,14 +1680,14 @@ const MirrorView = ({
                     : "#6D6E71"
                   : "",
               }}
-              classes={{
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.popoverHover
-                    : appTheme === appThemes.DARK
-                    ? classes.popoverHoverDark
-                    : classes.popoverHoverDefault,
-              }}
+              // classes={{
+              //   root:
+              //     appTheme === appThemes.LIGHT
+              //       ? classes.popoverHover
+              //       : appTheme === appThemes.DARK
+              //       ? classes.popoverHoverDark
+              //       : classes.popoverHoverDefault,
+              // }}
             >
               {isMirrorViewChecked ? (
                 <SelectedIcon />
@@ -1653,7 +1701,7 @@ const MirrorView = ({
                 />
               )}
 
-              <MenuItem
+              <CustomMenuItem
                 disableRipple
                 style={{
                   display: "flex",
@@ -1672,21 +1720,21 @@ const MirrorView = ({
                   handleClose();
                   _handleMirrorClick({ e });
                 }}
-                classes={{
-                  root:
-                    appTheme === appThemes.LIGHT
-                      ? classes.menuItemHover
-                      : appTheme === appThemes.DARK
-                      ? classes.menuItemDark
-                      : classes.menuItemDefault,
-                  gutters: isMirrorViewChecked
-                    ? classes.singleMenuItemGuttersAfterSelect
-                    : classes.singleMenuItemGutters,
-                }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.menuItemHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.menuItemDark
+                //       : classes.menuItemDefault,
+                //   gutters: isMirrorViewChecked
+                //     ? classes.singleMenuItemGuttersAfterSelect
+                //     : classes.singleMenuItemGutters,
+                // }}
               >
                 Mirror View
-              </MenuItem>
-            </Box>
+              </CustomMenuItem>
+            </BoxElement>
           </MenuList>
         </Box>
       </>
@@ -1696,7 +1744,7 @@ const MirrorView = ({
 
 const WebcamBTN = () => {
   const theme = useTheme();
-  const classes = useStyles();
+  // const classes = useStyles();
   const mMeeting = useMeeting({});
   const {
     appTheme,
@@ -1768,6 +1816,13 @@ const WebcamBTN = () => {
     }
   };
 
+  const BoxElement =
+    appTheme === appThemes.LIGHT
+      ? CustomBoxLight
+      : appTheme === appThemes.DARK
+      ? CustomBox
+      : CustomBoxDefault;
+
   return (
     <Box
       style={{
@@ -1794,7 +1849,7 @@ const WebcamBTN = () => {
         renderRightComponent={() => {
           return (
             <Tooltip placement="bottom" title={"Change webcam"}>
-              <IconButton
+              <CustomIconButton
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -1806,11 +1861,12 @@ const WebcamBTN = () => {
                   style={{
                     color: localWebcamOn
                       ? "white"
-                      : appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
                   }}
                 />
-              </IconButton>
+              </CustomIconButton>
             </Tooltip>
           );
         }}
@@ -1846,25 +1902,41 @@ const WebcamBTN = () => {
           }}
         >
           {webcams.map(({ deviceId, label }, index) => (
-            <MenuItem
-              key={`output_webcams_${deviceId}`}
-              selected={deviceId === selectWebcamDeviceId}
-              onClick={() => {
-                handleClose();
-                setSelectWebcamDeviceId(deviceId);
-                changeWebcam(deviceId);
-              }}
-              classes={{
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.popoverHover
-                    : appTheme === appThemes.DARK
-                    ? classes.popoverHoverDark
+            <BoxElement
+              style={{
+                display: "flex",
+                alignItems: "center",
+
+                backgroundColor:
+                  deviceId === selectWebcamDeviceId
+                    ? appTheme === appThemes.DARK
+                      ? "#3F4046"
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.three
+                      : "#6D6E71"
                     : "",
               }}
             >
-              {label || `Webcam ${index + 1}`}
-            </MenuItem>
+              <CustomWebcamMenuItem
+                key={`output_webcams_${deviceId}`}
+                selected={deviceId === selectWebcamDeviceId}
+                onClick={() => {
+                  handleClose();
+                  setSelectWebcamDeviceId(deviceId);
+                  changeWebcam(deviceId);
+                }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
+              >
+                {label || `Webcam ${index + 1}`}
+              </CustomWebcamMenuItem>
+            </BoxElement>
           ))}
         </MenuList>
 
@@ -1897,7 +1969,7 @@ const MicBTN = () => {
   const [outputmics, setOutputMics] = useState([]);
   const mMeeting = useMeeting({});
   const theme = useTheme();
-  const classes = useStyles();
+  // const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { getCustomAudioTrack } = useCustomTrack();
   const { getPlaybackDevices } = useMediaDevice({ onDeviceChanged });
@@ -2009,7 +2081,8 @@ const MicBTN = () => {
         renderRightComponent={() => {
           return (
             <Tooltip placement="bottom" title={"Change microphone"}>
-              <IconButton
+              <CustomIconButton
+                p={0}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
                   getOutputDevices();
@@ -2022,11 +2095,12 @@ const MicBTN = () => {
                   style={{
                     color: localMicOn
                       ? "white"
-                      : appTheme === appThemes.LIGHT &&
-                        theme.palette.lightTheme.contrastText,
+                      : appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
                   }}
                 />
-              </IconButton>
+              </CustomIconButton>
             </Tooltip>
           );
         }}
@@ -2045,7 +2119,7 @@ const MicBTN = () => {
         changeMic={changeMic}
         mics={mics}
         outputmics={outputmics}
-        classes={classes}
+        // classes={classes}
         _handleNoiseClick={_handleNoiseClick}
         handleClose={handleClose}
       />
@@ -2054,7 +2128,7 @@ const MicBTN = () => {
 };
 const EndCallBTN = () => {
   const mMeeting = useMeeting({});
-  const classes = useStyles();
+  // const classes = useStyles();
 
   const [isEndMeeting, setIsEndMeeting] = useState(false);
   const {
@@ -2131,9 +2205,9 @@ const EndCallBTN = () => {
             anchorEl={tollTipEl.current}
             open={Boolean(downArrow)}
             onClose={handleClose}
-            classes={{
-              paper: classes.popoverBorder,
-            }}
+            // classes={{
+            //   paper: classes.popoverBorder,
+            // }}
           >
             <MenuList
               style={{
@@ -2157,14 +2231,14 @@ const EndCallBTN = () => {
                   window.onbeforeunload = null;
                   leave();
                 }}
-                classes={{
-                  root:
-                    appTheme === appThemes.LIGHT
-                      ? classes.popoverHover
-                      : appTheme === appThemes.DARK
-                      ? classes.popoverHoverDark
-                      : "",
-                }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
@@ -2234,14 +2308,14 @@ const EndCallBTN = () => {
                 onClick={() => {
                   setIsEndMeeting(true);
                 }}
-                classes={{
-                  root:
-                    appTheme === appThemes.LIGHT
-                      ? classes.popoverHover
-                      : appTheme === appThemes.DARK
-                      ? classes.popoverHoverDark
-                      : "",
-                }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
@@ -2331,7 +2405,7 @@ const EndCallBTN = () => {
 };
 
 const TopBar = ({ topBarHeight }) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   const [defaultBrandLogoUrl, setDefaultBrandLogoUrl] = useState(null);
@@ -2828,7 +2902,7 @@ const TopBar = ({ topBarHeight }) => {
               alt={"App Logo"}
               style={{
                 display: "inline-block",
-                height: topBarHeight - theme.spacing(2),
+                height: topBarHeight,
               }}
               src={
                 defaultBrandLogoUrl ||
@@ -2854,8 +2928,9 @@ const TopBar = ({ topBarHeight }) => {
                   fontSize: "1.2rem",
                   fontWeight: "600",
                   color:
-                    appTheme === appThemes.LIGHT &&
-                    theme.palette.lightTheme.contrastText,
+                    appTheme === appThemes.LIGHT
+                      ? theme.palette.lightTheme.contrastText
+                      : "white",
                 }}
               >
                 {brandName}
@@ -2896,7 +2971,12 @@ const TopBar = ({ topBarHeight }) => {
         )}
       </Box>
 
-      <Box className={classes.row} p={2}>
+      <Box
+        display={"flex"}
+        alignItems={"center"}
+        // className={classes.row}
+        p={2}
+      >
         {topBarIcons.map((row, i) => {
           return (
             <React.Fragment key={`topbar_controls_i_${i}`}>
@@ -2916,7 +2996,9 @@ const TopBar = ({ topBarHeight }) => {
               <Box
                 ml={i === 0 ? 0 : 2}
                 mr={i === topBarIcons.length - 1 ? 0 : 2}
-                className={classes.row}
+                display={"flex"}
+                alignItems={"center"}
+                // className={classes.row}
               >
                 {row.map((buttonType, j) => {
                   return (

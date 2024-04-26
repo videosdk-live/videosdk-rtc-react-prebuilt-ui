@@ -1,72 +1,47 @@
-import {
-  Box,
-  TextField,
-  Typography,
-  Button,
-  makeStyles,
-  useTheme,
-} from "@material-ui/core";
+import { Box, Typography, Button, InputBase } from "@mui/material";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
 import ConfirmBox from "../../components/ConfirmBox";
 import { extractRootDomain, getUniqueId } from "../../utils/common";
 import useIsLiveStreaming from "../useIsLivestreaming";
+import { styled, useTheme } from "@mui/material/styles";
 
-const useStyles = makeStyles(() => ({
-  textField: {
-    borderRadius: "4px",
-    backgroundColor: "#3D3C4E",
-    color: "white",
-  },
+const DarkCustomButton = styled(Button)`
+  &.MuiButton-root {
+    color: #95959e;
+  }
+  &:hover {
+    color: white;
+    background: #2b2e32;
+  }
+`;
 
-  textFieldLight: {
-    borderRadius: "4px",
-    backgroundColor: "#D3D7DA",
-    color: "#404B53",
-    "&:hover": {
-      backgroundColor: "#D3D7DA",
-    },
-  },
-  textFieldDisabled: {
-    "&:disabled": {
-      color: "#8A9197",
-      backgroundColor: "#CCD2DB",
-    },
-  },
-  button: {
-    color: "#95959E",
-    "&:hover": {
-      color: "#ffffff",
-    },
-  },
-  buttonLight: {
-    "&:hover": {
-      backgroundColor: "#CCD2DB",
-    },
-  },
-  input: {
-    color: "white",
-  },
-  root: {
-    "& .MuiFilledInput-input": {
-      padding: "12px 12px 12px",
-    },
-  },
-  rootDark: {
-    "& .MuiFilledInput-input": {
-      padding: "12px 12px 12px",
-      background: "#3E4346",
-    },
-  },
+const LightCustomButton = styled(Button)`
+  &.MuiButton-root {
+    color: #95959e;
+  }
+  &:hover {
+    color: white;
+    background: #ccd2db;
+  }
+`;
 
-  rootLight: {
-    "& .MuiFilledInput-input": {
-      padding: "12px 12px 12px",
-      background: "#D3D7DA",
-    },
-  },
-}));
+const DarkCustomTextField = styled(InputBase)`
+  &.MuiInputBase-root {
+    padding: 6px 12px 6px;
+    background-color: #3e4346 !important;
+    color: white;
+  }
+`;
+
+const LightCustomTextField = styled(InputBase)`
+  &.MuiInputBase-root {
+    padding: 6px 12px 6px;
+    background-color: #d3d7da !important;
+    color: #404b53;
+  }
+`;
 
 const SingleLiveStreamItem = ({
   item,
@@ -132,8 +107,6 @@ const SingleLiveStreamItem = ({
     itemRef.current = item;
   }, [item]);
 
-  const classes = useStyles();
-
   const _handleSaveInsideArray = ({ Id, streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
 
@@ -153,6 +126,11 @@ const SingleLiveStreamItem = ({
     publish({ config: newPlatforms }, { persist: true });
     setLiveStreamConfig(newPlatforms);
   };
+
+  const ButtonElement =
+    appTheme === appThemes.LIGHT ? LightCustomButton : DarkCustomButton;
+  const TextFieldElement =
+    appTheme === appThemes.LIGHT ? LightCustomTextField : DarkCustomTextField;
 
   return (
     <>
@@ -188,8 +166,9 @@ const SingleLiveStreamItem = ({
               style={{
                 fontWeight: "bold",
                 color:
-                  appTheme === appThemes.LIGHT &&
-                  theme.palette.lightTheme.contrastText,
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
               }}
             >
               {item.url ? domainName : item.title}
@@ -206,7 +185,7 @@ const SingleLiveStreamItem = ({
           >
             {isSelfEditing ? (
               <>
-                <Button
+                <ButtonElement
                   variant="text"
                   onClick={() => {
                     const isValid = handleValidation();
@@ -224,15 +203,11 @@ const SingleLiveStreamItem = ({
                       appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
-                  className={
-                    appTheme === appThemes.LIGHT
-                      ? classes.buttonLight
-                      : classes.button
-                  }
                 >
                   Save
-                </Button>
-                <Button
+                </ButtonElement>
+
+                <ButtonElement
                   variant="text"
                   onClick={() => {
                     setOnCancelClick({ id: item.id, visible: true });
@@ -242,18 +217,13 @@ const SingleLiveStreamItem = ({
                       appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
-                  className={
-                    appTheme === appThemes.LIGHT
-                      ? classes.buttonLight
-                      : classes.button
-                  }
                 >
                   Cancel
-                </Button>
+                </ButtonElement>
               </>
             ) : (
               <>
-                <Button
+                <ButtonElement
                   variant="text"
                   onClick={() => {
                     // setIsEditing({ id: item.id, editing: true });
@@ -264,17 +234,12 @@ const SingleLiveStreamItem = ({
                       appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
-                  className={
-                    appTheme === appThemes.LIGHT
-                      ? classes.buttonLight
-                      : classes.button
-                  }
                   disabled={isEditing || isLiveStreaming}
                 >
                   EDIT
-                </Button>
+                </ButtonElement>
 
-                <Button
+                <ButtonElement
                   variant="text"
                   onClick={() => {
                     setOnRemoveClick({
@@ -287,22 +252,20 @@ const SingleLiveStreamItem = ({
                       appTheme === appThemes.LIGHT &&
                       theme.palette.lightTheme.contrastText,
                   }}
-                  className={
-                    appTheme === appThemes.LIGHT
-                      ? classes.buttonLight
-                      : classes.button
-                  }
                   disabled={isEditing || isLiveStreaming}
                 >
                   REMOVE
-                </Button>
+                </ButtonElement>
               </>
             )}
           </Box>
         </Box>
         <Box mt={1}>
-          <TextField
+          <TextFieldElement
             placeholder="Stream Key"
+            sx={{
+              color: "white",
+            }}
             fullWidth
             variant="filled"
             type="password"
@@ -315,37 +278,23 @@ const SingleLiveStreamItem = ({
                   ? theme.palette.lightTheme.three
                   : "",
             }}
-            className={
-              appTheme === appThemes.LIGHT
-                ? classes.rootLight
-                : appTheme === appThemes.DARK
-                ? classes.rootDark
-                : classes.root
-            }
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedStreamKey : item.streamKey}
             InputProps={{
               disableUnderline: true,
-              classes: {
-                disabled:
-                  appTheme === appThemes.LIGHT && classes.textFieldDisabled,
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.textFieldLight
-                    : classes.textField,
-              },
             }}
             onChange={(e) => {
               setEditedStreamKey(e.target.value);
             }}
           />
+
           {editedStreamKeyErr && (
             <Typography variant="body2" style={{ color: "#D33730" }}>
               Please provide valid stream key
             </Typography>
           )}
 
-          <TextField
+          <TextFieldElement
             placeholder="Stream Url"
             fullWidth
             variant="filled"
@@ -359,30 +308,16 @@ const SingleLiveStreamItem = ({
                   ? theme.palette.lightTheme.three
                   : "",
             }}
-            className={
-              appTheme === appThemes.LIGHT
-                ? classes.rootLight
-                : appTheme === appThemes.DARK
-                ? classes.rootDark
-                : classes.root
-            }
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedUrl : item.url}
             InputProps={{
               disableUnderline: true,
-              classes: {
-                disabled:
-                  appTheme === appThemes.LIGHT && classes.textFieldDisabled,
-                root:
-                  appTheme === appThemes.LIGHT
-                    ? classes.textFieldLight
-                    : classes.textField,
-              },
             }}
             onChange={(e) => {
               setEditedUrl(e.target.value);
             }}
           />
+
           {editedUrlErr && (
             <Typography variant="body2" style={{ color: "#D33730" }}>
               Please provide valid stream url
@@ -437,6 +372,11 @@ const AddLiveStream = ({
   const [streamKeyErr, setStreamKeyErr] = useState(false);
   const [streamUrlErr, setStreamUrlErr] = useState(false);
 
+  const ButtonElement =
+    appTheme === appThemes.LIGHT ? LightCustomButton : DarkCustomButton;
+  const TextFieldElement =
+    appTheme === appThemes.LIGHT ? LightCustomTextField : DarkCustomTextField;
+
   const elementRef = useRef();
 
   const domainName = useMemo(() => {
@@ -464,8 +404,6 @@ const AddLiveStream = ({
     }
     return isValid;
   };
-
-  const classes = useStyles();
 
   useEffect(() => {
     renderCallback(elementRef.current);
@@ -507,8 +445,9 @@ const AddLiveStream = ({
             style={{
               fontWeight: "bold",
               color:
-                appTheme === appThemes.LIGHT &&
-                theme.palette.lightTheme.contrastText,
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
             }}
           >
             {url ? domainName : "Platform Name"}
@@ -523,7 +462,7 @@ const AddLiveStream = ({
             justifyContent: "flex-end",
           }}
         >
-          <Button
+          <ButtonElement
             variant="text"
             onClick={() => {
               const isValid = handleValidation({ streamKey, url });
@@ -541,18 +480,13 @@ const AddLiveStream = ({
                 appTheme === appThemes.LIGHT &&
                 theme.palette.lightTheme.contrastText,
             }}
-            className={
-              appTheme === appThemes.LIGHT
-                ? classes.buttonLight
-                : classes.button
-            }
           >
             ADD
-          </Button>
+          </ButtonElement>
         </Box>
       </Box>
       <Box mt={1}>
-        <TextField
+        <TextFieldElement
           placeholder="Stream Key"
           fullWidth
           variant="filled"
@@ -566,33 +500,22 @@ const AddLiveStream = ({
                 ? theme.palette.lightTheme.three
                 : "",
           }}
-          className={
-            appTheme === appThemes.LIGHT
-              ? classes.rootLight
-              : appTheme === appThemes.DARK
-              ? classes.rootDark
-              : classes.root
-          }
           value={streamKey}
           InputProps={{
             disableUnderline: true,
-            classes: {
-              root:
-                appTheme === appThemes.LIGHT
-                  ? classes.textFieldLight
-                  : classes.textField,
-            },
           }}
           onChange={(e) => {
             setStreamKey(e.target.value);
           }}
         />
+
         {streamKeyErr && (
           <Typography variant="body2" style={{ color: "#D33730" }}>
             Please provide valid stream key
           </Typography>
         )}
-        <TextField
+
+        <TextFieldElement
           placeholder="Stream Url"
           fullWidth
           variant="filled"
@@ -606,27 +529,15 @@ const AddLiveStream = ({
                 : "",
           }}
           autocomplete="off"
-          className={
-            appTheme === appThemes.LIGHT
-              ? classes.rootLight
-              : appTheme === appThemes.DARK
-              ? classes.rootDark
-              : classes.root
-          }
           value={url}
           InputProps={{
             disableUnderline: true,
-            classes: {
-              root:
-                appTheme === appThemes.LIGHT
-                  ? classes.textFieldLight
-                  : classes.textField,
-            },
           }}
           onChange={(e) => {
             setStreamUrl(e.target.value);
           }}
         />
+
         {streamUrlErr && (
           <Typography variant="body2" style={{ color: "#D33730" }}>
             Please provide valid stream url

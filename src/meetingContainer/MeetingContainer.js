@@ -42,8 +42,8 @@ import {
   RECORDER_MAX_GRID_SIZE,
   RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED,
 } from "../CONSTS";
-import { Box, CircularProgress } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
+import { Box } from "@mui/material";
+import { useTheme } from "@mui/system";
 import PollsListner from "../components/PollListner";
 import RecordingLoader from "../components/RecordingLoader";
 import useCustomTrack from "../utils/useCustomTrack";
