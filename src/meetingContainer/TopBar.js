@@ -52,7 +52,7 @@ import {
   Gesture,
   ClosedCaption,
   ClosedCaptionOutlined,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import {
   isMobile as RDDIsMobile,
   isTablet as RDDIsTablet,

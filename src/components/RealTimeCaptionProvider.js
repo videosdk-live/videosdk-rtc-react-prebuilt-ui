@@ -11,7 +11,7 @@ import { meetingModes } from "../CONSTS";
 import useIsMobile from "../utils/useIsMobile";
 import useIsTab from "../utils/useIsTab";
 import { useMediaQuery } from "react-responsive";
-import { Typography, useTheme } from "@material-ui/core";
+import { Typography, useTheme } from "@mui/material";
 
 const RealTimeCaptionProvider = ({}) => {
   const mMeeting = useMeeting({});
