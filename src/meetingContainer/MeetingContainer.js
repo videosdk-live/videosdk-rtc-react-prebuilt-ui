@@ -48,6 +48,7 @@ import PollsListner from "../components/PollListner";
 import RecordingLoader from "../components/RecordingLoader";
 import useCustomTrack from "../utils/useCustomTrack";
 import ResolutionListner from "../components/ResolutionListner";
+import RealTimeCaptionProvider from "../components/RealTimeCaptionProvider";
 
 const getPinMsg = ({
   localParticipant,
@@ -187,6 +188,7 @@ const MeetingContainer = () => {
     hlsTheme,
     liveStreamTheme,
     cameraId,
+    realtimeTranscriptionVisible,
   } = useMeetingAppContext();
 
   const joinWithoutUserInteractionValue =
@@ -839,7 +841,7 @@ const MeetingContainer = () => {
             <PollsListner />
             <PauseInvisibleParticipants />
             {/* <ResolutionListner /> */}
-
+            {realtimeTranscriptionVisible ? <RealTimeCaptionProvider /> : null}
             <div
               style={{
                 display: "flex",

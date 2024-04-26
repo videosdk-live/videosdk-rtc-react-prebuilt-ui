@@ -79,6 +79,8 @@ const App = () => {
       participantTabPanelEnabled: "participantTabPanelEnabled",
       moreOptionsEnabled: "moreOptionsEnabled",
       participantCanToggleRecording: "participantCanToggleRecording",
+      participantCanToggleRealtimeTranscription:
+        "participantCanToggleRealtimeTranscription",
       participantCanLeave: "participantCanLeave",
       participantCanToggleOtherWebcam: "participantCanToggleOtherWebcam",
       participantCanToggleOtherMic: "participantCanToggleOtherMic",
@@ -94,6 +96,9 @@ const App = () => {
       recordingAWSDirPath: "recordingAWSDirPath",
       autoStartRecording: "autoStartRecording",
       recordingTheme: "recordingTheme",
+      //
+      realtimeTranscriptionEnabled: "realtimeTranscriptionEnabled",
+      realtimeTranscriptionVisible: "realtimeTranscriptionVisible",
       //
       brandingEnabled: "brandingEnabled",
       brandLogoURL: "brandLogoURL",
@@ -246,6 +251,9 @@ const App = () => {
     }
     if (typeof paramKeys.recordingEnabled !== "string") {
       paramKeys.recordingEnabled = "false";
+    }
+    if (typeof paramKeys.realtimeTranscriptionEnabled !== "string") {
+      paramKeys.realtimeTranscriptionEnabled = "false";
     }
     if (typeof paramKeys.hlsEnabled !== "string") {
       paramKeys.hlsEnabled = "false";
@@ -687,6 +695,8 @@ const App = () => {
             canChangeLayout: paramKeys.canChangeLayout === "true",
             meetingLayoutTopic: paramKeys.meetingLayoutTopic,
             recordingEnabled: paramKeys.recordingEnabled === "true",
+            realtimeTranscriptionEnabled:
+              paramKeys.realtimeTranscriptionEnabled === "true",
             hlsEnabled: paramKeys.hlsEnabled === "true",
             recordingWebhookUrl: paramKeys.recordingWebhookUrl,
             recordingAWSDirPath: paramKeys.recordingAWSDirPath,
@@ -698,6 +708,8 @@ const App = () => {
             hlsTheme: paramKeys.hlsTheme,
             participantCanToggleRecording:
               paramKeys.participantCanToggleRecording === "true",
+            participantCanToggleRealtimeTranscription:
+              paramKeys.participantCanToggleRealtimeTranscription === "true",
             participantCanToggleHls:
               paramKeys.participantCanToggleHls === "true",
             brandingEnabled: paramKeys.brandingEnabled === "true",
@@ -791,6 +803,8 @@ const App = () => {
             micQuality: paramKeys.micQuality,
             joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
             webcamEnabled: paramKeys.webcamEnabled,
+            realtimeTranscriptionVisible:
+              paramKeys.realtimeTranscriptionVisible === "true",
           }}
         >
           <MeetingProvider

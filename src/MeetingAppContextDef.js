@@ -77,6 +77,7 @@ export const MeetingAppProvider = ({
   participantCanToggleSelfMic,
   raiseHandEnabled,
   recordingEnabled,
+  realtimeTranscriptionEnabled,
   recordingWebhookUrl,
   recordingAWSDirPath,
   autoStartRecording,
@@ -85,6 +86,7 @@ export const MeetingAppProvider = ({
   liveStreamTheme,
   autoStartHls,
   participantCanToggleRecording,
+  participantCanToggleRealtimeTranscription,
   participantCanToggleHls,
   brandingEnabled,
   brandLogoURL,
@@ -158,6 +160,7 @@ export const MeetingAppProvider = ({
   micQuality,
   joinWithoutUserInteraction,
   webcamEnabled,
+  realtimeTranscriptionVisible,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
@@ -279,6 +282,7 @@ export const MeetingAppProvider = ({
         moreOptionsEnabled,
         raiseHandEnabled,
         recordingEnabled,
+        realtimeTranscriptionEnabled,
         meetingLayoutTopic,
         recordingWebhookUrl,
         recordingAWSDirPath,
@@ -288,6 +292,7 @@ export const MeetingAppProvider = ({
         hlsTheme,
         liveStreamTheme,
         participantCanToggleRecording,
+        participantCanToggleRealtimeTranscription,
         participantCanToggleHls,
         brandingEnabled,
         brandLogoURL,
@@ -330,6 +335,7 @@ export const MeetingAppProvider = ({
         alwaysShowOverlay,
         sideStackSize,
         reduceEdgeSpacing,
+        realtimeTranscriptionVisible,
 
         isRecorder,
         maintainVideoAspectRatio,

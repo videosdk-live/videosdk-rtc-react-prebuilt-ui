@@ -14,7 +14,13 @@ import {
   Checkbox,
 } from "@material-ui/core";
 import OutlineIconButton from "../components/OutlineIconButton";
-import { Constants, useMediaDevice, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import {
+  Constants,
+  useMediaDevice,
+  useMeeting,
+  usePubSub,
+  useTranscription,
+} from "@videosdk.live/react-sdk";
 import {
   sideBarModes,
   appThemes,
@@ -44,6 +50,8 @@ import {
   MoreHoriz as MoreHorizIcon,
   ArrowDropDown as ArrowDropDownIcon,
   Gesture,
+  ClosedCaption,
+  ClosedCaptionOutlined,
 } from "@material-ui/icons";
 import {
   isMobile as RDDIsMobile,
@@ -67,6 +75,7 @@ import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
 import useCustomTrack from "../utils/useCustomTrack";
+import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
 
 const BpIcon = styled("span")(({ theme }) => ({
   borderRadius: 12,
@@ -585,6 +594,130 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
         );
       }}
     />
+  );
+};
+const TranscriptionBTN = ({ isMobile, isTab }) => {
+  const { startTranscription, stopTranscription } = useTranscription();
+  const mMeeting = useMeeting({});
+  const theme = useTheme();
+  // const [isTranscriptionRunning, setTranscriptionRunning] = useState(false);
+  const transcriptionState = mMeeting?.transcriptionState;
+
+  const isTranscriptionRunning = useIsTranscriptionRunning();
+  const { participantCanToggleRealtimeTranscription, appTheme } =
+    useMeetingAppContext();
+  const { isRequestProcessing } = useMemo(
+    () => ({
+      isRequestProcessing:
+        transcriptionState ===
+          Constants.transcriptionEvents.TRANSCRIPTION_STARTING ||
+        transcriptionState ===
+          Constants.transcriptionEvents.TRANSCRIPTION_STOPPING,
+    }),
+    [transcriptionState]
+  );
+  const isTranscriptionRunningRef = useRef(isTranscriptionRunning);
+
+  useEffect(() => {
+    isTranscriptionRunningRef.current = isTranscriptionRunning;
+  }, [isTranscriptionRunning]);
+
+  const _handleClick = () => {
+    const isTranscriptionRunning = isTranscriptionRunningRef.current;
+
+    if (isTranscriptionRunning) {
+      stopTranscription();
+    } else {
+      startTranscription();
+    }
+  };
+  return (
+    <>
+      {isMobile || isTab ? (
+        <MobileIconButton
+          Icon={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? ClosedCaption
+              : ClosedCaptionOutlined
+          }
+          onClick={_handleClick}
+          tooltipTitle={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "Stop Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "Starting Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "Start Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "Stopping Transcription"
+              : "Start Transcription"
+          }
+          isFocused={isTranscriptionRunning}
+          disabled={!participantCanToggleRealtimeTranscription}
+          bgColor={
+            appTheme === appThemes.LIGHT &&
+            (transcriptionState ===
+              Constants.transcriptionEvents.TRANSCRIPTION_STARTED ||
+              transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING) &&
+            "#EEF0F2"
+          }
+          buttonText={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "Stop Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "Starting Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "Start Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "Stopping Transcription"
+              : "Start Transcription"
+          }
+          isRequestProcessing={isRequestProcessing}
+        />
+      ) : (
+        <OutlineIconButton
+          Icon={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? ClosedCaption
+              : ClosedCaptionOutlined
+          }
+          onClick={_handleClick}
+          focusBGColor={
+            appTheme === appThemes.LIGHT &&
+            theme.palette.lightTheme.contrastText
+          }
+          isFocused={isTranscriptionRunning}
+          tooltipTitle={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "Stop Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "Starting Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "Start Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "Stopping Transcription"
+              : "Start Transcription"
+          }
+          disabled={!participantCanToggleRealtimeTranscription}
+          isRequestProcessing={isRequestProcessing}
+        />
+      )}
+    </>
   );
 };
 const RecordingBTN = ({ isMobile, isTab }) => {
@@ -1767,21 +1900,19 @@ const MicBTN = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { getCustomAudioTrack } = useCustomTrack();
-  const {getPlaybackDevices} = useMediaDevice({onDeviceChanged})
+  const { getPlaybackDevices } = useMediaDevice({ onDeviceChanged });
 
-  const getSpeakers = async () =>{
+  const getSpeakers = async () => {
     const devices = await getPlaybackDevices();
     const outputMics = devices.filter(
-      (d) =>
-        d.deviceId !== "default" &&
-        d.deviceId !== "communications"
+      (d) => d.deviceId !== "default" && d.deviceId !== "communications"
     );
 
     outputMics && outputMics?.length && setOutputMics(outputMics);
-  }
+  };
 
   function onDeviceChanged() {
-   getSpeakers()
+    getSpeakers();
   }
 
   const handleClick = (event) => {
@@ -1809,7 +1940,7 @@ const MicBTN = () => {
   const tollTipEl = useRef();
 
   const getOutputDevices = async () => {
-   await getSpeakers()
+    await getSpeakers();
   };
 
   const _handleNoiseClick = async ({ e, selectMicDeviceId }) => {
@@ -2218,6 +2349,7 @@ const TopBar = ({ topBarHeight }) => {
     participantCanToggleSelfMic,
     raiseHandEnabled,
     recordingEnabled,
+    realtimeTranscriptionEnabled,
     brandingEnabled,
     brandLogoURL,
     brandName,
@@ -2255,6 +2387,7 @@ const TopBar = ({ topBarHeight }) => {
       MIC: "MIC",
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
+      CLOSE_CAPTION: "CLOSE_CAPTION",
       HLS: "HLS",
       WHITEBOARD: "WHITEBOARD",
       ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
@@ -2354,6 +2487,17 @@ const TopBar = ({ topBarHeight }) => {
           priority: 13,
         });
       }
+      //
+      if (
+        realtimeTranscriptionEnabled &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
+        utilsArr.unshift(topBarButtonTypes.CLOSE_CAPTION);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CLOSE_CAPTION,
+          // priority: 5,
+        });
+      }
 
       if (recordingEnabled && meetingMode === meetingModes.CONFERENCE) {
         utilsArr.unshift(topBarButtonTypes.RECORDING);
@@ -2442,6 +2586,7 @@ const TopBar = ({ topBarHeight }) => {
       raiseHandEnabled,
       topBarButtonTypes,
       recordingEnabled,
+      realtimeTranscriptionEnabled,
       meetingMode,
     ]);
 
@@ -2487,6 +2632,8 @@ const TopBar = ({ topBarHeight }) => {
               <ActivitiesBTN />
             ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
               <EndCallBTN />
+            ) : icon.buttonType === topBarButtonTypes.CLOSE_CAPTION ? (
+              <TranscriptionBTN />
             ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
               <RecordingBTN />
             ) : icon.buttonType === topBarButtonTypes.HLS ? (
@@ -2589,6 +2736,12 @@ const TopBar = ({ topBarHeight }) => {
                   />
                 ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
                   <EndCallBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
+                ) : icon.buttonType === topBarButtonTypes.CLOSE_CAPTION ? (
+                  <TranscriptionBTN
                     onClick={handleCloseFAB}
                     isMobile={isMobile}
                     isTab={isTab}
@@ -2784,6 +2937,8 @@ const TopBar = ({ topBarHeight }) => {
                         <ActivitiesBTN />
                       ) : buttonType === topBarButtonTypes.END_CALL ? (
                         <EndCallBTN />
+                      ) : buttonType === topBarButtonTypes.CLOSE_CAPTION ? (
+                        <TranscriptionBTN />
                       ) : buttonType === topBarButtonTypes.RECORDING ? (
                         <RecordingBTN />
                       ) : buttonType === topBarButtonTypes.HLS ? (
