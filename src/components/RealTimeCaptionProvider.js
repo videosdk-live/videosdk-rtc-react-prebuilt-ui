@@ -38,7 +38,6 @@ const RealTimeCaptionProvider = ({}) => {
   const { enqueueSnackbar } = useSnackbar();
 
   function onTranscriptionStateChanged(data) {
-    console.log("transcription state changed :: ", data);
     let status = data.status;
     if (
       participantCanToggleRealtimeTranscription &&
