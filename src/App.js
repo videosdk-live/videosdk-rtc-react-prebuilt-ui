@@ -23,7 +23,7 @@ import {
 import useIsSMDesktop from "./utils/useIsSMDesktop";
 import useIsLGDesktop from "./utils/useIsLGDesktop";
 import useIsTab from "./utils/useIsTab";
-import packageInfo from '../package.json';
+import packageInfo from "../package.json";
 import { meetingModes } from "./CONSTS";
 import animationData from "./animations/meeting-left.json";
 import lightThemeAnimationData from "./animations/meeting_left_white.json";

@@ -32,6 +32,7 @@ import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import liveBlink from "../animations/live-blink.json";
 import liveHLS from "../animations/live-hls.json";
+import liveCC from "../animations/live-cc.json";
 import stoppingHLS from "../animations/hls_stop_blink.json";
 import LiveIcon from "../icons/LiveIcon";
 import RaiseHand from "../icons/RaiseHand";
@@ -648,7 +649,6 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
   const { startTranscription, stopTranscription } = useTranscription();
   const mMeeting = useMeeting({});
   const theme = useTheme();
-  // const [isTranscriptionRunning, setTranscriptionRunning] = useState(false);
   const transcriptionState = mMeeting?.transcriptionState;
 
   const isTranscriptionRunning = useIsTranscriptionRunning();
@@ -678,6 +678,18 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     } else {
       startTranscription();
     }
+  };
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: liveCC,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    iconScale: "scale(+5)",
+    height: 70,
+    width: 100,
   };
   return (
     <>
@@ -733,19 +745,24 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
           isRequestProcessing={isRequestProcessing}
         />
       ) : (
-        <OutlineIconButton
-          Icon={
+        <OutlineIconTextButton
+          customBtnWidth={"50px"}
+          onClick={_handleClick}
+          buttonText={
             transcriptionState ===
             Constants.transcriptionEvents.TRANSCRIPTION_STARTED
-              ? ClosedCaption
-              : ClosedCaptionOutlined
+              ? "CC"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "CC"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "CC"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "CC"
+              : "CC"
           }
-          onClick={_handleClick}
-          focusBGColor={
-            appTheme === appThemes.LIGHT &&
-            theme.palette.lightTheme.contrastText
-          }
-          isFocused={isTranscriptionRunning}
           tooltipTitle={
             transcriptionState ===
             Constants.transcriptionEvents.TRANSCRIPTION_STARTED
@@ -760,6 +777,13 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
                 Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
               ? "Stopping Transcription"
               : "Start Transcription"
+          }
+          isFocused={isTranscriptionRunning}
+          lottieOption={
+            transcriptionState ==
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? defaultOptions
+              : null
           }
           disabled={!participantCanToggleRealtimeTranscription}
           isRequestProcessing={isRequestProcessing}
@@ -2569,7 +2593,7 @@ const TopBar = ({ topBarHeight }) => {
         utilsArr.unshift(topBarButtonTypes.CLOSE_CAPTION);
         mobileIconArr.unshift({
           buttonType: topBarButtonTypes.CLOSE_CAPTION,
-          // priority: 5,
+          priority: 8,
         });
       }
 
@@ -2870,6 +2894,7 @@ const TopBar = ({ topBarHeight }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        overflow: "hidden",
         backgroundColor:
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main

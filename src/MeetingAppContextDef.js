@@ -35,7 +35,6 @@ export const sideBarNestedModes = {
   VIRTUAL_BACKGROUND: "VIRTUAL_BACKGROUND",
 };
 
-
 export const meetingLayouts = {
   SPOTLIGHT: "SPOTLIGHT",
   SIDEBAR: "SIDEBAR",
