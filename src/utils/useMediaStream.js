@@ -1,34 +1,36 @@
-import { createCameraVideoTrack , createMicrophoneAudioTrack } from "@videosdk.live/react-sdk";
+import {
+  createCameraVideoTrack,
+  createMicrophoneAudioTrack,
+} from "@videosdk.live/react-sdk";
 
 const useMediaStream = () => {
-
-  const getVideoTrack = async ({ webcamId, encoderConfig }={}) => {
+  const getVideoTrack = async ({ webcamId, encoderConfig } = {}) => {
     try {
       const track = await createCameraVideoTrack({
-        cameraId: webcamId ,
-        encoderConfig: encoderConfig ?  encoderConfig :"h540p_w960p",
+        cameraId: webcamId,
+        encoderConfig: encoderConfig ? encoderConfig : "h540p_w960p",
         optimizationMode: "motion",
         multiStream: false,
       });
 
       return track;
-    } catch(error) {
+    } catch (error) {
       return null;
     }
   };
 
-  const getAudioTrack = async ({micId}={}) => {
-    try{
+  const getAudioTrack = async ({ micId } = {}) => {
+    try {
       const track = await createMicrophoneAudioTrack({
-        microphoneId: micId
+        microphoneId: micId,
       });
       return track;
-    } catch(error) {
+    } catch (error) {
       return null;
     }
   };
 
-  return { getVideoTrack,getAudioTrack };
+  return { getVideoTrack, getAudioTrack };
 };
 
 export default useMediaStream;

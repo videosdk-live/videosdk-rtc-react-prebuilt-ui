@@ -202,7 +202,19 @@ const OutlineIconButton = ({
           {buttonText ? (
             <Typography
               variant="subtitle2"
-              style={{ fontWeight: "bold", marginRight: 8 }}
+              style={{
+                fontWeight: "bold",
+                marginRight: 8,
+                color: isFocused
+                  ? focusIconColor || appTheme === appThemes.LIGHT
+                    ? theme.palette.common.white
+                    : "#1C1F2E"
+                  : color
+                  ? color
+                  : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "#fff",
+              }}
             >
               {buttonText}
             </Typography>

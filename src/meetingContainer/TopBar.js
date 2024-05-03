@@ -19,6 +19,7 @@ import {
   useMediaDevice,
   useMeeting,
   usePubSub,
+  useTranscription,
 } from "@videosdk.live/react-sdk";
 import {
   sideBarModes,
@@ -31,6 +32,7 @@ import useIsMobile from "../utils/useIsMobile";
 import recordingBlink from "../animations/recording-blink.json";
 import liveBlink from "../animations/live-blink.json";
 import liveHLS from "../animations/live-hls.json";
+import liveCC from "../animations/live-cc.json";
 import stoppingHLS from "../animations/hls_stop_blink.json";
 import LiveIcon from "../icons/LiveIcon";
 import RaiseHand from "../icons/RaiseHand";
@@ -49,6 +51,8 @@ import {
   MoreHoriz as MoreHorizIcon,
   ArrowDropDown as ArrowDropDownIcon,
   Gesture,
+  ClosedCaption,
+  ClosedCaptionOutlined,
 } from "@mui/icons-material";
 import {
   isMobile as RDDIsMobile,
@@ -72,6 +76,7 @@ import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
 import useCustomTrack from "../utils/useCustomTrack";
+import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
 
 const CustomBox = styled(Box)`
   &:hover {
@@ -638,6 +643,153 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
         );
       }}
     />
+  );
+};
+const TranscriptionBTN = ({ isMobile, isTab }) => {
+  const { startTranscription, stopTranscription } = useTranscription();
+  const mMeeting = useMeeting({});
+  const theme = useTheme();
+  const transcriptionState = mMeeting?.transcriptionState;
+
+  const isTranscriptionRunning = useIsTranscriptionRunning();
+  const { participantCanToggleRealtimeTranscription, appTheme } =
+    useMeetingAppContext();
+  const { isRequestProcessing } = useMemo(
+    () => ({
+      isRequestProcessing:
+        transcriptionState ===
+          Constants.transcriptionEvents.TRANSCRIPTION_STARTING ||
+        transcriptionState ===
+          Constants.transcriptionEvents.TRANSCRIPTION_STOPPING,
+    }),
+    [transcriptionState]
+  );
+  const isTranscriptionRunningRef = useRef(isTranscriptionRunning);
+
+  useEffect(() => {
+    isTranscriptionRunningRef.current = isTranscriptionRunning;
+  }, [isTranscriptionRunning]);
+
+  const _handleClick = () => {
+    const isTranscriptionRunning = isTranscriptionRunningRef.current;
+
+    if (isTranscriptionRunning) {
+      stopTranscription();
+    } else {
+      startTranscription();
+    }
+  };
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: liveCC,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+    iconScale: "scale(+5)",
+    height: 70,
+    width: 100,
+  };
+  return (
+    <>
+      {isMobile || isTab ? (
+        <MobileIconButton
+          Icon={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? ClosedCaption
+              : ClosedCaptionOutlined
+          }
+          onClick={_handleClick}
+          tooltipTitle={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "Stop Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "Starting Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "Start Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "Stopping Transcription"
+              : "Start Transcription"
+          }
+          isFocused={isTranscriptionRunning}
+          disabled={!participantCanToggleRealtimeTranscription}
+          bgColor={
+            appTheme === appThemes.LIGHT &&
+            (transcriptionState ===
+              Constants.transcriptionEvents.TRANSCRIPTION_STARTED ||
+              transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING) &&
+            "#EEF0F2"
+          }
+          buttonText={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "Stop Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "Starting Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "Start Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "Stopping Transcription"
+              : "Start Transcription"
+          }
+          isRequestProcessing={isRequestProcessing}
+        />
+      ) : (
+        <OutlineIconTextButton
+          customBtnWidth={"50px"}
+          onClick={_handleClick}
+          buttonText={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "CC"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "CC"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "CC"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "CC"
+              : "CC"
+          }
+          tooltipTitle={
+            transcriptionState ===
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+              ? "Stop Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? "Starting Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+              ? "Start Transcription"
+              : transcriptionState ===
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+              ? "Stopping Transcription"
+              : "Start Transcription"
+          }
+          isFocused={isTranscriptionRunning}
+          lottieOption={
+            transcriptionState ==
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+              ? defaultOptions
+              : null
+          }
+          disabled={!participantCanToggleRealtimeTranscription}
+          isRequestProcessing={isRequestProcessing}
+        />
+      )}
+    </>
   );
 };
 const RecordingBTN = ({ isMobile, isTab }) => {
@@ -1503,11 +1655,11 @@ const MirrorView = ({
   // const classes = useStyles();
 
   const BoxElement =
-  appTheme === appThemes.LIGHT
-    ? CustomBoxLight
-    : appTheme === appThemes.DARK
-    ? CustomBox
-    : CustomBoxDefault;
+    appTheme === appThemes.LIGHT
+      ? CustomBoxLight
+      : appTheme === appThemes.DARK
+      ? CustomBox
+      : CustomBoxDefault;
 
   return (
     localWebcamOn && (
@@ -1954,7 +2106,7 @@ const MicBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change microphone"}>
               <CustomIconButton
-              p={0}
+                p={0}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
                   getOutputDevices();
@@ -2295,6 +2447,7 @@ const TopBar = ({ topBarHeight }) => {
     participantCanToggleSelfMic,
     raiseHandEnabled,
     recordingEnabled,
+    realtimeTranscriptionEnabled,
     brandingEnabled,
     brandLogoURL,
     brandName,
@@ -2332,6 +2485,7 @@ const TopBar = ({ topBarHeight }) => {
       MIC: "MIC",
       RAISE_HAND: "RAISE_HAND",
       RECORDING: "RECORDING",
+      CLOSE_CAPTION: "CLOSE_CAPTION",
       HLS: "HLS",
       WHITEBOARD: "WHITEBOARD",
       ADD_LIVE_STREAM: "ADD_LIVE_STREAM",
@@ -2431,6 +2585,17 @@ const TopBar = ({ topBarHeight }) => {
           priority: 13,
         });
       }
+      //
+      if (
+        realtimeTranscriptionEnabled &&
+        meetingMode === meetingModes.CONFERENCE
+      ) {
+        utilsArr.unshift(topBarButtonTypes.CLOSE_CAPTION);
+        mobileIconArr.unshift({
+          buttonType: topBarButtonTypes.CLOSE_CAPTION,
+          priority: 8,
+        });
+      }
 
       if (recordingEnabled && meetingMode === meetingModes.CONFERENCE) {
         utilsArr.unshift(topBarButtonTypes.RECORDING);
@@ -2519,6 +2684,7 @@ const TopBar = ({ topBarHeight }) => {
       raiseHandEnabled,
       topBarButtonTypes,
       recordingEnabled,
+      realtimeTranscriptionEnabled,
       meetingMode,
     ]);
 
@@ -2564,6 +2730,8 @@ const TopBar = ({ topBarHeight }) => {
               <ActivitiesBTN />
             ) : icon.buttonType === topBarButtonTypes.END_CALL ? (
               <EndCallBTN />
+            ) : icon.buttonType === topBarButtonTypes.CLOSE_CAPTION ? (
+              <TranscriptionBTN />
             ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
               <RecordingBTN />
             ) : icon.buttonType === topBarButtonTypes.HLS ? (
@@ -2670,6 +2838,12 @@ const TopBar = ({ topBarHeight }) => {
                     isMobile={isMobile}
                     isTab={isTab}
                   />
+                ) : icon.buttonType === topBarButtonTypes.CLOSE_CAPTION ? (
+                  <TranscriptionBTN
+                    onClick={handleCloseFAB}
+                    isMobile={isMobile}
+                    isTab={isTab}
+                  />
                 ) : icon.buttonType === topBarButtonTypes.RECORDING ? (
                   <RecordingBTN
                     onClick={handleCloseFAB}
@@ -2720,6 +2894,7 @@ const TopBar = ({ topBarHeight }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        overflow: "hidden",
         backgroundColor:
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
@@ -2869,6 +3044,8 @@ const TopBar = ({ topBarHeight }) => {
                         <ActivitiesBTN />
                       ) : buttonType === topBarButtonTypes.END_CALL ? (
                         <EndCallBTN />
+                      ) : buttonType === topBarButtonTypes.CLOSE_CAPTION ? (
+                        <TranscriptionBTN />
                       ) : buttonType === topBarButtonTypes.RECORDING ? (
                         <RecordingBTN />
                       ) : buttonType === topBarButtonTypes.HLS ? (

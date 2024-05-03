@@ -1,10 +1,4 @@
-import {
-  Box,
-  ButtonBase,
-  Tooltip,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, ButtonBase, Tooltip, Typography, useTheme } from "@mui/material";
 import React, { useState, useRef, useEffect } from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
@@ -26,6 +20,8 @@ const OutlineIconTextButton = ({
   large,
   isRequestProcessing,
   textColor,
+  customBtnWidth,
+  customBtnHeight,
 }) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
@@ -118,6 +114,8 @@ const OutlineIconTextButton = ({
           transitionTimingFunction: "linear",
           cursor: "pointer",
           opacity: blinkingState,
+          width: customBtnWidth ? customBtnWidth : null,
+          height: customBtnHeight ? customBtnHeight : null,
         }}
       >
         <Box
@@ -143,7 +141,22 @@ const OutlineIconTextButton = ({
                 }}
               >
                 <Lottie
-                  style={{ height: iconSize }}
+                  style={{
+                    height: lottieOption?.iconHeight
+                      ? lottieOption?.iconHeight
+                      : iconSize,
+                    // border: `${2}px solid black`,
+                    transform: lottieOption?.iconScale
+                      ? lottieOption?.iconScale
+                      : null,
+                    background: `${
+                      isFocused
+                        ? appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "#fff"
+                        : null
+                    }`,
+                  }}
                   options={lottieOption}
                   eventListeners={[{ eventName: "done" }]}
                   height={iconSize}
