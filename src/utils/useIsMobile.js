@@ -5,4 +5,4 @@ const useIsMobile = (maxWidth) => {
   return isMobile;
 };
 
-export default useIsMobile;
+export default useIsMobile; 

@@ -54,10 +54,6 @@ import {
   ClosedCaption,
   ClosedCaptionOutlined,
 } from "@mui/icons-material";
-import {
-  isMobile as RDDIsMobile,
-  isTablet as RDDIsTablet,
-} from "react-device-detect";
 import ConfirmBox from "../components/ConfirmBox";
 import OutlineIconTextButton from "../components/OutlineIconTextButton";
 import MobileIconButton from "../components/MobileIconButton";
@@ -570,7 +566,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         typeof onClick === "function" && onClick();
       }}
       disabled={
-        RDDIsMobile || RDDIsTablet
+        isMobile || isTab
           ? true
           : whiteboardStarted
           ? true
@@ -600,7 +596,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         toggleScreenShare();
       }}
       disabled={
-        RDDIsMobile || RDDIsTablet
+        isMobile || isTab
           ? true
           : whiteboardStarted
           ? true
