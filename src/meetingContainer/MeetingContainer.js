@@ -49,6 +49,7 @@ import RecordingLoader from "../components/RecordingLoader";
 import useCustomTrack from "../utils/useCustomTrack";
 import ResolutionListner from "../components/ResolutionListner";
 import RealTimeCaptionProvider from "../components/RealTimeCaptionProvider";
+import Watermark from "../components/watermark/Watermark";
 
 const getPinMsg = ({
   localParticipant,
@@ -919,6 +920,7 @@ const MeetingContainer = () => {
                     height: containerHeight - topBarHeight,
                   }}
                 />
+                <Watermark />
               </div>
             </div>
           </>
