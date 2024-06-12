@@ -1,10 +1,9 @@
+import { Box, Popover, Typography, useTheme } from "@mui/material";
 import {
-  Box,
-  Popover,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+  useMeeting,
+  useParticipant,
+  VideoSDKPlayer,
+} from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@mui/material";
@@ -30,7 +29,6 @@ import ReactPlayer from "react-player";
 import NetworkIcon from "../../icons/NetworkIcon";
 import { CloseOutlined } from "@mui/icons-material";
 import { useMediaQuery } from "react-responsive";
-
 
 export const CornerDisplayName = ({
   participantId,
@@ -303,8 +301,9 @@ export const CornerDisplayName = ({
             alignItems: "center",
             // lineHeight: 1,
             color:
-              appTheme === appThemes.LIGHT ?
-              theme.palette.lightTheme.contrastText : "white",
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "white",
           }}
         >
           {isPresenting
@@ -346,7 +345,7 @@ export const CornerDisplayName = ({
               !isRecorder &&
               !micOn && (
                 <MicOff
-                color={appTheme !== appTheme.LIGHT && "white"}
+                  color={appTheme !== appTheme.LIGHT && "white"}
                   style={{
                     color: theme.palette.common.white,
                     height: isRecorder
@@ -638,18 +637,11 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     pinState,
     pin,
     unpin,
+    participant,
   } = useParticipant(participantId, {
     onStreamDisabled,
     onStreamEnabled,
   });
-
-  const mediaStream = useMemo(() => {
-    if (webcamOn && webcamStream) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(webcamStream.track);
-      return mediaStream;
-    }
-  }, [webcamStream, webcamOn]);
 
   const participantAccentColor = useMemo(
     () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
@@ -657,12 +649,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   );
 
   const theme = useTheme();
-
-  useEffect(() => {
-    if (!quality || isRecorder) return;
-
-    setQuality(quality);
-  }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -674,7 +660,9 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const flipStyle = useMemo(
     () =>
-      isLocal ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" } : {},
+      isLocal && !isMirrorViewChecked
+        ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" }
+        : {},
     [isLocal]
   );
 
@@ -687,6 +675,15 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     },
   };
 
+  const videoDivRef = useRef();
+
+  useEffect(() => {
+    if (videoDivRef.current && participant) {
+      const video = participant.renderVideo();
+      videoDivRef.current.appendChild(video);
+    }
+  }, [participant, videoDivRef.current]);
+
   // useEffect(() => {
   //   if (!presenterId) {
   //     typeof webcamStream?.resume === "function" && webcamStream?.resume();
@@ -698,21 +695,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       setQuality("high");
     }
   }, [isRecorder]);
-
-  useEffect(() => {
-    if (
-      videoDivWrapperRef?.offsetWidth &&
-      videoDivWrapperRef?.offsetHeight &&
-      !isRecorder &&
-      !isLocal &&
-      webcamStream
-    ) {
-      // setViewPort(
-      //   videoDivWrapperRef?.offsetWidth,
-      //   videoDivWrapperRef?.offsetHeight
-      // );
-    }
-  }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
   useEffect(() => {
     eventEmitter.emit(appEvents["participant-visible"], {
@@ -802,32 +784,22 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
         }`}
       >
         {webcamOn ? (
-          <>
-            <ReactPlayer
-              ref={videoPlayer}
-              //
-              playsinline // very very imp prop
-              playIcon={<></>}
-              //
-              pip={false}
-              light={false}
-              controls={false}
-              muted={true}
-              playing={true}
-              //
-              url={mediaStream}
-              //
-              height={"100%"}
-              width={"100%"}
-              style={!isMirrorViewChecked && flipStyle}
-              onError={(err) => {
-                console.log(err, "participant video error");
-              }}
-              onProgress={() => {
-                checkAndUpdatePortrait();
-              }}
-            />
-          </>
+          <VideoSDKPlayer
+            participantId={participantId}
+            style={{
+              height: "100%",
+              width: "100%",
+              ...flipStyle,
+            }}
+            type={"video"}
+            className={`${
+              maintainLandscapeVideoAspectRatio && !portrait
+                ? "video-contain"
+                : portrait
+                ? ""
+                : "video-cover"
+            }`}
+          />
         ) : (
           <div
             style={{

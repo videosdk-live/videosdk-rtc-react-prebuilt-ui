@@ -823,7 +823,7 @@ const App = () => {
                   : "sd",
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
-              autoConsume: false,
+              autoConsume: true,
               mode: paramKeys.mode,
               multiStream: paramKeys.multiStream === "true",
             }}

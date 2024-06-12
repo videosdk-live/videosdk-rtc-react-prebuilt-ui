@@ -17,11 +17,11 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
         if (isVisible) {
           // console.log("resuming participant stream", participantId);
           // typeof webcamStream?.resume === "function" && webcamStream?.resume();
-          consumeWebcamStreams();
+          // consumeWebcamStreams();
         } else {
           // console.log("pausing participant stream", participantId);
           // typeof webcamStream?.pause === "function" && webcamStream?.pause();
-          stopConsumingWebcamStreams();
+          // stopConsumingWebcamStreams();
         }
       }
     }
