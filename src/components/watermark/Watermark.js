@@ -48,7 +48,7 @@ export default function Watermark() {
         "No Latitude Found"}
       <br />
       Longitude:{" "}
-      {messages.at(messages.length - 1)?.payload?.latitude ??
+      {messages.at(messages.length - 1)?.payload?.longitude ??
         "No Longitude Found"}
     </div>
   );
