@@ -400,7 +400,7 @@ const MeetingContainer = () => {
 
   const _handleMeetingLeft = () => {
     if (redirectOnLeave && redirectOnLeave !== "undefined") {
-      window.top.location = redirectOnLeave;
+      window.location = redirectOnLeave;
     } else {
       setMeetingLeft(true);
     }
