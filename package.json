@@ -1,8 +1,8 @@
 {
   "name": "videosdk-rtc-react-prebuilt-ui",
-  "version": "0.3.40",
+  "version": "0.3.41",
   "private": true,
-  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.40/",
+  "homepage": "https://embed.videosdk.live/rtc-js-prebuilt/0.3.41/",
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.4",
