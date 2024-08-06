@@ -131,10 +131,11 @@ export default function JoinMeeting({
     };
   }, []);
 
-  const [{ webcams, mics }, setDevices] = useState({
+  const [{ webcams, mics, speakers }, setDevices] = useState({
     devices: [],
     webcams: [],
     mics: [],
+    speakers: [],
   });
 
   const [boxHeight, setBoxHeight] = useState(0);
@@ -148,6 +149,10 @@ export default function JoinMeeting({
   const [videoTrack, setVideoTrack] = useState(null);
   const [audioTrack, setAudioTrack] = useState(null);
 
+  const [selectedMicrophone, setSelectedMicrophone] = useState("");
+  const [selectedSpeaker, setSelectedSpeaker] = useState("");
+  const [selectedCamera, setSelectedCamera] = useState("");
+
   const webcamOn = useMemo(() => !!videoTrack, [videoTrack]);
   const micOn = useMemo(() => !!audioTrack, [audioTrack]);
 
@@ -156,11 +161,44 @@ export default function JoinMeeting({
 
   const { width: windowWidth } = useWindowSize();
 
-  const { getCameras, getMicrophones } = useMediaDevice({
+  const {
+    getCameras,
+    getMicrophones,
+    getPlaybackDevices,
+    checkPermissions,
+    requestPermission,
+  } = useMediaDevice({
     onDeviceChanged,
   });
 
   const { getAudioTrack, getVideoTrack } = useMediaStream();
+
+  useEffect(() => {
+    const checkAndRequestPermissions = async () => {
+      try {
+        const checkAudioVideoPermission = await checkPermissions();
+        const hasAudioPermission = checkAudioVideoPermission.get(
+          Constants.permission.AUDIO
+        );
+        const hasVideoPermission = checkAudioVideoPermission.get(
+          Constants.permission.VIDEO
+        );
+
+        const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+
+        if (!hasAudioPermission || !hasVideoPermission || isFirefox) {
+          await requestPermission();
+          // console.log("Permissions requested");
+        }
+
+        getDevices({ micEnabled, webcamEnabled, cameraId });
+      } catch (ex) {
+        console.log("Error in checkPermissions", ex);
+      }
+    };
+
+    checkAndRequestPermissions();
+  }, []);
 
   useEffect(() => {
     if (
@@ -251,6 +289,11 @@ export default function JoinMeeting({
       setDevices((devices) => {
         return { ...devices, webcams };
       });
+
+      if (webcams.length > 0) {
+        changeWebcam(webcams[0].deviceId);
+        setSelectedCamera(webcams[0].deviceId);
+      }
     } catch (err) {
       console.log("Error in getting camera devices", err);
     }
@@ -268,6 +311,24 @@ export default function JoinMeeting({
       setDevices((devices) => {
         return { ...devices, mics };
       });
+
+      if (mics.length > 0) {
+        changeMic(mics[0].deviceId);
+        setSelectedMicrophone(mics[0].deviceId);
+      }
+    } catch (err) {
+      console.log("Error in getting audio devices", err);
+    }
+  };
+
+  const getSpeakerDevices = async () => {
+    try {
+      let speakers = await getPlaybackDevices();
+      // console.log("Speakers ", speakers);
+
+      setDevices((devices) => {
+        return { ...devices, speakers };
+      });
     } catch (err) {
       console.log("Error in getting audio devices", err);
     }
@@ -276,14 +337,16 @@ export default function JoinMeeting({
   function onDeviceChanged() {
     getCameraDevices();
     getAudioDevices();
+    getSpeakerDevices();
   }
 
   const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
       const webcams = await getCameras();
       const mics = await getMicrophones();
+      const speakers = await getPlaybackDevices();
 
-      setDevices({ webcams, mics });
+      setDevices({ webcams, mics, speakers });
 
       const hasMic = mics.length > 0;
       const hasWebcam = webcams.length > 0;
@@ -298,6 +361,18 @@ export default function JoinMeeting({
         firstTime: true,
         cameraId: cameraId,
       });
+
+      if (mics.length > 0) {
+        // changeMic(mics[0].deviceId)
+        setSelectedMicrophone(mics[0].deviceId);
+      }
+      if (webcams.length > 0) {
+        // changeWebcam(webcams[0].deviceId)
+        setSelectedCamera(webcams[0].deviceId);
+      }
+      if (speakers.length > 0) {
+        setSelectedSpeaker(speakers[0].deviceId);
+      }
     } catch (err) {
       console.log(err);
     }
