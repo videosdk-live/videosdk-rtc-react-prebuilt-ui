@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import fetch from "node-fetch";
 import { styled, useTheme } from "@mui/material/styles";
 import {
   IconButton,
@@ -643,6 +644,7 @@ const AddLiveStreamBTN = ({ isMobile, isTab }) => {
 };
 const TranscriptionBTN = ({ isMobile, isTab }) => {
   const { startTranscription, stopTranscription } = useTranscription();
+  const { meetingId }= useMeeting();
   const mMeeting = useMeeting({});
   const theme = useTheme();
   const transcriptionState = mMeeting?.transcriptionState;
@@ -672,9 +674,29 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     if (isTranscriptionRunning) {
       stopTranscription();
     } else {
-      startTranscription();
+      // startTranscription();
+      startTrans();
     }
   };
+
+  async function startTrans(){
+    const options = {
+      method: "POST",
+      headers: {
+        "Authorization": "$YOUR_TOKEN",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "roomId" : `${meetingId}`,
+        "language": "hi", 
+        "webhookUrl" : "https://www.example.com"
+      }),
+    };
+    const url= `https://api.videosdk.live/ai/v1/realtime-transcriptions/start`;
+    const response = await fetch(url, options);
+    const data = await response.json();
+    // console.log(data);
+  }
 
   const defaultOptions = {
     loop: true,
