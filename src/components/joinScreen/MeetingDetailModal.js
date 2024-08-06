@@ -267,7 +267,7 @@ export default function MeetingDetailModal({
         </div>
       ) : null}
 
-      <Box mt={meetingTitle || meetingUrl ? 2 : 0} style={{ width: "100%" }}>
+      <Box mt={meetingTitle || meetingUrl ? 2 : 0} style={{ width: "100%", marginTop : "5px" }}>
       <ThemeProvider theme={customTheme(outerTheme)}>
         <TextField
           id={"inputJoin"}

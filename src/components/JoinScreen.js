@@ -7,6 +7,10 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { Videocam, Mic, MicOff, VideocamOff } from "@mui/icons-material";
@@ -20,7 +24,7 @@ import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
 import { appThemes } from "../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
-import { useMediaDevice } from "@videosdk.live/react-sdk";
+import { useMediaDevice, Constants } from "@videosdk.live/react-sdk";
 import useMediaStream from "../utils/useMediaStream";
 
 export const DotsBoxContainer = ({ type }) => {
@@ -131,10 +135,11 @@ export default function JoinMeeting({
     };
   }, []);
 
-  const [{ webcams, mics }, setDevices] = useState({
+  const [{ webcams, mics, speakers }, setDevices] = useState({
     devices: [],
     webcams: [],
     mics: [],
+    speakers: [],
   });
 
   const [boxHeight, setBoxHeight] = useState(0);
@@ -148,6 +153,10 @@ export default function JoinMeeting({
   const [videoTrack, setVideoTrack] = useState(null);
   const [audioTrack, setAudioTrack] = useState(null);
 
+  const [selectedMicrophone, setSelectedMicrophone] = useState("");
+  const [selectedSpeaker, setSelectedSpeaker] = useState("");
+  const [selectedCamera, setSelectedCamera] = useState("");
+
   const webcamOn = useMemo(() => !!videoTrack, [videoTrack]);
   const micOn = useMemo(() => !!audioTrack, [audioTrack]);
 
@@ -156,11 +165,51 @@ export default function JoinMeeting({
 
   const { width: windowWidth } = useWindowSize();
 
-  const { getCameras, getMicrophones } = useMediaDevice({
+  const {
+    getCameras,
+    getMicrophones,
+    getPlaybackDevices,
+    checkPermissions,
+    requestPermission,
+  } = useMediaDevice({
     onDeviceChanged,
   });
 
   const { getAudioTrack, getVideoTrack } = useMediaStream();
+
+  useEffect(() => {
+    const checkAndRequestPermissions = async () => {
+      try {
+        const checkAudioVideoPermission = await checkPermissions();
+        const hasAudioPermission = checkAudioVideoPermission.get(
+          Constants.permission.AUDIO
+        );
+        const hasVideoPermission = checkAudioVideoPermission.get(
+          Constants.permission.VIDEO
+        );
+
+        // console.log(
+        //   "Check Audio and Video Permissions",
+        //   hasAudioPermission,
+        //   hasVideoPermission
+        // );
+
+        // Detect if the browser is Firefox
+        const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+
+        if (!hasAudioPermission || !hasVideoPermission || isFirefox) {
+          await requestPermission();
+          // console.log("Permissions requested");
+        }
+
+        getDevices({ micEnabled, webcamEnabled, cameraId });
+      } catch (ex) {
+        console.log("Error in checkPermissions", ex);
+      }
+    };
+
+    checkAndRequestPermissions();
+  }, []);
 
   useEffect(() => {
     if (
@@ -196,6 +245,7 @@ export default function JoinMeeting({
 
     setAudioTrack(audioTrack);
   };
+
   const getDefaultMediaTracks = async ({
     mic,
     webcam,
@@ -251,6 +301,11 @@ export default function JoinMeeting({
       setDevices((devices) => {
         return { ...devices, webcams };
       });
+
+      if (webcams.length > 0) {
+        changeWebcam(webcams[0].deviceId);
+        setSelectedCamera(webcams[0].deviceId);
+      }
     } catch (err) {
       console.log("Error in getting camera devices", err);
     }
@@ -268,6 +323,24 @@ export default function JoinMeeting({
       setDevices((devices) => {
         return { ...devices, mics };
       });
+
+      if (mics.length > 0) {
+        changeMic(mics[0].deviceId);
+        setSelectedMicrophone(mics[0].deviceId);
+      }
+    } catch (err) {
+      console.log("Error in getting audio devices", err);
+    }
+  };
+
+  const getSpeakerDevices = async () => {
+    try {
+      let speakers = await getPlaybackDevices();
+      // console.log("Speakers ", speakers);
+
+      setDevices((devices) => {
+        return { ...devices, speakers };
+      });
     } catch (err) {
       console.log("Error in getting audio devices", err);
     }
@@ -276,14 +349,18 @@ export default function JoinMeeting({
   function onDeviceChanged() {
     getCameraDevices();
     getAudioDevices();
+    getSpeakerDevices();
   }
 
   const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
       const webcams = await getCameras();
       const mics = await getMicrophones();
+      const speakers = await getPlaybackDevices();
 
-      setDevices({ webcams, mics });
+      // console.log("Speakers list inside getDEvices", speakers);
+
+      setDevices({ webcams, mics, speakers });
 
       const hasMic = mics.length > 0;
       const hasWebcam = webcams.length > 0;
@@ -298,6 +375,18 @@ export default function JoinMeeting({
         firstTime: true,
         cameraId: cameraId,
       });
+
+      if (mics.length > 0) {
+        // changeMic(mics[0].deviceId)
+        setSelectedMicrophone(mics[0].deviceId);
+      }
+      if (webcams.length > 0) {
+        // changeWebcam(webcams[0].deviceId)
+        setSelectedCamera(webcams[0].deviceId);
+      }
+      if (speakers.length > 0) {
+        setSelectedSpeaker(speakers[0].deviceId);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -354,7 +443,46 @@ export default function JoinMeeting({
     }
   };
 
+  // useEffect(() => {
+  //   videoTrackRef.current = videoTrack;
+
+  //   if (videoTrack) {
+  //     const videoSrcObject = new MediaStream([videoTrack]);
+
+  //     if (videoPlayerRef.current) {
+  //       videoPlayerRef.current.srcObject = videoSrcObject;
+  //       try {
+  //         videoPlayerRef.current.play();
+  //       } catch (err) {
+  //         console.log("error in video play", err);
+  //       }
+  //     }
+
+  //     setTimeout(() => {
+  //       if (popupVideoPlayerRef.current) {
+  //         popupVideoPlayerRef.current.srcObject = videoSrcObject;
+  //         try {
+  //           popupVideoPlayerRef.current.play();
+  //         } catch (err) {
+  //           console.log("error in video play", err);
+  //         }
+  //       }
+  //     }, 1000);
+  //   } else {
+  //     if (videoPlayerRef.current) {
+  //       videoPlayerRef.current.srcObject = null;
+  //     }
+  //     if (popupVideoPlayerRef.current) {
+  //       popupVideoPlayerRef.current.srcObject = null;
+  //     }
+  //   }
+  // }, [videoTrack, setting, settingDialogueOpen]);
+
   useEffect(() => {
+    console.log("videoTrack:", videoTrack);
+    console.log("setting:", setting);
+    console.log("settingDialogueOpen:", settingDialogueOpen);
+
     videoTrackRef.current = videoTrack;
 
     if (videoTrack) {
@@ -395,9 +523,20 @@ export default function JoinMeeting({
     startMuteListener();
   }, [audioTrack]);
 
-  useEffect(() => {
-    getDevices({ micEnabled, webcamEnabled, cameraId });
-  }, []);
+  const handleMicrophoneChange = (event) => {
+    // console.log("handle Microphone Change", event.target.value);
+    changeMic(event.target.value);
+    setSelectedMicrophone(event.target.value);
+  };
+
+  const handleSpeakerChange = (event) => {
+    setSelectedSpeaker(event.target.value);
+  };
+
+  const handleCameraChange = (event) => {
+    changeWebcam(event.target.value);
+    setSelectedCamera(event.target.value);
+  };
 
   const padding = useResponsiveSize({
     xl: 6,
@@ -436,6 +575,31 @@ export default function JoinMeeting({
   const isXLOnly = useMediaQuery(theme.breakpoints.only("xl"));
 
   const { t } = useTranslation();
+
+  const themeStyles = {
+    LIGHT: {
+      backgroundColor: "rgb(238, 240, 242)", // Transparent black background for light theme
+      dropdownBgColor: "rgb(238, 240, 242)", // Dropdown background color for light theme
+      labelColor: "black",
+      selectColor: "black",
+      iconColor: "black",
+      menuItemColor: "black",
+      borderBottomColor: "rgba(0, 0, 0, 0.1)",
+    },
+    DARK: {
+      backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent white background for dark theme
+      dropdownBgColor: "rgba(255, 255, 255, 0.1)", // Dropdown background color for dark theme
+      labelColor: "white",
+      selectColor: "white",
+      iconColor: "white",
+      menuItemColor: "white",
+      borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    },
+  };
+
+  console.log("Setting current theme as ,", appThemes)
+
+  const currentTheme = themeStyles[appThemes] || themeStyles.LIGHT;
 
   return (
     <>
@@ -551,8 +715,202 @@ export default function JoinMeeting({
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          marginBottom: "10px",
                         }}
                       />
+
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{ mb: 2, maxWidth: "640px" }}
+                      >
+                        <Grid item xs={4}>
+                          <FormControl
+                            variant="filled"
+                            fullWidth
+                            sx={{
+                              backgroundColor: currentTheme.backgroundColor,
+                              borderRadius: 1,
+                              "& .MuiInputLabel-root": {
+                                color: currentTheme.labelColor,
+                              },
+                              "& .MuiSelect-root": {
+                                color: currentTheme.selectColor,
+                                backgroundColor: currentTheme.dropdownBgColor, // Set dropdown background color
+                              },
+                              "& .MuiSelect-icon": {
+                                color: currentTheme.iconColor,
+                              },
+                              "& .MuiFilledInput-root": {
+                                color: currentTheme.selectColor,
+                                "&:before": {
+                                  borderBottomColor:
+                                    currentTheme.borderBottomColor,
+                                },
+                              },
+                            }}
+                          >
+                            <InputLabel id="microphone-select-label">
+                              MicroPhone
+                            </InputLabel>
+                            <Select
+                              labelId="microphone-select-label"
+                              id="microphone-select"
+                              value={selectedMicrophone}
+                              label="MicroPhone"
+                              onChange={handleMicrophoneChange}
+                              sx={{
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                              }}
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    maxHeight: 200, // Sets max height for the dropdown
+                                    backgroundColor:
+                                      currentTheme.dropdownBgColor, // Set dropdown background color
+                                  },
+                                },
+                              }}
+                            >
+                              {mics.map((mic) => (
+                                <MenuItem
+                                  key={mic.deviceId}
+                                  value={mic.deviceId}
+                                  sx={{ color: currentTheme.menuItemColor }} // Set text color
+                                >
+                                  {mic.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl
+                            variant="filled"
+                            fullWidth
+                            sx={{
+                              backgroundColor: currentTheme.backgroundColor,
+                              borderRadius: 1,
+                              "& .MuiInputLabel-root": {
+                                color: currentTheme.labelColor,
+                              },
+                              "& .MuiSelect-root": {
+                                color: currentTheme.selectColor,
+                                backgroundColor: currentTheme.dropdownBgColor, // Set dropdown background color
+                              },
+                              "& .MuiSelect-icon": {
+                                color: currentTheme.iconColor,
+                              },
+                              "& .MuiFilledInput-root": {
+                                color: currentTheme.selectColor,
+                                "&:before": {
+                                  borderBottomColor:
+                                    currentTheme.borderBottomColor,
+                                },
+                              },
+                            }}
+                          >
+                            <InputLabel id="speaker-select-label">
+                              Speaker
+                            </InputLabel>
+                            <Select
+                              labelId="speaker-select-label"
+                              id="speaker-select"
+                              value={selectedSpeaker}
+                              label="Speaker"
+                              onChange={handleSpeakerChange}
+                              sx={{
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                              }}
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    maxHeight: 200, // Sets max height for the dropdown
+                                    backgroundColor:
+                                      currentTheme.dropdownBgColor, // Set dropdown background color
+                                  },
+                                },
+                              }}
+                            >
+                              {speakers.map((spk) => (
+                                <MenuItem
+                                  key={spk.deviceId}
+                                  value={spk.deviceId}
+                                  sx={{ color: currentTheme.menuItemColor }} // Set text color
+                                >
+                                  {spk.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl
+                            variant="filled"
+                            fullWidth
+                            sx={{
+                              backgroundColor: currentTheme.backgroundColor,
+                              borderRadius: 1,
+                              "& .MuiInputLabel-root": {
+                                color: currentTheme.labelColor,
+                              },
+                              "& .MuiSelect-root": {
+                                color: currentTheme.selectColor,
+                                backgroundColor: currentTheme.dropdownBgColor, // Set dropdown background color
+                              },
+                              "& .MuiSelect-icon": {
+                                color: currentTheme.iconColor,
+                              },
+                              "& .MuiFilledInput-root": {
+                                color: currentTheme.selectColor,
+                                "&:before": {
+                                  borderBottomColor:
+                                    currentTheme.borderBottomColor,
+                                },
+                              },
+                            }}
+                          >
+                            <InputLabel id="camera-select-label">
+                              Camera
+                            </InputLabel>
+                            <Select
+                              labelId="camera-select-label"
+                              id="camera-select"
+                              value={selectedCamera}
+                              label="Camera"
+                              onChange={handleCameraChange}
+                              sx={{
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                              }}
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    maxHeight: 200, // Sets max height for the dropdown
+                                    backgroundColor:
+                                      currentTheme.dropdownBgColor, // Set dropdown background color
+                                  },
+                                },
+                              }}
+                            >
+                              {webcams.map((cam) => (
+                                <MenuItem
+                                  key={cam.deviceId}
+                                  value={cam.deviceId}
+                                  sx={{ color: currentTheme.menuItemColor }} // Set text color
+                                >
+                                  {cam.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
 
                       {!isXSOnly ? (
                         <>
@@ -602,6 +960,7 @@ export default function JoinMeeting({
                                     : "#1C1F2E80",
                                 borderRadius: 4,
                                 cursor: "pointer",
+                                marginTop: "20px",
                               }}
                               m={2}
                               onClick={(e) => {
