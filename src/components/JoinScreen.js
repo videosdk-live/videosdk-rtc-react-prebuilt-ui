@@ -2,13 +2,18 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Button,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
+
 import { Videocam, Mic, MicOff, VideocamOff } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
 import useResponsiveSize from "../utils/useResponsiveSize";
@@ -18,10 +23,17 @@ import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
-import { appThemes } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
-import { useMediaDevice } from "@videosdk.live/react-sdk";
+import {
+  useMediaDevice,
+  Constants,
+  useMeeting,
+} from "@videosdk.live/react-sdk";
 import useMediaStream from "../utils/useMediaStream";
+import useIsTab from "../utils/useIsTab";
+import useIsLGDesktop from "../utils/useIsLGDesktop";
+import useIsMobile from "../utils/useIsMobile";
 
 export const DotsBoxContainer = ({ type }) => {
   const theme = useTheme();
@@ -95,11 +107,21 @@ export default function JoinMeeting({
   webcamEnabled,
   setSelectedMic,
   setSelectedWebcam,
+  setSelectedSpeaker,
+  selectedMic,
+  selectedWebcam,
+  selectedSpeaker,
   mode,
   appTheme,
   cameraId,
 }) {
+  const {checkPermissions, requestPermission} = useMediaDevice();
+  const [hasAudioPermission, sethasAudioPermission] = useState();
+  const [hasVideoPermission, sethasVideoPermission] = useState();
   const theme = useTheme();
+  const isTab = useIsTab();
+  const isLGDesktop = useIsLGDesktop();
+  const isMobile = useIsMobile();
 
   const [nameErr, setNameErr] = useState(false);
 
@@ -125,16 +147,75 @@ export default function JoinMeeting({
   };
 
   useEffect(() => {
+    const checkAndRequestPermissions = async () => {
+      try {
+        const checkAudioVideoPermission = await checkPermissions();
+        sethasAudioPermission(checkAudioVideoPermission.get(
+          Constants.permission.AUDIO
+        ))
+        sethasVideoPermission(checkAudioVideoPermission.get(
+          Constants.permission.VIDEO
+        ))
+        // hasAudioPermission = checkAudioVideoPermission.get(
+        //   Constants.permission.AUDIO
+        // );
+        // hasVideoPermission = checkAudioVideoPermission.get(
+        //   Constants.permission.VIDEO
+        // );
+
+        if (hasAudioPermission) {
+          // getDefaultMediaTracks({ mic: true, webcam: false });
+          console.log("has audio permission", hasAudioPermission)
+        } else {
+          await requestPermission(Constants.permission.AUDIO);
+          sethasAudioPermission(checkAudioVideoPermission.get(
+            Constants.permission.AUDIO
+          ))
+        }
+        if (hasVideoPermission) {
+          console.log("has video permission", hasVideoPermission)
+          // getDefaultMediaTracks({ mic: false, webcam: true });
+        } else {
+          await requestPermission(Constants.permission.VIDEO);
+          sethasVideoPermission(checkAudioVideoPermission.get(
+            Constants.permission.VIDEO
+          ))
+        }
+
+        // console.log("hasVideoPermission", hasVideoPermission);
+
+        const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+
+        // if (isFirefox) {
+        // setting new permission
+        //   await requestPermission();
+        //   // console.log("Permissions requested");
+        // }
+
+        getDevices({ micEnabled, webcamEnabled, cameraId });
+      } catch (ex) {
+        console.log("Error in checkPermissions", ex);
+      }
+    };
+
+    checkAndRequestPermissions();
+    // return ()=>{
+
+    // }
+  }, []);
+
+  useEffect(() => {
     return () => {
       _handleTurnOffMic();
       _handleTurnOffWebcam();
     };
   }, []);
 
-  const [{ webcams, mics }, setDevices] = useState({
+  const [{ webcams, mics, speakers }, setDevices] = useState({
     devices: [],
     webcams: [],
     mics: [],
+    speakers : [],
   });
 
   const [boxHeight, setBoxHeight] = useState(0);
@@ -156,7 +237,7 @@ export default function JoinMeeting({
 
   const { width: windowWidth } = useWindowSize();
 
-  const { getCameras, getMicrophones } = useMediaDevice({
+  const { getCameras, getMicrophones, getPlaybackDevices } = useMediaDevice({
     onDeviceChanged,
   });
 
@@ -208,11 +289,11 @@ export default function JoinMeeting({
       const audioTracks = stream?.getAudioTracks();
       const audioTrack = audioTracks.length ? audioTracks[0] : null;
       setAudioTrack(audioTrack);
-      if (firstTime) {
-        setSelectedMic({
-          id: audioTrack?.getSettings()?.deviceId,
-        });
-      }
+      // if (firstTime) {
+      //   setSelectedMic({
+      //     id: audioTrack?.getSettings()?.deviceId,
+      //   });
+      // }
     }
 
     if (webcam) {
@@ -223,11 +304,11 @@ export default function JoinMeeting({
       const videoTracks = stream?.getVideoTracks();
       const videoTrack = videoTracks.length ? videoTracks[0] : null;
       setVideoTrack(videoTrack);
-      if (firstTime) {
-        setSelectedWebcam({
-          id: videoTrack?.getSettings()?.deviceId,
-        });
-      }
+      // if (firstTime) {
+      //   setSelectedWebcam({
+      //     id: videoTrack?.getSettings()?.deviceId,
+      //   });
+      // }
     }
   };
   async function startMuteListener() {
@@ -273,17 +354,31 @@ export default function JoinMeeting({
     }
   };
 
+  const getSpeakerDevices = async () => {
+    try{
+      let speakers = await getPlaybackDevices();
+
+      setDevices((devices) => {
+        return { ...devices, speakers };
+      });
+    } catch (err) {
+      console.log("Error in getting camera devices", err);
+    }
+  }
+
   function onDeviceChanged() {
     getCameraDevices();
     getAudioDevices();
+    getSpeakerDevices();
   }
 
   const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
       const webcams = await getCameras();
       const mics = await getMicrophones();
+      const speakers = await getPlaybackDevices();
 
-      setDevices({ webcams, mics });
+      setDevices({ webcams, mics, speakers });
 
       const hasMic = mics.length > 0;
       const hasWebcam = webcams.length > 0;
@@ -298,6 +393,11 @@ export default function JoinMeeting({
         firstTime: true,
         cameraId: cameraId,
       });
+
+      setSelectedMic(mics[0].deviceId);
+      // console.log("Selected Webcam ", webcams[0]);
+      setSelectedWebcam(webcams[0].deviceId);
+      setSelectedSpeaker(speakers[0].deviceId);
     } catch (err) {
       console.log(err);
     }
@@ -354,6 +454,19 @@ export default function JoinMeeting({
     }
   };
 
+  const handleMicrophoneChange = (event) => {
+    changeMic(event.target.value);
+    setSelectedMic(event.target.value);
+  };
+  const handleSpeakerChange = (event) => {
+    setSelectedSpeaker(event.target.value);
+    setSelectedSpeaker(event.target.value);
+  };
+  const handleCameraChange = (event) => {
+    changeWebcam(event.target.value);
+    setSelectedWebcam(event.target.value);
+  };
+
   useEffect(() => {
     videoTrackRef.current = videoTrack;
 
@@ -363,7 +476,7 @@ export default function JoinMeeting({
       if (videoPlayerRef.current) {
         videoPlayerRef.current.srcObject = videoSrcObject;
         try {
-          videoPlayerRef.current.play();
+          videoPlayerRef.current.play().catch((e) => console.log(e));
         } catch (err) {
           console.log("error in video play", err);
         }
@@ -373,7 +486,7 @@ export default function JoinMeeting({
         if (popupVideoPlayerRef.current) {
           popupVideoPlayerRef.current.srcObject = videoSrcObject;
           try {
-            popupVideoPlayerRef.current.play();
+            popupVideoPlayerRef.current.play().catch((e) => console.log(e));
           } catch (err) {
             console.log("error in video play", err);
           }
@@ -395,9 +508,9 @@ export default function JoinMeeting({
     startMuteListener();
   }, [audioTrack]);
 
-  useEffect(() => {
-    getDevices({ micEnabled, webcamEnabled, cameraId });
-  }, []);
+  // useEffect(() => {
+  //   getDevices({ micEnabled, webcamEnabled, cameraId });
+  // }, []);
 
   const padding = useResponsiveSize({
     xl: 6,
@@ -770,6 +883,216 @@ export default function JoinMeeting({
                           </Grid>
                         </Box>
                       </Box>
+                      {mode === meetingModes.VIEWER ? null : (
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          gap={1}
+                          sx={{ my: 1.5 }}
+                          minWidth={"100%"}
+                        >
+                          <FormControl
+                            variant="filled"
+                            sx={{
+                              width: isMobile
+                                ? 130
+                                : isTab
+                                ? 150
+                                : isLGDesktop
+                                ? 180
+                                : 200,
+                              backgroundColor:
+                                appTheme === appThemes.DARK
+                                  ? theme.palette.darkTheme.seven
+                                  : appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.three
+                                  : "#1C1F2E80",
+                            }}
+                            disabled={!hasAudioPermission}
+                          >
+                            <InputLabel id="demo-simple-select-label">
+                              Select Mics
+                            </InputLabel>
+                            <Select
+                              sx={{
+                                color:
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.contrastText
+                                    : "#fff",
+                              }}
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    backgroundColor:
+                                      appTheme === appThemes.DARK
+                                        ? theme.palette.darkTheme.seven
+                                        : appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.three
+                                        : "#1C1F2E80",
+                                    color:
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.contrastText
+                                        : "#fff",
+                                  },
+                                },
+                              }}
+                              labelId="microphone-select-label"
+                              id="microphone-select"
+                              value={selectedMic}
+                              label="MicroPhone"
+                              variant="filled"
+                              onChange={handleMicrophoneChange}
+                            >
+                              {mics?.map((speaker) => {
+                                return (
+                                  <MenuItem value={speaker.deviceId}>
+                                    {speaker.label}
+                                  </MenuItem>
+                                );
+                              })}
+                            </Select>
+                          </FormControl>
+                          <FormControl
+                            variant="filled"
+                            sx={{
+                              width: isMobile
+                                ? 130
+                                : isTab
+                                ? 150
+                                : isLGDesktop
+                                ? 180
+                                : 200,
+
+                              backgroundColor:
+                                appTheme === appThemes.DARK
+                                  ? theme.palette.darkTheme.seven
+                                  : appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.three
+                                  : "#1C1F2E80",
+
+                              borderRadius: "5px",
+                            }}
+                            disabled={!hasAudioPermission}
+                          >
+                            <InputLabel id="demo-simple-select-label">
+                              Select Speakers
+                            </InputLabel>
+                            <Select
+                              sx={{
+                                color:
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.contrastText
+                                    : "#fff",
+                              }}
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    backgroundColor:
+                                      appTheme === appThemes.DARK
+                                        ? theme.palette.darkTheme.seven
+                                        : appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.three
+                                        : "#1C1F2E80",
+                                    color:
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.contrastText
+                                        : "#fff",
+                                  },
+                                },
+                              }}
+                              labelId="speaker-select-label"
+                              id="speaker-select"
+                              value={selectedSpeaker}
+                              label="Speaker"
+                              onChange={handleSpeakerChange}
+                              variant="filled"
+                            >
+                              {speakers?.map((speaker) => {
+                                return (
+                                  <MenuItem value={speaker.deviceId}>
+                                    {speaker.label}
+                                  </MenuItem>
+                                );
+                              })}
+                            </Select>
+                          </FormControl>
+
+                          <FormControl
+                            variant="filled"
+                            sx={{
+                              width: isMobile
+                                ? 130
+                                : isTab
+                                ? 150
+                                : isLGDesktop
+                                ? 180
+                                : 200,
+                              backgroundColor:
+                                appTheme === appThemes.DARK
+                                  ? theme.palette.darkTheme.seven
+                                  : appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.three
+                                  : "#1C1F2E80",
+
+                              borderRadius: "5px",
+                            }}
+                            disabled={!hasVideoPermission}
+                          >
+                            <InputLabel id="demo-simple-select-label">
+                              Select Webcam
+                            </InputLabel>
+                            <Select
+                              sx={{
+                                color:
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.contrastText
+                                    : "#fff",
+                              }}
+                              MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    backgroundColor:
+                                      appTheme === appThemes.DARK
+                                        ? theme.palette.darkTheme.seven
+                                        : appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.three
+                                        : "#1C1F2E80",
+                                    color:
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.contrastText
+                                        : "#fff",
+                                  },
+                                },
+                              }}
+                              labelId="camera-select-label"
+                              id="camera-select"
+                              value={selectedWebcam}
+                              label="Camera"
+                              onChange={handleCameraChange}
+                              variant="filled"
+                            >
+                              {webcams?.map((webcam) => {
+                                return (
+                                  <MenuItem
+                                    sx={{
+                                      background:
+                                        appTheme === appThemes.DARK
+                                          ? theme.palette.darkTheme.seven
+                                          : appTheme === appThemes.LIGHT
+                                          ? theme.palette.lightTheme.three
+                                          : "#1C1F2E80",
+                                    }}
+                                    value={webcam.deviceId}
+                                  >
+                                    {webcam.label}
+                                  </MenuItem>
+                                );
+                              })}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      )}
                     </Box>
                   </Box>
                 </Box>

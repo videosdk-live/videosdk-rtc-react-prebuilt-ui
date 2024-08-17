@@ -533,6 +533,7 @@ const App = () => {
   );
   const [selectedMic, setSelectedMic] = useState({ id: null });
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
+  const [selectedSpeaker, setSelectedSpeaker] = useState({ id : null});
 
   const validateMeetingId = async ({ meetingId, token, debug, region }) => {
     const BASE_URL = "https://api.videosdk.live";
@@ -863,6 +864,10 @@ const App = () => {
           setName={setName}
           setSelectedMic={setSelectedMic}
           setSelectedWebcam={setSelectedWebcam}
+          setSelectedSpeaker={setSelectedSpeaker}
+          selectedMic = {selectedMic}
+          selectedWebcam = {selectedWebcam}
+          selectedSpeaker={selectedSpeaker}
           meetingUrl={paramKeys.joinScreenMeetingUrl}
           meetingTitle={paramKeys.joinScreenTitle}
           participantCanToggleSelfWebcam={
