@@ -23,7 +23,7 @@ import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
-import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes } from "../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
 import {
   useMediaDevice,
@@ -107,17 +107,11 @@ export default function JoinMeeting({
   webcamEnabled,
   setSelectedMic,
   setSelectedWebcam,
-  setSelectedSpeaker,
-  selectedMic,
-  selectedWebcam,
-  selectedSpeaker,
   mode,
   appTheme,
   cameraId,
 }) {
-  const {checkPermissions, requestPermission} = useMediaDevice();
-  const [hasAudioPermission, sethasAudioPermission] = useState();
-  const [hasVideoPermission, sethasVideoPermission] = useState();
+  
   const theme = useTheme();
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
@@ -147,42 +141,82 @@ export default function JoinMeeting({
   };
 
   useEffect(() => {
+    return () => {
+      _handleTurnOffMic();
+      _handleTurnOffWebcam();
+    };
+  }, []);
+
+  const [{ webcams, mics, speakers }, setDevices] = useState({
+    devices: [],
+    webcams: [],
+    mics: [],
+    speakers: [],
+  });
+
+  const [boxHeight, setBoxHeight] = useState(0);
+
+  const audioAnalyserIntervalRef = useRef();
+
+  const videoPlayerRef = useRef();
+  const popupVideoPlayerRef = useRef();
+  const popupAudioPlayerRef = useRef();
+
+  const [videoTrack, setVideoTrack] = useState(null);
+  const [audioTrack, setAudioTrack] = useState(null);
+
+  const [selectedMicrophone, setSelectedMicrophone] = useState("");
+  const [selectedSpeaker, setSelectedSpeaker] = useState("");
+  const [selectedCamera, setSelectedCamera] = useState("");
+
+  const [hasAudioPermission, setHasAudioPermission] = useState(false);
+  const [hasVideoPermission, setHasVideoPermission] = useState(false);
+
+  // Webcam on and micON status var
+  const webcamOn = useMemo(() => !!videoTrack, [videoTrack]);
+  const micOn = useMemo(() => !!audioTrack, [audioTrack]);
+
+  const videoTrackRef = useRef();
+  const audioTrackRef = useRef();
+
+  const { width: windowWidth } = useWindowSize();
+
+  const {
+    getCameras,
+    getMicrophones,
+    getPlaybackDevices,
+    checkPermissions,
+    requestPermission,
+  } = useMediaDevice({
+    onDeviceChanged,
+  });
+
+  const { getAudioTrack, getVideoTrack } = useMediaStream();
+
+  useEffect(() => {
     const checkAndRequestPermissions = async () => {
       try {
         const checkAudioVideoPermission = await checkPermissions();
-        sethasAudioPermission(checkAudioVideoPermission.get(
-          Constants.permission.AUDIO
-        ))
-        sethasVideoPermission(checkAudioVideoPermission.get(
-          Constants.permission.VIDEO
-        ))
-        // hasAudioPermission = checkAudioVideoPermission.get(
-        //   Constants.permission.AUDIO
-        // );
-        // hasVideoPermission = checkAudioVideoPermission.get(
-        //   Constants.permission.VIDEO
-        // );
+        setHasAudioPermission(
+          checkAudioVideoPermission.get(Constants.permission.AUDIO)
+        );
+        setHasVideoPermission(
+          checkAudioVideoPermission.get(Constants.permission.VIDEO)
+        );
 
-        if (hasAudioPermission) {
+        if (!hasAudioPermission) {
           // getDefaultMediaTracks({ mic: true, webcam: false });
-          console.log("has audio permission", hasAudioPermission)
-        } else {
-          await requestPermission(Constants.permission.AUDIO);
-          sethasAudioPermission(checkAudioVideoPermission.get(
-            Constants.permission.AUDIO
-          ))
+          const response = await requestPermission(Constants.permission.AUDIO);
+         
+          setHasAudioPermission(response.get("audio"));
         }
-        if (hasVideoPermission) {
-          console.log("has video permission", hasVideoPermission)
+        if (!hasVideoPermission) {
           // getDefaultMediaTracks({ mic: false, webcam: true });
-        } else {
-          await requestPermission(Constants.permission.VIDEO);
-          sethasVideoPermission(checkAudioVideoPermission.get(
-            Constants.permission.VIDEO
-          ))
+          const response = await requestPermission(Constants.permission.VIDEO);
+          
+          setHasVideoPermission(response.get("video"));
         }
 
-        // console.log("hasVideoPermission", hasVideoPermission);
 
         const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
@@ -202,46 +236,7 @@ export default function JoinMeeting({
     // return ()=>{
 
     // }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      _handleTurnOffMic();
-      _handleTurnOffWebcam();
-    };
-  }, []);
-
-  const [{ webcams, mics, speakers }, setDevices] = useState({
-    devices: [],
-    webcams: [],
-    mics: [],
-    speakers : [],
-  });
-
-  const [boxHeight, setBoxHeight] = useState(0);
-
-  const audioAnalyserIntervalRef = useRef();
-
-  const videoPlayerRef = useRef();
-  const popupVideoPlayerRef = useRef();
-  const popupAudioPlayerRef = useRef();
-
-  const [videoTrack, setVideoTrack] = useState(null);
-  const [audioTrack, setAudioTrack] = useState(null);
-
-  const webcamOn = useMemo(() => !!videoTrack, [videoTrack]);
-  const micOn = useMemo(() => !!audioTrack, [audioTrack]);
-
-  const videoTrackRef = useRef();
-  const audioTrackRef = useRef();
-
-  const { width: windowWidth } = useWindowSize();
-
-  const { getCameras, getMicrophones, getPlaybackDevices } = useMediaDevice({
-    onDeviceChanged,
-  });
-
-  const { getAudioTrack, getVideoTrack } = useMediaStream();
+  }, [hasAudioPermission, hasVideoPermission]);
 
   useEffect(() => {
     if (
@@ -254,20 +249,23 @@ export default function JoinMeeting({
 
   const changeWebcam = async (deviceId) => {
     const currentvideoTrack = videoTrackRef.current;
-
     if (currentvideoTrack) {
       currentvideoTrack.stop();
     }
 
     const stream = await getVideoTrack({ webcamId: deviceId });
+
     const videoTracks = stream.getVideoTracks();
 
-    const videoTrack = videoTracks.length ? videoTracks[0] : null;
+    const videoTrack = videoTracks?.length ? videoTracks[0] : null;
 
     setVideoTrack(videoTrack);
+    // setSelectedCameraTrack(videoTrack);
   };
   const changeMic = async (deviceId) => {
     const currentAudioTrack = audioTrackRef.current;
+    // Previous audio track
+    // TODO: printing previous audio track
     currentAudioTrack && currentAudioTrack.stop();
     const stream = await getAudioTrack({ micId: deviceId });
     const audioTracks = stream.getAudioTracks();
@@ -276,6 +274,7 @@ export default function JoinMeeting({
     clearInterval(audioAnalyserIntervalRef.current);
 
     setAudioTrack(audioTrack);
+    // setSelectedMicrophoneTrack(audioTrack);
   };
   const getDefaultMediaTracks = async ({
     mic,
@@ -287,13 +286,15 @@ export default function JoinMeeting({
       const stream = await getAudioTrack();
 
       const audioTracks = stream?.getAudioTracks();
+
       const audioTrack = audioTracks.length ? audioTracks[0] : null;
       setAudioTrack(audioTrack);
-      // if (firstTime) {
-      //   setSelectedMic({
-      //     id: audioTrack?.getSettings()?.deviceId,
-      //   });
-      // }
+      if (firstTime) {
+        setSelectedMic({
+          id: audioTrack?.getSettings()?.deviceId,
+        });
+      }
+      // setSelectedMicrophoneTrack(audioTrack);
     }
 
     if (webcam) {
@@ -302,13 +303,14 @@ export default function JoinMeeting({
         encoderConfig: "h720p_w1280p",
       });
       const videoTracks = stream?.getVideoTracks();
-      const videoTrack = videoTracks.length ? videoTracks[0] : null;
+      const videoTrack = videoTracks?.length ? videoTracks[0] : null;
       setVideoTrack(videoTrack);
-      // if (firstTime) {
-      //   setSelectedWebcam({
-      //     id: videoTrack?.getSettings()?.deviceId,
-      //   });
-      // }
+      if (firstTime) {
+        setSelectedWebcam({
+          id: videoTrack?.getSettings()?.deviceId,
+        });
+      }
+      // setSelectedCameraTrack(videoTrack);
     }
   };
   async function startMuteListener() {
@@ -332,6 +334,14 @@ export default function JoinMeeting({
       setDevices((devices) => {
         return { ...devices, webcams };
       });
+
+      if (webcams.length > 0) {
+        changeWebcam(webcams[0].deviceId);
+        // setSelectedCamera(webcams[0].deviceId);
+        // setSelectWebcamDeviceId(webcams[0]?.deviceId);
+        setSelectedWebcam({ id: webcams[0].deviceId });
+        // setSelectedCameraTrack({id: webcams[0].deviceId})
+      }
     } catch (err) {
       console.log("Error in getting camera devices", err);
     }
@@ -340,7 +350,6 @@ export default function JoinMeeting({
   const getAudioDevices = async () => {
     try {
       let mics = await getMicrophones();
-
       const hasMic = mics.length > 0;
       if (hasMic) {
         startMuteListener();
@@ -349,28 +358,35 @@ export default function JoinMeeting({
       setDevices((devices) => {
         return { ...devices, mics };
       });
+
+      if (mics.length > 0) {
+        changeMic(mics[0].deviceId);
+        setSelectedMicrophone(mics[0].deviceId);
+        setSelectedMic({ id: mics[0].deviceId });
+      }
     } catch (err) {
       console.log("Error in getting audio devices", err);
     }
   };
 
   const getSpeakerDevices = async () => {
-    try{
+    try {
       let speakers = await getPlaybackDevices();
 
       setDevices((devices) => {
         return { ...devices, speakers };
       });
     } catch (err) {
-      console.log("Error in getting camera devices", err);
+      console.log("Error in getting audio devices", err);
     }
-  }
+  };
 
   function onDeviceChanged() {
     getCameraDevices();
     getAudioDevices();
     getSpeakerDevices();
   }
+
 
   const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
@@ -386,18 +402,25 @@ export default function JoinMeeting({
       if (hasMic) {
         startMuteListener();
       }
-
       getDefaultMediaTracks({
-        mic: hasMic && micEnabled,
-        webcam: hasWebcam && webcamEnabled,
         firstTime: true,
+        mic: hasMic && micEnabled,
+        // Trigger line
+        webcam: hasWebcam && webcamEnabled,
         cameraId: cameraId,
       });
 
-      setSelectedMic(mics[0].deviceId);
-      // console.log("Selected Webcam ", webcams[0]);
-      setSelectedWebcam(webcams[0].deviceId);
-      setSelectedSpeaker(speakers[0].deviceId);
+      if (mics.length > 0) {
+        setSelectedMicrophone(mics[0].deviceId);
+        setSelectedMic({ id: mics[0].deviceId });
+      }
+      if (webcams.length > 0) {
+        setSelectedCamera(webcams[0].deviceId);
+        setSelectedWebcam({ id: webcams[0].deviceId });
+      }
+      if (speakers.length > 0) {
+        setSelectedSpeaker(speakers[0].deviceId);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -454,29 +477,25 @@ export default function JoinMeeting({
     }
   };
 
-  const handleMicrophoneChange = (event) => {
-    changeMic(event.target.value);
-    setSelectedMic(event.target.value);
-  };
-  const handleSpeakerChange = (event) => {
-    setSelectedSpeaker(event.target.value);
-    setSelectedSpeaker(event.target.value);
-  };
-  const handleCameraChange = (event) => {
-    changeWebcam(event.target.value);
-    setSelectedWebcam(event.target.value);
-  };
-
   useEffect(() => {
+    if (webcamOn) {
+      if (videoTrackRef.current && videoTrackRef.current !== videoTrack) {
+        videoTrackRef.current.stop();
+      }
+    }
     videoTrackRef.current = videoTrack;
 
     if (videoTrack) {
       const videoSrcObject = new MediaStream([videoTrack]);
-
+      // for existing media track
       if (videoPlayerRef.current) {
+        // devil line causing play() error
         videoPlayerRef.current.srcObject = videoSrcObject;
+        //TODO: add same catch for audio also
         try {
-          videoPlayerRef.current.play().catch((e) => console.log(e));
+          videoPlayerRef.current.play().catch((e) => {
+            console.log("Error in play", e);
+          });
         } catch (err) {
           console.log("error in video play", err);
         }
@@ -486,7 +505,7 @@ export default function JoinMeeting({
         if (popupVideoPlayerRef.current) {
           popupVideoPlayerRef.current.srcObject = videoSrcObject;
           try {
-            popupVideoPlayerRef.current.play().catch((e) => console.log(e));
+            popupVideoPlayerRef.current.play();
           } catch (err) {
             console.log("error in video play", err);
           }
@@ -508,10 +527,22 @@ export default function JoinMeeting({
     startMuteListener();
   }, [audioTrack]);
 
-  // useEffect(() => {
-  //   getDevices({ micEnabled, webcamEnabled, cameraId });
-  // }, []);
 
+  const handleMicrophoneChange = (event) => {
+    changeMic(event.target.value);
+    setSelectedMicrophone(event.target.value);
+    setSelectedMic({ id: event.target.value });
+  };
+
+  const handleSpeakerChange = (event) => {
+    setSelectedSpeaker(event.target.value);
+  };
+
+  const handleCameraChange = (event) => {
+    changeWebcam(event.target.value);
+    setSelectedCamera(event.target.value);
+    setSelectedWebcam({ id: event.target.value });
+  };
   const padding = useResponsiveSize({
     xl: 6,
     lg: 6,
@@ -595,6 +626,7 @@ export default function JoinMeeting({
               justifyContent: "center",
             }}
           >
+            {/* Camera and dropdown component with design*/}
             <Grid
               item
               xs={12}
@@ -602,6 +634,7 @@ export default function JoinMeeting({
               style={{
                 display: "flex",
                 flex: 1,
+                // height: "100vh"
               }}
             >
               <Box
@@ -718,7 +751,7 @@ export default function JoinMeeting({
                               }}
                               m={2}
                               onClick={(e) => {
-                                handleClickOpen();
+                                handleClickOpen(e);
                               }}
                             >
                               <Box
@@ -889,8 +922,9 @@ export default function JoinMeeting({
                           justifyContent="center"
                           alignItems="center"
                           gap={1}
-                          sx={{ my: 1.5 }}
+                          sx={{ mt:2, mb: 8 }}
                           minWidth={"100%"}
+
                         >
                           <FormControl
                             variant="filled"
@@ -909,7 +943,6 @@ export default function JoinMeeting({
                                   ? theme.palette.lightTheme.three
                                   : "#1C1F2E80",
                             }}
-                            disabled={!hasAudioPermission}
                           >
                             <InputLabel id="demo-simple-select-label">
                               Select Mics
@@ -937,9 +970,10 @@ export default function JoinMeeting({
                                   },
                                 },
                               }}
+                              disabled={!hasAudioPermission}
                               labelId="microphone-select-label"
                               id="microphone-select"
-                              value={selectedMic}
+                              value={selectedMicrophone}
                               label="MicroPhone"
                               variant="filled"
                               onChange={handleMicrophoneChange}
@@ -973,7 +1007,6 @@ export default function JoinMeeting({
 
                               borderRadius: "5px",
                             }}
-                            disabled={!hasAudioPermission}
                           >
                             <InputLabel id="demo-simple-select-label">
                               Select Speakers
@@ -1001,6 +1034,7 @@ export default function JoinMeeting({
                                   },
                                 },
                               }}
+                              disabled={!hasAudioPermission}
                               labelId="speaker-select-label"
                               id="speaker-select"
                               value={selectedSpeaker}
@@ -1037,7 +1071,6 @@ export default function JoinMeeting({
 
                               borderRadius: "5px",
                             }}
-                            disabled={!hasVideoPermission}
                           >
                             <InputLabel id="demo-simple-select-label">
                               Select Webcam
@@ -1065,14 +1098,15 @@ export default function JoinMeeting({
                                   },
                                 },
                               }}
+                              disabled={!hasVideoPermission}
                               labelId="camera-select-label"
                               id="camera-select"
-                              value={selectedWebcam}
+                              value={selectedCamera}
                               label="Camera"
                               onChange={handleCameraChange}
                               variant="filled"
                             >
-                              {webcams?.map((webcam) => {
+                              {webcams?.map((speaker) => {
                                 return (
                                   <MenuItem
                                     sx={{
@@ -1083,9 +1117,9 @@ export default function JoinMeeting({
                                           ? theme.palette.lightTheme.three
                                           : "#1C1F2E80",
                                     }}
-                                    value={webcam.deviceId}
+                                    value={speaker.deviceId}
                                   >
-                                    {webcam.label}
+                                    {speaker.label}
                                   </MenuItem>
                                 );
                               })}
@@ -1093,8 +1127,11 @@ export default function JoinMeeting({
                           </FormControl>
                         </Box>
                       )}
+
+                      {/* DropDown ends here.... */}
                     </Box>
                   </Box>
+                  {/* Camera and dropdown ends here.. */}
                 </Box>
               </Box>
             </Grid>
@@ -1108,6 +1145,7 @@ export default function JoinMeeting({
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
+              
               }}
             >
               <Box
@@ -1118,6 +1156,7 @@ export default function JoinMeeting({
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  marginTop: "40px",
                 }}
               >
                 <MeetingDetailModal
