@@ -111,7 +111,6 @@ export default function JoinMeeting({
   appTheme,
   cameraId,
 }) {
-  
   const theme = useTheme();
   const isTab = useIsTab();
   const isLGDesktop = useIsLGDesktop();
@@ -172,6 +171,8 @@ export default function JoinMeeting({
   const [hasAudioPermission, setHasAudioPermission] = useState(false);
   const [hasVideoPermission, setHasVideoPermission] = useState(false);
 
+  const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
   // Webcam on and micON status var
   const webcamOn = useMemo(() => !!videoTrack, [videoTrack]);
   const micOn = useMemo(() => !!audioTrack, [audioTrack]);
@@ -193,50 +194,61 @@ export default function JoinMeeting({
 
   const { getAudioTrack, getVideoTrack } = useMediaStream();
 
-  useEffect(() => {
-    const checkAndRequestPermissions = async () => {
-      try {
-        const checkAudioVideoPermission = await checkPermissions();
-        setHasAudioPermission(
-          checkAudioVideoPermission.get(Constants.permission.AUDIO)
-        );
-        setHasVideoPermission(
-          checkAudioVideoPermission.get(Constants.permission.VIDEO)
-        );
+  const checkAndRequestPermissions = async () => {
+    try {
+      const checkAudioVideoPermission = await checkPermissions();
+      let audioPermission = checkAudioVideoPermission.get(
+        Constants.permission.AUDIO
+      );
+      let videoPermission = checkAudioVideoPermission.get(
+        Constants.permission.VIDEO
+      );
 
-        if (!hasAudioPermission) {
-          // getDefaultMediaTracks({ mic: true, webcam: false });
-          const response = await requestPermission(Constants.permission.AUDIO);
-         
-          setHasAudioPermission(response.get("audio"));
-        }
-        if (!hasVideoPermission) {
-          // getDefaultMediaTracks({ mic: false, webcam: true });
-          const response = await requestPermission(Constants.permission.VIDEO);
-          
-          setHasVideoPermission(response.get("video"));
-        }
+      setHasAudioPermission(audioPermission);
+      setHasVideoPermission(videoPermission);
 
-
-        const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
-
-        // if (isFirefox) {
-        // setting new permission
-        //   await requestPermission();
-        //   // console.log("Permissions requested");
-        // }
-
-        getDevices({ micEnabled, webcamEnabled, cameraId });
-      } catch (ex) {
-        console.log("Error in checkPermissions", ex);
+      if (!audioPermission) {
+        const response = await requestPermission(Constants.permission.AUDIO);
+        audioPermission = response.get("audio");
+        setHasAudioPermission(audioPermission);
       }
-    };
 
+      if (!videoPermission) {
+        const response = await requestPermission(Constants.permission.VIDEO);
+        videoPermission = response.get("video");
+        setHasVideoPermission(videoPermission);
+      }
+
+      if (audioPermission && videoPermission) {
+        // Only call getDevices when both permissions are granted
+        getDevices({ micEnabled, webcamEnabled, cameraId });
+      }
+    } catch (ex) {
+      if (isFirefox) {
+        const audioResponse = await requestPermission(
+          Constants.permission.AUDIO
+        );
+        const videoResponse = await requestPermission(
+          Constants.permission.VIDEO
+        );
+
+        setHasAudioPermission(audioResponse.get("audio"));
+        setHasVideoPermission(videoResponse.get("video"));
+
+        if (audioResponse.get("audio") && videoResponse.get("video")) {
+          getDevices({ micEnabled, webcamEnabled, cameraId });
+        }
+      }
+
+      console.log("Error in checkPermissions", ex);
+    }
+  };
+
+  useEffect(() => {
     checkAndRequestPermissions();
-    // return ()=>{
-
-    // }
-  }, [hasAudioPermission, hasVideoPermission]);
+    // Consider removing the dependencies to avoid infinite loop
+    // Or use a more controlled state management strategy
+  }, []); // Empty dependency array to run only on mount
 
   useEffect(() => {
     if (
@@ -270,7 +282,7 @@ export default function JoinMeeting({
     const stream = await getAudioTrack({ micId: deviceId });
     const audioTracks = stream.getAudioTracks();
 
-    const audioTrack = audioTracks.length ? audioTracks[0] : null;
+    const audioTrack = audioTracks?.length ? audioTracks[0] : null;
     clearInterval(audioAnalyserIntervalRef.current);
 
     setAudioTrack(audioTrack);
@@ -287,7 +299,7 @@ export default function JoinMeeting({
 
       const audioTracks = stream?.getAudioTracks();
 
-      const audioTrack = audioTracks.length ? audioTracks[0] : null;
+      const audioTrack = audioTracks?.length ? audioTracks[0] : null;
       setAudioTrack(audioTrack);
       if (firstTime) {
         setSelectedMic({
@@ -335,9 +347,9 @@ export default function JoinMeeting({
         return { ...devices, webcams };
       });
 
-      if (webcams.length > 0) {
+      if (webcams?.length > 0) {
         changeWebcam(webcams[0].deviceId);
-        // setSelectedCamera(webcams[0].deviceId);
+        setSelectedCamera(webcams[0].deviceId);
         // setSelectWebcamDeviceId(webcams[0]?.deviceId);
         setSelectedWebcam({ id: webcams[0].deviceId });
         // setSelectedCameraTrack({id: webcams[0].deviceId})
@@ -387,7 +399,6 @@ export default function JoinMeeting({
     getSpeakerDevices();
   }
 
-
   const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
     try {
       const webcams = await getCameras();
@@ -414,7 +425,7 @@ export default function JoinMeeting({
         setSelectedMicrophone(mics[0].deviceId);
         setSelectedMic({ id: mics[0].deviceId });
       }
-      if (webcams.length > 0) {
+      if (webcams?.length > 0) {
         setSelectedCamera(webcams[0].deviceId);
         setSelectedWebcam({ id: webcams[0].deviceId });
       }
@@ -489,7 +500,6 @@ export default function JoinMeeting({
       const videoSrcObject = new MediaStream([videoTrack]);
       // for existing media track
       if (videoPlayerRef.current) {
-        // devil line causing play() error
         videoPlayerRef.current.srcObject = videoSrcObject;
         //TODO: add same catch for audio also
         try {
@@ -505,7 +515,9 @@ export default function JoinMeeting({
         if (popupVideoPlayerRef.current) {
           popupVideoPlayerRef.current.srcObject = videoSrcObject;
           try {
-            popupVideoPlayerRef.current.play();
+            popupVideoPlayerRef.current.play().catch((e) => {
+              console.log("Error in play", e);
+            });
           } catch (err) {
             console.log("error in video play", err);
           }
@@ -526,7 +538,6 @@ export default function JoinMeeting({
 
     startMuteListener();
   }, [audioTrack]);
-
 
   const handleMicrophoneChange = (event) => {
     changeMic(event.target.value);
@@ -588,7 +599,7 @@ export default function JoinMeeting({
           display: "flex",
           flex: 1,
           flexDirection: "column",
-          height: "100vh",
+          height: `${isMobile ? "100%" : "100vh"}`,
           backgroundColor:
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.main
@@ -919,23 +930,23 @@ export default function JoinMeeting({
                       {mode === meetingModes.VIEWER ? null : (
                         <Box
                           display="flex"
+                          flexDirection={{ xs: "column", sm: "row" }}
                           justifyContent="center"
                           alignItems="center"
-                          gap={1}
-                          sx={{ mt:2, mb: 8 }}
-                          minWidth={"100%"}
-
+                          gap={1} // Consistent gap between items
+                          sx={{ mt: 2, mb: 8 }}
+                          width="100%" // Ensures full width
                         >
                           <FormControl
                             variant="filled"
                             sx={{
-                              width: isMobile
-                                ? 130
-                                : isTab
-                                ? 150
-                                : isLGDesktop
-                                ? 180
-                                : 200,
+                              width: {
+                                xs: "100%", // Full width on extra small screens
+                                sm: 130, // 130px on small screens
+                                md: 150, // 150px on medium screens
+                                lg: 180, // 180px on large screens
+                                xl: 200, // 200px on extra-large screens
+                              },
                               backgroundColor:
                                 appTheme === appThemes.DARK
                                   ? theme.palette.darkTheme.seven
@@ -975,93 +986,98 @@ export default function JoinMeeting({
                               id="microphone-select"
                               value={selectedMicrophone}
                               label="MicroPhone"
-                              variant="filled"
+                              // variant="filled"
                               onChange={handleMicrophoneChange}
                             >
                               {mics?.map((speaker) => {
                                 return (
-                                  <MenuItem value={speaker.deviceId}>
+                                  <MenuItem
+                                    key={speaker.deviceId}
+                                    value={speaker.deviceId}
+                                  >
                                     {speaker.label}
                                   </MenuItem>
                                 );
                               })}
                             </Select>
                           </FormControl>
-                          <FormControl
-                            variant="filled"
-                            sx={{
-                              width: isMobile
-                                ? 130
-                                : isTab
-                                ? 150
-                                : isLGDesktop
-                                ? 180
-                                : 200,
-
-                              backgroundColor:
-                                appTheme === appThemes.DARK
-                                  ? theme.palette.darkTheme.seven
-                                  : appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.three
-                                  : "#1C1F2E80",
-
-                              borderRadius: "5px",
-                            }}
-                          >
-                            <InputLabel id="demo-simple-select-label">
-                              Select Speakers
-                            </InputLabel>
-                            <Select
-                              sx={{
-                                color:
-                                  appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.contrastText
-                                    : "#fff",
-                              }}
-                              MenuProps={{
-                                PaperProps: {
-                                  style: {
-                                    backgroundColor:
-                                      appTheme === appThemes.DARK
-                                        ? theme.palette.darkTheme.seven
-                                        : appTheme === appThemes.LIGHT
-                                        ? theme.palette.lightTheme.three
-                                        : "#1C1F2E80",
-                                    color:
-                                      appTheme === appThemes.LIGHT
-                                        ? theme.palette.lightTheme.contrastText
-                                        : "#fff",
-                                  },
-                                },
-                              }}
-                              disabled={!hasAudioPermission}
-                              labelId="speaker-select-label"
-                              id="speaker-select"
-                              value={selectedSpeaker}
-                              label="Speaker"
-                              onChange={handleSpeakerChange}
+                          {!isFirefox && (
+                            <FormControl
                               variant="filled"
+                              sx={{
+                                width: {
+                                  xs: "100%",
+                                  sm: 130,
+                                  md: 150,
+                                  lg: 180,
+                                  xl: 200,
+                                },
+                                backgroundColor:
+                                  appTheme === appThemes.DARK
+                                    ? theme.palette.darkTheme.seven
+                                    : appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.three
+                                    : "#1C1F2E80",
+
+                                borderRadius: "5px",
+                              }}
                             >
-                              {speakers?.map((speaker) => {
-                                return (
-                                  <MenuItem value={speaker.deviceId}>
-                                    {speaker.label}
-                                  </MenuItem>
-                                );
-                              })}
-                            </Select>
-                          </FormControl>
+                              <InputLabel id="speaker-select-label">
+                                Select Speakers
+                              </InputLabel>
+                              <Select
+                                sx={{
+                                  color:
+                                    appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.contrastText
+                                      : "#fff",
+                                }}
+                                MenuProps={{
+                                  PaperProps: {
+                                    style: {
+                                      backgroundColor:
+                                        appTheme === appThemes.DARK
+                                          ? theme.palette.darkTheme.seven
+                                          : appTheme === appThemes.LIGHT
+                                          ? theme.palette.lightTheme.three
+                                          : "#1C1F2E80",
+                                      color:
+                                        appTheme === appThemes.LIGHT
+                                          ? theme.palette.lightTheme
+                                              .contrastText
+                                          : "#fff",
+                                    },
+                                  },
+                                }}
+                                disabled={!hasAudioPermission}
+                                labelId="speaker-select-label"
+                                id="speaker-select"
+                                value={selectedSpeaker}
+                                label="Speaker"
+                                onChange={handleSpeakerChange}
+                                // variant="filled"
+                              >
+                                {speakers?.map((speaker) => {
+                                  return (
+                                    <MenuItem value={speaker.deviceId}>
+                                      {speaker.label}
+                                    </MenuItem>
+                                  );
+                                })}
+                              </Select>
+                            </FormControl>
+                          )}
 
                           <FormControl
                             variant="filled"
                             sx={{
-                              width: isMobile
-                                ? 130
-                                : isTab
-                                ? 150
-                                : isLGDesktop
-                                ? 180
-                                : 200,
+                              width: {
+                                xs: "100%",
+                                sm: 130,
+                                md: 150,
+                                lg: 180,
+                                xl: 200,
+                              },
                               backgroundColor:
                                 appTheme === appThemes.DARK
                                   ? theme.palette.darkTheme.seven
@@ -1072,7 +1088,7 @@ export default function JoinMeeting({
                               borderRadius: "5px",
                             }}
                           >
-                            <InputLabel id="demo-simple-select-label">
+                            <InputLabel id="camera-select-label">
                               Select Webcam
                             </InputLabel>
                             <Select
@@ -1104,21 +1120,11 @@ export default function JoinMeeting({
                               value={selectedCamera}
                               label="Camera"
                               onChange={handleCameraChange}
-                              variant="filled"
+                              // variant="filled"
                             >
                               {webcams?.map((speaker) => {
                                 return (
-                                  <MenuItem
-                                    sx={{
-                                      background:
-                                        appTheme === appThemes.DARK
-                                          ? theme.palette.darkTheme.seven
-                                          : appTheme === appThemes.LIGHT
-                                          ? theme.palette.lightTheme.three
-                                          : "#1C1F2E80",
-                                    }}
-                                    value={speaker.deviceId}
-                                  >
+                                  <MenuItem value={speaker.deviceId}>
                                     {speaker.label}
                                   </MenuItem>
                                 );
@@ -1145,7 +1151,6 @@ export default function JoinMeeting({
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
-              
               }}
             >
               <Box
@@ -1156,7 +1161,8 @@ export default function JoinMeeting({
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginTop: "40px",
+                  marginTop: isFirefox ? "120px" : isMobile ? "210px" : "40px",
+                  marginLeft: isMobile || isFirefox ? "20px" : "",
                 }}
               >
                 <MeetingDetailModal
