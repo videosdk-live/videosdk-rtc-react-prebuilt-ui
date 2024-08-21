@@ -1793,7 +1793,7 @@ const WebcamBTN = () => {
   };
   const changeWebcam = async (deviceId) => {
     const track = await getCustomVideoTrack(deviceId);
-    mMeeting?.changeWebcam(track ? track : deviceId);
+    mMeeting?.changeWebcam(track ? track?.cameraId : deviceId);
   };
 
   const handleClick = (event) => {
