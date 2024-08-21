@@ -23,7 +23,7 @@ import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
 import { meetingModes } from "../CONSTS";
-import { appThemes } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
 import {
   useMediaDevice,
@@ -138,6 +138,8 @@ export default function JoinMeeting({
   const handleClose = (value) => {
     setSettingDialogueOpen(false);
   };
+
+  const {setSelectedOutputDeviceId} = useMeetingAppContext();
 
   useEffect(() => {
     return () => {
@@ -359,6 +361,7 @@ export default function JoinMeeting({
     }
   };
 
+
   const getAudioDevices = async () => {
     try {
       let mics = await getMicrophones();
@@ -375,6 +378,10 @@ export default function JoinMeeting({
         changeMic(mics[0].deviceId);
         setSelectedMicrophone(mics[0].deviceId);
         setSelectedMic({ id: mics[0].deviceId });
+
+
+        setSelectedOutputDeviceId(mics[0].deviceId)
+
       }
     } catch (err) {
       console.log("Error in getting audio devices", err);
@@ -424,6 +431,7 @@ export default function JoinMeeting({
       if (mics.length > 0) {
         setSelectedMicrophone(mics[0].deviceId);
         setSelectedMic({ id: mics[0].deviceId });
+        setSelectedOutputDeviceId(mics[0].deviceId)
       }
       if (webcams?.length > 0) {
         setSelectedCamera(webcams[0].deviceId);
