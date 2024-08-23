@@ -1358,7 +1358,7 @@ const SingleMicMenu = ({
       : appTheme === appThemes.DARK
       ? CustomBox
       : CustomBoxDefault;
-
+  
   return (
     <Box>
       <Box
@@ -1778,9 +1778,27 @@ const WebcamBTN = () => {
   } = useMeetingAppContext();
   const { enqueueSnackbar } = useSnackbar();
   const { getCustomVideoTrack } = useCustomTrack();
-
+  // const { getCameras } = useMediaDevice();
+  
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
+  // const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+  // const { getCameras, checkPermissions, requestPermission } = useMediaDevice({
+  //   onDeviceChanged,
+  // });
+
+  // function onDeviceChanged() {
+  //   getCameraDevices();
+  // }
+
+  // const getCameraDevices = async () => {
+  //   const cameras = await getCameras();
+  //   // console.log(cameras);
+  //   // if (isFirefox) {
+  //     // changeWebcam(webcams[0].deviceId);
+  //     // setSelectWebcamDeviceId(webcams[0].deviceId);
+  //   // }
+  // };
 
   const localWebcamOn = mMeeting?.localWebcamOn;
   const toggleWebcam = async () => {
@@ -1792,6 +1810,15 @@ const WebcamBTN = () => {
     mMeeting?.toggleWebcam(track);
   };
   const changeWebcam = async (deviceId) => {
+    // if (isFirefox) {
+    //   const stream = await getCustomVideoTrack({ webcamId: deviceId });
+
+    //   const videoTracks = stream.getVideoTracks();
+
+    //   const videoTrack = videoTracks?.length ? videoTracks[0] : null;
+
+    //   setSelectWebcamDeviceId(videoTrack);
+    // }
     const track = await getCustomVideoTrack(deviceId);
     mMeeting?.changeWebcam(track ? track?.cameraId : deviceId);
   };
@@ -1808,7 +1835,21 @@ const WebcamBTN = () => {
     const webcams = await mGetWebcams();
 
     webcams && webcams?.length && setWebcams(webcams);
+    setSelectWebcamDeviceId(webcams[0].deviceId);
   };
+
+  useEffect(() => {
+    getWebcams(mMeeting.getWebcams);
+  }, []);
+
+  // const getWebcamsForMozilla = async () => {
+  //   if (isFirefox) {
+  //     const webCamsList = await mMeeting.getWebcams();
+  //   }
+  // };
+  // useEffect(() => {
+  //   getWebcamsForMozilla();
+  // }, [isFirefox]);
 
   const tollTipEl = useRef();
 
