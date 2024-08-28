@@ -1343,6 +1343,8 @@ const SingleMicMenu = ({
   micArr,
   Icon,
   label,
+  selectedMic,
+  setSelectedMic,
   // classes,
   selectMicDeviceId,
   setSelectMicDeviceId,
@@ -1358,7 +1360,9 @@ const SingleMicMenu = ({
       : appTheme === appThemes.DARK
       ? CustomBox
       : CustomBoxDefault;
-  
+
+ 
+
   return (
     <Box>
       <Box
@@ -1374,7 +1378,7 @@ const SingleMicMenu = ({
         <Typography
           style={{
             marginLeft: 12,
-            fontSize: 14,
+            fontSize: 12,
             color: theme.palette.darkTheme.contrastText,
           }}
         >
@@ -1399,32 +1403,18 @@ const SingleMicMenu = ({
               : "",
         }}
       >
-        {micArr.map(({ deviceId, label }, index) => (
-          <BoxElement
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingLeft: 12,
-              paddingRight: 12,
-              backgroundColor:
-                deviceId === selectMicDeviceId
-                  ? appTheme === appThemes.DARK
-                    ? "#3F4046"
-                    : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.three
-                    : "#6D6E71"
-                  : "",
-            }}
-          >
-            {deviceId === selectMicDeviceId && <SelectedIcon />}
-
-            <CustomMenuItem
-              disableRipple
+        {micArr.map(({ deviceId, label }, index) => {
+          return (
+            <BoxElement
               style={{
                 display: "flex",
-                flex: 1,
+                alignItems: "center",
+                paddingLeft: 25,
+                paddingRight: 25,
+                margin: deviceId === selectedMic.id && "0 -14px",
+
                 backgroundColor:
-                  deviceId === selectMicDeviceId
+                  deviceId === selectedMic.id
                     ? appTheme === appThemes.DARK
                       ? "#3F4046"
                       : appTheme === appThemes.LIGHT
@@ -1432,20 +1422,41 @@ const SingleMicMenu = ({
                       : "#6D6E71"
                     : "",
               }}
-              key={`mics_${deviceId}`}
-              selected={deviceId === selectMicDeviceId}
-              onClick={() => {
-                handleClose();
-                setSelectMicDeviceId(deviceId);
-                if (!isOutputMics) {
-                  changeMic(deviceId);
-                }
-              }}
             >
-              {label || `Mic ${index + 1}`}
-            </CustomMenuItem>
-          </BoxElement>
-        ))}
+              {deviceId === selectedMic.id && <SelectedIcon />}
+
+              <CustomMenuItem
+                disableRipple
+                style={{
+                  display:"flex",
+                  flex: 1,
+                  
+                  backgroundColor:
+                    deviceId === selectedMic.id
+                      ? appTheme === appThemes.DARK
+                        ? "#3F4046"
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.three
+                        : "#6D6E71"
+                      : "",
+                }}
+                key={`mics_${deviceId}`}
+               
+
+                onClick={() => {
+                  handleClose();
+                  setSelectedMic({ id: deviceId });
+                  // setSelectMicDeviceId(deviceId);
+                  if (!isOutputMics) {
+                    changeMic(deviceId);
+                  }
+                }}
+              >
+                {label || `Mic ${index + 1}`}
+              </CustomMenuItem>
+            </BoxElement>
+          );
+        })}
       </MenuList>
     </Box>
   );
@@ -1455,8 +1466,10 @@ const MicMenu = ({
   selectMicDeviceId,
   setSelectMicDeviceId,
   selectedOutputDeviceId,
+  selectedMic, //global mic id
   setSelectedOutputDeviceId,
   localMicOn,
+  setSelectedMic,
   downArrow,
   mics,
   outputmics,
@@ -1506,7 +1519,9 @@ const MicMenu = ({
           Icon={MicrophoneIcon}
           selectMicDeviceId={selectMicDeviceId}
           setSelectMicDeviceId={setSelectMicDeviceId}
+          selectedMic={selectedMic}
           changeMic={changeMic}
+          setSelectedMic={setSelectedMic}
           // classes={classes}
           appTheme={appTheme}
           theme={theme}
@@ -1527,6 +1542,8 @@ const MicMenu = ({
           selectMicDeviceId={selectedOutputDeviceId}
           setSelectMicDeviceId={setSelectedOutputDeviceId}
           isOutputMics={true}
+          selectedMic={selectedMic}
+          setSelectedMic={setSelectedMic}
           // classes={classes}
           changeMic={changeMic}
           appTheme={appTheme}
@@ -1779,7 +1796,7 @@ const WebcamBTN = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { getCustomVideoTrack } = useCustomTrack();
   // const { getCameras } = useMediaDevice();
-  
+
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
   // const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
@@ -2019,6 +2036,8 @@ const MicBTN = () => {
     notificationAlertsEnabled,
     selectMicDeviceId,
     setSelectMicDeviceId,
+    selectedMic,
+    setSelectedMic,
     selectedOutputDeviceId,
     setSelectedOutputDeviceId,
   } = useMeetingAppContext();
@@ -2058,7 +2077,7 @@ const MicBTN = () => {
   const localMicOn = mMeeting?.localMicOn;
   const toggleMic = async () => {
     let track;
-    if (!localMicOn) track = await getCustomAudioTrack(selectMicDeviceId);
+    if (!localMicOn) track = await getCustomAudioTrack(selectedMic.id);
     mMeeting?.toggleMic(track);
   };
   const changeMic = mMeeting?.changeMic;
@@ -2168,6 +2187,8 @@ const MicBTN = () => {
       <MicMenu
         selectMicDeviceId={selectMicDeviceId}
         setSelectMicDeviceId={setSelectMicDeviceId}
+        selectedMic={selectedMic}
+        setSelectedMic={setSelectedMic}
         selectedOutputDeviceId={selectedOutputDeviceId}
         setSelectedOutputDeviceId={setSelectedOutputDeviceId}
         isNoiseRemovalChecked={isNoiseRemovalChecked}

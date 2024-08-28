@@ -696,6 +696,7 @@ const App = () => {
             layoutPriority: paramKeys.layoutPriority,
             canPin: paramKeys.canPin === "true",
             selectedMic,
+            setSelectedMic,
             selectedWebcam,
             joinScreenWebCam,
             joinScreenMic,
