@@ -397,8 +397,8 @@ const SubmitPollListItem = ({ poll }) => {
                         <Typography
                           style={{
                             color:
-                              appTheme === appThemes.LIGHT &&
-                              theme.palette.lightTheme.contrastText,
+                              appTheme === appThemes.LIGHT ?
+                              theme.palette.lightTheme.contrastText : "white",
                           }}
                         >
                           {option.option}
