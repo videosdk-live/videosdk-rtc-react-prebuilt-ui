@@ -484,22 +484,26 @@ const MeetingContainer = () => {
   const _handleParticipantJoined = (data) => {
     if (showJoinNotificationRef.current) {
       const { displayName } = data;
-    if (notificationSoundEnabled) {
-      new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
-    }
-    if (participantNotificationAlertsEnabled) {
-      enqueueSnackbar(`${displayName} joined the meeting`, {});
-    }
+      if (participantNotificationAlertsEnabled) {
+        if (notificationSoundEnabled) {
+          new Audio(
+            `https://static.videosdk.live/prebuilt/notification.mp3`
+          ).play();
+        }
+        enqueueSnackbar(`${displayName} joined the meeting`, {});
+      }
     }
   };
 
   const _handleParticipantLeft = (data) => {
     const { displayName } = data;
-    if (notificationSoundEnabled) {
-    new Audio(`https://static.videosdk.live/prebuilt/notification.mp3`).play();
-    }
     if (participantNotificationAlertsEnabled) {
-    enqueueSnackbar(`${displayName} left the meeting`, {});
+      if (notificationSoundEnabled) {
+        new Audio(
+          `https://static.videosdk.live/prebuilt/notification.mp3`
+        ).play();
+      }
+      enqueueSnackbar(`${displayName} left the meeting`, {});
     }
   };
 
