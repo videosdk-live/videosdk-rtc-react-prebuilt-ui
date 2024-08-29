@@ -389,8 +389,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                           margin: 0,
                           padding: 0,
                           color:
-                            appTheme === appThemes.LIGHT &&
-                            theme.palette.lightTheme.contrastText,
+                            appTheme === appThemes.LIGHT ?
+                            theme.palette.lightTheme.contrastText :"white",
                         }}
                       >
                         {`${Math.floor(percentage)}%`}
