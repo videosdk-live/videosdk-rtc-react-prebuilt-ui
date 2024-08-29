@@ -1,4 +1,17 @@
-import { Box, Button, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -8,6 +21,7 @@ import {
 } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { v4 as uuid } from "uuid";
+import { minWidth } from "@mui/system";
 
 export const secondsToMinutes = (time) => {
   var minutes = Math.floor((time % 3600) / 60)
@@ -23,6 +37,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
   const timerIntervalRef = useRef();
   const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
+
   // const classes = useStyles();
 
   const padding = useResponsiveSize({
@@ -55,6 +70,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 
   const [timeLeft, setTimeLeft] = useState(0);
   const [isTimerPollActive, setIsTimerPollActive] = useState(false);
+
+  const [showResults, setShowResults] = useState(false);
+  const [resultsReport, setResultsReport] = useState([]);
 
   const mMeeting = useMeeting();
 
@@ -128,6 +146,47 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
     };
   }, [poll, localParticipantId]);
 
+  const creatingSubmissionsReport = () => {
+    const submissionsArray = poll?.submissions || [];
+    const pollsOptions = poll?.options || [];
+
+    // Store participant names in a Map
+    const participantNameMap = new Map();
+
+    if (showResults) {
+      const report = submissionsArray.map((submission) => {
+        // Retrieve the stored name or use the current name
+        let participantName =
+          submission.participantName ||
+          participantNameMap.get(submission.participantId) ||
+          "";
+
+        // Store participant name if it's not already in the map
+        if (submission.participantName) {
+          participantNameMap.set(submission.participantId, participantName);
+        }
+
+        // Get the option selected
+        const option = pollsOptions.find(
+          (choice) => choice.optionId === submission.optionId
+        );
+
+        return {
+          participantId: submission.participantId,
+          participantName,
+          optionId: option?.optionId,
+          optionName: option?.option,
+        };
+      });
+
+      setResultsReport(report);
+    }
+  };
+
+  useEffect(() => {
+    creatingSubmissionsReport();
+  }, [showResults, poll]);
+
   const checkTimeOver = ({ timeout, createdAt }) =>
     !(new Date(createdAt).getTime() + timeout * 1000 > new Date().getTime());
 
@@ -146,6 +205,14 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
       setIsTimerPollActive(true);
     }
   };
+
+  function truncateText(text, wordLimit) {
+    const words = text.split(" ");
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + " ...";
+    }
+    return text;
+  }
 
   useEffect(() => {
     if (hasTimer) {
@@ -322,8 +389,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                           margin: 0,
                           padding: 0,
                           color:
-                            appTheme === appThemes.LIGHT &&
-                            theme.palette.lightTheme.contrastText,
+                            appTheme === appThemes.LIGHT ?
+                            theme.palette.lightTheme.contrastText :"white",
                         }}
                       >
                         {`${Math.floor(percentage)}%`}
@@ -341,7 +408,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               marginBottom: equalSpacing,
               display: "flex",
               alignItems: "flex-end",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
             }}
           >
             {isDraft ? (
@@ -366,6 +433,25 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 Launch
               </Button>
             ) : null}
+
+            <Button
+              variant="outlined"
+              size="small"
+              style={{
+                marginTop: equalSpacing + 2,
+                color:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.contrastText
+                    : "white",
+              }}
+              onClick={() => setShowResults(!showResults)}
+            >
+              {showResults ? "Hide Results" : "Show Results"}
+            </Button>
             {isPollActive && !hasTimer ? (
               <Button
                 variant="outlined"
@@ -394,6 +480,52 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
               </Button>
             ) : null}
           </Box>
+          {showResults === true ? (
+            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+              <table style={{ width: "95%" }}>
+                <TableHead>
+                  <TableRow>
+                    {/* <TableCell>Participant Id</TableCell> */}
+                    <TableCell>Participant Name</TableCell>
+                    <TableCell>Option</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {resultsReport?.map((row, item) => {
+                    return (
+                      <TableRow
+                        key={item}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        {/* <TableCell>{row?.participantId}</TableCell> */}
+                        <TableCell>
+                          {/* {row?.participantName} */}
+                          {row?.participantName.length > 5 ? (
+                            <Tooltip title={row?.participantName} arrow>
+                              {truncateText(row?.participantName, 5)}
+                            </Tooltip>
+                          ) : (
+                            truncateText(row?.participantName, 5)
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {row?.optionName.length > 10 ? (
+                            <Tooltip title={row?.optionName} arrow>
+                              {truncateText(row?.optionName, 10)}
+                            </Tooltip>
+                          ) : (
+                            truncateText(row?.optionName, 10)
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </table>
+            </div>
+          ) : null}
         </Box>
       </Box>
     </Box>
@@ -490,17 +622,26 @@ const PollList = ({ panelHeight }) => {
           })}
           {polls.map((poll, index) => {
             return (
-              <Poll
-                key={`creator_polls_${poll.id}`}
-                // totalPolls={totalPolls}
-                poll={poll}
-                panelHeight={panelHeight}
-                index={index}
-              />
+              <>
+                <Poll
+                  key={`creator_polls_${poll.id}`}
+                  // totalPolls={totalPolls}
+                  poll={poll}
+                  panelHeight={panelHeight}
+                  index={index}
+                />
+              </>
             );
           })}
         </Box>
-        <Box style={{ padding: padding, marginTop: equalSpacing }}>
+        <Box
+          style={{
+            display: "flex",
+            gap: "2",
+            padding: padding,
+            marginTop: equalSpacing,
+          }}
+        >
           <Button
             variant="contained"
             style={{

@@ -94,7 +94,10 @@ const MeetingLeftScreen = ({
           />
         </div>
         <Box mt={6}>
-          <Typography variant={"h4"} style={{ fontWeight: "bold" }}>
+          <Typography
+            variant={"h4"}
+            style={{ fontWeight: "bold", color: color }}
+          >
             You have left the meeting!
           </Typography>
         </Box>
@@ -115,7 +118,11 @@ const MeetingLeftScreen = ({
               size={isSMDesktop || isLGDesktop ? "large" : "medium"}
               variant="contained"
               color={"primary"}
-              style={{ textTransform: "capitalize", fontWeight: "bold" }}
+              style={{
+                textTransform: "capitalize",
+                fontWeight: "bold",
+                color: color,
+              }}
             >
               Rejoin Meeting
             </Button>
@@ -144,7 +151,7 @@ const MeetingLeftScreen = ({
                 <Button
                   size={isSMDesktop || isLGDesktop ? "large" : "medium"}
                   variant="outlined"
-                  style={{ fontWeight: "bold" }}
+                  style={{ fontWeight: "bold", color: color }}
                 >
                   {leftScreenActionButtonLabel}
                 </Button>
