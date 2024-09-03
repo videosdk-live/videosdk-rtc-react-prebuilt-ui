@@ -535,6 +535,7 @@ const App = () => {
   );
   const [selectedMic, setSelectedMic] = useState({ id: null });
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
+  const [selectedSpeaker, setSelectedSpeaker] = useState({ id : null});
 
   const validateMeetingId = async ({ meetingId, token, debug, region }) => {
     const BASE_URL = "https://api.videosdk.live";
@@ -623,64 +624,7 @@ const App = () => {
   }, []);
 
   return (
-    <>
-      {meetingLeft ? (
-        paramKeys.isRecorder === "true" ? null : (
-          <MeetingLeftScreen
-            brandLogoURL={paramKeys.brandLogoURL}
-            leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
-            leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
-            leftScreenRejoinButtonEnabled={
-              paramKeys.leftScreenRejoinButtonEnabled !== "false"
-            }
-            backgroundColor={
-              paramKeys.theme === appThemes.DARK
-                ? theme.palette.darkTheme.main
-                : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default
-            }
-            color={
-              paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.contrastText
-                : theme.palette.common.white
-            }
-            animationData={
-              paramKeys.theme === appThemes.LIGHT
-                ? lightThemeAnimationData
-                : animationData
-            }
-            setMeetingLeft={setMeetingLeft}
-          />
-        )
-      ) : meetingIdValidation.isLoading ? (
-        <Box
-          style={{
-            display: "flex",
-            flex: 1,
-            flexDirection: "column",
-            height: "100vh",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor:
-              paramKeys.theme === appThemes.DARK
-                ? theme.palette.darkTheme.main
-                : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
-          }}
-        >
-          <CircularProgress size={"4rem"} />
-        </Box>
-      ) : meetingIdValidation.reqError ? (
-        <>
-          {/* <ErrorPage
-            errMsg={meetingIdValidation.reqError}
-            statusCode={meetingIdValidation.reqStatusCode}
-          /> */}
-        </>
-      ) : userHasInteracted && meetingIdValidation.meetingId ? (
-        <MeetingAppProvider
+    <MeetingAppProvider
           {...{
             redirectOnLeave: paramKeys.redirectOnLeave,
             chatEnabled: paramKeys.chatEnabled === "true",
@@ -754,6 +698,7 @@ const App = () => {
             layoutPriority: paramKeys.layoutPriority,
             canPin: paramKeys.canPin === "true",
             selectedMic,
+            setSelectedMic,
             selectedWebcam,
             joinScreenWebCam,
             joinScreenMic,
@@ -811,6 +756,64 @@ const App = () => {
               paramKeys.realtimeTranscriptionVisible === "true",
           }}
         >
+   <>
+      {meetingLeft ? (
+        paramKeys.isRecorder === "true" ? null : (
+          <MeetingLeftScreen
+            brandLogoURL={paramKeys.brandLogoURL}
+            leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
+            leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+            leftScreenRejoinButtonEnabled={
+              paramKeys.leftScreenRejoinButtonEnabled !== "false"
+            }
+            backgroundColor={
+              paramKeys.theme === appThemes.DARK
+                ? theme.palette.darkTheme.main
+                : paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default
+            }
+            color={
+              paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : theme.palette.common.white
+            }
+            animationData={
+              paramKeys.theme === appThemes.LIGHT
+                ? lightThemeAnimationData
+                : animationData
+            }
+            setMeetingLeft={setMeetingLeft}
+          />
+        )
+      ) : meetingIdValidation.isLoading ? (
+        <Box
+          style={{
+            display: "flex",
+            flex: 1,
+            flexDirection: "column",
+            height: "100vh",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor:
+              paramKeys.theme === appThemes.DARK
+                ? theme.palette.darkTheme.main
+                : paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
+          }}
+        >
+          <CircularProgress size={"4rem"} />
+        </Box>
+      ) : meetingIdValidation.reqError ? (
+        <>
+          {/* <ErrorPage
+            errMsg={meetingIdValidation.reqError}
+            statusCode={meetingIdValidation.reqStatusCode}
+          /> */}
+        </>
+      ) : userHasInteracted && meetingIdValidation.meetingId ? (
+        
           <MeetingProvider
             config={{
               meetingId: meetingIdValidation.meetingId,
@@ -843,7 +846,6 @@ const App = () => {
           >
             <MeetingContainer />
           </MeetingProvider>
-        </MeetingAppProvider>
       ) : paramKeys.joinScreenEnabled === "true" ? (
         <JoinMeeting
           onClick={({ name, webcamOn, micOn }) => {
@@ -866,6 +868,10 @@ const App = () => {
           setName={setName}
           setSelectedMic={setSelectedMic}
           setSelectedWebcam={setSelectedWebcam}
+          setSelectedSpeaker={setSelectedSpeaker}
+          selectedMic = {selectedMic}
+          selectedWebcam = {selectedWebcam}
+          selectedSpeaker={selectedSpeaker}
           meetingUrl={paramKeys.joinScreenMeetingUrl}
           meetingTitle={paramKeys.joinScreenTitle}
           participantCanToggleSelfWebcam={
@@ -909,6 +915,7 @@ const App = () => {
         subTitle={meetingError.message}
       />
     </>
+    </MeetingAppProvider>
   );
 };
 
