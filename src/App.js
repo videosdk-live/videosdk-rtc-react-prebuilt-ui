@@ -531,9 +531,11 @@ const App = () => {
           paramKeys.micEnabled === "true"
       : paramKeys.micEnabled === "true"
   );
+
+  // The global state for all devices from join screen to meeting container to topbar
   const [selectedMic, setSelectedMic] = useState({ id: null });
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
-  const [selectedSpeaker, setSelectedSpeaker] = useState({ id : null});
+  const [selectedSpeaker, setSelectedSpeaker] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token, debug, region }) => {
     const BASE_URL = "https://api.videosdk.live";
@@ -623,194 +625,189 @@ const App = () => {
 
   return (
     <MeetingAppProvider
-          {...{
-            redirectOnLeave: paramKeys.redirectOnLeave,
-            chatEnabled: paramKeys.chatEnabled === "true",
-            screenShareEnabled: paramKeys.screenShareEnabled === "true",
-            pollEnabled: paramKeys.pollEnabled === "true",
-            whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
-            participantCanToggleSelfWebcam:
-              paramKeys.participantCanToggleSelfWebcam === "true",
-            participantCanToggleSelfMic:
-              paramKeys.participantCanToggleSelfMic === "true",
-            participantTabPanelEnabled:
-              paramKeys.participantTabPanelEnabled === "true",
-            moreOptionsEnabled: paramKeys.moreOptionsEnabled === "true",
-            raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
-            canChangeLayout: paramKeys.canChangeLayout === "true",
-            meetingLayoutTopic: paramKeys.meetingLayoutTopic,
-            recordingEnabled: paramKeys.recordingEnabled === "true",
-            realtimeTranscriptionEnabled:
-              paramKeys.realtimeTranscriptionEnabled === "true",
-            hlsEnabled: paramKeys.hlsEnabled === "true",
-            recordingWebhookUrl: paramKeys.recordingWebhookUrl,
-            recordingAWSDirPath: paramKeys.recordingAWSDirPath,
-            recordingTheme: paramKeys.recordingTheme,
-            autoStartRecording: paramKeys.autoStartRecording === "true",
-            autoStartHls: paramKeys.autoStartHls === "true",
-            hlsPlayerControlsVisible:
-              paramKeys.hlsPlayerControlsVisible === "true",
-            hlsTheme: paramKeys.hlsTheme,
-            participantCanToggleRecording:
-              paramKeys.participantCanToggleRecording === "true",
-            participantCanToggleRealtimeTranscription:
-              paramKeys.participantCanToggleRealtimeTranscription === "true",
-            participantCanToggleHls:
-              paramKeys.participantCanToggleHls === "true",
-            brandingEnabled: paramKeys.brandingEnabled === "true",
-            poweredBy: paramKeys.poweredBy === "true",
-            liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
-            autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
-            liveStreamOutputs: paramKeys.liveStreamOutputs,
-            liveStreamTheme: paramKeys.liveStreamTheme,
-            brandLogoURL:
-              paramKeys.brandLogoURL?.length > 0
-                ? paramKeys.brandLogoURL
-                : null,
-            brandName:
-              paramKeys.brandName?.length > 0 ? paramKeys.brandName : null,
-            waitingScreenImageUrl:
-              paramKeys.waitingScreenImageUrl?.length > 0
-                ? paramKeys.waitingScreenImageUrl
-                : null,
-            waitingScreenText:
-              paramKeys.waitingScreenText?.length > 0
-                ? paramKeys.waitingScreenText
-                : null,
-            participantCanLeave: paramKeys.participantCanLeave !== "false",
-            askJoin: paramKeys.askJoin === "true",
-            participantCanToggleOtherMic:
-              paramKeys.participantCanToggleOtherMic === "true",
-            participantCanToggleOtherWebcam:
-              paramKeys.participantCanToggleOtherWebcam === "true",
-            partcipantCanToogleOtherScreenShare:
-              paramKeys.partcipantCanToogleOtherScreenShare === "true",
-            participantCanToggleLivestream:
-              paramKeys.participantCanToggleLivestream === "true",
-            participantCanToggleOtherMode:
-              paramKeys.participantCanToggleOtherMode === "true",
-            notificationSoundEnabled:
-              paramKeys.notificationSoundEnabled === "true",
-            layoutType: paramKeys.layoutType,
-            mode: paramKeys.mode,
-            layoutPriority: paramKeys.layoutPriority,
-            canPin: paramKeys.canPin === "true",
-            selectedMic,
-            setSelectedMic,
-            selectedWebcam,
-            joinScreenWebCam,
-            joinScreenMic,
-            canRemoveOtherParticipant:
-              paramKeys.canRemoveOtherParticipant === "true",
-            participantCanEndMeeting:
-              paramKeys.participantCanEndMeeting === "true",
-            canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
-            canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
-            canToggleVirtualBackground:
-              paramKeys.canToggleVirtualBackground === "true",
-            canCreatePoll: paramKeys.canCreatePoll === "true",
-            canToggleParticipantTab:
-              paramKeys.canToggleParticipantTab === "true",
-            meetingLeft,
-            setMeetingLeft,
-            animationsEnabled: paramKeys.animationsEnabled !== "false",
-            topbarEnabled: paramKeys.topbarEnabled !== "false",
-            notificationAlertsEnabled:
-              paramKeys.notificationAlertsEnabled !== "false",
-            debug: paramKeys.debug === "true",
-            layoutGridSize: paramKeys.layoutGridSize,
-            hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
-            alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
-            sideStackSize: paramKeys.sideStackSize,
-            reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
-            isRecorder: paramKeys.isRecorder === "true",
-            appTheme: paramKeys.theme,
-            language: paramKeys.language,
-            token: paramKeys.token,
-            //
-            // recordingLayoutType: paramKeys.recordingLayoutType,
-            // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
-            // recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
-            // liveStreamLayoutType: paramKeys.liveStreamLayoutType,
-            // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
-            // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
-            //
-            maintainVideoAspectRatio:
-              paramKeys.maintainVideoAspectRatio === "true",
-            maintainLandscapeVideoAspectRatio:
-              paramKeys.maintainLandscapeVideoAspectRatio === "true",
-            networkBarEnabled: paramKeys.networkBarEnabled === "true",
-            cameraResolution: paramKeys.cameraResolution,
-            cameraId: paramKeys.cameraId,
-            cameraMultiStream: paramKeys.cameraMultiStream === "true",
-            cameraOptimizationMode: paramKeys.cameraOptimizationMode,
-            screenShareResolution: paramKeys.screenShareResolution,
-            screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
-            micQuality: paramKeys.micQuality,
-            joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
-            webcamEnabled: paramKeys.webcamEnabled,
-            realtimeTranscriptionVisible:
-              paramKeys.realtimeTranscriptionVisible === "true",
-          }}
-        >
-   <>
-      {meetingLeft ? (
-        paramKeys.isRecorder === "true" ? null : (
-          <MeetingLeftScreen
-            brandLogoURL={paramKeys.brandLogoURL}
-            leftScreenActionButtonLabel={paramKeys.leftScreenActionButtonLabel}
-            leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
-            leftScreenRejoinButtonEnabled={
-              paramKeys.leftScreenRejoinButtonEnabled !== "false"
-            }
-            backgroundColor={
-              paramKeys.theme === appThemes.DARK
-                ? theme.palette.darkTheme.main
-                : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default
-            }
-            color={
-              paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.contrastText
-                : theme.palette.common.white
-            }
-            animationData={
-              paramKeys.theme === appThemes.LIGHT
-                ? lightThemeAnimationData
-                : animationData
-            }
-            setMeetingLeft={setMeetingLeft}
-          />
-        )
-      ) : meetingIdValidation.isLoading ? (
-        <Box
-          style={{
-            display: "flex",
-            flex: 1,
-            flexDirection: "column",
-            height: "100vh",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor:
-              paramKeys.theme === appThemes.DARK
-                ? theme.palette.darkTheme.main
-                : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
-          }}
-        >
-          <CircularProgress size={"4rem"} />
-        </Box>
-      ) : meetingIdValidation.reqError ? (
-        <>
-          {/* <ErrorPage
+      {...{
+        redirectOnLeave: paramKeys.redirectOnLeave,
+        chatEnabled: paramKeys.chatEnabled === "true",
+        screenShareEnabled: paramKeys.screenShareEnabled === "true",
+        pollEnabled: paramKeys.pollEnabled === "true",
+        whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
+        participantCanToggleSelfWebcam:
+          paramKeys.participantCanToggleSelfWebcam === "true",
+        participantCanToggleSelfMic:
+          paramKeys.participantCanToggleSelfMic === "true",
+        participantTabPanelEnabled:
+          paramKeys.participantTabPanelEnabled === "true",
+        moreOptionsEnabled: paramKeys.moreOptionsEnabled === "true",
+        raiseHandEnabled: paramKeys.raiseHandEnabled === "true",
+        canChangeLayout: paramKeys.canChangeLayout === "true",
+        meetingLayoutTopic: paramKeys.meetingLayoutTopic,
+        recordingEnabled: paramKeys.recordingEnabled === "true",
+        realtimeTranscriptionEnabled:
+          paramKeys.realtimeTranscriptionEnabled === "true",
+        hlsEnabled: paramKeys.hlsEnabled === "true",
+        recordingWebhookUrl: paramKeys.recordingWebhookUrl,
+        recordingAWSDirPath: paramKeys.recordingAWSDirPath,
+        recordingTheme: paramKeys.recordingTheme,
+        autoStartRecording: paramKeys.autoStartRecording === "true",
+        autoStartHls: paramKeys.autoStartHls === "true",
+        hlsPlayerControlsVisible: paramKeys.hlsPlayerControlsVisible === "true",
+        hlsTheme: paramKeys.hlsTheme,
+        participantCanToggleRecording:
+          paramKeys.participantCanToggleRecording === "true",
+        participantCanToggleRealtimeTranscription:
+          paramKeys.participantCanToggleRealtimeTranscription === "true",
+        participantCanToggleHls: paramKeys.participantCanToggleHls === "true",
+        brandingEnabled: paramKeys.brandingEnabled === "true",
+        poweredBy: paramKeys.poweredBy === "true",
+        liveStreamEnabled: paramKeys.liveStreamEnabled === "true",
+        autoStartLiveStream: paramKeys.autoStartLiveStream === "true",
+        liveStreamOutputs: paramKeys.liveStreamOutputs,
+        liveStreamTheme: paramKeys.liveStreamTheme,
+        brandLogoURL:
+          paramKeys.brandLogoURL?.length > 0 ? paramKeys.brandLogoURL : null,
+        brandName: paramKeys.brandName?.length > 0 ? paramKeys.brandName : null,
+        waitingScreenImageUrl:
+          paramKeys.waitingScreenImageUrl?.length > 0
+            ? paramKeys.waitingScreenImageUrl
+            : null,
+        waitingScreenText:
+          paramKeys.waitingScreenText?.length > 0
+            ? paramKeys.waitingScreenText
+            : null,
+        participantCanLeave: paramKeys.participantCanLeave !== "false",
+        askJoin: paramKeys.askJoin === "true",
+        participantCanToggleOtherMic:
+          paramKeys.participantCanToggleOtherMic === "true",
+        participantCanToggleOtherWebcam:
+          paramKeys.participantCanToggleOtherWebcam === "true",
+        partcipantCanToogleOtherScreenShare:
+          paramKeys.partcipantCanToogleOtherScreenShare === "true",
+        participantCanToggleLivestream:
+          paramKeys.participantCanToggleLivestream === "true",
+        participantCanToggleOtherMode:
+          paramKeys.participantCanToggleOtherMode === "true",
+        notificationSoundEnabled: paramKeys.notificationSoundEnabled === "true",
+        layoutType: paramKeys.layoutType,
+        mode: paramKeys.mode,
+        layoutPriority: paramKeys.layoutPriority,
+        canPin: paramKeys.canPin === "true",
+        selectedMic,
+        setSelectedMic,
+        selectedWebcam,
+        setSelectedWebcam,
+        joinScreenWebCam,
+        joinScreenMic,
+        selectedSpeaker,
+        setSelectedSpeaker,
+        canRemoveOtherParticipant:
+          paramKeys.canRemoveOtherParticipant === "true",
+        participantCanEndMeeting: paramKeys.participantCanEndMeeting === "true",
+        canDrawOnWhiteboard: paramKeys.canDrawOnWhiteboard === "true",
+        canToggleWhiteboard: paramKeys.canToggleWhiteboard === "true",
+        canToggleVirtualBackground:
+          paramKeys.canToggleVirtualBackground === "true",
+        canCreatePoll: paramKeys.canCreatePoll === "true",
+        canToggleParticipantTab: paramKeys.canToggleParticipantTab === "true",
+        meetingLeft,
+        setMeetingLeft,
+        animationsEnabled: paramKeys.animationsEnabled !== "false",
+        topbarEnabled: paramKeys.topbarEnabled !== "false",
+        notificationAlertsEnabled:
+          paramKeys.notificationAlertsEnabled !== "false",
+        debug: paramKeys.debug === "true",
+        layoutGridSize: paramKeys.layoutGridSize,
+        hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
+        alwaysShowOverlay: paramKeys.alwaysShowOverlay === "true",
+        sideStackSize: paramKeys.sideStackSize,
+        reduceEdgeSpacing: paramKeys.reduceEdgeSpacing === "true",
+        isRecorder: paramKeys.isRecorder === "true",
+        appTheme: paramKeys.theme,
+        language: paramKeys.language,
+        token: paramKeys.token,
+        //
+        // recordingLayoutType: paramKeys.recordingLayoutType,
+        // recordingLayoutPriority: paramKeys.recordingLayoutPriority,
+        // recordingLayoutGridSize: paramKeys.recordingLayoutGridSize,
+        // liveStreamLayoutType: paramKeys.liveStreamLayoutType,
+        // liveStreamLayoutPriority: paramKeys.liveStreamLayoutPriority,
+        // liveStreamLayoutGridSize: paramKeys.liveStreamLayoutGridSize,
+        //
+        maintainVideoAspectRatio: paramKeys.maintainVideoAspectRatio === "true",
+        maintainLandscapeVideoAspectRatio:
+          paramKeys.maintainLandscapeVideoAspectRatio === "true",
+        networkBarEnabled: paramKeys.networkBarEnabled === "true",
+        cameraResolution: paramKeys.cameraResolution,
+        cameraId: paramKeys.cameraId,
+        cameraMultiStream: paramKeys.cameraMultiStream === "true",
+        cameraOptimizationMode: paramKeys.cameraOptimizationMode,
+        screenShareResolution: paramKeys.screenShareResolution,
+        screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
+        micQuality: paramKeys.micQuality,
+        joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
+        webcamEnabled: paramKeys.webcamEnabled,
+        realtimeTranscriptionVisible:
+          paramKeys.realtimeTranscriptionVisible === "true",
+      }}
+    >
+      <>
+        {meetingLeft ? (
+          paramKeys.isRecorder === "true" ? null : (
+            <MeetingLeftScreen
+              brandLogoURL={paramKeys.brandLogoURL}
+              leftScreenActionButtonLabel={
+                paramKeys.leftScreenActionButtonLabel
+              }
+              leftScreenActionButtonHref={paramKeys.leftScreenActionButtonHref}
+              leftScreenRejoinButtonEnabled={
+                paramKeys.leftScreenRejoinButtonEnabled !== "false"
+              }
+              backgroundColor={
+                paramKeys.theme === appThemes.DARK
+                  ? theme.palette.darkTheme.main
+                  : paramKeys.theme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default
+              }
+              color={
+                paramKeys.theme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : theme.palette.common.white
+              }
+              animationData={
+                paramKeys.theme === appThemes.LIGHT
+                  ? lightThemeAnimationData
+                  : animationData
+              }
+              setMeetingLeft={setMeetingLeft}
+            />
+          )
+        ) : meetingIdValidation.isLoading ? (
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              height: "100vh",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor:
+                paramKeys.theme === appThemes.DARK
+                  ? theme.palette.darkTheme.main
+                  : paramKeys.theme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
+            }}
+          >
+            <CircularProgress size={"4rem"} />
+          </Box>
+        ) : meetingIdValidation.reqError ? (
+          <>
+            {/* <ErrorPage
             errMsg={meetingIdValidation.reqError}
             statusCode={meetingIdValidation.reqStatusCode}
           /> */}
-        </>
-      ) : userHasInteracted && meetingIdValidation.meetingId ? (
-        
+          </>
+        ) : userHasInteracted && meetingIdValidation.meetingId ? (
           <MeetingProvider
             config={{
               meetingId: meetingIdValidation.meetingId,
@@ -843,75 +840,75 @@ const App = () => {
           >
             <MeetingContainer />
           </MeetingProvider>
-      ) : paramKeys.joinScreenEnabled === "true" ? (
-        <JoinMeeting
-          onClick={({ name, webcamOn, micOn }) => {
-            setName(name);
-            setJoinScreenMic(micOn);
-            setJoinScreenWebCam(webcamOn);
-            setUserHasInteracted(true);
-          }}
-          {...{
-            micEnabled:
+        ) : paramKeys.joinScreenEnabled === "true" ? (
+          <JoinMeeting
+            onClick={({ name, webcamOn, micOn }) => {
+              setName(name);
+              setJoinScreenMic(micOn);
+              setJoinScreenWebCam(webcamOn);
+              setUserHasInteracted(true);
+            }}
+            {...{
+              micEnabled:
+                paramKeys.mode === meetingModes.VIEWER
+                  ? false
+                  : paramKeys.micEnabled === "true",
+              webcamEnabled:
+                paramKeys.mode === meetingModes.VIEWER
+                  ? false
+                  : paramKeys.webcamEnabled === "true",
+            }}
+            name={name}
+            setName={setName}
+            setSelectedMic={setSelectedMic}
+            setSelectedWebcam={setSelectedWebcam}
+            setSelectedSpeaker={setSelectedSpeaker}
+            selectedSpeaker={selectedSpeaker}
+            selectedMic={selectedMic}
+            selectedWebcam={selectedWebcam}
+            meetingUrl={paramKeys.joinScreenMeetingUrl}
+            meetingTitle={paramKeys.joinScreenTitle}
+            participantCanToggleSelfWebcam={
               paramKeys.mode === meetingModes.VIEWER
-                ? false
-                : paramKeys.micEnabled === "true",
-            webcamEnabled:
+                ? "false"
+                : paramKeys.participantCanToggleSelfWebcam
+            }
+            participantCanToggleSelfMic={
               paramKeys.mode === meetingModes.VIEWER
-                ? false
-                : paramKeys.webcamEnabled === "true",
-          }}
-          name={name}
-          setName={setName}
-          setSelectedMic={setSelectedMic}
-          setSelectedWebcam={setSelectedWebcam}
-          setSelectedSpeaker={setSelectedSpeaker}
-          selectedMic = {selectedMic}
-          selectedWebcam = {selectedWebcam}
-          selectedSpeaker={selectedSpeaker}
-          meetingUrl={paramKeys.joinScreenMeetingUrl}
-          meetingTitle={paramKeys.joinScreenTitle}
-          participantCanToggleSelfWebcam={
-            paramKeys.mode === meetingModes.VIEWER
-              ? "false"
-              : paramKeys.participantCanToggleSelfWebcam
-          }
-          participantCanToggleSelfMic={
-            paramKeys.mode === meetingModes.VIEWER
-              ? "false"
-              : paramKeys.participantCanToggleSelfMic
-          }
-          mode={paramKeys.mode}
-          appTheme={paramKeys.theme}
-          cameraId={paramKeys.cameraId}
-        />
-      ) : (
-        <ClickAnywhereToContinue
-          onClick={() => {
-            setUserHasInteracted(true);
-          }}
-          title="Click anywhere to continue"
-          brandLogoURL={paramKeys.brandLogoURL}
-        />
-      )}
-      <ConfirmBox
-        open={meetingError.isVisible}
-        successText="OKAY"
-        onSuccess={() => {
-          setMeetingError(({ message }) => {
-            throw new Error(message);
+                ? "false"
+                : paramKeys.participantCanToggleSelfMic
+            }
+            mode={paramKeys.mode}
+            appTheme={paramKeys.theme}
+            cameraId={paramKeys.cameraId}
+          />
+        ) : (
+          <ClickAnywhereToContinue
+            onClick={() => {
+              setUserHasInteracted(true);
+            }}
+            title="Click anywhere to continue"
+            brandLogoURL={paramKeys.brandLogoURL}
+          />
+        )}
+        <ConfirmBox
+          open={meetingError.isVisible}
+          successText="OKAY"
+          onSuccess={() => {
+            setMeetingError(({ message }) => {
+              throw new Error(message);
 
-            // return {
-            //   message: null,
-            //   code: null,
-            //   isVisible: false,
-            // };
-          });
-        }}
-        title={`Error Code: ${meetingError.code}`}
-        subTitle={meetingError.message}
-      />
-    </>
+              // return {
+              //   message: null,
+              //   code: null,
+              //   isVisible: false,
+              // };
+            });
+          }}
+          title={`Error Code: ${meetingError.code}`}
+          subTitle={meetingError.message}
+        />
+      </>
     </MeetingAppProvider>
   );
 };

@@ -1,4 +1,8 @@
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+import {
+  useMediaDevice,
+  useMeeting,
+  useParticipant,
+} from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
@@ -10,9 +14,50 @@ const ParticipantAudioPlayer = ({ participantId }) => {
     consumeMicStreams,
     stopConsumingMicStreams,
   } = useParticipant(participantId);
-
-  const { selectedOutputDeviceId } = useMeetingAppContext();
+  const { getPlaybackDevices } = useMediaDevice({
+    onDeviceChanged: () => {
+      updateAudioOutput();
+    },
+  });
+  const { selectedSpeaker, setSelectedSpeaker } = useMeetingAppContext();
   const audioPlayer = useRef();
+
+  async function updateAudioOutput() {
+    if (audioPlayer.current && micOn && micStream) {
+      const mediaStream = new MediaStream();
+      mediaStream.addTrack(micStream.track);
+
+      audioPlayer.current.srcObject = mediaStream;
+
+      try {
+        await audioPlayer.current.setSinkId(selectedSpeaker.id);
+        audioPlayer.current.play().catch((err) => {
+          if (
+            err.message.includes("user didn't interact with the document first")
+          ) {
+            console.error("audio error: " + err.message);
+          }
+        });
+      } catch (error) {
+        console.log("Error setting sink ID:", error);
+
+        // Fallback: Find and set another available device if the current one is disconnected
+        const availableDevices = await getPlaybackDevices();
+        const newSpeaker = availableDevices.find(
+          (device) => device.deviceId !== selectedSpeaker.id
+        );
+
+        if (newSpeaker) {
+          setSelectedSpeaker({
+            id: newSpeaker.deviceId,
+            // label: newSpeaker.label,
+          });
+        }
+      }
+    } else {
+      audioPlayer.current.srcObject = null;
+    }
+  }
 
   useEffect(() => {
     if (!isLocal) {
@@ -24,28 +69,34 @@ const ParticipantAudioPlayer = ({ participantId }) => {
   }, []);
 
   useEffect(() => {
-    if (!isLocal && audioPlayer.current && micOn && micStream) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(micStream.track);
+    updateAudioOutput();
+  }, [micStream, micOn, isLocal, participantId, selectedSpeaker]);
 
-      audioPlayer.current.srcObject = mediaStream;
-      try {
-        audioPlayer.current.setSinkId(selectedOutputDeviceId);
-      } catch (error) {
-        console.log("error", error);
-      }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
+  useEffect(() => {
+    const handleDeviceChange = async () => {
+      const availableDevices = await getPlaybackDevices();
+      const currentDeviceExists = availableDevices.some(
+        (device) => device.deviceId === selectedSpeaker.id
+      );
+
+      if (!currentDeviceExists) {
+        const newSpeaker = availableDevices;
+
+        if (newSpeaker) {
+          setSelectedSpeaker({
+            id: newSpeaker.deviceId,
+            // label: newSpeaker.label,
+          });
         }
-      });
-    } else {
-      audioPlayer.current.srcObject = null;
-    }
-  }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
+      }
+    };
+    // handleDeviceChange();
+
+
+    // return () => {
+    //   // navigator.mediaDevices.ondevicechange = null;
+    // };
+  }, []);
 
   return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
 };

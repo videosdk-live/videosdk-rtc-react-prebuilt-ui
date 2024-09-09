@@ -165,6 +165,7 @@ const MeetingContainer = () => {
     meetingLayout,
     selectedMic,
     selectedWebcam,
+    selectedSpeaker,
     joinScreenWebCam,
     joinScreenMic,
     joinWithoutUserInteraction,
@@ -367,6 +368,8 @@ const MeetingContainer = () => {
         startHls({ layout, theme: hlsTheme });
       }
     }, 3000);
+    
+
 
     if (
       joinWithoutUserInteractionValue

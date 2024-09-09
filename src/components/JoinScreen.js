@@ -105,6 +105,7 @@ export default function JoinMeeting({
   participantCanToggleSelfMic,
   micEnabled,
   webcamEnabled,
+  setSelectedSpeaker,
   setSelectedMic,
   setSelectedWebcam,
   mode,
@@ -167,7 +168,7 @@ export default function JoinMeeting({
   const [audioTrack, setAudioTrack] = useState(null);
 
   const [selectedMicrophone, setSelectedMicrophone] = useState("");
-  const [selectedSpeaker, setSelectedSpeaker] = useState("");
+  const [selectSpeaker, setSelectSpeaker] = useState("");
   const [selectedCamera, setSelectedCamera] = useState("");
 
   const [hasAudioPermission, setHasAudioPermission] = useState(false);
@@ -378,10 +379,6 @@ export default function JoinMeeting({
         changeMic(mics[0].deviceId);
         setSelectedMicrophone(mics[0].deviceId);
         setSelectedMic({ id: mics[0].deviceId });
-
-
-        setSelectedOutputDeviceId(mics[0].deviceId)
-
       }
     } catch (err) {
       console.log("Error in getting audio devices", err);
@@ -391,6 +388,10 @@ export default function JoinMeeting({
   const getSpeakerDevices = async () => {
     try {
       let speakers = await getPlaybackDevices();
+
+      speakers = speakers.filter(
+        (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+      );
 
       setDevices((devices) => {
         return { ...devices, speakers };
@@ -410,7 +411,10 @@ export default function JoinMeeting({
     try {
       const webcams = await getCameras();
       const mics = await getMicrophones();
-      const speakers = await getPlaybackDevices();
+      let speakers = await getPlaybackDevices();
+      speakers = speakers.filter(
+        (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+      );
 
       setDevices({ webcams, mics, speakers });
 
@@ -431,14 +435,16 @@ export default function JoinMeeting({
       if (mics.length > 0) {
         setSelectedMicrophone(mics[0].deviceId);
         setSelectedMic({ id: mics[0].deviceId });
-        setSelectedOutputDeviceId(mics[0].deviceId)
       }
       if (webcams?.length > 0) {
         setSelectedCamera(webcams[0].deviceId);
         setSelectedWebcam({ id: webcams[0].deviceId });
       }
       if (speakers.length > 0) {
-        setSelectedSpeaker(speakers[0].deviceId);
+        setSelectSpeaker(speakers[0].deviceId);
+        setSelectedSpeaker({id: speakers[0].deviceId})
+        setSelectedOutputDeviceId(speakers[0].deviceId)
+
       }
     } catch (err) {
       console.log(err);
@@ -554,7 +560,8 @@ export default function JoinMeeting({
   };
 
   const handleSpeakerChange = (event) => {
-    setSelectedSpeaker(event.target.value);
+    setSelectSpeaker(event.target.value);
+    setSelectedSpeaker({id: event.target.value})
   };
 
   const handleCameraChange = (event) => {
@@ -1060,7 +1067,7 @@ export default function JoinMeeting({
                                 disabled={!hasAudioPermission}
                                 labelId="speaker-select-label"
                                 id="speaker-select"
-                                value={selectedSpeaker}
+                                value={selectSpeaker}
                                 label="Speaker"
                                 onChange={handleSpeakerChange}
                                 // variant="filled"
