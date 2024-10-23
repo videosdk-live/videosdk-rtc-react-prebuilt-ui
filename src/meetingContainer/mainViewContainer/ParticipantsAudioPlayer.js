@@ -16,9 +16,9 @@ const ParticipantAudioPlayer = ({ participantId }) => {
 
   useEffect(() => {
     if (!isLocal) {
-      consumeMicStreams();
+      // consumeMicStreams();
       return () => {
-        stopConsumingMicStreams();
+        // stopConsumingMicStreams();
       };
     }
   }, []);
