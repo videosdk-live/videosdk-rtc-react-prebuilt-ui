@@ -366,7 +366,6 @@ const PinnedLayoutViewContainer = ({
                         color: "white",
                         cursor: "pointer",
                         zIndex: 40,
-                        // fontSize: "18px"
                       }}
                     >
                       ✕
@@ -374,40 +373,15 @@ const PinnedLayoutViewContainer = ({
                   )}
                   <iframe
                     title="whiteboard"
-                    src={whiteboardUrl}
+                    src={`${whiteboardUrl}${
+                      !canDrawOnWhiteboard ? "&drawOnWhiteboard=false" : ""
+                    }`}
                     width="100%"
                     style={{
-                      height: "calc(100vh - 100px)", // Use calc in style
-                      zIndex: 0, // Keeps it below overlay and button
+                      height: "calc(100vh - 100px)",
+                      zIndex: 0,
                     }}
                   ></iframe>
-
-                  {!canDrawOnWhiteboard && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "rgba(0, 0, 0, 0.75)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: 10,
-                      }}
-                    >
-                      <iframe
-                        title="whiteboard"
-                        src={`${whiteboardUrl}&drawOnWhiteboard=false`}
-                        width="100%"
-                        style={{
-                          height: "calc(100vh - 100px)", // Use calc in style
-                          zIndex: 0, // Keeps it below overlay and button
-                        }}
-                      ></iframe>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <WhiteboardContainer
