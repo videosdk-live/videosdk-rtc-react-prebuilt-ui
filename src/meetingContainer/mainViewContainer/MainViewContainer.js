@@ -1,4 +1,4 @@
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, useWhiteboard } from "@videosdk.live/react-sdk";
 import React, { useEffect, useMemo, useState } from "react";
 import ParticipantViewer from "./ParticipantViewer";
 import PresenterView from "./PresenterView";
@@ -18,7 +18,7 @@ import {
   appThemes,
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated } from "react-spring";
 import { useTheme } from "@mui/material";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { useMediaQuery } from "react-responsive";
@@ -63,7 +63,6 @@ const MotionParticipant = ({
 
   const { animationsEnabled } = useMeetingAppContext();
 
-
   const animeConfig = { tension: 180, friction: 22 };
 
   const animatedProps = useSpring({
@@ -71,18 +70,18 @@ const MotionParticipant = ({
     left: relativeLeft,
     height: relativeHeight,
     width: relativeWidth,
-    scale: mounted ? 1 : (animationsEnabled ? 0 : 0.5),
+    scale: mounted ? 1 : animationsEnabled ? 0 : 0.5,
     config: animeConfig,
   });
 
   if (!animatedProps) {
-    return null; 
+    return null;
   }
 
   return (
     <animated.div
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: animatedProps.top.interpolate((val) => `${val}%`),
         left: animatedProps.left.interpolate((val) => `${val}%`),
         height: animatedProps.height.interpolate((val) => `${val}%`),
@@ -514,6 +513,8 @@ const MainViewContainer = ({
     () => (singleRow.length ? presentingSideBarWidth : 0),
     [singleRow, presentingSideBarWidth]
   );
+  const { stopWhiteboard, whiteboardUrl } = useWhiteboard();
+  const { canDrawOnWhiteboard, canToggleWhiteboard } = useMeetingAppContext();
 
   return participants ? (
     <>
@@ -568,33 +569,99 @@ const MainViewContainer = ({
               position: "relative",
             }}
           >
-            {whiteboardStarted && (
-              <WhiteboardContainer
-                {...{
-                  ...convertHWAspectRatio({
-                    height:
-                      height -
-                      2 * spacing -
-                      (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
-                    width: whiteboardStarted
+            {whiteboardStarted &&
+              (whiteboardUrl ? (
+                <div style={{ position: "relative", width: "100%" }}>
+                  {canToggleWhiteboard && (
+                    <button
+                      onClick={stopWhiteboard}
+                      style={{
+                        position: "absolute",
+                        float: "right",
+                        top: "10px",
+                        right: "10px",
+                        marginBottom: "5px",
+                        backgroundColor: "rgba(0, 0, 0, 0.8)",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "40px",
+                        height: "40px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        color: "white",
+                        cursor: "pointer",
+                        zIndex: 40,
+                        // fontSize: "18px"
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <iframe
+                    title="whiteboard"
+                    src={whiteboardUrl}
+                    width="100%"
+                    style={{
+                      height: "calc(100vh - 100px)", // Use calc in style
+                      zIndex: 0, // Keeps it below overlay and button
+                    }}
+                  ></iframe>
+
+                  {!canDrawOnWhiteboard && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0, 0, 0, 0.75)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 10,
+                      }}
+                    >
+                      <iframe
+                        title="whiteboard"
+                        src={`${whiteboardUrl}&drawOnWhiteboard=false`}
+                        width="100%"
+                        style={{
+                          height: "calc(100vh - 100px)", // Use calc in style
+                          zIndex: 0, // Keeps it below overlay and button
+                        }}
+                      ></iframe>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <WhiteboardContainer
+                  {...{
+                    ...convertHWAspectRatio({
+                      height:
+                        height -
+                        2 * spacing -
+                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
+                      width: whiteboardStarted
+                        ? width -
+                          (isMobile ? 0 : actualPresentingSideBarWidth) -
+                          2 * spacing -
+                          (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
+                          (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
+                        : 0,
+                    }),
+                    whiteboardToolbarWidth,
+                    whiteboardSpacing,
+                    originalHeight: height - 2 * spacing,
+                    originalWidth: whiteboardStarted
                       ? width -
                         (isMobile ? 0 : actualPresentingSideBarWidth) -
-                        2 * spacing -
-                        (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
-                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
+                        2 * spacing
                       : 0,
-                  }),
-                  whiteboardToolbarWidth,
-                  whiteboardSpacing,
-                  originalHeight: height - 2 * spacing,
-                  originalWidth: whiteboardStarted
-                    ? width -
-                      (isMobile ? 0 : actualPresentingSideBarWidth) -
-                      2 * spacing
-                    : 0,
-                }}
-              />
-            )}
+                  }}
+                />
+              ))}
 
             {presenterId && <PresenterView presenterId={presenterId} />}
 
