@@ -221,7 +221,7 @@ export default function JoinMeeting({
         encoderConfig: "h720p_w1280p",
       });
       const videoTracks = stream?.getVideoTracks();
-      const videoTrack = videoTracks.length ? videoTracks[0] : null;
+      const videoTrack = videoTracks?.length ? videoTracks[0] : null;
       setVideoTrack(videoTrack);
       if (firstTime) {
         setSelectedWebcam({

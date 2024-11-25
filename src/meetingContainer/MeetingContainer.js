@@ -481,7 +481,8 @@ const MeetingContainer = () => {
   };
 
   const _handleParticipantJoined = (data) => {
-    data.renderVideo({ type: "video" });
+    // data.renderVideo({ type: "video" });
+    // data.renderAudio({ type: "audio" });
     // if (showJoinNotificationRef.current) {
     //   const { displayName } = data;
     // if (notificationSoundEnabled) {

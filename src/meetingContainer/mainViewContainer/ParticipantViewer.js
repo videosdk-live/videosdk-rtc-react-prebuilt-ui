@@ -265,7 +265,16 @@ export const CornerDisplayName = ({
   }, [webcamStream, micStream, screenShareStream, networkBarEnabled]);
 
   return (
-    <>
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        zIndex: 20,
+        position: "absolute",
+        top: 0,
+        left: 0,
+      }}
+    >
       <div
         onClick={(e) => {
           e.stopPropagation();
@@ -590,7 +599,7 @@ export const CornerDisplayName = ({
             </div>
           </Box>
         )}
-    </>
+    </div>
   );
 };
 
@@ -677,12 +686,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const videoDivRef = useRef();
 
-  useEffect(() => {
-    if (videoDivRef.current && participant) {
-      const video = participant.renderVideo();
-      videoDivRef.current.appendChild(video);
-    }
-  }, [participant, videoDivRef.current]);
+  // useEffect(() => {
+  //   if (videoDivRef.current && participant) {
+  //     const video = participant.renderVideo();
+  //     videoDivRef.current.appendChild(video);
+  //   }
+  // }, [participant, videoDivRef.current]);
 
   // useEffect(() => {
   //   if (!presenterId) {
@@ -783,85 +792,93 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             : "video-cover"
         }`}
       >
-        {webcamOn ? (
-          <VideoSDKPlayer
-            participantId={participantId}
-            style={{
-              height: "100%",
-              width: "100%",
-              ...flipStyle,
-            }}
-            type={"video"}
-            className={`${
-              maintainLandscapeVideoAspectRatio && !portrait
-                ? "video-contain"
-                : portrait
-                ? ""
-                : "video-cover"
-            }`}
-          />
-        ) : (
-          <div
-            style={{
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {isActiveSpeaker && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Lottie
-                  options={defaultRippleOptions}
-                  eventListeners={[{ eventName: "done" }]}
-                  height={
-                    (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
-                  }
-                  width={
-                    (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
-                  }
-                  isClickToPauseDisabled
-                />
-              </div>
-            )}
-
-            <Box
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 0,
+            top: 0,
+            left: 0,
+            position: "absolute",
+          }}
+        >
+          {isActiveSpeaker && (
+            <div
               style={{
-                zIndex: 10,
-                height: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
-                width: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                borderRadius: 100,
-                backgroundColor: participantAccentColor,
-                transition: animationsEnabled
-                  ? "height 800ms, width 800ms"
-                  : undefined,
-                transitionTimingFunction: "ease-in-out",
               }}
             >
-              <Typography
-                variant={presenterId || whiteboardStarted ? "body2" : "h5"}
-                style={{ color: invertColor(participantAccentColor) }}
-              >
-                {String(displayName).charAt(0).toUpperCase()}
-              </Typography>
-            </Box>
-          </div>
-        )}
+              <Lottie
+                options={defaultRippleOptions}
+                eventListeners={[{ eventName: "done" }]}
+                height={
+                  (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
+                }
+                width={
+                  (dpSize / (presenterId || whiteboardStarted ? 2 : 1)) * 2
+                }
+                isClickToPauseDisabled
+              />
+            </div>
+          )}
+
+          <Box
+            style={{
+              zIndex: -1,
+              height: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
+              width: dpSize / (presenterId || whiteboardStarted ? 2 : 1),
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 100,
+              backgroundColor: participantAccentColor,
+              transition: animationsEnabled
+                ? "height 800ms, width 800ms"
+                : undefined,
+              transitionTimingFunction: "ease-in-out",
+              top: "50%",
+              left: "50%",
+            }}
+          >
+            <Typography
+              variant={presenterId || whiteboardStarted ? "body2" : "h5"}
+              style={{ color: invertColor(participantAccentColor) }}
+            >
+              {String(displayName).charAt(0).toUpperCase()}
+            </Typography>
+          </Box>
+        </div>
+
+        <VideoSDKPlayer
+          participantId={participantId}
+          containerStyle={{
+            height: "100%",
+            width: "100%",
+            ...flipStyle,
+            zIndex: 10,
+            top: 0,
+            left: 0,
+            position: "absolute",
+          }}
+          type={"video"}
+          className={`${
+            maintainLandscapeVideoAspectRatio && !portrait
+              ? "video-contain"
+              : portrait
+              ? ""
+              : "video-cover"
+          }`}
+        />
 
         <CornerDisplayName
           {...{

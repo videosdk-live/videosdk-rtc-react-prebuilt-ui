@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ScreenShare } from "@mui/icons-material";
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+import {
+  useMeeting,
+  useParticipant,
+  VideoSDKPlayer,
+} from "@videosdk.live/react-sdk";
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import ParticipantViewer, { CornerDisplayName } from "./ParticipantViewer";
 import useIsMobile from "../../utils/useIsMobile";
@@ -53,13 +57,13 @@ const PresenterView = ({ presenterId }) => {
 
   const [mouseOver, setMouseOver] = useState(false);
 
-  const mediaStream = useMemo(() => {
-    if (screenShareOn) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(screenShareStream.track);
-      return mediaStream;
-    }
-  }, [screenShareStream, screenShareOn]);
+  // const mediaStream = useMemo(() => {
+  //   if (screenShareOn) {
+  //     const mediaStream = new MediaStream();
+  //     mediaStream.addTrack(screenShareStream.track);
+  //     return mediaStream;
+  //   }
+  // }, [screenShareStream, screenShareOn]);
 
   const mobilePortrait = isMobile && isPortrait;
 
@@ -93,36 +97,36 @@ const PresenterView = ({ presenterId }) => {
     meetingLayout,
   ]);
 
-  const audioPlayer = useRef();
+  // const audioPlayer = useRef();
 
-  useEffect(() => {
-    if (
-      !isLocal &&
-      audioPlayer.current &&
-      screenShareOn &&
-      screenShareAudioStream
-    ) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(screenShareAudioStream.track);
+  // useEffect(() => {
+  //   if (
+  //     !isLocal &&
+  //     audioPlayer.current &&
+  //     screenShareOn &&
+  //     screenShareAudioStream
+  //   ) {
+  //     const mediaStream = new MediaStream();
+  //     mediaStream.addTrack(screenShareAudioStream.track);
 
-      audioPlayer.current.srcObject = mediaStream;
-      try {
-        audioPlayer.current.setSinkId(selectedOutputDeviceId);
-      } catch (error) {
-        console.log("error", error);
-      }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
-    } else {
-      audioPlayer.current.srcObject = null;
-    }
-  }, [screenShareAudioStream, screenShareOn, isLocal, selectedOutputDeviceId]);
+  //     audioPlayer.current.srcObject = mediaStream;
+  //     try {
+  //       audioPlayer.current.setSinkId(selectedOutputDeviceId);
+  //     } catch (error) {
+  //       console.log("error", error);
+  //     }
+  //     audioPlayer.current.play().catch((err) => {
+  //       if (
+  //         err.message ===
+  //         "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
+  //       ) {
+  //         console.error("audio" + err.message);
+  //       }
+  //     });
+  //   } else {
+  //     audioPlayer.current.srcObject = null;
+  //   }
+  // }, [screenShareAudioStream, screenShareOn, isLocal, selectedOutputDeviceId]);
 
   return (
     <div
@@ -162,8 +166,12 @@ const PresenterView = ({ presenterId }) => {
             : "flex",
       }}
     >
-      <audio autoPlay playsInline controls={false} ref={audioPlayer} />
-
+      {/* <audio autoPlay playsInline controls={false} ref={audioPlayer} /> */}
+      <VideoSDKPlayer
+        type={"shareAudio"}
+        participantId={presenterId}
+        containerStyle={{ display: "none" }}
+      />
       <div
         style={{
           height: mobilePortrait ? "50%" : "100%",
@@ -172,7 +180,7 @@ const PresenterView = ({ presenterId }) => {
         }}
         className={"video-contain"}
       >
-        <>
+        {/* <>
           <ReactPlayer
             ref={videoPlayer}
             //
@@ -196,7 +204,11 @@ const PresenterView = ({ presenterId }) => {
               console.log(err, "presenter video error");
             }}
           />
-        </>
+        </> */}
+        <VideoSDKPlayer
+          participantId={presenterId}
+          type={"share"}
+        ></VideoSDKPlayer>
         {isLocal && (
           <Box
             p={5}
