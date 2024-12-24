@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, useWhiteboard } from "@videosdk.live/react-sdk";
 import React, { useMemo } from "react";
 import { useMediaQuery } from "react-responsive";
 import { appThemes, useMeetingAppContext } from "../../MeetingAppContextDef";
@@ -213,6 +213,9 @@ const PinnedLayoutViewContainer = ({
   const gutter = 4;
   const spacing = (reduceEdgeSpacing ? 4 : rowSpacing) - gutter;
 
+  const { stopWhiteboard, whiteboardUrl } = useWhiteboard();
+  const { canDrawOnWhiteboard, canToggleWhiteboard } = useMeetingAppContext();
+
   const _presentingSideBarWidth = useResponsiveSize({
     xl: 320,
     lg: 280,
@@ -341,30 +344,71 @@ const PinnedLayoutViewContainer = ({
                 presenterId={spotlightParticipantId}
               />
             ) : spotlightMediaType === "WHITEBOARD" ? (
-              <WhiteboardContainer
-                {...{
-                  ...convertHWAspectRatio({
-                    height:
-                      height -
-                      2 * spacing -
-                      (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
-                    width: whiteboardStarted
-                      ? width -
-                        (isMobile ? 0 : presentingSideBarWidth) -
+              whiteboardUrl ? (
+                <div style={{ position: "relative", width: "100%" }}>
+                  {canToggleWhiteboard && (
+                    <button
+                      onClick={stopWhiteboard}
+                      style={{
+                        position: "absolute",
+                        float: "right",
+                        top: "10px",
+                        right: "10px",
+                        marginBottom: "5px",
+                        backgroundColor: "rgba(0, 0, 0, 0.8)",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "40px",
+                        height: "40px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        color: "white",
+                        cursor: "pointer",
+                        zIndex: 40,
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <iframe
+                    title="whiteboard"
+                    src={`${whiteboardUrl}${
+                      !canDrawOnWhiteboard ? "&drawOnWhiteboard=false" : ""
+                    }`}
+                    width="100%"
+                    style={{
+                      height: "calc(100vh - 100px)",
+                      zIndex: 0,
+                    }}
+                  ></iframe>
+                </div>
+              ) : (
+                <WhiteboardContainer
+                  {...{
+                    ...convertHWAspectRatio({
+                      height:
+                        height -
                         2 * spacing -
-                        (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
-                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
-                      : 0,
-                  }),
-                  whiteboardToolbarWidth,
-                  whiteboardSpacing,
-                  originalHeight: height - 2 * spacing,
-                  originalWidth:
-                    width -
-                    (isMobile ? 0 : presentingSideBarWidth) -
-                    2 * spacing,
-                }}
-              />
+                        (whiteboardToolbarWidth === 0 ? 2 * 16 : 0),
+                      width: whiteboardStarted
+                        ? width -
+                          (isMobile ? 0 : presentingSideBarWidth) -
+                          2 * spacing -
+                          (whiteboardToolbarWidth + 2 * whiteboardSpacing) -
+                          (whiteboardToolbarWidth === 0 ? 2 * 16 : 0)
+                        : 0,
+                    }),
+                    whiteboardToolbarWidth,
+                    whiteboardSpacing,
+                    originalHeight: height - 2 * spacing,
+                    originalWidth:
+                      width -
+                      (isMobile ? 0 : presentingSideBarWidth) -
+                      2 * spacing,
+                  }}
+                />
+              )
             ) : (
               <MemoizedMotionParticipant
                 {...{
