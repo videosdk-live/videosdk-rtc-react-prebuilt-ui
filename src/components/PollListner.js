@@ -10,7 +10,12 @@ const PollListner = ({ pollId }) => {
   const { setCreatedPolls } = useMeetingAppContext();
 
   usePubSub(`SUBMIT_A_POLL_${pollId}`, {
-    onMessageReceived: ({ message, senderId: participantId, timestamp }) => {
+    onMessageReceived: ({
+      message,
+      senderId: participantId,
+      senderName: participantName,
+      timestamp,
+    }) => {
       setCreatedPolls((s) =>
         s.map((_poll) =>
           pollId === _poll.id
@@ -18,7 +23,12 @@ const PollListner = ({ pollId }) => {
                 ..._poll,
                 submissions: [
                   ..._poll.submissions,
-                  { optionId: message.optionId, participantId, timestamp },
+                  {
+                    optionId: message.optionId,
+                    participantId,
+                    participantName,
+                    timestamp,
+                  },
                 ],
               }
             : _poll
@@ -36,15 +46,24 @@ const PollListner = ({ pollId }) => {
         //   }
         //   return 0;
         // })
-        .map(({ senderId: participantId, timestamp, message }) => {
-          const { optionId } = message;
-
-          return {
-            optionId,
-            participantId,
+        .map(
+          ({
+            senderId: participantId,
             timestamp,
-          };
-        });
+            message,
+            senderName: participantName,
+          }) => {
+            const { optionId } = message;
+
+            return {
+              participantName,
+              optionId,
+              participantId,
+              participantName,
+              timestamp,
+            };
+          }
+        );
 
       setCreatedPolls((s) => {
         return s.map((_poll) => {

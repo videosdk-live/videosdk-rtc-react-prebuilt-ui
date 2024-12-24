@@ -137,6 +137,7 @@ const App = () => {
       animationsEnabled: "animationsEnabled",
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
+      participantNotificationAlertsEnabled:"participantNotificationAlertsEnabled",
       debug: "debug",
       participantId: "participantId",
       //
@@ -373,6 +374,7 @@ const App = () => {
       paramKeys.topbarEnabled = "false";
       paramKeys.notificationSoundEnabled = "false";
       paramKeys.notificationAlertsEnabled = "false";
+      paramKeys.participantNotificationAlertsEnabled = "false";
       paramKeys.animationsEnabled = "false";
       paramKeys.redirectOnLeave = undefined;
     }
@@ -772,6 +774,7 @@ const App = () => {
             topbarEnabled: paramKeys.topbarEnabled !== "false",
             notificationAlertsEnabled:
               paramKeys.notificationAlertsEnabled !== "false",
+            participantNotificationAlertsEnabled : paramKeys.participantNotificationAlertsEnabled !== "false",  
             debug: paramKeys.debug === "true",
             layoutGridSize: paramKeys.layoutGridSize,
             hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
