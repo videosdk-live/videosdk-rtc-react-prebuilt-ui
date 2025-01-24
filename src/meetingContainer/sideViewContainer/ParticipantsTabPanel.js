@@ -47,6 +47,7 @@ function ParticipantListItem({ raisedHand, participantId }) {
     micOn,
     webcamOn,
     displayName,
+    webcamStream,
     isLocal,
     pinState,
     pin,
@@ -642,7 +643,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
     participants,
     filterQuery
   ) =>
-    filterQuery?.length > 3
+    filterQuery?.length > 2
       ? sortedRaisedHandsParticipants.filter(({ participantId }) => {
           const { displayName } = participants.get(participantId);
 

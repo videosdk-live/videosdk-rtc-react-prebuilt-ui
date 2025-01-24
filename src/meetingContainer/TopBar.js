@@ -249,7 +249,7 @@ const RaiseHandBTN = ({ onClick, isMobile, isTab }) => {
   const onRaiseHand = () => {
     if (isMobile || isTab) {
       onClick();
-      typeof onClick === "function" && onClick();
+      // typeof onClick === "function" && onClick();
       publish("Raise Hand");
     } else {
       publish("Raise Hand");
