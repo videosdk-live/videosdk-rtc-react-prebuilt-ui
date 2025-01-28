@@ -81,7 +81,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               display: "inline-block",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
-              textAlign: "right",
+              textAlign: "left",
               color:
                 appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.contrastText
@@ -134,7 +134,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
   );
 };
 
-const ChatMessages = ({ listHeight }) => {
+const ChatMessages = () => {
   const listRef = useRef();
 
   const scrollToBottom = (data) => {
@@ -163,7 +163,17 @@ const ChatMessages = ({ listHeight }) => {
   }, [messages]);
 
   return messages ? (
-    <Box ref={listRef} style={{ overflowY: "scroll", height: listHeight }}>
+    <Box
+      ref={listRef}
+      style={{
+        overflowY: "scroll",
+        // height: listHeight
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+      }}
+    >
       <Box p={2}>
         {messages.map((msg, i) => {
           const { senderId, senderName, message, timestamp } = msg;
@@ -181,7 +191,7 @@ const ChatMessages = ({ listHeight }) => {
   );
 };
 
-const ChatMessageInput = ({ inputHeight }) => {
+const ChatMessageInput = () => {
   const [messageText, setMessageText] = useState("");
   const [emojiOpen, setEmojiOpen] = useState(false);
 
@@ -242,12 +252,13 @@ const ChatMessageInput = ({ inputHeight }) => {
     <Box
       ref={inputContainer}
       style={{
-        height: inputHeight - 1 - theme.spacing(2),
+        // height: inputHeight - 1 - theme.spacing(2),
         display: "flex",
         borderTop: "1px solid #70707033",
         alignItems: "center",
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
       }}
     >
       <Popover
@@ -293,8 +304,9 @@ const ChatMessageInput = ({ inputHeight }) => {
       <ThemeProvider theme={customTheme(outerTheme)}>
         <Input
           sx={{ marginTop: 1 }}
-          rows={1}
-          rowsMax={2}
+          // rows={1}
+          maxRows={4}
+          // rowsMax={2}
           multiline
           ref={input}
           placeholder="Write your message"
@@ -369,12 +381,17 @@ const ChatMessageInput = ({ inputHeight }) => {
 };
 
 const ChatTabPanel = ({ panelHeight }) => {
-  const inputHeight = 92;
-  const listHeight = panelHeight - inputHeight;
   return (
-    <div>
-      <ChatMessages listHeight={listHeight} />
-      <ChatMessageInput inputHeight={inputHeight} />
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        height: panelHeight,
+      }}
+    >
+      <ChatMessages />
+      <ChatMessageInput />
     </div>
   );
 };
