@@ -783,15 +783,24 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
         </ThemeProvider>
       </Box>
 
+      
       <Box style={{ overflowY: "auto" }}>
-        <List
+        {part.map(({ participantId, raisedHand }) => (
+          <ParticipantListItem
+            key={participantId}
+            participantId={participantId}
+            raisedHand={raisedHand}
+          />
+        ))}
+      </Box>
+
+      {/* <List
           width={isTab || isMobile ? width - 32 : panelWidth - 36}
           height={panelHeight - 90}
           rowCount={part.length}
           rowHeight={64}
           rowRenderer={rowRenderer}
-        />
-      </Box>
+        /> */}
     </Box>
   );
 }
