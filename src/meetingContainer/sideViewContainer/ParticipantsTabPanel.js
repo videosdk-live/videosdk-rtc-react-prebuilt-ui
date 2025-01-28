@@ -47,7 +47,6 @@ function ParticipantListItem({ raisedHand, participantId }) {
     micOn,
     webcamOn,
     displayName,
-    webcamStream,
     isLocal,
     pinState,
     pin,
