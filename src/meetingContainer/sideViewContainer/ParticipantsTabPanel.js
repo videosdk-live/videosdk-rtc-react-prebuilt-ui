@@ -673,6 +673,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
       <div {...{ key, style }}>
         {isVisible ? (
           <ParticipantListItem
+            key={participantId}
             participantId={participantId}
             raisedHand={raisedHand}
           />
@@ -783,24 +784,15 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
         </ThemeProvider>
       </Box>
 
-      
       <Box style={{ overflowY: "auto" }}>
-        {part.map(({ participantId, raisedHand }) => (
-          <ParticipantListItem
-            key={participantId}
-            participantId={participantId}
-            raisedHand={raisedHand}
-          />
-        ))}
-      </Box>
-
-      {/* <List
+        <List
           width={isTab || isMobile ? width - 32 : panelWidth - 36}
           height={panelHeight - 90}
           rowCount={part.length}
           rowHeight={64}
           rowRenderer={rowRenderer}
-        /> */}
+        />
+      </Box>
     </Box>
   );
 }
