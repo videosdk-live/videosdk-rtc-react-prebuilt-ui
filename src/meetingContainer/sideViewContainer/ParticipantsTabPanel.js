@@ -642,7 +642,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
     participants,
     filterQuery
   ) =>
-    filterQuery?.length > 3
+    filterQuery?.length > 2
       ? sortedRaisedHandsParticipants.filter(({ participantId }) => {
           const { displayName } = participants.get(participantId);
 
@@ -672,6 +672,7 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
       <div {...{ key, style }}>
         {isVisible ? (
           <ParticipantListItem
+            key={participantId}
             participantId={participantId}
             raisedHand={raisedHand}
           />
