@@ -45,6 +45,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     setSideBarMode,
     meetingMode,
     appTheme,
+    whiteboardStarted,
     whiteboardEnabled,
     canToggleWhiteboard,
     canToggleVirtualBackground,
@@ -55,14 +56,14 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
 
   const mMeeting = useMeeting({});
 
-  const presenterId = mMeeting?.presenterId;
+  const presenterId = mMeeting?.presenterId;  
 
   const moreOptionArr = [
     {
       Icon: WhiteboardIcon,
       primary: "Whiteboard",
       secondary: "Brainstorm, share idea & collaborate ",
-      disabled: presenterId || !canToggleWhiteboard,
+      disabled: presenterId || !canToggleWhiteboard || whiteboardStarted,
       displayed:
         whiteboardEnabled && meetingMode === meetingModes.CONFERENCE
           ? true
