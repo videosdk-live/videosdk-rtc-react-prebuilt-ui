@@ -4,7 +4,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+import { useMeeting, useParticipant, VideoPlayer } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@mui/material";
@@ -26,7 +26,7 @@ import animationData from "../../animations/equaliser.json";
 import circleRipple from "../../animations/circleRipple.json";
 import { Pin } from "../../icons";
 import useIsLGDesktop from "../../utils/useIsLGDesktop";
-import ReactPlayer from "react-player";
+// import ReactPlayer from "react-player";
 import NetworkIcon from "../../icons/NetworkIcon";
 import { CloseOutlined } from "@mui/icons-material";
 import { useMediaQuery } from "react-responsive";
@@ -169,15 +169,15 @@ export const CornerDisplayName = ({
       audio: audioStats
         ? audioStats[0]?.packetsLost
           ? `${parseFloat(
-              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
-            ).toFixed(2)}%`
+            (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
+          ).toFixed(2)}%`
           : "-"
         : "-",
       video: videoStats
         ? videoStats[0]?.packetsLost
           ? `${parseFloat(
-              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
-            ).toFixed(2)}%`
+            (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
+          ).toFixed(2)}%`
           : "-"
         : "-",
     },
@@ -197,8 +197,8 @@ export const CornerDisplayName = ({
       audio: "-",
       video:
         videoStats &&
-        (videoStats[0]?.size?.framerate === null ||
-          videoStats[0]?.size?.framerate === undefined)
+          (videoStats[0]?.size?.framerate === null ||
+            videoStats[0]?.size?.framerate === undefined)
           ? "-"
           : `${videoStats ? videoStats[0]?.size?.framerate : "-"}`,
     },
@@ -223,9 +223,8 @@ export const CornerDisplayName = ({
         videoStats && !isLocal
           ? videoStats && videoStats[0]?.currentSpatialLayer === null
             ? "-"
-            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${
-                videoStats[0]?.currentTemporalLayer || 0
-              }`
+            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${videoStats[0]?.currentTemporalLayer || 0
+            }`
           : "-",
     },
     {
@@ -235,9 +234,8 @@ export const CornerDisplayName = ({
         videoStats && !isLocal
           ? videoStats && videoStats[0]?.preferredSpatialLayer === null
             ? "-"
-            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${
-                videoStats[0]?.preferredTemporalLayer || 0
-              }`
+            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${videoStats[0]?.preferredTemporalLayer || 0
+            }`
           : "-",
     },
   ];
@@ -304,7 +302,7 @@ export const CornerDisplayName = ({
             // lineHeight: 1,
             color:
               appTheme === appThemes.LIGHT ?
-              theme.palette.lightTheme.contrastText : "white",
+                theme.palette.lightTheme.contrastText : "white",
           }}
         >
           {isPresenting
@@ -312,8 +310,8 @@ export const CornerDisplayName = ({
               ? `You are presenting`
               : `${nameTructed(displayName, 15)} is presenting`
             : isLocal
-            ? "You"
-            : nameTructed(displayName, 26)}
+              ? "You"
+              : nameTructed(displayName, 26)}
         </Typography>
         {(!micOn || isActiveSpeaker) && !isPresenting && (
           <div
@@ -324,14 +322,14 @@ export const CornerDisplayName = ({
               isRecorder
                 ? null
                 : {
-                    padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
-                    backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 24,
-                    marginLeft: 6,
-                  }
+                  padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
+                  backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 24,
+                  marginLeft: 6,
+                }
             }
           >
             {isActiveSpeaker ? (
@@ -346,7 +344,7 @@ export const CornerDisplayName = ({
               !isRecorder &&
               !micOn && (
                 <MicOff
-                color={appTheme !== appTheme.LIGHT && "white"}
+                  color={appTheme !== appTheme.LIGHT && "white"}
                   style={{
                     color: theme.palette.common.white,
                     height: isRecorder
@@ -473,16 +471,15 @@ export const CornerDisplayName = ({
                         score > 7
                           ? "#3BA55D"
                           : score > 4
-                          ? "#faa713"
-                          : "#FF5D5D",
+                            ? "#faa713"
+                            : "#FF5D5D",
                     }}
                   >
                     <Typography
                       variant="body2"
                       style={{ fontWeight: 600 }}
-                    >{`Quality Score : ${
-                      score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
-                    }`}</Typography>
+                    >{`Quality Score : ${score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
+                      }`}</Typography>
 
                     <IconButton
                       size="small"
@@ -502,11 +499,10 @@ export const CornerDisplayName = ({
                               borderBottom:
                                 index === qualityStateArray.length - 1
                                   ? ""
-                                  : `1px solid ${
-                                      appTheme === appThemes.LIGHT
-                                        ? theme.palette.lightTheme.outlineColor
-                                        : "#ffffff33"
-                                    }`,
+                                  : `1px solid ${appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.outlineColor
+                                    : "#ffffff33"
+                                  }`,
                             }}
                           >
                             <Box
@@ -537,11 +533,10 @@ export const CornerDisplayName = ({
                                 flex: 1,
                                 alignItems: "center",
                                 justifyContent: "center",
-                                borderLeft: `1px solid ${
-                                  appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.outlineColor
-                                    : "#ffffff33"
-                                }`,
+                                borderLeft: `1px solid ${appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                                  }`,
                               }}
                             >
                               <Typography
@@ -562,11 +557,10 @@ export const CornerDisplayName = ({
                                 flex: 1,
                                 alignItems: "center",
                                 justifyContent: "center",
-                                borderLeft: `1px solid ${
-                                  appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.outlineColor
-                                    : "#ffffff33"
-                                }`,
+                                borderLeft: `1px solid ${appTheme === appThemes.LIGHT
+                                  ? theme.palette.lightTheme.outlineColor
+                                  : "#ffffff33"
+                                  }`,
                               }}
                             >
                               <Typography
@@ -596,10 +590,12 @@ export const CornerDisplayName = ({
 };
 
 const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
-  const videoPlayer = useRef();
+  // const videoPlayer = useRef();
   const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
   const [portrait, setPortrait] = useState(false);
+  const statsIntervalIdRef = useRef();
+
 
   const mMeeting = useMeeting();
 
@@ -643,14 +639,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     onStreamEnabled,
   });
 
-  const mediaStream = useMemo(() => {
-    if (webcamOn && webcamStream) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(webcamStream.track);
-      return mediaStream;
-    }
-  }, [webcamStream, webcamOn]);
-
   const participantAccentColor = useMemo(
     () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
     []
@@ -674,7 +662,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const flipStyle = useMemo(
     () =>
-      isLocal ? { transform: "scaleX(-1)", WebkitTransform: "scaleX(-1)" } : {},
+      isLocal ? { transform: "scaleX(1)", WebkitTransform: "scaleX(1)" } : {},
     [isLocal]
   );
 
@@ -739,6 +727,28 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
   };
 
+  useEffect(() => {
+    if (webcamStream) {
+      checkAndUpdatePortrait()
+
+      if (statsIntervalIdRef.current) {
+        clearInterval(statsIntervalIdRef.current);
+      }
+
+      statsIntervalIdRef.current = setInterval(checkAndUpdatePortrait, 500);
+    } else {
+      if (statsIntervalIdRef.current) {
+        clearInterval(statsIntervalIdRef.current);
+        statsIntervalIdRef.current = null;
+      }
+    }
+
+    return () => {
+      if (statsIntervalIdRef.current)
+        clearInterval(statsIntervalIdRef.current);
+    };
+  }, [webcamStream]);
+
   return (
     <VisibilitySensor
       active
@@ -787,45 +797,31 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.two
-              : theme.palette.background.paper,
+                ? theme.palette.lightTheme.two
+                : theme.palette.background.paper,
           position: "relative",
           overflow: "hidden",
           borderRadius: isRecorder ? null : theme.spacing(1),
         }}
-        className={`${
-          maintainLandscapeVideoAspectRatio && !portrait
-            ? "video-contain"
-            : portrait
+        className={`${maintainLandscapeVideoAspectRatio && !portrait
+          ? "video-contain"
+          : portrait
             ? ""
             : "video-cover"
-        }`}
+          }`}
       >
         {webcamOn ? (
           <>
-            <ReactPlayer
-              ref={videoPlayer}
-              //
-              playsinline // very very imp prop
-              playIcon={<></>}
-              //
-              pip={false}
-              light={false}
-              controls={false}
-              muted={true}
-              playing={true}
-              //
-              url={mediaStream}
-              //
-              height={"100%"}
-              width={"100%"}
-              style={!isMirrorViewChecked && flipStyle}
-              onError={(err) => {
-                console.log(err, "participant video error");
+            <VideoPlayer
+              participantId={participantId}
+              type="video"
+              containerStyle={{
+                height: "100%",
+                width: "100%",
               }}
-              onProgress={() => {
-                checkAndUpdatePortrait();
-              }}
+              className="h-full"
+              classNameVideo="h-full"
+              videoStyle={isMirrorViewChecked ? {} : flipStyle}
             />
           </>
         ) : (

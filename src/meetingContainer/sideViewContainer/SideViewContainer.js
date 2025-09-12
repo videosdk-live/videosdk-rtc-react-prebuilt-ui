@@ -195,7 +195,7 @@ const SideBarTabView = ({ width, height }) => {
                         ? "Create a poll"
                         : canCreatePoll &&
                           sideBarMode === "ACTIVITIES" &&
-                          meetingMode !== meetingModes.VIEWER
+                          meetingMode !== meetingModes.SIGNALLING_ONLY
                         ? "Create a poll"
                         : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
                       : sideBarNestedMode === "CREATE_POLL" &&

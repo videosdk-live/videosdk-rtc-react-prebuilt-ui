@@ -49,8 +49,8 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.three
-              : theme.palette.common.sidePanel,
+                ? theme.palette.lightTheme.three
+                : theme.palette.common.sidePanel,
           display: "flex",
           flexDirection: "column",
           // alignItems: localSender ? "flex-end" : "flex-start",
@@ -62,8 +62,8 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
               appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.five
                 : appTheme === appThemes.DARK
-                ? theme.palette.lightTheme.four
-                : "#ffffff80",
+                  ? theme.palette.lightTheme.four
+                  : "#ffffff80",
             textAlign: "left",
           }}
         >
@@ -97,7 +97,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                       style: {
                         color:
                           appTheme === appThemes.LIGHT ||
-                          appTheme === appThemes.DARK
+                            appTheme === appThemes.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main,
                       },
@@ -120,8 +120,8 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                 appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.four
                   : appTheme === appThemes.DARK
-                  ? theme.palette.lightTheme.five
-                  : "#ffffff80",
+                    ? theme.palette.lightTheme.five
+                    : "#ffffff80",
               fontStyle: "italic",
               textAlign: "right",
             }}
@@ -276,8 +276,8 @@ const ChatMessageInput = ({ inputHeight }) => {
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
           }}
           color={
             appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
@@ -300,12 +300,15 @@ const ChatMessageInput = ({ inputHeight }) => {
           placeholder="Write your message"
           fullWidth
           value={messageText}
-          onKeyPress={(e) => {
+          onKeyPress={async (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               const message = messageText.trim();
 
               if (message.length > 0) {
-                publish(message, { persist: true });
+                try {
+                  await publish(message, { persist: true });
+                } catch (error) {
+                }
                 setTimeout(() => {
                   setMessageText("");
                 }, 100);
@@ -340,10 +343,13 @@ const ChatMessageInput = ({ inputHeight }) => {
                 <Box>
                   <IconButton
                     disabled={!messageText.trim().length}
-                    onClick={() => {
+                    onClick={async() => {
                       const message = messageText.trim();
                       if (message.length > 0) {
-                        publish(message, { persist: true });
+                        try {
+                          await publish(message, { persist: true });
+                        } catch (error) {
+                        }
                         setTimeout(() => {
                           setMessageText("");
                         }, 100);

@@ -269,10 +269,9 @@ const CreatePollPart = ({
       background: transparent;
     }
     &:hover .MuiSvgIcon-root {
-      color: ${
-        textColor
-          ? textColor
-          : appTheme === appThemes.LIGHT
+      color: ${textColor
+        ? textColor
+        : appTheme === appThemes.LIGHT
           ? `#404B53`
           : `white`
       };
@@ -331,13 +330,12 @@ const CreatePollPart = ({
         variant="standard"
         sx={{
           width: "100%",
-          borderBottom: `1px solid ${
-            appTheme === appThemes.DARK
-              ? theme.palette.darkTheme.seven
-              : appTheme === appThemes.LIGHT
+          borderBottom: `1px solid ${appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.seven
+            : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : theme.palette.common.sidePanel
-          }`,
+            }`,
         }}
         placeholder="What you want to ask ?"
         autoFocus
@@ -413,10 +411,10 @@ const CreatePollPart = ({
                               ? theme.palette.lightTheme.primaryMain
                               : theme.palette.primary.main
                             : appTheme === appThemes.DARK
-                            ? theme.palette.darkTheme.seven
-                            : appTheme === appThemes.LIGHT
-                            ? theme.palette.lightTheme.three
-                            : theme.palette.common.sidePanel,
+                              ? theme.palette.darkTheme.seven
+                              : appTheme === appThemes.LIGHT
+                                ? theme.palette.lightTheme.three
+                                : theme.palette.common.sidePanel,
                       }}
                       InputProps={{
                         disableUnderline: true,
@@ -506,10 +504,10 @@ const CreatePollPart = ({
                       ? theme.palette.lightTheme.primaryMain
                       : theme.palette.primary.main
                     : appTheme === appThemes.DARK
-                    ? theme.palette.darkTheme.seven
-                    : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.three
-                    : theme.palette.common.sidePanel,
+                      ? theme.palette.darkTheme.seven
+                      : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.three
+                        : theme.palette.common.sidePanel,
               }}
               InputProps={{
                 disableUnderline: true,
@@ -526,7 +524,7 @@ const CreatePollPart = ({
                 fullWidth
                 variant="filled"
                 autocomplete="off"
-                onChange={(e) => {}}
+                onChange={(e) => { }}
                 onFocus={(e) => {
                   _handleKeyDown(e);
                   focusCreateOption();
@@ -546,8 +544,8 @@ const CreatePollPart = ({
                     appTheme === appThemes.DARK
                       ? theme.palette.darkTheme.seven
                       : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.three
-                      : theme.palette.common.sidePanel,
+                        ? theme.palette.lightTheme.three
+                        : theme.palette.common.sidePanel,
                 }}
                 InputProps={{
                   disableUnderline: true,
@@ -806,8 +804,8 @@ const PollButtonPart = ({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.three
-              : theme.palette.common.sidePanel,
+                ? theme.palette.lightTheme.three
+                : theme.palette.common.sidePanel,
           color:
             appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.contrastText
@@ -815,7 +813,7 @@ const PollButtonPart = ({
           padding: "8px",
           boxShadow: "none",
         }}
-        onClick={() => {
+        onClick={async() => {
           const isValid = handleValidation({
             question,
             options,
@@ -825,23 +823,28 @@ const PollButtonPart = ({
           });
 
           if (isValid) {
-            publishDraftPoll(
-              {
-                id: uuid(),
-                question: question.trim(),
-                options: options.map((option) => ({
-                  ...option,
-                  option: option.option.trim(),
-                })),
-                timeout: isSetTimerChecked ? timer : 0,
-                hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
-                hasTimer: isSetTimerChecked ? true : false,
-                isActive: false,
-              },
-              {
-                persist: true,
-              }
-            );
+            try {
+              await publishDraftPoll(
+                {
+                  id: uuid(),
+                  question: question.trim(),
+                  options: options.map((option) => ({
+                    ...option,
+                    option: option.option.trim(),
+                  })),
+                  timeout: isSetTimerChecked ? timer : 0,
+                  hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
+                  hasTimer: isSetTimerChecked ? true : false,
+                  isActive: false,
+                },
+                {
+                  persist: true,
+                }
+              );
+            } catch (error) {
+
+            }
+
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}
@@ -861,7 +864,7 @@ const PollButtonPart = ({
           padding: "8px",
           boxShadow: "none",
         }}
-        onClick={() => {
+        onClick={async () => {
           const isValid = handleValidation({
             question,
             options,
@@ -871,22 +874,27 @@ const PollButtonPart = ({
           });
 
           if (isValid) {
-            publishCreatePoll(
-              {
-                id: uuid(),
-                question: question.trim(),
-                options: options.map((option) => ({
-                  ...option,
-                  option: option.option.trim(),
-                })),
-                timeout: isSetTimerChecked ? timer : 0,
-                hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
-                hasTimer: isSetTimerChecked ? true : false,
-                isActive: true,
-                index: polls.length + 1,
-              },
-              { persist: true }
-            );
+            try {
+              await publishCreatePoll(
+                {
+                  id: uuid(),
+                  question: question.trim(),
+                  options: options.map((option) => ({
+                    ...option,
+                    option: option.option.trim(),
+                  })),
+                  timeout: isSetTimerChecked ? timer : 0,
+                  hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
+                  hasTimer: isSetTimerChecked ? true : false,
+                  isActive: true,
+                  index: polls.length + 1,
+                },
+                { persist: true }
+              );
+            } catch (error) {
+
+            }
+
             setSideBarNestedMode(sideBarNestedModes.POLLS);
           }
         }}

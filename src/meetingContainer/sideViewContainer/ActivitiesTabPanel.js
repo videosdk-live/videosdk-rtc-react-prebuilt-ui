@@ -64,7 +64,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
       secondary: "Brainstorm, share idea & collaborate ",
       disabled: presenterId || !canToggleWhiteboard,
       displayed:
-        whiteboardEnabled && meetingMode === meetingModes.CONFERENCE
+        whiteboardEnabled && meetingMode === meetingModes.SEND_AND_RECV
           ? true
           : false,
       onClick: () => {
@@ -98,7 +98,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
     });
   }
 
-  if (liveStreamEnabled && meetingMode === meetingModes.CONFERENCE) {
+  if (liveStreamEnabled && meetingMode === meetingModes.SEND_AND_RECV) {
     moreOptionArr.push({
       Icon: AddLiveStreamsIcon,
       primary: "Add Live Streams",
@@ -112,7 +112,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
   }
 
   return sideBarNestedMode === sideBarNestedModes.POLLS ? (
-    canCreatePoll && meetingMode !== meetingModes.VIEWER ? (
+    canCreatePoll && meetingMode !== meetingModes.SIGNALLING_ONLY ? (
       polls.length === 0 && draftPolls.length === 0 ? (
         <CreatePoll {...{ panelHeight }} />
       ) : (

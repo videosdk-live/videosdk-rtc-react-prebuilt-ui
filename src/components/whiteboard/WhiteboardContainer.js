@@ -348,8 +348,8 @@ function WhiteboardContainer({
 
       case "ZOOM": {
         const zoomLevel = data;
-        if(zoomLevel >= 1){
-        fabricRef.current.zoomToPoint(new fabric.Point(fabricRef.current.getWidth()/2, fabricRef.current.getHeight()/2), zoomLevel)
+        if (zoomLevel >= 1) {
+          fabricRef.current.zoomToPoint(new fabric.Point(fabricRef.current.getWidth() / 2, fabricRef.current.getHeight() / 2), zoomLevel)
         }
         break;
       }
@@ -367,8 +367,7 @@ function WhiteboardContainer({
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${
-              p ? nameTructed(p.displayName, 15) : "You"
+            `${p ? nameTructed(p.displayName, 15) : "You"
             } cleared the whiteboard 🗑️`,
             { autoHideDuration: 4000 }
           );
@@ -457,8 +456,13 @@ function WhiteboardContainer({
     });
   }, []);
 
-  function sendData({ event, data }) {
-    publish({ event, data }, { persist: true });
+  async function sendData({ event, data }) {
+    try {
+      await publish({ event, data }, { persist: true });
+
+    } catch (error) {
+
+    }
   }
 
   useEffect(() => {
@@ -732,14 +736,14 @@ function WhiteboardContainer({
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom + 0.2;
     fabricRef.current.fire("exitText", {});
-    sendData({ event: "ZOOM", data:newZoom  });
+    sendData({ event: "ZOOM", data: newZoom });
   }
 
   function zoomOut() {
     const currentZoom = fabricRef.current.getZoom();
     const newZoom = currentZoom - 0.2;
     fabricRef.current.fire("exitText", {});
-    sendData({ event: "ZOOM", data:newZoom });
+    sendData({ event: "ZOOM", data: newZoom });
   }
 
   function openPdf(url) {

@@ -127,8 +127,8 @@ function ParticipantListItem({ raisedHand, participantId }) {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.seven
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.three
-            : theme.palette.common.sidePanel,
+              ? theme.palette.lightTheme.three
+              : theme.palette.common.sidePanel,
         borderRadius: 6,
       }}
     >
@@ -149,8 +149,8 @@ function ParticipantListItem({ raisedHand, participantId }) {
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.five
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.five
-                : "",
+                  ? theme.palette.lightTheme.five
+                  : "",
           }}
         >
           {displayName?.charAt(0)}
@@ -224,14 +224,14 @@ function ParticipantListItem({ raisedHand, participantId }) {
                 </Box>
               )}
 
-              {meetingMode === meetingModes.CONFERENCE && (
+              {meetingMode === meetingModes.SEND_AND_RECV && (
                 <Box ml={0.5} mr={0.5}>
                   <IconButton
                     disabled={
                       !participantCanToggleOtherMic ||
                       isLocal ||
-                      meetingMode === meetingModes.VIEWER ||
-                      participantMode === meetingModes.VIEWER
+                      meetingMode === meetingModes.SIGNALLING_ONLY ||
+                      participantMode === meetingModes.SIGNALLING_ONLY
                     }
                     style={{ padding: 0 }}
                     onClick={async () => {
@@ -267,14 +267,14 @@ function ParticipantListItem({ raisedHand, participantId }) {
                   </IconButton>
                 </Box>
               )}
-              {meetingMode === meetingModes.CONFERENCE && (
+              {meetingMode === meetingModes.SEND_AND_RECV && (
                 <Box ml={1} mr={0}>
                   <IconButton
                     disabled={
                       !participantCanToggleOtherWebcam ||
                       isLocal ||
-                      meetingMode === meetingModes.VIEWER ||
-                      participantMode === meetingModes.VIEWER
+                      meetingMode === meetingModes.SIGNALLING_ONLY ||
+                      participantMode === meetingModes.SIGNALLING_ONLY
                     }
                     style={{ padding: 0 }}
                     onClick={async () => {
@@ -327,8 +327,8 @@ function ParticipantListItem({ raisedHand, participantId }) {
                     <IconButton
                       disabled={
                         // !expanded ||
-                        meetingMode === meetingModes.VIEWER ||
-                        participantMode === meetingModes.VIEWER
+                        meetingMode === meetingModes.SIGNALLING_ONLY ||
+                        participantMode === meetingModes.SIGNALLING_ONLY
                       }
                       size="small"
                       onClick={(e) => {
@@ -348,8 +348,8 @@ function ParticipantListItem({ raisedHand, participantId }) {
                               ? theme.palette.lightTheme.contrastText
                               : "white"
                             : appTheme === appThemes.LIGHT
-                            ? theme.palette.lightTheme.four
-                            : "#ffffff80"
+                              ? theme.palette.lightTheme.four
+                              : "#ffffff80"
                         }
                       />
                     </IconButton>
@@ -359,7 +359,7 @@ function ParticipantListItem({ raisedHand, participantId }) {
             </Box>
           </Box>
 
-          {meetingMode === meetingModes.CONFERENCE && (
+          {meetingMode === meetingModes.SEND_AND_RECV && (
             <Box
               style={{
                 transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -367,7 +367,7 @@ function ParticipantListItem({ raisedHand, participantId }) {
             >
               <IconButton
                 style={{ padding: 0 }}
-                disabled={meetingMode === meetingModes.VIEWER}
+                disabled={meetingMode === meetingModes.SIGNALLING_ONLY}
                 onClick={(e) => {
                   handleClick(e);
                 }}
@@ -410,14 +410,14 @@ function ParticipantListItem({ raisedHand, participantId }) {
                       appTheme === appThemes.DARK
                         ? theme.palette.darkTheme.slightLighter
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.two
-                        : "",
+                          ? theme.palette.lightTheme.two
+                          : "",
                     color:
                       appTheme === appThemes.DARK
                         ? theme.palette.common.white
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.contrastText
-                        : "",
+                          ? theme.palette.lightTheme.contrastText
+                          : "",
                   }}
                 >
                   {!isLocal && canRemoveOtherParticipant && (
@@ -477,14 +477,19 @@ function ParticipantListItem({ raisedHand, participantId }) {
                       handleClose={handleClose}
                     />
                   )}
-                  {meetingMode === meetingModes.CONFERENCE && (
+                  {meetingMode === meetingModes.SEND_AND_RECV && (
                     <MenuItem
                       key={`screen-share`}
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        publish({
-                          setScreenShareOn: !isParticipantPresenting,
-                        });
+                        try {
+                          await publish({
+                            setScreenShareOn: !isParticipantPresenting,
+                          });
+                        } catch (error) {
+
+                        }
+
                         handleClose();
                       }}
                       disabled={
@@ -493,8 +498,8 @@ function ParticipantListItem({ raisedHand, participantId }) {
                           partcipantCanToogleOtherScreenShare &&
                           (presenterId ? isParticipantPresenting : true)
                         ) ||
-                        meetingMode === meetingModes.VIEWER ||
-                        participantMode === meetingModes.VIEWER
+                        meetingMode === meetingModes.SIGNALLING_ONLY ||
+                        participantMode === meetingModes.SIGNALLING_ONLY
                       }
                     >
                       <Box style={{ display: "flex", flexDirection: "row" }}>
@@ -519,20 +524,20 @@ function ParticipantListItem({ raisedHand, participantId }) {
                                 appTheme === appThemes.LIGHT
                                   ? theme.palette.lightTheme.contrastText
                                   : !(
-                                      !isLocal &&
-                                      partcipantCanToogleOtherScreenShare &&
-                                      (presenterId
-                                        ? isParticipantPresenting
-                                        : true)
-                                    ) ||
-                                    meetingMode === meetingModes.VIEWER ||
-                                    participantMode === meetingModes.VIEWER
-                                  ? appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.contrastText
-                                    : "#ffffff80"
-                                  : appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.contrastText
-                                  : "#ffffff"
+                                    !isLocal &&
+                                    partcipantCanToogleOtherScreenShare &&
+                                    (presenterId
+                                      ? isParticipantPresenting
+                                      : true)
+                                  ) ||
+                                    meetingMode === meetingModes.SIGNALLING_ONLY ||
+                                    participantMode === meetingModes.SIGNALLING_ONLY
+                                    ? appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.contrastText
+                                      : "#ffffff80"
+                                    : appTheme === appThemes.LIGHT
+                                      ? theme.palette.lightTheme.contrastText
+                                      : "#ffffff"
                               }
                             />
                           )}
@@ -555,12 +560,12 @@ function ParticipantListItem({ raisedHand, participantId }) {
                                   partcipantCanToogleOtherScreenShare &&
                                   (presenterId ? isParticipantPresenting : true)
                                 ) ||
-                                meetingMode === meetingModes.VIEWER ||
-                                participantMode === meetingModes.VIEWER
+                                  meetingMode === meetingModes.SIGNALLING_ONLY ||
+                                  participantMode === meetingModes.SIGNALLING_ONLY
                                   ? theme.palette.text.secondary
                                   : appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.contrastText
-                                  : theme.palette.common.white,
+                                    ? theme.palette.lightTheme.contrastText
+                                    : theme.palette.common.white,
                             }}
                           >
                             {isParticipantPresenting
@@ -644,14 +649,14 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   ) =>
     filterQuery?.length > 2
       ? sortedRaisedHandsParticipants.filter(({ participantId }) => {
-          const { displayName } = participants.get(participantId);
+        const { displayName } = participants.get(participantId);
 
-          const hide = !displayName
-            ?.toLowerCase()
-            .includes(filterQuery.toLowerCase());
+        const hide = !displayName
+          ?.toLowerCase()
+          .includes(filterQuery.toLowerCase());
 
-          return !hide;
-        })
+        return !hide;
+      })
       : sortedRaisedHandsParticipants;
 
   const part = useMemo(
@@ -685,8 +690,8 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.seven
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.three
-                  : theme.palette.common.sidePanel,
+                    ? theme.palette.lightTheme.three
+                    : theme.palette.common.sidePanel,
               borderRadius: 6,
             }}
           ></Box>

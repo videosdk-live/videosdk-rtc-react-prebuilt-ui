@@ -200,7 +200,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
         (new Date(createdAt).getTime() +
           timeout * 1000 -
           new Date().getTime()) /
-          1000
+        1000
       );
       setIsTimerPollActive(true);
     }
@@ -286,8 +286,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 ? `Ends in ${secondsToMinutes(timeLeft)}`
                 : "Live"
               : isDraft
-              ? "Draft"
-              : "Ended"}
+                ? "Draft"
+                : "Ended"}
           </Typography>
         </Box>
         <Box style={{ marginTop: 16 }}>
@@ -344,8 +344,8 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                         appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.seven
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.three
-                          : theme.palette.common.sidePanel,
+                            ? theme.palette.lightTheme.three
+                            : theme.palette.common.sidePanel,
                       borderRadius: 4,
                       display: "flex",
                       flex: 1,
@@ -361,11 +361,11 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                               : theme.palette.primary.main
                             : "#9E9DA6"
                           : maxSubmittedOptions.includes(item.optionId)
-                          ? appTheme === appThemes.LIGHT ||
-                            appTheme === appThemes.DARK
-                            ? theme.palette.lightTheme.primaryMain
-                            : theme.palette.primary.main
-                          : "#9E9DA6",
+                            ? appTheme === appThemes.LIGHT ||
+                              appTheme === appThemes.DARK
+                              ? theme.palette.lightTheme.primaryMain
+                              : theme.palette.primary.main
+                            : "#9E9DA6",
 
                         // backgroundColor: item.isCorrect ? "#1178F8" : "#9E9DA6",
                         width: `${percentage}%`,
@@ -390,7 +390,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                           padding: 0,
                           color:
                             appTheme === appThemes.LIGHT ?
-                            theme.palette.lightTheme.contrastText :"white",
+                              theme.palette.lightTheme.contrastText : "white",
                         }}
                       >
                         {`${Math.floor(percentage)}%`}
@@ -467,13 +467,18 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       ? theme.palette.lightTheme.contrastText
                       : "white",
                 }}
-                onClick={() => {
-                  EndPublish(
-                    {
-                      pollId: poll.id,
-                    },
-                    { persist: true }
-                  );
+                onClick={async () => {
+                  try {
+                    await EndPublish(
+                      {
+                        pollId: poll.id,
+                      },
+                      { persist: true }
+                    );
+                  } catch (error) {
+
+                  }
+
                 }}
               >
                 End the Poll
@@ -593,27 +598,37 @@ const PollList = ({ panelHeight }) => {
                 panelHeight={panelHeight}
                 index={index}
                 isDraft={true}
-                publishDraftPoll={(poll) => {
+                publishDraftPoll={async (poll) => {
                   //
-                  RemoveFromDraftPublish(
-                    { pollId: poll.id },
-                    { persist: true }
-                  );
+                  try {
+                    await RemoveFromDraftPublish(
+                      { pollId: poll.id },
+                      { persist: true }
+                    );
+                  } catch (error) {
+
+                  }
+
                   //
-                  publishCreatePoll(
-                    {
-                      id: uuid(),
-                      question: poll.question,
-                      options: poll.options,
-                      // createdAt: new Date(),
-                      timeout: poll.timeout,
-                      hasTimer: poll.hasTimer,
-                      hasCorrectAnswer: poll.hasCorrectAnswer,
-                      isActive: true,
-                      index: polls.length + 1,
-                    },
-                    { persist: true }
-                  );
+                  try {
+                    await publishCreatePoll(
+                      {
+                        id: uuid(),
+                        question: poll.question,
+                        options: poll.options,
+                        // createdAt: new Date(),
+                        timeout: poll.timeout,
+                        hasTimer: poll.hasTimer,
+                        hasCorrectAnswer: poll.hasCorrectAnswer,
+                        isActive: true,
+                        index: polls.length + 1,
+                      },
+                      { persist: true }
+                    );
+                  }catch(e){
+                    
+                  }
+
                   //
                   setSideBarNestedMode(sideBarNestedModes.POLLS);
                 }}
