@@ -107,8 +107,8 @@ export default function JoinMeeting({
     participantCanToggleSelfWebcam === "true"
       ? "video"
       : participantCanToggleSelfMic === "true"
-      ? "audio"
-      : null
+        ? "audio"
+        : null
   );
 
   const [dlgMuted, setDlgMuted] = useState(false);
@@ -449,8 +449,8 @@ export default function JoinMeeting({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.main
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.main
-              : theme.palette.background.default,
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
         }}
       >
         <Box
@@ -461,8 +461,8 @@ export default function JoinMeeting({
             flexDirection: isXStoSM
               ? "column"
               : meetingUrl === "" || meetingTitle === ""
-              ? "row"
-              : "column",
+                ? "row"
+                : "column",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -476,8 +476,8 @@ export default function JoinMeeting({
               flexDirection: isXStoSM
                 ? "column"
                 : meetingUrl || meetingTitle
-                ? "row"
-                : "column",
+                  ? "row"
+                  : "column",
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -569,12 +569,12 @@ export default function JoinMeeting({
                             }}
                           >
                             {participantCanToggleSelfWebcam === "false" &&
-                            !webcamOn ? (
+                              !webcamOn ? (
                               <Typography
                                 color={"#fff"}
                                 variant={isXLOnly ? "h5" : "h6"}
                               >
-                                {mode === meetingModes.VIEWER
+                                {mode === meetingModes.SIGNALLING_ONLY
                                   ? "You are not permitted to use your microphone and camera."
                                   : "You are not allowed to turn on your camera"}
                               </Typography>
@@ -588,7 +588,7 @@ export default function JoinMeeting({
                             ) : null}
                           </Box>
                           {participantCanToggleSelfWebcam === "true" ||
-                          participantCanToggleSelfMic === "true" ? (
+                            participantCanToggleSelfMic === "true" ? (
                             <Box
                               style={{
                                 position: "absolute",
@@ -598,8 +598,8 @@ export default function JoinMeeting({
                                   appTheme === appThemes.DARK
                                     ? theme.palette.darkTheme.seven
                                     : appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.three
-                                    : "#1C1F2E80",
+                                      ? theme.palette.lightTheme.three
+                                      : "#1C1F2E80",
                                 borderRadius: 4,
                                 cursor: "pointer",
                               }}
@@ -709,13 +709,13 @@ export default function JoinMeeting({
                                     style={
                                       micOn
                                         ? {
-                                            backgroundColor: "white",
-                                            color: "black",
-                                          }
+                                          backgroundColor: "white",
+                                          color: "black",
+                                        }
                                         : {
-                                            backgroundColor: red[500],
-                                            color: "white",
-                                          }
+                                          backgroundColor: red[500],
+                                          color: "white",
+                                        }
                                     }
                                     sx={{
                                       borderRadius: "100%",
@@ -753,13 +753,13 @@ export default function JoinMeeting({
                                     style={
                                       webcamOn
                                         ? {
-                                            backgroundColor: "white",
-                                            color: "black",
-                                          }
+                                          backgroundColor: "white",
+                                          color: "black",
+                                        }
                                         : {
-                                            backgroundColor: red[500],
-                                            color: "white",
-                                          }
+                                          backgroundColor: red[500],
+                                          color: "white",
+                                        }
                                     }
                                   >
                                     {webcamOn ? <Videocam /> : <VideocamOff />}

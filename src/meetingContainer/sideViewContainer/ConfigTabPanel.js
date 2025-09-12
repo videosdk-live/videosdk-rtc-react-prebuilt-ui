@@ -179,7 +179,7 @@ function ConfigTabPanel({ panelHeight }) {
     publishToPubSub({ gridSize });
   };
 
-  const publishToPubSub = debounce(function ({
+  const publishToPubSub = debounce(async function ({
     type: _type,
     gridSize: _gridSize,
     priority: _priority,
@@ -191,14 +191,28 @@ function ConfigTabPanel({ panelHeight }) {
     const resolution = _resolution || resolutionRef.current;
 
     const layout = { type, gridSize, priority };
-
-    livestreamPublishRef.current({ layout }, { persist: true });
-    hlsPublishRef.current({ layout }, { persist: true });
-    meetingPublishRef.current({ layout }, { persist: true });
-    recordingPublishRef.current({ layout }, { persist: true });
-    resolutionPublishRef.current({ resolution }, { persist: true });
+    try {
+      await livestreamPublishRef.current({ layout }, { persist: true });
+    } catch (error) {
+    }
+    try {
+      await hlsPublishRef.current({ layout }, { persist: true });
+    } catch (error) {
+    }
+    try {
+      await meetingPublishRef.current({ layout }, { persist: true });
+    } catch (error) {
+    }
+    try {
+      await recordingPublishRef.current({ layout }, { persist: true });
+    } catch (error) {
+    }
+    try {
+      await resolutionPublishRef.current({ resolution }, { persist: true });
+    } catch (error) {
+    }
   },
-  500);
+    500);
 
   //layout and priority card
   let Card = ({ isActive, ref, title, Icon, onClick }) => {
@@ -275,8 +289,8 @@ function ConfigTabPanel({ panelHeight }) {
               appTheme === appThemes.LIGHT
                 ? ""
                 : appTheme === appThemes.DARK
-                ? "#95959E"
-                : "#95959E"
+                  ? "#95959E"
+                  : "#95959E"
             }
             strokeColor={appTheme === appThemes.LIGHT ? "" : "#474657"}
           />
@@ -397,13 +411,12 @@ function ConfigTabPanel({ panelHeight }) {
         </Box>
         <Box
           style={{
-            borderBottom: `2px solid ${
-              appTheme === appThemes.DARK
-                ? theme.palette.darkTheme.seven
-                : appTheme === appThemes.LIGHT
+            borderBottom: `2px solid ${appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
                 ? theme.palette.lightTheme.three
                 : "#3A3F4B"
-            }`,
+              }`,
             marginLeft: -12,
           }}
         ></Box>

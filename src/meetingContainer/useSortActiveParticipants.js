@@ -112,7 +112,7 @@ const useSortActiveParticipants = () => {
     const participantId = participant.id;
 
     // filter out viewer mode participant
-    if (participant.mode == Constants.modes.VIEWER) {
+    if (participant.mode == Constants.modes.SIGNALLING_ONLY) {
       return;
     }
 
@@ -205,7 +205,7 @@ const useSortActiveParticipants = () => {
     const participants = participantsRef.current;
     const maxParticipantInMainView = maxParticipantInMainViewRef.current;
     const conferenceParticipantsArray = [...participants.values()].filter(
-      (participant) => participant.mode === Constants.modes.CONFERENCE
+      (participant) => participant.mode === Constants.modes.SEND_AND_RECV
     );
 
     const conferenceParticipantsMap = new Map(
@@ -255,7 +255,7 @@ const useSortActiveParticipants = () => {
   const participants = mMeeting?.participants;
 
   const conferenceParticipantsArray = [...participants.values()].filter(
-    (participant) => participant.mode === Constants.modes.CONFERENCE
+    (participant) => participant.mode === Constants.modes.SEND_AND_RECV
   );
 
   const conferenceParticipantsMap = new Map(

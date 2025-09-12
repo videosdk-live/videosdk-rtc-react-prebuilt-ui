@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ScreenShare } from "@mui/icons-material";
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+import { useMeeting, useParticipant, VideoPlayer } from "@videosdk.live/react-sdk";
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import ParticipantViewer, { CornerDisplayName } from "./ParticipantViewer";
 import useIsMobile from "../../utils/useIsMobile";
@@ -17,16 +17,14 @@ import {
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { useMediaQuery } from "react-responsive";
-import ReactPlayer from "react-player";
 
 const PresenterView = ({ presenterId }) => {
   const mMeeting = useMeeting();
-  const videoPlayer = useRef();
   const {
     webcamOn,
     micOn,
     isLocal,
-    screenShareStream,
+    // screenShareStream,
     screenShareAudioStream,
     screenShareOn,
     displayName,
@@ -52,14 +50,6 @@ const PresenterView = ({ presenterId }) => {
   const theme = useTheme();
 
   const [mouseOver, setMouseOver] = useState(false);
-
-  const mediaStream = useMemo(() => {
-    if (screenShareOn) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(screenShareStream.track);
-      return mediaStream;
-    }
-  }, [screenShareStream, screenShareOn]);
 
   const mobilePortrait = isMobile && isPortrait;
 
@@ -146,8 +136,8 @@ const PresenterView = ({ presenterId }) => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.slightLighter
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.two
-            : "black",
+              ? theme.palette.lightTheme.two
+              : "black",
         alignItems:
           mobilePortrait && meetingLayout !== meetingLayouts.SPOTLIGHT
             ? undefined
@@ -173,27 +163,17 @@ const PresenterView = ({ presenterId }) => {
         className={"video-contain"}
       >
         <>
-          <ReactPlayer
-            ref={videoPlayer}
-            //
-            playsinline // very very imp prop
-            playIcon={<></>}
-            //
-            pip={false}
-            light={false}
-            controls={false}
-            muted={true}
-            playing={true}
-            //
-            url={mediaStream}
-            //
-            height={"100%"}
-            width={"100%"}
-            style={{
-              filter: isLocal ? "blur(1rem)" : undefined,
+          <VideoPlayer
+            participantId={presenterId}
+            type="share"
+            containerStyle={{
+              height: "100%",
+              width: "100%",
             }}
-            onError={(err) => {
-              console.log(err, "presenter video error");
+            className={`h-full`}
+            classNameVideo={`h-full`}
+            videoStyle={{
+              filter: isLocal ? "blur(1rem)" : undefined,
             }}
           />
         </>
@@ -214,8 +194,8 @@ const PresenterView = ({ presenterId }) => {
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.two
-                  : "#333244",
+                    ? theme.palette.lightTheme.two
+                    : "#333244",
             }}
           >
             <ScreenShare

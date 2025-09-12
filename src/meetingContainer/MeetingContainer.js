@@ -250,8 +250,8 @@ const MeetingContainer = () => {
               ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
               : data.message.layout.gridSize
             : data.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
-            ? RECORDER_MAX_GRID_SIZE
-            : data.message.layout.gridSize
+              ? RECORDER_MAX_GRID_SIZE
+              : data.message.layout.gridSize
           : data.message.layout.gridSize,
       });
     },
@@ -276,8 +276,8 @@ const MeetingContainer = () => {
                 ? RECORDER_MAX_GRID_SIZE_WITH_SCREENSCHARE_ENABLED
                 : latestMessage.message.layout.gridSize
               : latestMessage.message.layout.gridSize > RECORDER_MAX_GRID_SIZE
-              ? RECORDER_MAX_GRID_SIZE
-              : latestMessage.message.layout.gridSize
+                ? RECORDER_MAX_GRID_SIZE
+                : latestMessage.message.layout.gridSize
             : latestMessage.message.layout.gridSize,
         });
       }
@@ -316,7 +316,7 @@ const MeetingContainer = () => {
     const { changeWebcam, changeMic, muteMic, disableWebcam } =
       mMeetingRef.current;
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const { startLivestream, startRecording, startHls } = mMeetingRef.current;
 
       const isLiveStreaming = isLiveStreamingRef.current;
@@ -326,8 +326,8 @@ const MeetingContainer = () => {
       const outputs = liveStreamConfigRef?.current?.length
         ? liveStreamConfigRef.current
         : liveStreamOutputs?.length
-        ? liveStreamOutputs
-        : null;
+          ? liveStreamOutputs
+          : null;
 
       const type = typeRef.current;
       const priority = priorityRef.current;
@@ -340,15 +340,19 @@ const MeetingContainer = () => {
 
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
         startLivestream(outputs, { layout, theme: liveStreamTheme });
+        try {
+          await liveStreamConfigPublishRef.current(
+            {
+              config: outputs.map((output) => {
+                return { ...output, id: getUniqueId() };
+              }),
+            },
+            { persist: true }
+          );
+        } catch (error) {
 
-        liveStreamConfigPublishRef.current(
-          {
-            config: outputs.map((output) => {
-              return { ...output, id: getUniqueId() };
-            }),
-          },
-          { persist: true }
-        );
+        }
+
       }
 
       //
@@ -470,10 +474,9 @@ const MeetingContainer = () => {
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${
-              isLocal
-                ? "You end the call"
-                : " This meeting has been ended by host"
+            `${isLocal
+              ? "You end the call"
+              : " This meeting has been ended by host"
             }`
           );
         }
@@ -555,7 +558,7 @@ const MeetingContainer = () => {
       }
       if (
         notificationSoundEnabled &&
-        meetingModeRef.current === meetingModes.CONFERENCE
+        meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
         new Audio(
           `https://static.videosdk.live/prebuilt/notification.mp3`
@@ -564,30 +567,29 @@ const MeetingContainer = () => {
 
       if (
         notificationAlertsEnabled &&
-        meetingModeRef.current === meetingModes.CONFERENCE
+        meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
         enqueueSnackbar(
-          `${
-            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          `${isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
           } started presenting`
         );
       }
     }
   };
 
-  const _handleOnRecordingStarted = () => {};
+  const _handleOnRecordingStarted = () => { };
 
-  const _handleOnRecordingStopped = () => {};
+  const _handleOnRecordingStopped = () => { };
 
-  const _handleOnLiveStreamStarted = () => {};
+  const _handleOnLiveStreamStarted = () => { };
 
-  const _handleOnLiveStreamStopped = () => {};
+  const _handleOnLiveStreamStopped = () => { };
 
   const _handleOnRecordingStateChanged = ({ status }) => {
     if (
       participantCanToggleRecording &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE &&
+      meetingModeRef.current === meetingModes.SEND_AND_RECV &&
       (status === Constants.recordingEvents.RECORDING_STARTED ||
         status === Constants.recordingEvents.RECORDING_STOPPED)
     ) {
@@ -603,7 +605,7 @@ const MeetingContainer = () => {
     if (
       participantCanToggleLivestream &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE &&
+      meetingModeRef.current === meetingModes.SEND_AND_RECV &&
       (status === Constants.livestreamEvents.LIVESTREAM_STARTED ||
         status === Constants.livestreamEvents.LIVESTREAM_STOPPED)
     ) {
@@ -622,16 +624,14 @@ const MeetingContainer = () => {
       state === "CONNECTED"
         ? "Meeting is connected"
         : state === "CONNECTING"
-        ? "Meeting is connecting"
-        : state === "FAILED"
-        ? "Meeting connection failed"
-        : state === "DISCONNECTED"
-        ? "Meeting connection disconnected abruptly"
-        : state === "CLOSING"
-        ? "Meeting is closing"
-        : state === "CLOSED"
-        ? "Meeting connection closed"
-        : ""
+          ? "Meeting is connecting"
+          : state === "FAILED"
+            ? "Meeting connection failed"
+            : state === "DISCONNECTED"
+              ? "Meeting connection disconnected abruptly"
+              : state === "RECONNECTING"
+                ? "Meeting is Reconnecting"
+                : `Meeting is in ${state} state`
     );
   };
 
@@ -640,7 +640,7 @@ const MeetingContainer = () => {
     if (
       participantCanToggleHls &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE && // trigger on conference mode only
+      meetingModeRef.current === meetingModes.SEND_AND_RECV && // trigger on conference mode only
       (data.status === Constants.hlsEvents.HLS_STARTED ||
         data.status === Constants.hlsEvents.HLS_STOPPED)
     ) {
@@ -673,11 +673,11 @@ const MeetingContainer = () => {
     //set downstream url on basis of started or stopped
   };
 
-  const _handleOnHlsStarted = (data) => {};
+  const _handleOnHlsStarted = (data) => { };
 
-  const _handleOnHlsStopped = () => {};
+  const _handleOnHlsStopped = () => { };
 
-  const _handleOnEntryRequested = () => {};
+  const _handleOnEntryRequested = () => { };
 
   const _handleOnEntryResponded = (participantId, decision) => {
     if (mMeetingRef.current?.localParticipant?.id === participantId) {
@@ -706,7 +706,7 @@ const MeetingContainer = () => {
     if (
       showJoinNotificationRef.current &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE
+      meetingModeRef.current === meetingModes.SEND_AND_RECV
     ) {
       enqueueSnackbar(
         getPinMsg({
@@ -742,8 +742,8 @@ const MeetingContainer = () => {
       message: debug
         ? message
         : isJoiningError
-        ? "Unable to join meeting!"
-        : message,
+          ? "Unable to join meeting!"
+          : message,
     });
   };
 
@@ -788,7 +788,7 @@ const MeetingContainer = () => {
           document.documentElement.msRequestFullscreen();
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -825,8 +825,8 @@ const MeetingContainer = () => {
           appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.darkTheme.main
+              : theme.palette.background.default,
       }}
     >
       <ConfirmBox
@@ -862,11 +862,11 @@ const MeetingContainer = () => {
                   position: "relative",
                 }}
               >
-                {meetingMode === meetingModes.CONFERENCE ? (
+                {meetingMode === meetingModes.SEND_AND_RECV ? (
                   <>
                     {mMeeting?.pinnedParticipants.size > 0 &&
-                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                      meetingLayout === meetingLayouts.SIDEBAR) ? (
+                      (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                        meetingLayout === meetingLayouts.SIDEBAR) ? (
                       <PinnedLayoutViewContainer
                         {...{
                           height: containerHeight - topBarHeight,
@@ -875,8 +875,8 @@ const MeetingContainer = () => {
                             (isTab || isMobile
                               ? 0
                               : typeof sideBarMode === "string"
-                              ? sideBarContainerWidth
-                              : 0),
+                                ? sideBarContainerWidth
+                                : 0),
                           whiteboardToolbarWidth,
                           whiteboardSpacing,
                         }}
@@ -890,8 +890,8 @@ const MeetingContainer = () => {
                             (isTab || isMobile
                               ? 0
                               : typeof sideBarMode === "string"
-                              ? sideBarContainerWidth
-                              : 0),
+                                ? sideBarContainerWidth
+                                : 0),
                           whiteboardToolbarWidth,
                           whiteboardSpacing,
                         }}
@@ -910,8 +910,8 @@ const MeetingContainer = () => {
                           (isTab || isMobile
                             ? 0
                             : typeof sideBarMode === "string"
-                            ? sideBarContainerWidth
-                            : 0),
+                              ? sideBarContainerWidth
+                              : 0),
                       }}
                     />
                   </>
@@ -946,8 +946,8 @@ const MeetingContainer = () => {
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.slightLighter
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.two
-                  : theme.palette.background.default,
+                    ? theme.palette.lightTheme.two
+                    : theme.palette.background.default,
             }}
           >
             <RecordingLoader {...{ meetingLayout, appTheme }} />

@@ -107,7 +107,7 @@ const SingleLiveStreamItem = ({
     itemRef.current = item;
   }, [item]);
 
-  const _handleSaveInsideArray = ({ Id, streamKey, url }) => {
+  const _handleSaveInsideArray = async ({ Id, streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
 
     const newPlatforms = liveStreamConfig.map((item) => {
@@ -122,8 +122,12 @@ const SingleLiveStreamItem = ({
         return item;
       }
     });
+    try {
+      await publish({ config: newPlatforms }, { persist: true });
+    } catch (error) {
 
-    publish({ config: newPlatforms }, { persist: true });
+    }
+
     setLiveStreamConfig(newPlatforms);
   };
 
@@ -140,13 +144,12 @@ const SingleLiveStreamItem = ({
             index === 0
               ? ""
               : `3px solid 
-                  ${
-                    appTheme === appThemes.DARK
-                      ? theme.palette.darkTheme.seven
-                      : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.three
-                      : "#3A3F4B"
-                  }`,
+                  ${appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.seven
+                : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.three
+                  : "#3A3F4B"
+              }`,
           paddingRight: "12px",
           paddingLeft: "12px",
           paddingTop: "12px",
@@ -275,8 +278,8 @@ const SingleLiveStreamItem = ({
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.seven
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.three
-                  : "",
+                    ? theme.palette.lightTheme.three
+                    : "",
             }}
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedStreamKey : item.streamKey}
@@ -305,8 +308,8 @@ const SingleLiveStreamItem = ({
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.seven
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.three
-                  : "",
+                    ? theme.palette.lightTheme.three
+                    : "",
             }}
             disabled={!isSelfEditing}
             value={isSelfEditing ? editedUrl : item.url}
@@ -423,10 +426,9 @@ const AddLiveStream = ({
         boxShadow: "0 -10px 20px -5px rgba(0,0,0,0.35)",
         borderTop:
           liveStreamConfig?.length > 0 &&
-          `3px solid ${
-            appTheme === appThemes.DARK
-              ? theme.palette.darkTheme.seven
-              : appTheme === appThemes.LIGHT
+          `3px solid ${appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.seven
+            : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.three
               : "#3A3F4B"
           }`,
@@ -497,8 +499,8 @@ const AddLiveStream = ({
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.seven
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.three
-                : "",
+                  ? theme.palette.lightTheme.three
+                  : "",
           }}
           value={streamKey}
           InputProps={{
@@ -525,8 +527,8 @@ const AddLiveStream = ({
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.seven
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.three
-                : "",
+                  ? theme.palette.lightTheme.three
+                  : "",
           }}
           autocomplete="off"
           value={url}
@@ -570,21 +572,26 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
 
   const { publish } = usePubSub("LIVE_STREAM_CONFIG");
 
-  const _handleRemove = ({ id }) => {
+  const _handleRemove = async ({ id }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
 
     const filtered = liveStreamConfig.filter(({ id: _id }) => {
       return id !== _id;
     });
+    try {
+      await publish({ config: filtered }, { persist: true });
+    } catch (error) {
+    }
 
-    publish({ config: filtered }, { persist: true });
   };
 
-  const _handleSave = ({ streamKey, url }) => {
+  const _handleSave = async ({ streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
     liveStreamConfig.push({ id: getUniqueId(), streamKey, url });
-
-    publish({ config: liveStreamConfig }, { persist: true });
+    try {
+      await publish({ config: liveStreamConfig }, { persist: true });
+    } catch (error) {
+    }
 
     setTimeout(() => {
       liveStreamsContainerRef.current.scrollTop =

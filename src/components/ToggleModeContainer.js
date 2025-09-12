@@ -39,14 +39,19 @@ const ToggleModeContainer = ({
     !isLocal && (
       <MenuItem
         key={`mode_${participantId}`}
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
-          publish({
-            mode:
-              participantMode === meetingModes.CONFERENCE
-                ? meetingModes.VIEWER
-                : meetingModes.CONFERENCE,
-          });
+          try {
+            await publish({
+              mode:
+                participantMode === meetingModes.SEND_AND_RECV
+                  ? meetingModes.SIGNALLING_ONLY
+                  : meetingModes.SEND_AND_RECV,
+            });
+          } catch (error) {
+
+          }
+
           handleClose();
         }}
       >
@@ -60,7 +65,7 @@ const ToggleModeContainer = ({
           >
             <ParticipantAddHostIcon
               fill={
-                isHoverOnCohost || participantMode === meetingModes.CONFERENCE
+                isHoverOnCohost || participantMode === meetingModes.SEND_AND_RECV
                   ? appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : theme.palette.common.white
@@ -83,14 +88,14 @@ const ToggleModeContainer = ({
                 fontSize: 14,
 
                 color:
-                  isHoverOnCohost || participantMode === meetingModes.CONFERENCE
+                  isHoverOnCohost || participantMode === meetingModes.SEND_AND_RECV
                     ? appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#fff"
                     : theme.palette.text.secondary,
               }}
             >
-              {participantMode === meetingModes.CONFERENCE
+              {participantMode === meetingModes.SEND_AND_RECV
                 ? "Remove from Co-host"
                 : "Add as a Co-host"}
             </Typography>

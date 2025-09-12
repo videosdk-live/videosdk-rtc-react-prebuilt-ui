@@ -137,7 +137,7 @@ const App = () => {
       animationsEnabled: "animationsEnabled",
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
-      participantNotificationAlertsEnabled:"participantNotificationAlertsEnabled",
+      participantNotificationAlertsEnabled: "participantNotificationAlertsEnabled",
       debug: "debug",
       participantId: "participantId",
       //
@@ -444,16 +444,16 @@ const App = () => {
     }
 
     if (typeof paramKeys.mode !== "string") {
-      paramKeys.mode = meetingModes.CONFERENCE;
+      paramKeys.mode = meetingModes.SEND_AND_RECV;
     }
 
     switch (paramKeys.mode.toUpperCase()) {
-      case meetingModes.CONFERENCE:
-      case meetingModes.VIEWER:
+      case meetingModes.SEND_AND_RECV:
+      case meetingModes.SIGNALLING_ONLY:
         paramKeys.mode = paramKeys.mode.toUpperCase();
         break;
       default:
-        paramKeys.mode = meetingModes.CONFERENCE;
+        paramKeys.mode = meetingModes.SEND_AND_RECV;
         break;
     }
 
@@ -507,10 +507,10 @@ const App = () => {
     return isLGDesktop
       ? maxParticipantGridCount_large_desktop
       : isSMDesktop
-      ? maxParticipantGridCount_desktop
-      : isTab
-      ? maxParticipantGridCount_tab
-      : maxParticipantGridCount_mobile;
+        ? maxParticipantGridCount_desktop
+        : isTab
+          ? maxParticipantGridCount_tab
+          : maxParticipantGridCount_mobile;
   }, [isLGDesktop, isSMDesktop, isTab]);
 
   const paramKeys = useMemo(() => getParams({ maxGridSize }), [maxGridSize]);
@@ -523,14 +523,14 @@ const App = () => {
   const [joinScreenWebCam, setJoinScreenWebCam] = useState(
     paramKeys.joinScreenEnabled === "true"
       ? paramKeys.participantCanToggleSelfWebcam === "true" &&
-          paramKeys.webcamEnabled === "true"
+      paramKeys.webcamEnabled === "true"
       : paramKeys.webcamEnabled === "true"
   );
 
   const [joinScreenMic, setJoinScreenMic] = useState(
     paramKeys.joinScreenEnabled === "true"
       ? paramKeys.participantCanToggleSelfMic === "true" &&
-          paramKeys.micEnabled === "true"
+      paramKeys.micEnabled === "true"
       : paramKeys.micEnabled === "true"
   );
   const [selectedMic, setSelectedMic] = useState({ id: null });
@@ -637,8 +637,8 @@ const App = () => {
               paramKeys.theme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default
             }
             color={
               paramKeys.theme === appThemes.LIGHT
@@ -666,8 +666,8 @@ const App = () => {
               paramKeys.theme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : paramKeys.theme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
           }}
         >
           <CircularProgress size={"4rem"} />
@@ -774,7 +774,7 @@ const App = () => {
             topbarEnabled: paramKeys.topbarEnabled !== "false",
             notificationAlertsEnabled:
               paramKeys.notificationAlertsEnabled !== "false",
-            participantNotificationAlertsEnabled : paramKeys.participantNotificationAlertsEnabled !== "false",  
+            participantNotificationAlertsEnabled: paramKeys.participantNotificationAlertsEnabled !== "false",
             debug: paramKeys.debug === "true",
             layoutGridSize: paramKeys.layoutGridSize,
             hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
@@ -822,8 +822,8 @@ const App = () => {
                   ? "hd"
                   : paramKeys.maxResolution === "sd" ||
                     paramKeys.maxResolution === "hd"
-                  ? paramKeys.maxResolution
-                  : "sd",
+                    ? paramKeys.maxResolution
+                    : "sd",
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
               autoConsume: false,
@@ -854,11 +854,11 @@ const App = () => {
           }}
           {...{
             micEnabled:
-              paramKeys.mode === meetingModes.VIEWER
+              paramKeys.mode === meetingModes.SIGNALLING_ONLY
                 ? false
                 : paramKeys.micEnabled === "true",
             webcamEnabled:
-              paramKeys.mode === meetingModes.VIEWER
+              paramKeys.mode === meetingModes.SIGNALLING_ONLY
                 ? false
                 : paramKeys.webcamEnabled === "true",
           }}
@@ -869,12 +869,12 @@ const App = () => {
           meetingUrl={paramKeys.joinScreenMeetingUrl}
           meetingTitle={paramKeys.joinScreenTitle}
           participantCanToggleSelfWebcam={
-            paramKeys.mode === meetingModes.VIEWER
+            paramKeys.mode === meetingModes.SIGNALLING_ONLY
               ? "false"
               : paramKeys.participantCanToggleSelfWebcam
           }
           participantCanToggleSelfMic={
-            paramKeys.mode === meetingModes.VIEWER
+            paramKeys.mode === meetingModes.SIGNALLING_ONLY
               ? "false"
               : paramKeys.participantCanToggleSelfMic
           }

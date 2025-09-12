@@ -191,7 +191,7 @@ export const MeetingAppProvider = ({
   const [downstreamUrl, setDownstreamUrl] = useState(null);
   const [afterMeetingJoinedHLSState, setAfterMeetingJoinedHLSState] =
     useState(null);
-  const [isMirrorViewChecked, setIsMirrorViewChecked] = useState(false);
+  const [isMirrorViewChecked, setIsMirrorViewChecked] = useState(true);
   const [meetingResolution, setMeetingResolution] = useState(null);
 
   const [draftPolls, setDraftPolls] = useState([]);

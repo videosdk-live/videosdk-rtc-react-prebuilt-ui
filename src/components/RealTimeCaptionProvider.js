@@ -42,7 +42,7 @@ const RealTimeCaptionProvider = ({}) => {
     if (
       participantCanToggleRealtimeTranscription &&
       notificationAlertsEnabled &&
-      meetingModeRef.current === meetingModes.CONFERENCE &&
+      meetingModeRef.current === meetingModes.SEND_AND_RECV &&
       (status === Constants.transcriptionEvents.TRANSCRIPTION_STARTED ||
         status === Constants.transcriptionEvents.TRANSCRIPTION_STOPPED)
     ) {

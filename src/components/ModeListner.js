@@ -14,8 +14,8 @@ const reqInfoDefaultState = {
   enabled: false,
   mode: null,
   senderId: null,
-  accept: () => {},
-  reject: () => {},
+  accept: () => { },
+  reject: () => { },
 };
 
 const ModeListner = () => {
@@ -70,18 +70,21 @@ const ModeListner = () => {
   }, [notificationAlertsEnabled]);
 
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
-    onMessageReceived: (data) => {
-      if (data.message.mode === meetingModes.CONFERENCE) {
+    onMessageReceived: async (data) => {
+      if (data.message.mode === meetingModes.SEND_AND_RECV) {
         setReqModeInfo({
           enabled: true,
           senderId: data.senderId,
           mode: data.message.mode,
-          accept: () => {},
-          reject: () => {},
+          accept: () => { },
+          reject: () => { },
         });
       } else {
         mMeeting.changeMode(data.message.mode);
-        publishRef.current(data.message.mode, { persist: true });
+        try {
+          await publishRef.current(data.message.mode, { persist: true });
+        } catch (e) {
+        }
 
         const muteMic = mMeetingRef.current?.muteMic;
         const disableWebcam = mMeetingRef.current?.disableWebcam;
@@ -113,7 +116,7 @@ const ModeListner = () => {
           enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
         }
       },
-      onOldMessagesReceived: (messages) => {},
+      onOldMessagesReceived: (messages) => { },
     }
   );
 
@@ -135,7 +138,7 @@ const ModeListner = () => {
           }
         }
       },
-      onOldMessagesReceived: (messages) => {},
+      onOldMessagesReceived: (messages) => { },
     }
   );
 
@@ -152,7 +155,7 @@ const ModeListner = () => {
       }
       const mainViewParticipants = mainViewParticipantsRef.current;
 
-      if (mode == Constants.modes.CONFERENCE) {
+      if (mode == Constants.modes.SEND_AND_RECV) {
         if (!mainViewParticipants.includes(participantId)) {
           setMainViewParticipants([...mainViewParticipants, participantId]);
         }
@@ -170,18 +173,25 @@ const ModeListner = () => {
         open={reqModeInfo.enabled}
         successText={"Accept"}
         rejectText={"Deny"}
-        onReject={() => {
+        onReject={async () => {
           setReqModeInfo(reqInfoDefaultState);
-          invitatioRejectedPublish(
-            { senderId: reqModeInfo.senderId },
-            { persist: true }
-          );
+          try {
+            await invitatioRejectedPublish(
+              { senderId: reqModeInfo.senderId },
+              { persist: true }
+            );
+          } catch (e) {
+
+          }
         }}
-        onSuccess={() => {
+        onSuccess={async () => {
           mMeeting.changeMode(reqModeInfo.mode);
           publishRef.current(reqModeInfo.mode, { persist: true });
           setReqModeInfo(reqInfoDefaultState);
-          invitatioAcceptedPublish({}, { persist: true });
+          try {
+            await invitatioAcceptedPublish({}, { persist: true });
+          } catch (error) {
+          }
         }}
         title={`Request to become a Co-host`}
         subTitle={`Host has requested you to become a Co-host`}

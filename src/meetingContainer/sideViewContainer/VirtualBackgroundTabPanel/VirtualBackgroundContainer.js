@@ -9,9 +9,9 @@ import {
   createCameraVideoTrack,
   useMeeting,
   useParticipant,
+  VideoPlayer,
 } from "@videosdk.live/react-sdk";
 import { useMemo, useRef } from "react";
-import ReactPlayer from "react-player";
 import { appThemes, useMeetingAppContext } from "../../../MeetingAppContextDef";
 import useIsLGDesktop from "../../../utils/useIsLGDesktop";
 import useIsTab from "../../../utils/useIsTab";
@@ -142,8 +142,8 @@ const BackgroundSelection = ({ padding, theme }) => {
         appTheme === appThemes.DARK
           ? `${BASE_URL}/webcam-no-filter-dark-preview.png`
           : appTheme === appThemes.LIGHT
-          ? `${BASE_URL}/webcam-no-filter-light-preview.png`
-          : `${BASE_URL}/webcam-no-filter-preview.png`,
+            ? `${BASE_URL}/webcam-no-filter-light-preview.png`
+            : `${BASE_URL}/webcam-no-filter-preview.png`,
       type: "DEFAULT",
     },
     {
@@ -151,8 +151,8 @@ const BackgroundSelection = ({ padding, theme }) => {
         appTheme === appThemes.DARK
           ? `${BASE_URL}/webcam-blur-dark-preview.png`
           : appTheme === appThemes.LIGHT
-          ? `${BASE_URL}/webcam-blur-light-preview.png`
-          : `${BASE_URL}/webcam-blur-preview.png`,
+            ? `${BASE_URL}/webcam-blur-light-preview.png`
+            : `${BASE_URL}/webcam-blur-preview.png`,
       type: "blur",
     },
     {
@@ -257,8 +257,8 @@ const BackgroundSelection = ({ padding, theme }) => {
                   appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.eight
                     : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.three
-                    : theme.palette.background.default,
+                      ? theme.palette.lightTheme.three
+                      : theme.palette.background.default,
                 display: "flex",
                 flexDirection: "column",
                 borderRadius: theme.spacing(1),
@@ -266,26 +266,16 @@ const BackgroundSelection = ({ padding, theme }) => {
               }}
             >
               {webcamOn ? (
-                <ReactPlayer
-                  ref={videoPlayer}
-                  //
-                  playsinline // very very imp prop
-                  playIcon={<></>}
-                  //
-                  pip={false}
-                  light={false}
-                  controls={false}
-                  muted={true}
-                  playing={true}
-                  //
-                  url={mediaStream}
-                  //
-                  height={"100%"}
-                  width={"100%"}
-                  style={!isMirrorViewChecked && flipStyle}
-                  onError={(err) => {
-                    console.log(err, "participant video error");
+                <VideoPlayer
+                  participantId={participantId}
+                  type="video"
+                  containerStyle={{
+                    height: "100%",
+                    width: "100%",
                   }}
+                  className={`h-full`}
+                  classNameVideo={`h-full`}
+                  videoStyle={isMirrorViewChecked ? {} : flipStyle}
                 />
               ) : (
                 <Box
