@@ -25,6 +25,11 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
         }
       }
     }
+    return () => {
+      if (!isLocal) {
+        stopConsumingWebcamStreams();
+      }
+    };
   }, [isLocal, isVisible]);
 
   return <></>;
