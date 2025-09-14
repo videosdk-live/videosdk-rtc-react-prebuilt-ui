@@ -6,7 +6,7 @@ import {
   Slide,
   Typography,
   useTheme,
-  Fade
+  Fade,
 } from "@mui/material";
 import React, { useMemo } from "react";
 import {
@@ -124,6 +124,9 @@ const SideBarTabView = ({ width, height }) => {
             height: paddedHeight,
             borderRadius: 10,
             overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
           }}
         >
           <>
@@ -164,9 +167,7 @@ const SideBarTabView = ({ width, height }) => {
                           marginLeft: -4,
                         }}
                       >
-                        <NavigateBeforeOutlined
-                          fontSize="medium"
-                        />
+                        <NavigateBeforeOutlined fontSize="medium" />
                       </CustomIconButton>
                     )}
                   <Typography
@@ -217,9 +218,7 @@ const SideBarTabView = ({ width, height }) => {
                     disableTouchRipple
                     style={{ padding: 0, margin: 0 }}
                   >
-                    <CloseIcon
-                      fontSize={"small"}
-                    />
+                    <CloseIcon fontSize={"small"} />
                   </CustomIconButton>
                 </Box>
               </Box>
