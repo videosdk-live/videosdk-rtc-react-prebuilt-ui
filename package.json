@@ -9,7 +9,7 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@mui/system": "^5.15.15",
-    "@videosdk.live/react-sdk": "^0.4.2",
+    "@videosdk.live/react-sdk": "^0.4.12",
     "@videosdk.live/videosdk-media-processor-web": "^0.0.22",
     "compressorjs": "^1.2.1",
     "emoji-mart": "^5.5.2",
