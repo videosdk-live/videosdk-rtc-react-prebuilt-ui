@@ -56,12 +56,14 @@ const ParticipantsAudioPlayer = () => {
   const participants = mMeeting?.participants;
 
   return participants ? (
-    [...participants.keys()].map((participantId) => (
-      <ParticipantAudioPlayer
-        key={`participant_audio_${participantId}`}
-        participantId={participantId}
-      />
-    ))
+    [...participants.keys()]
+      .filter((pId) => pId !== mMeeting?.localParticipant?.id)
+      .map((participantId) => (
+        <ParticipantAudioPlayer
+          key={`participant_audio_${participantId}`}
+          participantId={participantId}
+        />
+      ))
   ) : (
     <></>
   );
