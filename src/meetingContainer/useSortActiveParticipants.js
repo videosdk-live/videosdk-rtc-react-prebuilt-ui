@@ -117,7 +117,6 @@ const useSortActiveParticipants = () => {
     }
 
     const activeParticipants = activeSortedParticipantsRef.current;
-    const mainViewParticipants = mainViewParticipantsRef.current;
     const maxParticipantInMainView = maxParticipantInMainViewRef.current;
 
     const lastActiveOn = new Date().getTime();
@@ -126,10 +125,6 @@ const useSortActiveParticipants = () => {
       ({ participantId: pID }) => {
         return pID === participantId;
       }
-    );
-
-    const filteredMainViewParticipants = [...mainViewParticipants].filter(
-      (pID) => pID !== participantId
     );
 
     if (foundIndex === -1) {
@@ -142,11 +137,21 @@ const useSortActiveParticipants = () => {
 
     setActiveSortedParticipants(activeSortedParticipants);
 
-    if (filteredMainViewParticipants.length < maxParticipantInMainView) {
-      filteredMainViewParticipants.unshift(participantId);
-      setMainViewParticipants(filteredMainViewParticipants);
-    } else {
-    }
+    // Use a functional updater so we always operate on the latest
+    // mainViewParticipants state — avoids the stale-ref race condition that
+    // occurs when onParticipantLeft and onParticipantJoined fire back-to-back
+    // during a rejoin (the ref lags one render cycle behind the real state).
+    setMainViewParticipants((prevMainViewParticipants) => {
+      const filteredMainViewParticipants = [...prevMainViewParticipants].filter(
+        (pID) => pID !== participantId
+      );
+
+      if (filteredMainViewParticipants.length < maxParticipantInMainView) {
+        filteredMainViewParticipants.unshift(participantId);
+      }
+
+      return filteredMainViewParticipants;
+    });
   };
 
   const _handleOnParticipantLeft = (participant) => {

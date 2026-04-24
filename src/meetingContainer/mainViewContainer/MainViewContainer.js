@@ -242,7 +242,11 @@ const MainViewContainer = ({
 
     let _pinnedParticipants = new Map(pinnedParticipants);
 
-    let mainParticipants = [...mainViewParticipants];
+    // Filter out any IDs that are no longer in the SDK's participants Map.
+    // This guards against stale entries left by rapid rejoin race conditions.
+    let mainParticipants = [...mainViewParticipants].filter((pId) =>
+      participants.has(pId)
+    );
 
     if (presenterId || whiteboardStarted) {
       const remainingParticipants = [...participants.keys()].filter(
