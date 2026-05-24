@@ -1,11 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
   Grid,
-  IconButton,
   Tooltip,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
@@ -13,15 +11,16 @@ import { Videocam, Mic, MicOff, VideocamOff } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import ConfirmBox from "../components/ConfirmBox";
-import { CheckboxIcon } from "../icons";
-import SettingDialogueBox from "./joinScreen/SettingDialogueBox";
 import MeetingDetailModal from "./joinScreen/MeetingDetailModal";
 import useWindowSize from "../utils/useWindowSize";
-import { meetingModes } from "../CONSTS";
 import { appThemes } from "../MeetingAppContextDef";
-import { useTranslation } from "react-i18next";
-import { useMediaDevice } from "@videosdk.live/react-sdk";
+import { Constants, useMediaDevice } from "@videosdk.live/react-sdk";
 import useMediaStream from "../utils/useMediaStream";
+import DropDown from "./DropDown";
+import DropDownSpeaker from "./DropDownSpeaker";
+import DropDownCam from "./DropDownCam";
+import useIsMobile from "../utils/useIsMobile";
+import { CameraPermissionDenied, MicPermissionDenied } from "../icons";
 
 export const DotsBoxContainer = ({ type }) => {
   const theme = useTheme();
@@ -93,70 +92,135 @@ export default function JoinMeeting({
   participantCanToggleSelfMic,
   micEnabled,
   webcamEnabled,
+  selectedMic,
+  selectedWebcam,
+  selectedSpeaker,
   setSelectedMic,
   setSelectedWebcam,
-  mode,
+  setSelectedSpeaker,
+  customAudioStream,
+  setCustomAudioStream,
+  setCustomVideoStream,
   appTheme,
   cameraId,
 }) {
   const theme = useTheme();
 
   const [nameErr, setNameErr] = useState(false);
-
-  const [setting, setSetting] = useState(
-    participantCanToggleSelfWebcam === "true"
-      ? "video"
-      : participantCanToggleSelfMic === "true"
-        ? "audio"
-        : null
-  );
-
+  const isMobile = useIsMobile();
+  const isSmallScreen = useIsMobile(900);
+  const [webcamOn, setWebcamOn] = useState(webcamEnabled ? true : false)
+  const [micOn, setMicOn] = useState(micEnabled ? true : false)
+  const [isCameraPermissionAllowed, setIsCameraPermissionAllowed] = useState(false)
+  const [isMicrophonePermissionAllowed, setIsMicrophonePermissionAllowed] = useState(false)
+  const [didDeviceChange, setDidDeviceChange] = useState(false);
+  const [testSpeaker, setTestSpeaker] = useState(false)
   const [dlgMuted, setDlgMuted] = useState(false);
   const [dlgDevices, setDlgDevices] = useState(false);
-
-  const [settingDialogueOpen, setSettingDialogueOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setSettingDialogueOpen(true);
-  };
-
-  const handleClose = (value) => {
-    setSettingDialogueOpen(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      _handleTurnOffMic();
-      _handleTurnOffWebcam();
-    };
-  }, []);
-
-  const [{ webcams, mics }, setDevices] = useState({
+  const [{ webcams, mics, speakers }, setDevices] = useState({
     devices: [],
     webcams: [],
     mics: [],
+    speakers: [],
   });
-
   const [boxHeight, setBoxHeight] = useState(0);
-
-  const audioAnalyserIntervalRef = useRef();
-
-  const videoPlayerRef = useRef();
-  const popupVideoPlayerRef = useRef();
-  const popupAudioPlayerRef = useRef();
-
   const [videoTrack, setVideoTrack] = useState(null);
   const [audioTrack, setAudioTrack] = useState(null);
+  const videoPlayerRef = useRef();
+  const audioPlayerRef = useRef();
+  const webcamRef = useRef();
+  const micRef = useRef();
+  useEffect(() => {
+    if (webcamOn) {
+      webcamRef.current = true;
+    }
+  }, [webcamOn]);
 
-  const webcamOn = useMemo(() => !!videoTrack, [videoTrack]);
-  const micOn = useMemo(() => !!audioTrack, [audioTrack]);
+  useEffect(() => {
+    if (micOn && micEnabled) {
+      micRef.current = true;
+    }
+  }, [micOn]);
+
+  useEffect(() => {
+    if (micOn && micEnabled) {
+      // Close the existing audio track if there's a new one
+      if (audioTrackRef.current && audioTrackRef.current !== audioTrack) {
+        audioTrackRef.current.stop();
+      }
+
+      audioTrackRef.current = audioTrack;
+      startMuteListener();
+
+      if (audioTrack) {
+        const audioSrcObject = new MediaStream([audioTrack]);
+        if (audioPlayerRef.current) {
+          audioPlayerRef.current.srcObject = audioSrcObject;
+          audioPlayerRef.current
+            .play()
+            .catch((error) => console.log("audio play error", error));
+        }
+      } else {
+        if (audioPlayerRef.current) {
+          audioPlayerRef.current.srcObject = null;
+        }
+      }
+    }
+  }, [micOn, audioTrack]);
+
+  useEffect(() => {
+    if (webcamOn && webcamEnabled) {
+
+      // Close the existing video track if there's a new one
+      if (videoTrackRef.current && videoTrackRef.current !== videoTrack) {
+        videoTrackRef.current.stop(); // Stop the existing video track
+      }
+
+      videoTrackRef.current = videoTrack;
+
+      var isPlaying =
+        videoPlayerRef.current.currentTime > 0 &&
+        !videoPlayerRef.current.paused &&
+        !videoPlayerRef.current.ended &&
+        videoPlayerRef.current.readyState >
+        videoPlayerRef.current.HAVE_CURRENT_DATA;
+
+      if (videoTrack) {
+        const videoSrcObject = new MediaStream([videoTrack]);
+
+        if (videoPlayerRef.current) {
+          videoPlayerRef.current.srcObject = videoSrcObject;
+          if (videoPlayerRef.current.pause && !isPlaying) {
+            videoPlayerRef.current
+              .play()
+              .catch((error) => console.log("error", error));
+          }
+        }
+      } else {
+        if (videoPlayerRef.current) {
+          videoPlayerRef.current.srcObject = null;
+        }
+      }
+    }
+  }, [webcamOn, videoTrack]);
+
+  useEffect(() => {
+    checkMediaPermission();
+    return () => { };
+  }, []);
 
   const videoTrackRef = useRef();
   const audioTrackRef = useRef();
 
   const { width: windowWidth } = useWindowSize();
 
-  const { getCameras, getMicrophones } = useMediaDevice({
+  const {
+    checkPermissions,
+    requestPermission,
+    getCameras,
+    getMicrophones,
+    getPlaybackDevices,
+  } = useMediaDevice({
     onDeviceChanged,
   });
 
@@ -171,6 +235,19 @@ export default function JoinMeeting({
     }
   }, [windowWidth, boxHeight]);
 
+  useEffect(() => {
+    if (isCameraPermissionAllowed) {
+      getCameraDevices();
+    } else {
+      setDevices((prev) => ({ ...prev, webcams: [] }));
+    }
+    if (isMicrophonePermissionAllowed) {
+      getAudioDevices();
+    } else {
+      setDevices((prev) => ({ ...prev, mics: [] }));
+    }
+  }, [isCameraPermissionAllowed, isMicrophonePermissionAllowed]);
+
   const changeWebcam = async (deviceId) => {
     const currentvideoTrack = videoTrackRef.current;
 
@@ -180,8 +257,8 @@ export default function JoinMeeting({
 
     const stream = await getVideoTrack({ webcamId: deviceId });
     const videoTracks = stream.getVideoTracks();
-
-    const videoTrack = videoTracks.length ? videoTracks[0] : null;
+    setCustomVideoStream(stream);
+    const videoTrack = videoTracks?.length ? videoTracks[0] : null;
 
     setVideoTrack(videoTrack);
   };
@@ -190,10 +267,8 @@ export default function JoinMeeting({
     currentAudioTrack && currentAudioTrack.stop();
     const stream = await getAudioTrack({ micId: deviceId });
     const audioTracks = stream.getAudioTracks();
-
-    const audioTrack = audioTracks.length ? audioTracks[0] : null;
-    clearInterval(audioAnalyserIntervalRef.current);
-
+    setCustomAudioStream(stream);
+    const audioTrack = audioTracks?.length ? audioTracks[0] : null;
     setAudioTrack(audioTrack);
   };
   const getDefaultMediaTracks = async ({
@@ -201,15 +276,17 @@ export default function JoinMeeting({
     webcam,
     firstTime,
     cameraId,
+    micId,
+    speakers,
   }) => {
     if (mic) {
-      const stream = await getAudioTrack();
-
+      const stream = await getAudioTrack({ micId: micId || selectedMic?.id });
+      setCustomAudioStream(stream);
       const audioTracks = stream?.getAudioTracks();
-      const audioTrack = audioTracks.length ? audioTracks[0] : null;
+      const audioTrack = audioTracks?.length ? audioTracks[0] : null;
       setAudioTrack(audioTrack);
       if (firstTime) {
-        setSelectedMic({
+        await setSelectedMic({
           id: audioTrack?.getSettings()?.deviceId,
         });
       }
@@ -217,17 +294,25 @@ export default function JoinMeeting({
 
     if (webcam) {
       const stream = await getVideoTrack({
-        webcamId: cameraId,
+        webcamId: cameraId || selectedWebcam?.id,
         encoderConfig: "h720p_w1280p",
       });
       const videoTracks = stream?.getVideoTracks();
-      const videoTrack = videoTracks.length ? videoTracks[0] : null;
+      setCustomVideoStream(stream);
+      const videoTrack = videoTracks?.length ? videoTracks[0] : null;
       setVideoTrack(videoTrack);
       if (firstTime) {
-        setSelectedWebcam({
+        await setSelectedWebcam({
           id: videoTrack?.getSettings()?.deviceId,
         });
       }
+    }
+    if (speakers) {
+      const speakers = await getPlaybackDevices();
+      await setSelectedSpeaker({
+        id: speakers[0]?.deviceId || null,
+        label: speakers[0]?.label || null,
+      });
     }
   };
   async function startMuteListener() {
@@ -247,10 +332,15 @@ export default function JoinMeeting({
   const getCameraDevices = async () => {
     try {
       let webcams = await getCameras();
-
+      const firstWebcam = webcams[0];
+      await setSelectedWebcam({
+        id: webcams[0]?.deviceId,
+        label: webcams[0]?.label,
+      });
       setDevices((devices) => {
         return { ...devices, webcams };
       });
+      return { webcams, firstWebcamId: firstWebcam?.deviceId };
     } catch (err) {
       console.log("Error in getting camera devices", err);
     }
@@ -259,145 +349,146 @@ export default function JoinMeeting({
   const getAudioDevices = async () => {
     try {
       let mics = await getMicrophones();
-
+      let speakers = await getPlaybackDevices();
+      const firstMic = mics[0];
       const hasMic = mics.length > 0;
       if (hasMic) {
         startMuteListener();
       }
-
-      setDevices((devices) => {
-        return { ...devices, mics };
+      await setSelectedSpeaker({
+        id: speakers[0]?.deviceId,
+        label: speakers[0]?.label,
       });
+      await setSelectedMic({ id: mics[0]?.deviceId, label: mics[0]?.label });
+      setDevices((devices) => {
+        return { ...devices, mics, speakers };
+      });
+      return { mics, speakers, firstMicId: firstMic?.deviceId };
     } catch (err) {
       console.log("Error in getting audio devices", err);
     }
   };
 
+
   function onDeviceChanged() {
+    setDidDeviceChange(true);
     getCameraDevices();
     getAudioDevices();
+    getDefaultMediaTracks({ mic: micRef.current, webcam: webcamRef.current });
   }
-
-  const getDevices = async ({ micEnabled, webcamEnabled, cameraId }) => {
-    try {
-      const webcams = await getCameras();
-      const mics = await getMicrophones();
-
-      setDevices({ webcams, mics });
-
-      const hasMic = mics.length > 0;
-      const hasWebcam = webcams.length > 0;
-
-      if (hasMic) {
-        startMuteListener();
-      }
-
-      getDefaultMediaTracks({
-        mic: hasMic && micEnabled,
-        webcam: hasWebcam && webcamEnabled,
-        firstTime: true,
-        cameraId: cameraId,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const _handleTurnOffWebcam = () => {
-    const videoTrack = videoTrackRef.current;
-
-    if (videoTrack) {
-      videoTrack.stop();
-
-      setVideoTrack(null);
-    }
-  };
-  const _handleTurnOnWebcam = () => {
-    const videoTrack = videoTrackRef.current;
-
-    if (!videoTrack) {
-      getDefaultMediaTracks({ mic: false, webcam: true, cameraId: cameraId });
-    }
-  };
 
   const _toggleWebcam = () => {
     const videoTrack = videoTrackRef.current;
-
-    if (videoTrack) {
-      _handleTurnOffWebcam();
-    } else {
-      _handleTurnOnWebcam();
+    if (webcamOn && webcamEnabled) {
+      if (videoTrack) {
+        videoTrack.stop();
+        setVideoTrack(null);
+        setCustomVideoStream(null);
+        setWebcamOn(false);
+      }
     }
-  };
-  const _handleTurnOffMic = () => {
-    const audioTrack = audioTrackRef.current;
-
-    if (audioTrack) {
-      audioTrack.stop();
-
-      setAudioTrack(null);
-    }
-  };
-  const _handleTurnOnMic = () => {
-    const audioTrack = audioTrackRef.current;
-
-    if (!audioTrack) {
-      getDefaultMediaTracks({ mic: true, webcam: false });
+    else {
+      if (webcamEnabled) {
+        getDefaultMediaTracks({ mic: false, webcam: true, cameraId: cameraId });
+        setWebcamOn(true);
+      }
     }
   };
   const _handleToggleMic = () => {
     const audioTrack = audioTrackRef.current;
-
-    if (audioTrack) {
-      _handleTurnOffMic();
+    if (micOn && micEnabled) {
+      if (audioTrack) {
+        audioTrack.stop();
+        setAudioTrack(null);
+        setCustomAudioStream(null);
+        setMicOn(false);
+      }
     } else {
-      _handleTurnOnMic();
+      if (micEnabled) {
+        getDefaultMediaTracks({ mic: true, webcam: false });
+        setMicOn(true);
+      }
     }
   };
 
-  useEffect(() => {
-    videoTrackRef.current = videoTrack;
+  const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+  async function requestAudioVideoPermission(mediaType) {
+    try {
+      const permission = await requestPermission(mediaType);
 
-    if (videoTrack) {
-      const videoSrcObject = new MediaStream([videoTrack]);
-
-      if (videoPlayerRef.current) {
-        videoPlayerRef.current.srcObject = videoSrcObject;
-        try {
-          videoPlayerRef.current.play();
-        } catch (err) {
-          console.log("error in video play", err);
+      // For Video
+      if (isFirefox) {
+        const isVideoAllowed = permission.get("video");
+        setIsCameraPermissionAllowed(isVideoAllowed);
+        if (isVideoAllowed && webcamEnabled) {
+          await getDefaultMediaTracks({ mic: false, webcam: true });
         }
       }
 
-      setTimeout(() => {
-        if (popupVideoPlayerRef.current) {
-          popupVideoPlayerRef.current.srcObject = videoSrcObject;
-          try {
-            popupVideoPlayerRef.current.play();
-          } catch (err) {
-            console.log("error in video play", err);
-          }
+      // For Audio
+      if (isFirefox) {
+        const isAudioAllowed = permission.get("audio");
+        setIsMicrophonePermissionAllowed(isAudioAllowed);
+        if (isAudioAllowed && micEnabled) {
+          await getDefaultMediaTracks({ mic: true, webcam: false });
         }
-      }, 1000);
-    } else {
-      if (videoPlayerRef.current) {
-        videoPlayerRef.current.srcObject = null;
       }
-      if (popupVideoPlayerRef.current) {
-        popupVideoPlayerRef.current.srcObject = null;
+
+      if (mediaType === Constants.permission.AUDIO) {
+        const isAudioAllowed = permission.get(Constants.permission.AUDIO);
+        setIsMicrophonePermissionAllowed(isAudioAllowed);
+        if (isAudioAllowed && micEnabled) {
+          await getDefaultMediaTracks({ mic: true, webcam: false });
+        }
       }
+
+      if (mediaType === Constants.permission.VIDEO) {
+        const isVideoAllowed = permission.get(Constants.permission.VIDEO);
+        setIsCameraPermissionAllowed(isVideoAllowed);
+        if (isVideoAllowed && webcamEnabled) {
+          await getDefaultMediaTracks({ mic: false, webcam: true });
+        }
+      }
+    } catch (ex) {
+      console.log("Error in requestPermission ", ex);
     }
-  }, [videoTrack, setting, settingDialogueOpen]);
+  }
+  const checkMediaPermission = async () => {
+    try {
+      const checkAudioVideoPermission = await checkPermissions();
+      const cameraPermissionAllowed = checkAudioVideoPermission.get(
+        Constants.permission.VIDEO
+      );
+      const microphonePermissionAllowed = checkAudioVideoPermission.get(
+        Constants.permission.AUDIO
+      );
 
-  useEffect(() => {
-    audioTrackRef.current = audioTrack;
-
-    startMuteListener();
-  }, [audioTrack]);
-
-  useEffect(() => {
-    getDevices({ micEnabled, webcamEnabled, cameraId });
-  }, []);
+      setIsCameraPermissionAllowed(cameraPermissionAllowed);
+      setIsMicrophonePermissionAllowed(microphonePermissionAllowed);
+      const { firstWebcamId } = await getCameraDevices();
+      const { firstMicId } = await getAudioDevices();
+      if (microphonePermissionAllowed && micEnabled) {
+        getDefaultMediaTracks({ mic: true, webcam: false, micId: firstMicId });
+      } else {
+        if (micEnabled) {
+          await requestAudioVideoPermission(Constants.permission.AUDIO);
+        }
+      }
+      if (cameraPermissionAllowed && webcamEnabled) {
+        getDefaultMediaTracks({ mic: false, webcam: true, cameraId: firstWebcamId });
+      } else {
+        if (webcamEnabled) {
+          await requestAudioVideoPermission(Constants.permission.VIDEO);
+        }
+      }
+    } catch (error) {
+      // For firefox, it will request audio and video simultaneously.
+      if (micEnabled && webcamEnabled) {
+        await requestAudioVideoPermission();
+      }
+      console.log(error);
+    }
+  };
 
   const padding = useResponsiveSize({
     xl: 6,
@@ -429,14 +520,7 @@ export default function JoinMeeting({
 
   const isXStoSM = useMediaQuery(theme.breakpoints.between("xs", "sm"));
   const gtThenMD = useMediaQuery(theme.breakpoints.up("md"));
-  const gtThenXL = useMediaQuery(theme.breakpoints.only("xl"));
-
-  const isXSOnly = useMediaQuery(theme.breakpoints.only("xs"));
-  const isSMOnly = useMediaQuery(theme.breakpoints.only("sm"));
   const isXLOnly = useMediaQuery(theme.breakpoints.only("xl"));
-
-  const { t } = useTranslation();
-
   return (
     <>
       <Box
@@ -458,11 +542,7 @@ export default function JoinMeeting({
           style={{
             display: "flex",
             flex: 1,
-            flexDirection: isXStoSM
-              ? "column"
-              : meetingUrl === "" || meetingTitle === ""
-                ? "row"
-                : "column",
+            flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -472,29 +552,26 @@ export default function JoinMeeting({
             spacing={padding}
             style={{
               display: "flex",
-              flex: isSMOnly ? 0 : 1,
-              flexDirection: isXStoSM
-                ? "column"
-                : meetingUrl || meetingTitle
-                  ? "row"
-                  : "column",
+              flex: 1,
+              flexDirection: isXStoSM ? "column" : "row",
               alignItems: "center",
               justifyContent: "center",
+              gap: "12px",
             }}
           >
             <Grid
               item
               xs={12}
-              md={gtThenXL ? 6 : 7}
+              md={7}
               style={{
                 display: "flex",
-                flex: 1,
+                flexDirection: "column",
+                width: "100%",
               }}
             >
               <Box
                 style={{
-                  width: isXSOnly ? "100%" : "100vw",
-                  // isXSOnly ? "100%" : isSMOnly ? "96%" : "100vw",
+                  width: "100%",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -532,7 +609,7 @@ export default function JoinMeeting({
                     <Box
                       sx={{
                         width: "100%",
-                        height: "45vh",
+                        height: "50vh",
                         position: "relative",
                       }}
                     >
@@ -551,130 +628,9 @@ export default function JoinMeeting({
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          transform: "scaleX(-1)",
                         }}
                       />
-
-                      {!isXSOnly ? (
-                        <>
-                          <Box
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              bottom: 0,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              right: 0,
-                              left: 0,
-                            }}
-                          >
-                            {participantCanToggleSelfWebcam === "false" &&
-                              !webcamOn ? (
-                              <Typography
-                                color={"#fff"}
-                                variant={isXLOnly ? "h5" : "h6"}
-                              >
-                                {mode === meetingModes.SIGNALLING_ONLY
-                                  ? "You are not permitted to use your microphone and camera."
-                                  : "You are not allowed to turn on your camera"}
-                              </Typography>
-                            ) : !webcamOn ? (
-                              <Typography
-                                color={"#fff"}
-                                variant={isXLOnly ? "h4" : "h6"}
-                              >
-                                The camera is off
-                              </Typography>
-                            ) : null}
-                          </Box>
-                          {participantCanToggleSelfWebcam === "true" ||
-                            participantCanToggleSelfMic === "true" ? (
-                            <Box
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                                backgroundColor:
-                                  appTheme === appThemes.DARK
-                                    ? theme.palette.darkTheme.seven
-                                    : appTheme === appThemes.LIGHT
-                                      ? theme.palette.lightTheme.three
-                                      : "#1C1F2E80",
-                                borderRadius: 4,
-                                cursor: "pointer",
-                              }}
-                              m={2}
-                              onClick={(e) => {
-                                handleClickOpen();
-                              }}
-                            >
-                              <Box
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                                m={0.5}
-                              >
-                                <IconButton
-                                  style={{
-                                    margin: 0,
-                                    padding: 0,
-                                  }}
-                                >
-                                  <CheckboxIcon
-                                    fill={
-                                      appTheme === appThemes.LIGHT
-                                        ? theme.palette.lightTheme.contrastText
-                                        : "#fff"
-                                    }
-                                  />
-                                </IconButton>
-                                <Typography
-                                  variant="subtitle1"
-                                  style={{
-                                    marginLeft: 4,
-                                    color:
-                                      appTheme === appThemes.LIGHT
-                                        ? theme.palette.lightTheme.contrastText
-                                        : "#fff",
-                                  }}
-                                >
-                                  {t("Check your audio and video")}
-                                </Typography>
-                              </Box>
-                            </Box>
-                          ) : null}
-                        </>
-                      ) : null}
-
-                      {settingDialogueOpen ? (
-                        <SettingDialogueBox
-                          open={settingDialogueOpen}
-                          onClose={handleClose}
-                          popupVideoPlayerRef={popupVideoPlayerRef}
-                          popupAudioPlayerRef={popupAudioPlayerRef}
-                          changeWebcam={changeWebcam}
-                          changeMic={changeMic}
-                          setting={setting}
-                          setSetting={setSetting}
-                          webcams={webcams}
-                          mics={mics}
-                          setSelectedMic={setSelectedMic}
-                          setSelectedWebcam={setSelectedWebcam}
-                          videoTrack={videoTrack}
-                          audioTrack={audioTrack}
-                          participantCanToggleSelfMic={
-                            participantCanToggleSelfMic
-                          }
-                          participantCanToggleSelfWebcam={
-                            participantCanToggleSelfWebcam
-                          }
-                          appTheme={appTheme}
-                        />
-                      ) : null}
-
                       <Box
                         position="absolute"
                         bottom={theme.spacing(2)}
@@ -699,33 +655,36 @@ export default function JoinMeeting({
                             {participantCanToggleSelfMic === "true" ? (
                               <Grid item>
                                 <Tooltip
-                                  title={micOn ? "Turn off mic" : "Turn on mic"}
+                                  title={micOn && micEnabled ? "Turn off mic" : "Turn on mic"}
                                   arrow
                                   placement="top"
                                 >
-                                  <Button
-                                    onClick={() => _handleToggleMic()}
-                                    variant="contained"
-                                    style={
-                                      micOn
-                                        ? {
-                                          backgroundColor: "white",
-                                          color: "black",
-                                        }
-                                        : {
-                                          backgroundColor: red[500],
-                                          color: "white",
-                                        }
-                                    }
-                                    sx={{
-                                      borderRadius: "100%",
-                                      minWidth: "auto",
-                                      width: "44px",
-                                      height: "44px",
-                                    }}
-                                  >
-                                    {micOn ? <Mic /> : <MicOff />}
-                                  </Button>
+                                  {isMicrophonePermissionAllowed &&
+                                    <Button
+                                      onClick={() => _handleToggleMic()}
+                                      variant="contained"
+                                      style={
+                                        micOn && micEnabled
+                                          ? {
+                                            backgroundColor: "white",
+                                            color: "black",
+                                          }
+                                          : {
+                                            backgroundColor: red[500],
+                                            color: "white",
+                                          }
+                                      }
+                                      sx={{
+                                        borderRadius: "100%",
+                                        minWidth: "auto",
+                                        width: "44px",
+                                        height: "44px",
+                                      }}
+                                    >
+                                      {micOn && micEnabled ? <Mic /> : <MicOff />}
+                                    </Button>
+                                  }
+                                  {!isMicrophonePermissionAllowed && <MicPermissionDenied width={48} height={48} />}
                                 </Tooltip>
                               </Grid>
                             ) : null}
@@ -734,36 +693,42 @@ export default function JoinMeeting({
                               <Grid item>
                                 <Tooltip
                                   title={
-                                    webcamOn
+                                    webcamOn && webcamEnabled
                                       ? "Turn off camera"
                                       : "Turn on camera"
                                   }
                                   arrow
                                   placement="top"
                                 >
-                                  <Button
-                                    onClick={() => _toggleWebcam()}
-                                    variant="contained"
-                                    sx={{
-                                      borderRadius: "100%",
-                                      minWidth: "auto",
-                                      width: "44px",
-                                      height: "44px",
-                                    }}
-                                    style={
-                                      webcamOn
-                                        ? {
-                                          backgroundColor: "white",
-                                          color: "black",
-                                        }
-                                        : {
-                                          backgroundColor: red[500],
-                                          color: "white",
-                                        }
-                                    }
-                                  >
-                                    {webcamOn ? <Videocam /> : <VideocamOff />}
-                                  </Button>
+                                  {isCameraPermissionAllowed &&
+                                    <Button
+                                      onClick={() => _toggleWebcam()}
+                                      variant="contained"
+                                      sx={{
+                                        borderRadius: "100%",
+                                        minWidth: "auto",
+                                        width: "44px",
+                                        height: "44px",
+                                      }}
+                                      style={
+                                        webcamOn && webcamEnabled
+                                          ? {
+                                            backgroundColor: "white",
+                                            color: "black",
+                                          }
+                                          : {
+                                            backgroundColor: red[500],
+                                            color: "white",
+                                          }
+                                      }
+                                    >
+                                      {webcamOn && webcamEnabled ? <Videocam /> : <VideocamOff />}
+                                    </Button>
+                                  }
+                                  {
+                                    !isCameraPermissionAllowed &&
+                                    <CameraPermissionDenied width={48} height={48} />
+                                  }
                                 </Tooltip>
                               </Grid>
                             ) : null}
@@ -774,11 +739,59 @@ export default function JoinMeeting({
                   </Box>
                 </Box>
               </Box>
+              <Box
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "12px",
+                }}
+                p={internalPadding}
+              >
+                {micEnabled && <Box style={{ marginTop: (isMobile) ? "4px" : 0, flex: 1, width: (isMobile) ? "100%" : "32.333%" }}>
+                  <DropDown
+                    mics={mics}
+                    changeMic={changeMic}
+                    customAudioStream={customAudioStream}
+                    audioTrack={audioTrack}
+                    micOn={micOn}
+                    didDeviceChange={didDeviceChange}
+                    setDidDeviceChange={setDidDeviceChange}
+                    testSpeaker={testSpeaker}
+                    setTestSpeaker={setTestSpeaker}
+                    selectedMic={selectedMic}
+                    setSelectedMic={setSelectedMic}
+                    selectedSpeaker={selectedSpeaker}
+                    isMicrophonePermissionAllowed={isMicrophonePermissionAllowed}
+                  />
+                </Box>}
+                {!(isMobile) && (
+                  <Box style={{ marginTop: isMobile ? "4px" : 0, flex: 1, width: "32.333%" }}>
+                    <DropDownSpeaker
+                      speakers={speakers}
+                      selectedSpeaker={selectedSpeaker}
+                      setSelectedSpeaker={setSelectedSpeaker}
+                      isMicrophonePermissionAllowed={isMicrophonePermissionAllowed}
+                    />
+                  </Box>
+                )}
+                {webcamEnabled && <Box style={{ marginTop: (isMobile) ? "4px" : 0, flex: 1, width: (isMobile) ? "100%" : "32.333%" }}>
+                  <DropDownCam
+                    changeWebcam={changeWebcam}
+                    webcams={webcams}
+                    selectedWebcam={selectedWebcam}
+                    setSelectedWebcam={setSelectedWebcam}
+                    isCameraPermissionAllowed={isCameraPermissionAllowed}
+                  />
+                </Box>}
+              </Box>
             </Grid>
             <Grid
               item
               xs={12}
-              md={isXStoSM ? 5 : meetingTitle || meetingUrl ? 5 : 6}
+              md={5}
               style={{
                 width: "100%",
                 display: "flex",
@@ -795,23 +808,36 @@ export default function JoinMeeting({
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  paddingLeft: isMobile ? "16px" : "20px",
                 }}
               >
-                <MeetingDetailModal
-                  internalPadding={internalPadding}
-                  name={name}
-                  setName={setName}
-                  nameErr={nameErr}
-                  meetingTitle={meetingTitle}
-                  meetingUrl={meetingUrl}
-                  setNameErr={setNameErr}
-                  isXStoSM={isXStoSM}
-                  startMeeting={() => {
-                    onClick({ name, webcamOn, micOn });
+                <Box
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: internalPadding,
+                    paddingRight: internalPadding,
                   }}
-                  isXLOnly={isXLOnly}
-                  appTheme={appTheme}
-                />
+                >
+                  <MeetingDetailModal
+                    internalPadding={internalPadding}
+                    name={name}
+                    setName={setName}
+                    nameErr={nameErr}
+                    meetingTitle={meetingTitle}
+                    meetingUrl={meetingUrl}
+                    setNameErr={setNameErr}
+                    isXStoSM={isXStoSM}
+                    startMeeting={() => {
+                      onClick({ name, webcamOn, micOn });
+                    }}
+                    isXLOnly={isXLOnly}
+                    appTheme={appTheme}
+                  />
+                </Box>
               </Box>
             </Grid>
           </Grid>
@@ -839,7 +865,7 @@ export default function JoinMeeting({
             subTitle="Please connect a mic and webcam to speak and share your video in the meeting. You can also join without them."
           />
         </Box>
-      </Box>
+      </Box >
     </>
   );
 }
