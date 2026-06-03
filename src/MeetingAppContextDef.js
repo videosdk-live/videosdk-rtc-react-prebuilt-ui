@@ -13,7 +13,7 @@ import { RECORDER_MAX_GRID_SIZE } from "./CONSTS";
 import { validURL } from "./utils/common";
 import useIsMobile from "./utils/useIsMobile";
 import useIsTab from "./utils/useIsTab";
-import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-media-processor-web";
+import { VirtualBackgroundProcessor } from "@videosdk.live/videosdk-virtual-background-web";
 
 export const MeetingAppContext = createContext();
 
