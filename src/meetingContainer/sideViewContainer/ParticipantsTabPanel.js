@@ -1,6 +1,7 @@
 import {
   useMeeting,
   useParticipant,
+  useAgentParticipant,
   usePubSub,
 } from "@videosdk.live/react-sdk";
 import { MoreVert, SearchOutlined } from "@mui/icons-material";
@@ -40,7 +41,7 @@ import useCustomTrack from "../../utils/useCustomTrack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
-function ParticipantListItem({ raisedHand, participantId }) {
+function NormalParticipantListItem({ raisedHand, participantId }) {
   const { presenterId } = useMeeting();
   const {
     participant,
@@ -602,6 +603,350 @@ function ParticipantListItem({ raisedHand, participantId }) {
         }}
       />
     </Box>
+  );
+}
+
+function AgentParticipantListItem({ participantId }) {
+  const {
+    agentParticipant,
+    displayName,
+    micOn,
+    webcamOn,
+    pinState,
+    pin,
+    unpin,
+  } = useAgentParticipant(participantId);
+
+  const {
+    canPin,
+    canRemoveOtherParticipant,
+    animationsEnabled,
+    meetingMode,
+    appTheme,
+  } = useMeetingAppContext();
+
+  const theme = useTheme();
+
+  const [isParticipantKickoutVisible, setIsParticipantKickoutVisible] =
+    useState(false);
+
+  const [moreIconClicked, setMoreIconClicked] = useState(null);
+
+  const handleClick = (event) => setMoreIconClicked(event.currentTarget);
+  const handleClose = () => setMoreIconClicked(null);
+
+  const isPinned = pinState?.share || pinState?.cam;
+
+  return (
+    <Box
+      mt={1}
+      p={1}
+      style={{
+        backgroundColor:
+          appTheme === appThemes.DARK
+            ? theme.palette.darkTheme.seven
+            : appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.three
+            : theme.palette.common.sidePanel,
+        borderRadius: 6,
+      }}
+    >
+      <Box
+        style={{
+          display: "flex",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+        }}
+      >
+        <Avatar
+          variant={"rounded"}
+          style={{
+            color: appTheme === appThemes.LIGHT && "white",
+            backgroundColor:
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.five
+                : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.five
+                : "",
+          }}
+        >
+          {displayName?.charAt(0)}
+        </Avatar>
+
+        <Box ml={1} mr={0.5} style={{ flex: 1, display: "flex" }}>
+          <Typography
+            style={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "pre-wrap",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.contrastText
+                  : "white",
+            }}
+            variant="body1"
+            noWrap
+          >
+            {/* Agents are never "You" — always show name */}
+            {nameTructed(displayName, 10)}
+          </Typography>
+        </Box>
+
+        <Box
+          style={{
+            display: "flex",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        >
+          <Box
+            style={{
+              display: "flex",
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              style={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {/* Mic status indicator (read-only for agents) */}
+              <Box ml={0.5} mr={0.5}>
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 100,
+                    padding: 4,
+                  }}
+                >
+                  {micOn ? (
+                    <ParticipantMicOnIcon
+                      fillColor={
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white"
+                      }
+                    />
+                  ) : (
+                    <ParticipantMicOffIcon />
+                  )}
+                </Box>
+              </Box>
+
+              {/* Webcam status indicator (read-only for agents) */}
+              <Box ml={1} mr={0}>
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 100,
+                    padding: 4,
+                  }}
+                >
+                  {webcamOn ? (
+                    <ParticipantVideoOnIcon
+                      fillColor={
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white"
+                      }
+                    />
+                  ) : (
+                    <ParticipantVideoOffIcon />
+                  )}
+                </Box>
+              </Box>
+
+              {/* Pin button */}
+              {canPin && (
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  ml={1}
+                  mr={0}
+                  p={0.5}
+                >
+                  <Tooltip title={isPinned ? "Unpin" : "Pin"}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isPinned ? unpin() : pin();
+                      }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <ParticipantPinIcon
+                        fill={
+                          isPinned
+                            ? appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white"
+                            : appTheme === appThemes.LIGHT
+                            ? theme.palette.lightTheme.four
+                            : "#ffffff80"
+                        }
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )}
+            </Box>
+          </Box>
+
+          {canRemoveOtherParticipant && (
+            <Box
+              style={{
+                transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
+              }}
+            >
+              <IconButton
+                style={{ padding: 0 }}
+                onClick={(e) => handleClick(e)}
+              >
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 100,
+                  }}
+                  p={0.5}
+                >
+                  <MoreVert
+                    fontSize="small"
+                    style={{
+                      height: 18,
+                      width: 18,
+                      color:
+                        appTheme === appThemes.LIGHT
+                          ? theme.palette.lightTheme.contrastText
+                          : "white",
+                    }}
+                  />
+                </Box>
+              </IconButton>
+              <Popover
+                open={Boolean(moreIconClicked)}
+                anchorEl={moreIconClicked}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                style={{ marginTop: 4, marginRight: 16 }}
+              >
+                <MenuList
+                  style={{
+                    backgroundColor:
+                      appTheme === appThemes.DARK
+                        ? theme.palette.darkTheme.slightLighter
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.two
+                        : "",
+                    color:
+                      appTheme === appThemes.DARK
+                        ? theme.palette.common.white
+                        : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "",
+                  }}
+                >
+                  <MenuItem
+                    key={`remove`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsParticipantKickoutVisible(true);
+                      handleClose();
+                    }}
+                  >
+                    <Box style={{ display: "flex", flexDirection: "row" }}>
+                      <Box
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <ParticipantRemoveIcon
+                          fillColor={
+                            appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : theme.palette.common.white
+                          }
+                        />
+                      </Box>
+                      <Box
+                        style={{
+                          display: "flex",
+                          flex: 1,
+                          flexDirection: "column",
+                          marginLeft: 12,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Typography style={{ fontSize: 14 }}>
+                          Remove Agent
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </MenuItem>
+                </MenuList>
+              </Popover>
+            </Box>
+          )}
+        </Box>
+      </Box>
+
+      <ConfirmBox
+        open={isParticipantKickoutVisible}
+        title={`Remove ${nameTructed(displayName, 15)}`}
+        subTitle={`Are you sure you want to remove ${nameTructed(displayName, 15)} from the call?`}
+        successText={"Remove"}
+        rejectText={"Cancel"}
+        onSuccess={() => {
+          agentParticipant?.remove();
+          setIsParticipantKickoutVisible(false);
+        }}
+        onReject={() => {
+          setIsParticipantKickoutVisible(false);
+        }}
+      />
+    </Box>
+  );
+}
+
+function ParticipantListItem({ raisedHand, participantId }) {
+  const { participants } = useMeeting();
+  const isAgent = participants?.get(participantId)?.isAgent === true;
+
+  if (isAgent) {
+    return <AgentParticipantListItem participantId={participantId} />;
+  }
+
+  return (
+    <NormalParticipantListItem
+      raisedHand={raisedHand}
+      participantId={participantId}
+    />
   );
 }
 

@@ -1,10 +1,10 @@
+import { Box, Popover, Typography, useTheme } from "@mui/material";
 import {
-  Box,
-  Popover,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { useMeeting, useParticipant, VideoPlayer } from "@videosdk.live/react-sdk";
+  useMeeting,
+  useParticipant,
+  useAgentParticipant,
+  VideoPlayer,
+} from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef, useMemo, useState } from "react";
 import { MicOff } from "../../icons";
 import { IconButton } from "@mui/material";
@@ -31,7 +31,6 @@ import NetworkIcon from "../../icons/NetworkIcon";
 import { CloseOutlined } from "@mui/icons-material";
 import { useMediaQuery } from "react-responsive";
 
-
 export const CornerDisplayName = ({
   participantId,
   isPresenting,
@@ -46,6 +45,12 @@ export const CornerDisplayName = ({
   mouseOver,
   isRecorder,
   isPortrait,
+  webcamStream,
+  micStream,
+  screenShareStream,
+  getVideoStats,
+  getAudioStats,
+  getShareStats,
 }) => {
   const theme = useTheme();
 
@@ -91,24 +96,15 @@ export const CornerDisplayName = ({
   const show = useMemo(
     () =>
       alwaysShowOverlay || mouseOver || isActiveSpeaker || overlaidInfoVisible,
-    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible]
+    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible],
   );
 
   const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
 
   const showPin = useMemo(
     () => (alwaysShowOverlay ? isPinned : isPinned || mouseOver),
-    [alwaysShowOverlay, isPinned, mouseOver]
+    [alwaysShowOverlay, isPinned, mouseOver],
   );
-
-  const {
-    webcamStream,
-    micStream,
-    getVideoStats,
-    getAudioStats,
-    getShareStats,
-    screenShareStream,
-  } = useParticipant(participantId);
 
   const statsIntervalIdRef = useRef();
   const [score, setScore] = useState({});
@@ -117,22 +113,32 @@ export const CornerDisplayName = ({
 
   const updateStats = async () => {
     let stats = [];
-    let audioStats = [];
-    let videoStats = [];
-    if (isPresenting) {
+    let audioStatsData = [];
+    let videoStatsData = [];
+
+    // Guard: agents have no getShareStats — only call when available
+    if (isPresenting && getShareStats) {
       stats = await getShareStats();
-    } else if (webcamStream) {
+    } else if (webcamStream && getVideoStats) {
       stats = await getVideoStats();
-    } else if (micStream) {
+    } else if (micStream && getAudioStats) {
       stats = await getAudioStats();
     }
 
-    if (webcamStream || micStream || isPresenting) {
-      videoStats = isPresenting ? await getShareStats() : await getVideoStats();
-      audioStats = isPresenting ? [] : await getAudioStats();
+    if (webcamStream || micStream || (isPresenting && screenShareStream)) {
+      videoStatsData =
+        isPresenting && getShareStats
+          ? await getShareStats()
+          : getVideoStats
+            ? await getVideoStats()
+            : [];
+      audioStatsData = isPresenting
+        ? []
+        : getAudioStats
+          ? await getAudioStats()
+          : [];
     }
 
-    // setScore(stats?.score);
     let score = stats
       ? stats.length > 0
         ? getQualityScore(stats[0])
@@ -140,8 +146,8 @@ export const CornerDisplayName = ({
       : 100;
 
     setScore(score);
-    setAudioStats(audioStats);
-    setVideoStats(videoStats);
+    setAudioStats(audioStatsData);
+    setVideoStats(videoStatsData);
   };
 
   const qualityStateArray = [
@@ -169,15 +175,15 @@ export const CornerDisplayName = ({
       audio: audioStats
         ? audioStats[0]?.packetsLost
           ? `${parseFloat(
-            (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
-          ).toFixed(2)}%`
+              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets,
+            ).toFixed(2)}%`
           : "-"
         : "-",
       video: videoStats
         ? videoStats[0]?.packetsLost
           ? `${parseFloat(
-            (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
-          ).toFixed(2)}%`
+              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets,
+            ).toFixed(2)}%`
           : "-"
         : "-",
     },
@@ -197,8 +203,8 @@ export const CornerDisplayName = ({
       audio: "-",
       video:
         videoStats &&
-          (videoStats[0]?.size?.framerate === null ||
-            videoStats[0]?.size?.framerate === undefined)
+        (videoStats[0]?.size?.framerate === null ||
+          videoStats[0]?.size?.framerate === undefined)
           ? "-"
           : `${videoStats ? videoStats[0]?.size?.framerate : "-"}`,
     },
@@ -223,8 +229,9 @@ export const CornerDisplayName = ({
         videoStats && !isLocal
           ? videoStats && videoStats[0]?.currentSpatialLayer === null
             ? "-"
-            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${videoStats[0]?.currentTemporalLayer || 0
-            }`
+            : `S:${videoStats[0]?.currentSpatialLayer || 0} T:${
+                videoStats[0]?.currentTemporalLayer || 0
+              }`
           : "-",
     },
     {
@@ -234,8 +241,9 @@ export const CornerDisplayName = ({
         videoStats && !isLocal
           ? videoStats && videoStats[0]?.preferredSpatialLayer === null
             ? "-"
-            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${videoStats[0]?.preferredTemporalLayer || 0
-            }`
+            : `S:${videoStats[0]?.preferredSpatialLayer || 0} T:${
+                videoStats[0]?.preferredTemporalLayer || 0
+              }`
           : "-",
     },
   ];
@@ -301,8 +309,9 @@ export const CornerDisplayName = ({
             alignItems: "center",
             // lineHeight: 1,
             color:
-              appTheme === appThemes.LIGHT ?
-                theme.palette.lightTheme.contrastText : "white",
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "white",
           }}
         >
           {isPresenting
@@ -322,14 +331,14 @@ export const CornerDisplayName = ({
               isRecorder
                 ? null
                 : {
-                  padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
-                  backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 24,
-                  marginLeft: 6,
-                }
+                    padding: isActiveSpeaker ? 0 : isMobile ? 2 : isTab ? 3 : 1,
+                    backgroundColor: isActiveSpeaker ? "" : "#D32F2Fcc",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 24,
+                    marginLeft: 6,
+                  }
             }
           >
             {isActiveSpeaker ? (
@@ -478,8 +487,9 @@ export const CornerDisplayName = ({
                     <Typography
                       variant="body2"
                       style={{ fontWeight: 600 }}
-                    >{`Quality Score : ${score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
-                      }`}</Typography>
+                    >{`Quality Score : ${
+                      score > 7 ? "Good" : score > 4 ? "Average" : "Poor"
+                    }`}</Typography>
 
                     <IconButton
                       size="small"
@@ -494,15 +504,17 @@ export const CornerDisplayName = ({
                       {qualityStateArray.map((item, index) => {
                         return (
                           <Box
+                            key={`quality_stat_${index}`}
                             style={{
                               display: "flex",
                               borderBottom:
                                 index === qualityStateArray.length - 1
                                   ? ""
-                                  : `1px solid ${appTheme === appThemes.LIGHT
-                                    ? theme.palette.lightTheme.outlineColor
-                                    : "#ffffff33"
-                                  }`,
+                                  : `1px solid ${
+                                      appTheme === appThemes.LIGHT
+                                        ? theme.palette.lightTheme.outlineColor
+                                        : "#ffffff33"
+                                    }`,
                             }}
                           >
                             <Box
@@ -533,10 +545,11 @@ export const CornerDisplayName = ({
                                 flex: 1,
                                 alignItems: "center",
                                 justifyContent: "center",
-                                borderLeft: `1px solid ${appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.outlineColor
-                                  : "#ffffff33"
-                                  }`,
+                                borderLeft: `1px solid ${
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.outlineColor
+                                    : "#ffffff33"
+                                }`,
                               }}
                             >
                               <Typography
@@ -557,10 +570,11 @@ export const CornerDisplayName = ({
                                 flex: 1,
                                 alignItems: "center",
                                 justifyContent: "center",
-                                borderLeft: `1px solid ${appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.outlineColor
-                                  : "#ffffff33"
-                                  }`,
+                                borderLeft: `1px solid ${
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.outlineColor
+                                    : "#ffffff33"
+                                }`,
                               }}
                             >
                               <Typography
@@ -589,16 +603,29 @@ export const CornerDisplayName = ({
   );
 };
 
-const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
-  // const videoPlayer = useRef();
+const ParticipantViewerContent = ({
+  participantId,
+  displayName,
+  webcamStream,
+  webcamOn,
+  micOn,
+  micStream,
+  isLocal, // always false for agents
+  isActiveSpeaker,
+  pinState,
+  pin,
+  unpin,
+  screenShareStream, // null for agents (they can't screen share)
+  getVideoStats,
+  getAudioStats,
+  getShareStats, // null for agents
+}) => {
   const [videoDivWrapperRef, setVideoDivWrapperRef] = useState(null);
   const [mouseOver, setMouseOver] = useState(false);
   const [portrait, setPortrait] = useState(false);
   const statsIntervalIdRef = useRef();
 
-
   const mMeeting = useMeeting();
-
   const presenterId = mMeeting?.presenterId;
 
   const {
@@ -614,32 +641,12 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
 
-  const {
-    displayName,
-    setQuality,
-    setViewPort,
-    webcamStream,
-    webcamOn,
-    micOn,
-    isLocal,
-    isActiveSpeaker,
-    pinState,
-    pin,
-    unpin,
-  } = useParticipant(participantId);
-
   const participantAccentColor = useMemo(
     () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
-    []
+    [],
   );
 
   const theme = useTheme();
-
-  useEffect(() => {
-    if (!quality || isRecorder) return;
-
-    setQuality(quality);
-  }, [quality, setQuality, isRecorder]);
 
   const dpSize = useResponsiveSize({
     xl: 92,
@@ -652,7 +659,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   const flipStyle = useMemo(
     () =>
       isLocal ? { transform: "scaleX(1)", WebkitTransform: "scaleX(1)" } : {},
-    [isLocal]
+    [isLocal],
   );
 
   const defaultRippleOptions = {
@@ -663,18 +670,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-
-  // useEffect(() => {
-  //   if (!presenterId) {
-  //     typeof webcamStream?.resume === "function" && webcamStream?.resume();
-  //   }
-  // }, [presenterId, webcamOn, webcamStream]);
-
-  useEffect(() => {
-    if (isRecorder) {
-      setQuality("high");
-    }
-  }, [isRecorder]);
 
   useEffect(() => {
     if (
@@ -718,7 +713,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
 
   useEffect(() => {
     if (webcamStream) {
-      checkAndUpdatePortrait()
+      checkAndUpdatePortrait();
 
       if (statsIntervalIdRef.current) {
         clearInterval(statsIntervalIdRef.current);
@@ -733,8 +728,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
     }
 
     return () => {
-      if (statsIntervalIdRef.current)
-        clearInterval(statsIntervalIdRef.current);
+      if (statsIntervalIdRef.current) clearInterval(statsIntervalIdRef.current);
     };
   }, [webcamStream]);
 
@@ -752,17 +746,6 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             participantId,
           });
         }
-        //
-        // if (useVisibilitySensor) {
-        //   if (isVisible) {
-        //     typeof webcamStream?.resume === "function" &&
-        //       webcamStream?.resume();
-        //   } else {
-        //     typeof webcamStream?.pause === "function" && webcamStream?.pause();
-        //   }
-        // } else {
-        //   typeof webcamStream?.resume === "function" && webcamStream?.resume();
-        // }
       }}
     >
       <div
@@ -792,12 +775,13 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
           overflow: "hidden",
           borderRadius: isRecorder ? null : theme.spacing(1),
         }}
-        className={`${maintainLandscapeVideoAspectRatio && !portrait
-          ? "video-contain"
-          : portrait
-            ? ""
-            : "video-cover"
-          }`}
+        className={`${
+          maintainLandscapeVideoAspectRatio && !portrait
+            ? "video-contain"
+            : portrait
+              ? ""
+              : "video-cover"
+        }`}
       >
         {webcamOn ? (
           <>
@@ -891,10 +875,129 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
             mouseOver,
             isRecorder,
             isPortrait,
+            webcamStream,
+            micStream,
+            screenShareStream,
+            getVideoStats,
+            getAudioStats,
+            getShareStats,
           }}
         />
       </div>
     </VisibilitySensor>
+  );
+};
+
+const NormalParticipantViewer = ({
+  participantId,
+  quality,
+  useVisibilitySensor,
+}) => {
+  const {
+    displayName,
+    setQuality,
+    webcamStream,
+    webcamOn,
+    micOn,
+    micStream,
+    isLocal,
+    isActiveSpeaker,
+    pinState,
+    pin,
+    unpin,
+    screenShareStream,
+    getVideoStats,
+    getAudioStats,
+    getShareStats,
+  } = useParticipant(participantId);
+
+  useEffect(() => {
+    if (!quality || !setQuality) return;
+    // setQuality(quality);
+  }, [quality, setQuality]);
+
+  return (
+    <ParticipantViewerContent
+      participantId={participantId}
+      displayName={displayName}
+      webcamStream={webcamStream}
+      webcamOn={webcamOn}
+      micOn={micOn}
+      micStream={micStream}
+      isLocal={isLocal}
+      isActiveSpeaker={isActiveSpeaker}
+      pinState={pinState}
+      pin={pin}
+      unpin={unpin}
+      screenShareStream={screenShareStream}
+      getVideoStats={getVideoStats}
+      getAudioStats={getAudioStats}
+      getShareStats={getShareStats}
+    />
+  );
+};
+
+const AgentParticipantViewerInner = ({
+  participantId,
+  quality,
+  useVisibilitySensor,
+}) => {
+  const {
+    displayName,
+    webcamStream,
+    webcamOn,
+    micOn,
+    micStream,
+    isActiveSpeaker,
+    pinState,
+    pin,
+    unpin,
+    getVideoStats,
+    getAudioStats,
+  } = useAgentParticipant(participantId);
+
+  return (
+    <ParticipantViewerContent
+      participantId={participantId}
+      displayName={displayName}
+      webcamStream={webcamStream}
+      webcamOn={webcamOn}
+      micOn={micOn}
+      micStream={micStream}
+      isLocal={false}
+      isActiveSpeaker={isActiveSpeaker}
+      pinState={pinState}
+      pin={pin}
+      unpin={unpin}
+      screenShareStream={null}
+      getVideoStats={getVideoStats}
+      getAudioStats={getAudioStats}
+      getShareStats={null}
+    />
+  );
+};
+
+const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
+  const mMeeting = useMeeting();
+
+  const isAgent = mMeeting?.participants?.get(participantId)?.isAgent === true;
+
+  if (isAgent) {
+    return (
+      <AgentParticipantViewerInner
+        participantId={participantId}
+        quality={quality}
+        useVisibilitySensor={useVisibilitySensor}
+      />
+    );
+  }
+
+  return (
+    <NormalParticipantViewer
+      participantId={participantId}
+      quality={quality}
+      useVisibilitySensor={useVisibilitySensor}
+    />
   );
 };
 

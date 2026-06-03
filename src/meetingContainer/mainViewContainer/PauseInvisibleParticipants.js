@@ -1,8 +1,34 @@
-import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
+import {
+  useMeeting,
+  useParticipant,
+  useAgentParticipant,
+} from "@videosdk.live/react-sdk";
 import { useEffect, useState } from "react";
 import { appEvents, eventEmitter } from "../../utils/common";
 
 const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
+  const mMeeting = useMeeting();
+
+  const isAgent = mMeeting?.participants?.get(participantId)?.isAgent === true;
+
+  if (isAgent) {
+    return (
+      <AgentPauseInvisibleParticipant
+        participantId={participantId}
+        isVisible={isVisible}
+      />
+    );
+  }
+
+  return (
+    <NormalPauseInvisibleParticipant
+      participantId={participantId}
+      isVisible={isVisible}
+    />
+  );
+};
+
+const NormalPauseInvisibleParticipant = ({ participantId, isVisible }) => {
   const {
     webcamStream,
     webcamOn,
@@ -30,6 +56,23 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
   return <></>;
 };
 
+const AgentPauseInvisibleParticipant = ({ participantId, isVisible }) => {
+  const { consumeWebcamStreams, stopConsumingWebcamStreams } =
+    useAgentParticipant(participantId);
+
+  useEffect(() => {
+    if (typeof isVisible === "string") {
+      if (isVisible) {
+        consumeWebcamStreams?.();
+      } else {
+        stopConsumingWebcamStreams?.();
+      }
+    }
+  }, [isVisible]);
+
+  return <></>;
+};
+
 const PauseInvisibleParticipants = () => {
   const [visibleParticipantIds, setVisibleParticipantIds] = useState([]);
 
@@ -52,36 +95,35 @@ const PauseInvisibleParticipants = () => {
     });
     eventEmitter.on(
       appEvents["participant-invisible"],
-      _handleParticipantInvisible
+      _handleParticipantInvisible,
     );
 
     return () => {
       eventEmitter.off(
         appEvents["participant-visible"],
-        _handleParticipantVisible
+        _handleParticipantVisible,
       );
+
       eventEmitter.off(
         appEvents["participant-invisible"],
-        _handleParticipantInvisible
+        _handleParticipantInvisible,
       );
     };
   }, []);
 
+  const participantIds = mMeeting?.participants
+    ? [...mMeeting.participants.keys()]
+    : [];
+
   return (
     <>
-      {[...mMeeting.participants.keys()].map((participantId) => {
-        return (
-          visibleParticipantIds.length > 0 && (
-            <PauseInvisibleParticipant
-              key={`PauseInvisibleParticipant_${participantId}`}
-              participantId={participantId}
-              isVisible={visibleParticipantIds.find(
-                (pId) => pId === participantId
-              )}
-            />
-          )
-        );
-      })}
+      {participantIds.map((participantId) => (
+        <PauseInvisibleParticipant
+          key={`PauseInvisibleParticipant_${participantId}`}
+          participantId={participantId}
+          isVisible={visibleParticipantIds.find((pId) => pId === participantId)}
+        />
+      ))}
     </>
   );
 };

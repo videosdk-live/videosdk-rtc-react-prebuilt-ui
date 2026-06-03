@@ -24,13 +24,18 @@ const PresenterView = ({ presenterId }) => {
     webcamOn,
     micOn,
     isLocal,
-    // screenShareStream,
+    screenShareStream,
     screenShareAudioStream,
     screenShareOn,
     displayName,
     pin,
     unpin,
     pinState,
+    webcamStream,
+    micStream,
+    getVideoStats,
+    getAudioStats,
+    getShareStats,
   } = useParticipant(presenterId);
   const toggleScreenShare = mMeeting?.toggleScreenShare;
   const localParticipantId = mMeeting?.localParticipant?.id;
@@ -258,6 +263,12 @@ const PresenterView = ({ presenterId }) => {
           isPresenting: true,
           participantId: presenterId,
           mouseOver,
+          webcamStream,
+          micStream,
+          screenShareStream,
+          getVideoStats,
+          getAudioStats,
+          getShareStats,
         }}
       />
       {mobilePortrait && meetingLayout !== meetingLayouts.SPOTLIGHT ? (
