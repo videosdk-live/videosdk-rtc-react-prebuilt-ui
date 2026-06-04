@@ -21,14 +21,14 @@ const PauseInvisibleParticipant = ({ participantId, isVisible }) => {
   }
 
   return (
-    <NormalPauseInvisibleParticipant
+    <HumanPauseInvisibleParticipant
       participantId={participantId}
       isVisible={isVisible}
     />
   );
 };
 
-const NormalPauseInvisibleParticipant = ({ participantId, isVisible }) => {
+const HumanPauseInvisibleParticipant = ({ participantId, isVisible }) => {
   const {
     webcamStream,
     webcamOn,

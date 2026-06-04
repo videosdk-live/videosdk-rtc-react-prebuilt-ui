@@ -888,7 +888,7 @@ const ParticipantViewerContent = ({
   );
 };
 
-const NormalParticipantViewer = ({
+const HumanParticipantViewer = ({
   participantId,
   quality,
   useVisibilitySensor,
@@ -913,7 +913,7 @@ const NormalParticipantViewer = ({
 
   useEffect(() => {
     if (!quality || !setQuality) return;
-    // setQuality(quality);
+    setQuality(quality);
   }, [quality, setQuality]);
 
   return (
@@ -993,7 +993,7 @@ const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
   }
 
   return (
-    <NormalParticipantViewer
+    <HumanParticipantViewer
       participantId={participantId}
       quality={quality}
       useVisibilitySensor={useVisibilitySensor}

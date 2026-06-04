@@ -6,7 +6,7 @@ import {
 import React, { useEffect, useRef } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
-const NormalParticipantAudioPlayer = ({ participantId }) => {
+const HumanParticipantAudioPlayer = ({ participantId }) => {
   const {
     micOn,
     micStream,
@@ -101,7 +101,7 @@ const ParticipantAudioPlayer = ({ participantId }) => {
   return isAgent ? (
     <AgentParticipantAudioPlayer participantId={participantId} />
   ) : (
-    <NormalParticipantAudioPlayer participantId={participantId} />
+    <HumanParticipantAudioPlayer participantId={participantId} />
   );
 };
 

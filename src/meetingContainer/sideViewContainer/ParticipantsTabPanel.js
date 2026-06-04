@@ -41,7 +41,7 @@ import useCustomTrack from "../../utils/useCustomTrack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
-function NormalParticipantListItem({ raisedHand, participantId }) {
+function HumanParticipantListItem({ raisedHand, participantId }) {
   const { presenterId } = useMeeting();
   const {
     participant,
@@ -943,7 +943,7 @@ function ParticipantListItem({ raisedHand, participantId }) {
   }
 
   return (
-    <NormalParticipantListItem
+    <HumanParticipantListItem
       raisedHand={raisedHand}
       participantId={participantId}
     />
