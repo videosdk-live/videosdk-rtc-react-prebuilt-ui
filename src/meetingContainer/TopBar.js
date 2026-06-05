@@ -70,7 +70,7 @@ import MicrophoneIcon from "../icons/MicrophoneIcon";
 import SpeakerMenuIcon from "../icons/SpeakerMenuIcon";
 import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
-import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-media-processor-web";
+import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-noise-suppressor-web";
 import useCustomTrack from "../utils/useCustomTrack";
 import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
 
