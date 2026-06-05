@@ -1,6 +1,6 @@
 {
   "name": "videosdk-rtc-react-prebuilt-ui",
-  "version": "0.3.44",
+  "version": "0.3.45",
   "private": true,
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",
