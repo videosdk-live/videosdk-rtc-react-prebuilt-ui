@@ -96,9 +96,11 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
 };
 
 const ParticipantAudioPlayer = ({ participantId }) => {
-  const { isAgent } = useParticipant(participantId);
+  const { participants } = useMeeting();
 
-  return isAgent ? (
+  const participant = participants.get(participantId);
+
+  return participant?.isAgent ? (
     <AgentParticipantAudioPlayer participantId={participantId} />
   ) : (
     <HumanParticipantAudioPlayer participantId={participantId} />
