@@ -5,10 +5,10 @@ import {
   sideBarNestedModes,
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
+import { useRef } from "react";
 
 const PollListner = ({ pollId }) => {
   const { setCreatedPolls } = useMeetingAppContext();
-
   usePubSub(`SUBMIT_A_POLL_${pollId}`, {
     onMessageReceived: ({
       message,
@@ -97,7 +97,23 @@ const PollsListner = () => {
   } = useMeetingAppContext();
 
   const { enqueueSnackbar } = useSnackbar();
-
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
   usePubSub(`CREATE_POLL`, {
     onMessageReceived: ({ message, timestamp }) => {
       // setPolls((s) => [
@@ -111,9 +127,10 @@ const PollsListner = () => {
       ]);
 
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`,
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`,
+        // ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {

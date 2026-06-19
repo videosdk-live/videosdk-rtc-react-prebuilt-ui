@@ -25,7 +25,7 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
         stopConsumingMicStreams();
       };
     }
-  }, []);
+  }, [participantId]);
 
   useEffect(() => {
     if (!isLocal && audioPlayer.current && micOn && micStream) {
@@ -113,7 +113,7 @@ const ParticipantsAudioPlayer = () => {
   const participants = mMeeting?.participants;
 
   return participants ? (
-    [...participants.keys()].map((participantId) => (
+    [...participants.keys()].filter((pId) => pId !== mMeeting?.localParticipant?.id).map((participantId) => (
       <ParticipantAudioPlayer
         key={`participant_audio_${participantId}`}
         participantId={participantId}

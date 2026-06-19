@@ -31,6 +31,23 @@ const ModeListner = () => {
     setMainViewParticipants,
   } = useMeetingAppContext();
 
+
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
   const mMeeting = useMeeting();
@@ -111,9 +128,10 @@ const ModeListner = () => {
     {
       onMessageReceived: (data) => {
         if (notificationSoundEnabledRef.current) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          // new Audio(
+          //   `https://static.videosdk.live/prebuilt/notification.mp3`
+          // ).play();
+          playNotification();
         }
         if (notificationAlertsEnabledRef.current) {
           enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
@@ -130,9 +148,10 @@ const ModeListner = () => {
         const { senderId } = JSON.parse(data.message);
         if (senderId === participantRef.current.participant.id) {
           if (notificationSoundEnabledRef.current) {
-            new Audio(
-              `https://static.videosdk.live/prebuilt/notification.mp3`,
-            ).play();
+            // new Audio(
+            //   `https://static.videosdk.live/prebuilt/notification.mp3`,
+            // ).play();
+            playNotification();
           }
 
           if (notificationAlertsEnabledRef.current) {
@@ -142,7 +161,7 @@ const ModeListner = () => {
           }
         }
       },
-      onOldMessagesReceived: (messages) => {},
+      onOldMessagesReceived: (messages) => { },
     },
   );
 

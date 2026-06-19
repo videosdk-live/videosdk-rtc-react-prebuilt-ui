@@ -92,7 +92,12 @@ const getPinMsg = ({
 const MeetingContainer = () => {
   const showJoinNotificationRef = useRef(false);
   const localParticipantAutoPinnedOnShare = useRef(false);
-
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const notificationCriticalAudioRef = useRef(null);
+  const isPlayingCriticalRef = useRef(false);
+  const notificationErrorAudioRef = useRef(null);
+  const isPlayingErrorRef = useRef(false);
   const mMeetingRef = useRef();
 
   const [containerHeight, setContainerHeight] = useState(0);
@@ -120,6 +125,51 @@ const MeetingContainer = () => {
     sm: 280,
     xs: 240,
   });
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
+  const playNotificationError = () => {
+    if (isPlayingErrorRef.current) return;
+    if (!notificationErrorAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationErrorAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification_err.mp3`
+      );
+    }
+    isPlayingErrorRef.current = true;
+    notificationErrorAudioRef.current.currentTime = 0;
+    notificationErrorAudioRef.current.play();
+    notificationErrorAudioRef.current.onended = () => {
+      isPlayingErrorRef.current = false;
+    };
+  };
+  const playNotificationCritical = () => {
+    if (isPlayingCriticalRef.current) return;
+    if (!notificationCriticalAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationCriticalAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
+      );
+    }
+    isPlayingCriticalRef.current = true;
+    notificationCriticalAudioRef.current.currentTime = 0;
+    notificationCriticalAudioRef.current.play();
+    notificationCriticalAudioRef.current.onended = () => {
+      isPlayingCriticalRef.current = false;
+    };
+  };
 
   useEffect(() => {
     containerRef.current?.offsetHeight &&
@@ -380,27 +430,35 @@ const MeetingContainer = () => {
         ? webcamEnabledValue
         : joinScreenWebCam && (cameraId || selectedWebcam.id)
     ) {
-      await new Promise((resolve) => {
-        disableWebcam();
-        setTimeout(async () => {
-          const track = await getCustomVideoTrack(
-            cameraId ? cameraId : selectedWebcam.id
-          );
-          changeWebcam(track);
-          resolve();
-        }, 500);
-      });
+      // await new Promise((resolve) => {
+      //   // disableWebcam();
+      //   setTimeout(async () => {
+      //     console.log('cameraId', cameraId);
+      //     console.log('selectedWebcam.id', selectedWebcam.id);
+
+      //     const track = await getCustomVideoTrack(
+      //       cameraId ? cameraId : selectedWebcam.id
+      //     );
+      //     console.log('track meeting container: ', track);
+
+      //     changeWebcam(track);
+      //     resolve();
+      //   }, 500);
+      // });
     }
 
     if (joinScreenMic && selectedMic.id) {
-      await new Promise((resolve) => {
-        // muteMic();
-        setTimeout(async () => {
-          const audioTrack = await getCustomAudioTrack(selectedMic.id);
-          changeMic(audioTrack);
-          resolve();
-        }, 500);
-      });
+      // await new Promise((resolve) => {
+      //   // muteMic();
+      //   setTimeout(async () => {
+      //     console.log('selectedMic.id', selectedMic.id);
+      //     const audioTrack = await getCustomAudioTrack(selectedMic.id);
+      //     console.log('audioTrack meeting container: ', audioTrack);
+      //     changeMic(audioTrack);
+      //     // changeMic(selectedMic.id);
+      //     resolve();
+      //   }, 500);
+      // });
     }
   };
 
@@ -422,9 +480,10 @@ const MeetingContainer = () => {
 
       if (!isLocal) {
         if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          // new Audio(
+          //   `https://static.videosdk.live/prebuilt/notification.mp3`
+          // ).play();
+          playNotification();
         }
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
@@ -443,9 +502,10 @@ const MeetingContainer = () => {
 
       const isLocal = senderId === localParticipantId;
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
       if (notificationAlertsEnabled) {
         enqueueSnackbar(
@@ -468,9 +528,10 @@ const MeetingContainer = () => {
 
       if (type === "END_CALL") {
         if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          // new Audio(
+          //   `https://static.videosdk.live/prebuilt/notification.mp3`
+          // ).play();
+          playNotification();
         }
 
         if (notificationAlertsEnabled) {
@@ -490,9 +551,10 @@ const MeetingContainer = () => {
       const { displayName } = data;
       if (participantNotificationAlertsEnabled) {
         if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          // new Audio(
+          //   `https://static.videosdk.live/prebuilt/notification.mp3`
+          // ).play();
+          playNotification();
         }
         enqueueSnackbar(`${displayName} joined the meeting`, {});
       }
@@ -503,9 +565,10 @@ const MeetingContainer = () => {
     const { displayName } = data;
     if (participantNotificationAlertsEnabled) {
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
       enqueueSnackbar(`${displayName} left the meeting`, {});
     }
@@ -561,9 +624,10 @@ const MeetingContainer = () => {
         notificationSoundEnabled &&
         meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
 
       if (
@@ -732,11 +796,12 @@ const MeetingContainer = () => {
     const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== -1;
     const isCriticalError = `${code}`.startsWith("500");
 
-    new Audio(
-      isCriticalError
-        ? `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
-        : `https://static.videosdk.live/prebuilt/notification_err.mp3`
-    ).play();
+    // new Audio(
+    //   isCriticalError
+    //     ? `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
+    //     : `https://static.videosdk.live/prebuilt/notification_err.mp3`
+    // ).play();
+    isCriticalError ? playNotificationCritical() : playNotificationError();
 
     setMeetingError({
       code,

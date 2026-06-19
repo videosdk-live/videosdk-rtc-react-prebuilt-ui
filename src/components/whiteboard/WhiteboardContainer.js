@@ -47,7 +47,23 @@ function WhiteboardContainer({
 
   const previousHeight = usePrevious(height);
   const previousWidth = usePrevious(width);
-
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
   // const initialHeight = useRef(height);
   const initialWidth = useRef(width);
 
@@ -368,7 +384,8 @@ function WhiteboardContainer({
         const p = mMeeting.participants.get(data);
 
         if (notificationSoundEnabled) {
-          new Audio("/notification.mp3").play();
+          // new Audio("/notification.mp3").play();
+          playNotification();
         }
 
         if (notificationAlertsEnabled) {
