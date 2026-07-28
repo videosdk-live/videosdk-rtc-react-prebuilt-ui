@@ -20,9 +20,21 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
 
   useEffect(() => {
     if (!isLocal) {
-      consumeMicStreams();
+      (async () => {
+        try {
+          await consumeMicStreams();
+        } catch (err) {
+          console.error('consumeMicStreams failed', err);
+        }
+      })();
       return () => {
-        stopConsumingMicStreams();
+        (async () => {
+          try {
+            await stopConsumingMicStreams();
+          } catch (err) {
+            console.error('stopConsumingMicStreams failed', err);
+          }
+        })();
       };
     }
   }, []);
@@ -62,9 +74,21 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
   const audioPlayer = useRef();
 
   useEffect(() => {
-    consumeMicStreams();
+    (async () => {
+      try {
+        await consumeMicStreams();
+      } catch (err) {
+        console.error('consumeMicStreams failed', err);
+      }
+    })();
     return () => {
-      stopConsumingMicStreams();
+      (async () => {
+        try {
+          await stopConsumingMicStreams();
+        } catch (err) {
+          console.error('stopConsumingMicStreams failed', err);
+        }
+      })();
     };
   }, []);
 

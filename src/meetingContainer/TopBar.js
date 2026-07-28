@@ -469,12 +469,18 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
-            onClick={() => {
+            onClick={async () => {
               typeof onClick === "function" && onClick();
 
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
+              try {
+                if (whiteboardStarted) {
+                  await mMeeting.meeting.stopWhiteboard();
+                } else {
+                  await mMeeting.meeting.startWhiteboard();
+                }
+              } catch (err) {
+                console.error(whiteboardStarted ? 'stopWhiteboard failed' : 'startWhiteboard failed', err);
+              }
             }}
           />
         ) : (
@@ -487,12 +493,18 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
-            onClick={() => {
+            onClick={async () => {
               typeof onClick === "function" && onClick();
 
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
+              try {
+                if (whiteboardStarted) {
+                  await mMeeting.meeting.stopWhiteboard();
+                } else {
+                  await mMeeting.meeting.startWhiteboard();
+                }
+              } catch (err) {
+                console.error(whiteboardStarted ? 'stopWhiteboard failed' : 'startWhiteboard failed', err);
+              }
             }}
           />
         ))}
@@ -545,7 +557,11 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         );
       }
     } else {
-      mMeeting?.toggleScreenShare(track);
+      try {
+        await mMeeting?.toggleScreenShare(track);
+      } catch (err) {
+        console.error('toggleScreenShare failed', err);
+      }
     }
   };
 
@@ -597,9 +613,9 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         appTheme === appThemes.LIGHT && theme.palette.lightTheme.contrastText
       }
       Icon={ScreenShare}
-      onClick={() => {
+      onClick={async () => {
         typeof onClick === "function" && onClick();
-        toggleScreenShare();
+        await toggleScreenShare();
       }}
       disabled={
         isMobile || isTab
@@ -672,13 +688,17 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     isTranscriptionRunningRef.current = isTranscriptionRunning;
   }, [isTranscriptionRunning]);
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isTranscriptionRunning = isTranscriptionRunningRef.current;
 
-    if (isTranscriptionRunning) {
-      stopTranscription();
-    } else {
-      startTranscription();
+    try {
+      if (isTranscriptionRunning) {
+        await stopTranscription();
+      } else {
+        await startTranscription();
+      }
+    } catch (err) {
+      console.error(isTranscriptionRunning ? 'stopTranscription failed' : 'startTranscription failed', err);
     }
   };
 
@@ -864,24 +884,32 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     width: 160,
   };
 
-  const _handleStartRecording = () => {
+  const _handleStartRecording = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-      layout,
-      theme: recordingTheme,
-    });
+    try {
+      await startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+        layout,
+        theme: recordingTheme,
+      });
+    } catch (err) {
+      console.error('startRecording failed', err);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isRecording = isRecordingRef.current;
 
     if (isRecording) {
-      stopRecording();
+      try {
+        await stopRecording();
+      } catch (err) {
+        console.error('stopRecording failed', err);
+      }
     } else {
       setShowConfirmationPopup(true);
     }
@@ -979,8 +1007,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
         subTitle={"Are you sure you want to start recording?"}
         open={showConfirmationPopup}
         successText={"Yes"}
-        onSuccess={() => {
-          _handleStartRecording();
+        onSuccess={async () => {
+          await _handleStartRecording();
           setShowConfirmationPopup(false);
         }}
         rejectText={"No"}
@@ -1066,24 +1094,32 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const _handleStartLivestream = () => {
+  const _handleStartLivestream = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startLivestream(liveStreamConfig, { layout, theme: liveStreamTheme });
+    try {
+      await startLivestream(liveStreamConfig, { layout, theme: liveStreamTheme });
+    } catch (err) {
+      console.error('startLivestream failed', err);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isLiveStreaming = isLiveStreamingRef.current;
 
     if (isLiveStreaming) {
-      stopLivestream();
+      try {
+        await stopLivestream();
+      } catch (err) {
+        console.error('stopLivestream failed', err);
+      }
     } else {
       if (liveStreamConfigRef.current.length > 0) {
-        _handleStartLivestream();
+        await _handleStartLivestream();
       } else {
         setIsPopupShown(true);
       }
@@ -1249,23 +1285,31 @@ const HlsBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const _handleStartHLS = () => {
+  const _handleStartHLS = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startHls({ layout, theme: hlsTheme });
+    try {
+      await startHls({ layout, theme: hlsTheme });
+    } catch (err) {
+      console.error('startHls failed', err);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isHls = isHlsRef.current;
 
     if (isHls) {
-      stopHls();
+      try {
+        await stopHls();
+      } catch (err) {
+        console.error('stopHls failed', err);
+      }
     } else {
-      _handleStartHLS();
+      await _handleStartHLS();
     }
   };
 
@@ -1440,11 +1484,15 @@ const SingleMicMenu = ({
               }}
               key={`mics_${deviceId}`}
               selected={deviceId === selectMicDeviceId}
-              onClick={() => {
+              onClick={async () => {
                 handleClose();
                 setSelectMicDeviceId(deviceId);
                 if (!isOutputMics) {
-                  changeMic(deviceId);
+                  try {
+                    await changeMic(deviceId);
+                  } catch (err) {
+                    console.error('changeMic failed', err);
+                  }
                 }
               }}
             >
@@ -1795,12 +1843,20 @@ const WebcamBTN = () => {
       track = await getCustomVideoTrack(
         cameraId === selectWebcamDeviceId ? cameraId : selectWebcamDeviceId
       );
-    mMeeting?.toggleWebcam(track);
+    try {
+      await mMeeting?.toggleWebcam(track);
+    } catch (err) {
+      console.error('toggleWebcam failed', err);
+    }
   };
   const changeWebcam = async (deviceId) => {
     console.log("deviceId", deviceId);
     const track = await getCustomVideoTrack(deviceId);
-    mMeeting?.changeWebcam(track ? track : deviceId);
+    try {
+      await mMeeting?.changeWebcam(track ? track : deviceId);
+    } catch (err) {
+      console.error('changeWebcam failed', err);
+    }
   };
 
   const handleClick = (event) => {
@@ -1812,9 +1868,13 @@ const WebcamBTN = () => {
   };
 
   const getWebcams = async (mGetWebcams) => {
-    const webcams = await mGetWebcams();
+    try {
+      const webcams = await mGetWebcams();
 
-    webcams && webcams?.length && setWebcams(webcams);
+      webcams && webcams?.length && setWebcams(webcams);
+    } catch (err) {
+      console.error('getWebcams failed', err);
+    }
   };
 
   const tollTipEl = useRef();
@@ -1863,8 +1923,8 @@ const WebcamBTN = () => {
         tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
-        onClick={() => {
-          toggleWebcam();
+        onClick={async () => {
+          await toggleWebcam();
         }}
         focusBGColor={
           appTheme === appThemes.LIGHT
@@ -1876,8 +1936,8 @@ const WebcamBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change webcam"}>
               <CustomIconButton
-                onClick={(e) => {
-                  getWebcams(mMeeting?.getWebcams);
+                onClick={async (e) => {
+                  await getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
                 }}
                 size={"small"}
@@ -1946,10 +2006,10 @@ const WebcamBTN = () => {
               <CustomWebcamMenuItem
                 key={`output_webcams_${deviceId}`}
                 selected={deviceId === selectWebcamDeviceId}
-                onClick={() => {
+                onClick={async () => {
                   handleClose();
                   setSelectWebcamDeviceId(deviceId);
-                  changeWebcam(deviceId);
+                  await changeWebcam(deviceId);
                 }}
               // classes={{
               //   root:
@@ -2001,12 +2061,16 @@ const MicBTN = () => {
   const { getPlaybackDevices } = useMediaDevice({ onDeviceChanged });
 
   const getSpeakers = async () => {
-    const devices = await getPlaybackDevices();
-    const outputMics = devices.filter(
-      (d) => d.deviceId !== "default" && d.deviceId !== "communications"
-    );
+    try {
+      const devices = await getPlaybackDevices();
+      const outputMics = devices.filter(
+        (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+      );
 
-    outputMics && outputMics?.length && setOutputMics(outputMics);
+      outputMics && outputMics?.length && setOutputMics(outputMics);
+    } catch (err) {
+      console.error('getPlaybackDevices failed', err);
+    }
   };
 
   function onDeviceChanged() {
@@ -2025,14 +2089,22 @@ const MicBTN = () => {
   const toggleMic = async () => {
     let track;
     if (!localMicOn) track = await getCustomAudioTrack(selectMicDeviceId);
-    mMeeting?.toggleMic(track);
+    try {
+      await mMeeting?.toggleMic(track);
+    } catch (err) {
+      console.error('toggleMic failed', err);
+    }
   };
   const changeMic = mMeeting?.changeMic;
 
   const getMics = async (mGetMics) => {
-    const mics = await mGetMics();
+    try {
+      const mics = await mGetMics();
 
-    mics && mics?.length && setMics(mics);
+      mics && mics?.length && setMics(mics);
+    } catch (err) {
+      console.error('getMics failed', err);
+    }
   };
 
   const tollTipEl = useRef();
@@ -2058,7 +2130,11 @@ const MicBTN = () => {
         stream
       );
 
-      changeMic(processedStream);
+      try {
+        await changeMic(processedStream);
+      } catch (err) {
+        console.error('changeMic failed', err);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -2109,9 +2185,9 @@ const MicBTN = () => {
             <Tooltip placement="bottom" title={"Change microphone"}>
               <CustomIconButton
                 p={0}
-                onClick={(e) => {
-                  getMics(mMeeting.getMics);
-                  getOutputDevices();
+                onClick={async (e) => {
+                  await getMics(mMeeting.getMics);
+                  await getOutputDevices();
                   handleClick(e);
                 }}
                 size={"small"}
@@ -2204,14 +2280,20 @@ const EndCallBTN = () => {
         bgColor={theme.palette.error.main}
         color={theme.palette.common.white}
         Icon={EndCall}
-        onClick={(e) => {
+        onClick={async (e) => {
           window.onbeforeunload = null;
-          !participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV
-            ? setIsEndMeeting(true)
-            : participantCanEndMeeting &&
-              meetingMode === meetingModes.SEND_AND_RECV
-              ? handleClick(e)
-              : leave();
+          if (!participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV) {
+            setIsEndMeeting(true);
+          } else if (participantCanEndMeeting &&
+              meetingMode === meetingModes.SEND_AND_RECV) {
+            handleClick(e);
+          } else {
+            try {
+              await leave();
+            } catch (err) {
+              console.error('leave failed', err);
+            }
+          }
         }}
       />
       {participantCanEndMeeting && (
@@ -2251,9 +2333,13 @@ const EndCallBTN = () => {
             >
               <MenuItem
                 key={`leave`}
-                onClick={() => {
+                onClick={async () => {
                   window.onbeforeunload = null;
-                  leave();
+                  try {
+                    await leave();
+                  } catch (err) {
+                    console.error('leave failed', err);
+                  }
                 }}
               // classes={{
               //   root:
@@ -2409,9 +2495,13 @@ const EndCallBTN = () => {
             title={"Are you sure to end this call for everyone?"}
             successText={"End Call"}
             onSuccess={() => {
-              setTimeout(() => {
+              setTimeout(async () => {
                 window.onbeforeunload = null;
-                end();
+                try {
+                  await end();
+                } catch (err) {
+                  console.error('end failed', err);
+                }
               }, 1000);
             }}
             rejectText="Cancel"

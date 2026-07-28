@@ -82,7 +82,11 @@ const ModeListner = () => {
           reject: () => { },
         });
       } else {
-        mMeeting.changeMode(mode);
+        try {
+          await mMeeting.changeMode(mode);
+        } catch (err) {
+          console.error('changeMode failed', err);
+        }
         try {
           await publishRef.current(mode, { persist: true });
         } catch (error) {
@@ -93,13 +97,30 @@ const ModeListner = () => {
         const disableWebcam = mMeetingRef.current?.disableWebcam;
         const disableScreenShare = mMeetingRef.current?.disableScreenShare;
 
-        muteMic();
-        disableWebcam();
-        disableScreenShare();
+        try {
+          await muteMic();
+        } catch (err) {
+          console.error('muteMic failed', err);
+        }
+        try {
+          await disableWebcam();
+        } catch (err) {
+          console.error('disableWebcam failed', err);
+        }
+        try {
+          await disableScreenShare();
+        } catch (err) {
+          console.error('disableScreenShare failed', err);
+        }
 
-        (participantRef.current?.pinState?.share ||
-          participantRef.current?.pinState?.cam) &&
-          participantRef.current?.unpin();
+        if (participantRef.current?.pinState?.share ||
+          participantRef.current?.pinState?.cam) {
+          try {
+            await participantRef.current?.unpin();
+          } catch (err) {
+            console.error('unpin failed', err);
+          }
+        }
 
         setSideBarMode(null);
       }
@@ -147,8 +168,12 @@ const ModeListner = () => {
   );
 
   useEffect(() => {
-    setTimeout(() => {
-      publishRef.current(meetingMode, { persist: true });
+    setTimeout(async () => {
+      try {
+        await publishRef.current(meetingMode, { persist: true });
+      } catch (err) {
+        console.error('publish failed', err);
+      }
     }, 2000);
   }, []);
 
@@ -189,8 +214,16 @@ const ModeListner = () => {
           }
         }}
         onSuccess={async () => {
-          mMeeting.changeMode(reqModeInfo.mode);
-          publishRef.current(reqModeInfo.mode, { persist: true });
+          try {
+            await mMeeting.changeMode(reqModeInfo.mode);
+          } catch (err) {
+            console.error('changeMode failed', err);
+          }
+          try {
+            await publishRef.current(reqModeInfo.mode, { persist: true });
+          } catch (err) {
+            console.error('publish failed', err);
+          }
           setReqModeInfo(reqInfoDefaultState);
           try {
             await invitatioAcceptedPublish("", {

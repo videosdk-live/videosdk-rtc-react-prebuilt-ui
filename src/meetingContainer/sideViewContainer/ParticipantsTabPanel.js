@@ -236,11 +236,15 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                     }
                     style={{ padding: 0 }}
                     onClick={async () => {
-                      if (micOn) {
-                        disableMic();
-                      } else {
-                        const track = await getCustomAudioTrack();
-                        enableMic(track);
+                      try {
+                        if (micOn) {
+                          await disableMic();
+                        } else {
+                          const track = await getCustomAudioTrack();
+                          await enableMic(track);
+                        }
+                      } catch (err) {
+                        console.error(micOn ? 'disableMic failed' : 'enableMic failed', err);
                       }
                     }}
                   >
@@ -279,11 +283,15 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                     }
                     style={{ padding: 0 }}
                     onClick={async () => {
-                      if (webcamOn) {
-                        disableWebcam();
-                      } else {
-                        const track = await getCustomVideoTrack();
-                        enableWebcam(track);
+                      try {
+                        if (webcamOn) {
+                          await disableWebcam();
+                        } else {
+                          const track = await getCustomVideoTrack();
+                          await enableWebcam(track);
+                        }
+                      } catch (err) {
+                        console.error(webcamOn ? 'disableWebcam failed' : 'enableWebcam failed', err);
                       }
                     }}
                   >
@@ -332,9 +340,18 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                         participantMode === meetingModes.SIGNALLING_ONLY
                       }
                       size="small"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        pinState?.share || pinState?.cam ? unpin() : pin();
+                        const shouldUnpin = pinState?.share || pinState?.cam;
+                        try {
+                          if (shouldUnpin) {
+                            await unpin();
+                          } else {
+                            await pin();
+                          }
+                        } catch (err) {
+                          console.error(shouldUnpin ? 'unpin failed' : 'pin failed', err);
+                        }
                       }}
                       style={{
                         display: "flex",
@@ -594,8 +611,12 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
         )} from the call?`}
         successText={"Remove"}
         rejectText={"Cancel"}
-        onSuccess={() => {
-          participant.remove();
+        onSuccess={async () => {
+          try {
+            await participant.remove();
+          } catch (err) {
+            console.error('remove failed', err);
+          }
           setIsParticipantKickoutVisible(false);
         }}
         onReject={() => {
@@ -787,9 +808,17 @@ function AgentParticipantListItem({ participantId }) {
                   <Tooltip title={isPinned ? "Unpin" : "Pin"}>
                     <IconButton
                       size="small"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        isPinned ? unpin() : pin();
+                        try {
+                          if (isPinned) {
+                            await unpin();
+                          } else {
+                            await pin();
+                          }
+                        } catch (err) {
+                          console.error(isPinned ? 'unpin failed' : 'pin failed', err);
+                        }
                       }}
                       style={{
                         display: "flex",
@@ -922,8 +951,12 @@ function AgentParticipantListItem({ participantId }) {
         subTitle={`Are you sure you want to remove ${nameTructed(displayName, 15)} from the call?`}
         successText={"Remove"}
         rejectText={"Cancel"}
-        onSuccess={() => {
-          agentParticipant?.remove();
+        onSuccess={async () => {
+          try {
+            await agentParticipant?.remove();
+          } catch (err) {
+            console.error('remove failed', err);
+          }
           setIsParticipantKickoutVisible(false);
         }}
         onReject={() => {

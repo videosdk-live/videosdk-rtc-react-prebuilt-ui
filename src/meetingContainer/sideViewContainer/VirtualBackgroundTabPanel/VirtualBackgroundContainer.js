@@ -59,7 +59,11 @@ const SingleImage = ({
           try {
             if (videoProcessor.processorRunning || !localWebcamOn) {
               videoProcessor.stop();
-              changeWebcam(stream);
+              try {
+                await changeWebcam(stream);
+              } catch (err) {
+                console.error('changeWebcam failed', err);
+              }
             }
             return;
           } catch (error) {
@@ -73,7 +77,11 @@ const SingleImage = ({
               type,
               imageUrl: backgroudImageUrl,
             });
-            changeWebcam(processedStream);
+            try {
+              await changeWebcam(processedStream);
+            } catch (err) {
+              console.error('changeWebcam failed', err);
+            }
           } catch (error) {
             console.log(error);
           }

@@ -67,8 +67,12 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
         whiteboardEnabled && meetingMode === meetingModes.SEND_AND_RECV
           ? true
           : false,
-      onClick: () => {
-        mMeeting.meeting.startWhiteboard();
+      onClick: async () => {
+        try {
+          await mMeeting.meeting.startWhiteboard();
+        } catch (err) {
+          console.error('startWhiteboard failed', err);
+        }
         setSideBarMode((s) => s === sideBarModes.ACTIVITIES && null);
         setSideBarNestedMode(null);
       },

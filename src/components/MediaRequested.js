@@ -45,19 +45,27 @@ const MediaRequested = () => {
   }, [mMeeting]);
 
   usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant?.id}`, {
-    onMessageReceived: (data) => {
+    onMessageReceived: async (data) => {
       const { setScreenShareOn } = JSON.parse(data.message);
       if (setScreenShareOn) {
         setReqScreenShareInfo({
           enabled: true,
           participantName: "Host",
-          accept: () => {
-            mMeeting?.toggleScreenShare();
+          accept: async () => {
+            try {
+              await mMeeting?.toggleScreenShare();
+            } catch (err) {
+              console.error('toggleScreenShare failed', err);
+            }
           },
           reject: () => { },
         });
       } else {
-        mMeeting?.toggleScreenShare();
+        try {
+          await mMeeting?.toggleScreenShare();
+        } catch (err) {
+          console.error('toggleScreenShare failed', err);
+        }
       }
     },
   });

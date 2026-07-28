@@ -40,15 +40,21 @@ const HumanPauseInvisibleParticipant = ({ participantId, isVisible }) => {
   useEffect(() => {
     if (typeof isVisible === "string") {
       if (!isLocal) {
-        if (isVisible) {
-          // console.log("resuming participant stream", participantId);
-          // typeof webcamStream?.resume === "function" && webcamStream?.resume();
-          consumeWebcamStreams();
-        } else {
-          // console.log("pausing participant stream", participantId);
-          // typeof webcamStream?.pause === "function" && webcamStream?.pause();
-          stopConsumingWebcamStreams();
-        }
+        (async () => {
+          try {
+            if (isVisible) {
+              // console.log("resuming participant stream", participantId);
+              // typeof webcamStream?.resume === "function" && webcamStream?.resume();
+              await consumeWebcamStreams();
+            } else {
+              // console.log("pausing participant stream", participantId);
+              // typeof webcamStream?.pause === "function" && webcamStream?.pause();
+              await stopConsumingWebcamStreams();
+            }
+          } catch (err) {
+            console.error(isVisible ? 'consumeWebcamStreams failed' : 'stopConsumingWebcamStreams failed', err);
+          }
+        })();
       }
     }
   }, [isLocal, isVisible]);
@@ -62,11 +68,17 @@ const AgentPauseInvisibleParticipant = ({ participantId, isVisible }) => {
 
   useEffect(() => {
     if (typeof isVisible === "string") {
-      if (isVisible) {
-        consumeWebcamStreams?.();
-      } else {
-        stopConsumingWebcamStreams?.();
-      }
+      (async () => {
+        try {
+          if (isVisible) {
+            await consumeWebcamStreams?.();
+          } else {
+            await stopConsumingWebcamStreams?.();
+          }
+        } catch (err) {
+          console.error(isVisible ? 'consumeWebcamStreams failed' : 'stopConsumingWebcamStreams failed', err);
+        }
+      })();
     }
   }, [isVisible]);
 

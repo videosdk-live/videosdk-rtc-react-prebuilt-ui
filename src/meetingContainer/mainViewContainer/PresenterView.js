@@ -232,9 +232,13 @@ const PresenterView = ({ presenterId }) => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  toggleScreenShare();
+                  try {
+                    await toggleScreenShare();
+                  } catch (err) {
+                    console.error('toggleScreenShare failed', err);
+                  }
                 }}
                 style={{
                   transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,

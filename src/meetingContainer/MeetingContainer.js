@@ -342,7 +342,11 @@ const MeetingContainer = () => {
       //
 
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
-        startLivestream(outputs, { layout, theme: liveStreamTheme });
+        try {
+          await startLivestream(outputs, { layout, theme: liveStreamTheme });
+        } catch (err) {
+          console.error('startLivestream failed', err);
+        }
         try {
           await liveStreamConfigPublishRef.current(
             JSON.stringify({
@@ -361,17 +365,25 @@ const MeetingContainer = () => {
       //
 
       if (autoStartRecording && !isRecording) {
-        startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-          layout,
-          theme: recordingTheme,
-        });
+        try {
+          await startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+            layout,
+            theme: recordingTheme,
+          });
+        } catch (err) {
+          console.error('startRecording failed', err);
+        }
       }
 
       //
       //
 
       if (autoStartHls && !isHls) {
-        startHls({ layout, theme: hlsTheme });
+        try {
+          await startHls({ layout, theme: hlsTheme });
+        } catch (err) {
+          console.error('startHls failed', err);
+        }
       }
     }, 3000);
 
@@ -381,12 +393,22 @@ const MeetingContainer = () => {
         : joinScreenWebCam && (cameraId || selectedWebcam.id)
     ) {
       await new Promise((resolve) => {
-        disableWebcam();
+        (async () => {
+          try {
+            await disableWebcam();
+          } catch (err) {
+            console.error('disableWebcam failed', err);
+          }
+        })();
         setTimeout(async () => {
           const track = await getCustomVideoTrack(
             cameraId ? cameraId : selectedWebcam.id
           );
-          changeWebcam(track);
+          try {
+            await changeWebcam(track);
+          } catch (err) {
+            console.error('changeWebcam failed', err);
+          }
           resolve();
         }, 500);
       });
@@ -397,7 +419,11 @@ const MeetingContainer = () => {
         // muteMic();
         setTimeout(async () => {
           const audioTrack = await getCustomAudioTrack(selectedMic.id);
-          changeMic(audioTrack);
+          try {
+            await changeMic(audioTrack);
+          } catch (err) {
+            console.error('changeMic failed', err);
+          }
           resolve();
         }, 500);
       });
@@ -511,7 +537,7 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handlePresenterChanged = (presenterId) => {
+  const _handlePresenterChanged = async (presenterId) => {
     // reduce grid size in recorder if presenter changes
     if (isRecorder) {
       if (presenterId) {
@@ -534,7 +560,11 @@ const MeetingContainer = () => {
     }
 
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
-      mMeetingRef.current?.localParticipant.unpin();
+      try {
+        await mMeetingRef.current?.localParticipant.unpin();
+      } catch (err) {
+        console.error('unpin failed', err);
+      }
       localParticipantAutoPinnedOnShare.current = false;
     }
 
@@ -553,7 +583,11 @@ const MeetingContainer = () => {
           if (!localIsPinned) {
             localParticipantAutoPinnedOnShare.current = true;
 
-            mMeetingRef.current?.localParticipant.pin();
+            try {
+              await mMeetingRef.current?.localParticipant.pin();
+            } catch (err) {
+              console.error('pin failed', err);
+            }
           }
         }
       }

@@ -574,7 +574,13 @@ const MainViewContainer = ({
                 <div style={{ position: "relative", width: "100%" }}>
                   {canToggleWhiteboard && (
                     <button
-                      onClick={stopWhiteboard}
+                      onClick={async () => {
+                        try {
+                          await stopWhiteboard();
+                        } catch (err) {
+                          console.error('stopWhiteboard failed', err);
+                        }
+                      }}
                       style={{
                         position: "absolute",
                         float: "right",

@@ -116,27 +116,31 @@ export const CornerDisplayName = ({
     let audioStatsData = [];
     let videoStatsData = [];
 
-    // Guard: agents have no getShareStats — only call when available
-    if (isPresenting && getShareStats) {
-      stats = await getShareStats();
-    } else if (webcamStream && getVideoStats) {
-      stats = await getVideoStats();
-    } else if (micStream && getAudioStats) {
-      stats = await getAudioStats();
-    }
+    try {
+      // Guard: agents have no getShareStats — only call when available
+      if (isPresenting && getShareStats) {
+        stats = await getShareStats();
+      } else if (webcamStream && getVideoStats) {
+        stats = await getVideoStats();
+      } else if (micStream && getAudioStats) {
+        stats = await getAudioStats();
+      }
 
-    if (webcamStream || micStream || (isPresenting && screenShareStream)) {
-      videoStatsData =
-        isPresenting && getShareStats
-          ? await getShareStats()
-          : getVideoStats
-            ? await getVideoStats()
+      if (webcamStream || micStream || (isPresenting && screenShareStream)) {
+        videoStatsData =
+          isPresenting && getShareStats
+            ? await getShareStats()
+            : getVideoStats
+              ? await getVideoStats()
+              : [];
+        audioStatsData = isPresenting
+          ? []
+          : getAudioStats
+            ? await getAudioStats()
             : [];
-      audioStatsData = isPresenting
-        ? []
-        : getAudioStats
-          ? await getAudioStats()
-          : [];
+      }
+    } catch (err) {
+      console.error('getStats failed', err);
     }
 
     let score = stats
@@ -387,9 +391,17 @@ export const CornerDisplayName = ({
         >
           <IconButton
             size="small"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              isPinned ? unpin() : pin();
+              try {
+                if (isPinned) {
+                  await unpin();
+                } else {
+                  await pin();
+                }
+              } catch (err) {
+                console.error(isPinned ? 'unpin failed' : 'pin failed', err);
+              }
             }}
             style={{
               display: "flex",
@@ -913,7 +925,13 @@ const HumanParticipantViewer = ({
 
   useEffect(() => {
     if (!quality || !setQuality) return;
-    setQuality(quality);
+    (async () => {
+      try {
+        await setQuality(quality);
+      } catch (err) {
+        console.error('setQuality failed', err);
+      }
+    })();
   }, [quality, setQuality]);
 
   return (
