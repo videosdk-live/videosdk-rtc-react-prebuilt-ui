@@ -551,7 +551,11 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
 
   const toggleScreenShare = async () => {
     let track;
-    if (!localScreenShareOn) track = await getScreenShareTrack();
+    if (!localScreenShareOn) {
+      track = await getScreenShareTrack();
+
+      if (!track) return;
+    }
 
     if (presenterIdRef.current && !localScreenShareOn) {
       let participantName = null;
@@ -2281,6 +2285,7 @@ const EndCallBTN = () => {
     participantCanLeave,
     meetingMode,
     appTheme,
+    setMeetingLeft,
   } = useMeetingAppContext();
 
   const leave = mMeeting?.leave;
@@ -2340,6 +2345,7 @@ const EndCallBTN = () => {
             } catch (err) {
               console.log("Error leaving meeting", err);
             }
+            setMeetingLeft(true);
           }
         }}
       />
@@ -2387,6 +2393,7 @@ const EndCallBTN = () => {
                   } catch (e) {
                     console.log("Error leaving meeting", e);
                   }
+                  setMeetingLeft(true);
                 }}
                 // classes={{
                 //   root:
@@ -2549,6 +2556,7 @@ const EndCallBTN = () => {
                 } catch (e) {
                   console.log("Error ending meeting", e);
                 }
+                setMeetingLeft(true);
               }, 1000);
             }}
             rejectText="Cancel"
