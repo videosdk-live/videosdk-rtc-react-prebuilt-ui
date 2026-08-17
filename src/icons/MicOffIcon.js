@@ -19,8 +19,8 @@ const MicOffIcon = (props) => {
           props.fillColor
             ? props.fillColor
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.contrastText
-            : "#fff"
+              ? theme.palette.lightTheme.contrastText
+              : "#fff"
         }
       />
     </svg>

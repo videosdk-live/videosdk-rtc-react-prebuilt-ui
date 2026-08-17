@@ -425,12 +425,13 @@ function ConfigTabPanel({ panelHeight }) {
         </Box>
         <Box
           style={{
-            borderBottom: `2px solid ${appTheme === appThemes.DARK
-              ? theme.palette.darkTheme.seven
-              : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.three
-                : "#3A3F4B"
-              }`,
+            borderBottom: `2px solid ${
+              appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.seven
+                : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.three
+                  : "#3A3F4B"
+            }`,
             marginLeft: -12,
           }}
         ></Box>

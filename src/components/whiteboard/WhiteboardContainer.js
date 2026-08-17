@@ -338,7 +338,7 @@ function WhiteboardContainer({
       try {
         const { event, data } = JSON.parse(message);
         onChatMessage({ event: event, data: data });
-      } catch (e) { }
+      } catch (e) {}
     },
     onOldMessagesReceived: async (messages) => {
       for (let i = 0; i < messages.length; i++) {
@@ -353,8 +353,7 @@ function WhiteboardContainer({
             await onChatMessage({ event: event, data: data });
             setIsLoadingCanvasData(false);
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       }
     },
   });
@@ -371,7 +370,13 @@ function WhiteboardContainer({
       case "ZOOM": {
         const zoomLevel = data;
         if (zoomLevel >= 1) {
-          fabricRef.current.zoomToPoint(new fabric.Point(fabricRef.current.getWidth() / 2, fabricRef.current.getHeight() / 2), zoomLevel)
+          fabricRef.current.zoomToPoint(
+            new fabric.Point(
+              fabricRef.current.getWidth() / 2,
+              fabricRef.current.getHeight() / 2
+            ),
+            zoomLevel
+          );
         }
         break;
       }
@@ -390,7 +395,8 @@ function WhiteboardContainer({
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${p ? nameTructed(p.displayName, 15) : "You"
+            `${
+              p ? nameTructed(p.displayName, 15) : "You"
             } cleared the whiteboard 🗑️`,
             { autoHideDuration: 4000 }
           );
@@ -484,7 +490,7 @@ function WhiteboardContainer({
       const payload = JSON.stringify({ event, data });
       await publish(payload, { persist: true });
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
   }
 

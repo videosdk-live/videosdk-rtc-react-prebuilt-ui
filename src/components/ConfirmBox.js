@@ -81,8 +81,8 @@ const ConfirmBox = ({
             ((v && v?.appTheme) || appTheme) === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
               : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
-              ? theme.palette.lightTheme.main
-              : theme.palette.background.default,
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
         }}
       >
         <Box
@@ -130,8 +130,8 @@ const ConfirmBox = ({
                   color: subTitleColor
                     ? subTitleColor
                     : ((v && v?.appTheme) || appTheme) === appThemes.LIGHT
-                    ? theme.palette.lightTheme.five
-                    : "#9FA0A7",
+                      ? theme.palette.lightTheme.five
+                      : "#9FA0A7",
                 }}
               >
                 {subTitle}

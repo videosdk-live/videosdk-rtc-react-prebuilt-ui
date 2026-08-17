@@ -21,17 +21,17 @@ const PollListner = ({ pollId }) => {
         s.map((_poll) =>
           pollId === _poll.id
             ? {
-              ..._poll,
-              submissions: [
-                ..._poll.submissions,
-                {
-                  optionId: optionId,
-                  participantId,
-                  participantName,
-                  timestamp,
-                },
-              ],
-            }
+                ..._poll,
+                submissions: [
+                  ..._poll.submissions,
+                  {
+                    optionId: optionId,
+                    participantId,
+                    participantName,
+                    timestamp,
+                  },
+                ],
+              }
             : _poll
         )
       );
@@ -159,7 +159,7 @@ const PollsListner = () => {
         ...s,
         ...messages
           .sort((a, b) =>
-            a.timestamp > b.timestamp ? -1 : a.timestamp < b.timestamp ? 1 : 0,
+            a.timestamp > b.timestamp ? -1 : a.timestamp < b.timestamp ? 1 : 0
           )
           .map(({ message, timestamp }) => ({
             ...JSON.parse(message),
@@ -254,8 +254,8 @@ const PollsListner = () => {
             messages.findIndex(({ message }) => {
               const { pollId } = JSON.parse(message);
               return pollId === _poll.id;
-            }) === -1,
-        ),
+            }) === -1
+        )
       );
     },
   });

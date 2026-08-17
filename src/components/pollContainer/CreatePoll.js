@@ -269,11 +269,12 @@ const CreatePollPart = ({
       background: transparent;
     }
     &:hover .MuiSvgIcon-root {
-      color: ${textColor
-        ? textColor
-        : appTheme === appThemes.LIGHT
-          ? `#404B53`
-          : `white`
+      color: ${
+        textColor
+          ? textColor
+          : appTheme === appThemes.LIGHT
+            ? `#404B53`
+            : `white`
       };
     }
     & .MuiSvgIcon-root {
@@ -330,12 +331,13 @@ const CreatePollPart = ({
         variant="standard"
         sx={{
           width: "100%",
-          borderBottom: `1px solid ${appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.seven
-            : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.three
-              : theme.palette.common.sidePanel
-            }`,
+          borderBottom: `1px solid ${
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.three
+                : theme.palette.common.sidePanel
+          }`,
         }}
         placeholder="What you want to ask ?"
         autoFocus
@@ -524,7 +526,7 @@ const CreatePollPart = ({
                 fullWidth
                 variant="filled"
                 autocomplete="off"
-                onChange={(e) => { }}
+                onChange={(e) => {}}
                 onFocus={(e) => {
                   _handleKeyDown(e);
                   focusCreateOption();
@@ -813,7 +815,7 @@ const PollButtonPart = ({
           padding: "8px",
           boxShadow: "none",
         }}
-        onClick={async() => {
+        onClick={async () => {
           const isValid = handleValidation({
             question,
             options,
@@ -839,7 +841,7 @@ const PollButtonPart = ({
                 }),
                 {
                   persist: true,
-                },
+                }
               );
             } catch (error) {
               console.log("Error in Pubsub ", error);
@@ -889,7 +891,7 @@ const PollButtonPart = ({
                   isActive: true,
                   index: polls.length + 1,
                 }),
-                { persist: true },
+                { persist: true }
               );
             } catch (error) {
               console.log("Error in Pubsub ", error);

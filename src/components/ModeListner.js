@@ -14,8 +14,8 @@ const reqInfoDefaultState = {
   enabled: false,
   mode: null,
   senderId: null,
-  accept: () => { },
-  reject: () => { },
+  accept: () => {},
+  reject: () => {},
 };
 
 const ModeListner = () => {
@@ -30,7 +30,6 @@ const ModeListner = () => {
     mainViewParticipants,
     setMainViewParticipants,
   } = useMeetingAppContext();
-
 
   const notificationAudioRef = useRef(null);
   const isPlayingRef = useRef(false);
@@ -88,15 +87,14 @@ const ModeListner = () => {
 
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: async (data) => {
-
       const { mode } = JSON.parse(data.message);
       if (mode === meetingModes.SEND_AND_RECV) {
         setReqModeInfo({
           enabled: true,
           senderId: data.senderId,
           mode: mode,
-          accept: () => { },
-          reject: () => { },
+          accept: () => {},
+          reject: () => {},
         });
       } else {
         mMeeting.changeMode(mode);
@@ -137,7 +135,7 @@ const ModeListner = () => {
           enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
         }
       },
-      onOldMessagesReceived: (messages) => { },
+      onOldMessagesReceived: (messages) => {},
     }
   );
 
@@ -156,13 +154,13 @@ const ModeListner = () => {
 
           if (notificationAlertsEnabledRef.current) {
             enqueueSnackbar(
-              `${data.senderName} has rejected the request to become Co-host`,
+              `${data.senderName} has rejected the request to become Co-host`
             );
           }
         }
       },
-      onOldMessagesReceived: (messages) => { },
-    },
+      onOldMessagesReceived: (messages) => {},
+    }
   );
 
   useEffect(() => {
@@ -201,7 +199,7 @@ const ModeListner = () => {
           try {
             await invitatioRejectedPublish(
               JSON.stringify({ senderId: reqModeInfo.senderId }),
-              { persist: true },
+              { persist: true }
             );
           } catch (error) {
             console.log("Error in Pubsub ", error);

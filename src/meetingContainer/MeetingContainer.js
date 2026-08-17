@@ -397,7 +397,7 @@ const MeetingContainer = () => {
                 return { ...output, id: getUniqueId() };
               }),
             }),
-            { persist: true },
+            { persist: true }
           );
         } catch (error) {
           console.log("Error in Pubsub ", error);
@@ -432,12 +432,10 @@ const MeetingContainer = () => {
       //   setTimeout(async () => {
       //     console.log('cameraId', cameraId);
       //     console.log('selectedWebcam.id', selectedWebcam.id);
-
       //     const track = await getCustomVideoTrack(
       //       cameraId ? cameraId : selectedWebcam.id
       //     );
       //     console.log('track meeting container: ', track);
-
       //     changeWebcam(track);
       //     resolve();
       //   }, 500);
@@ -533,9 +531,10 @@ const MeetingContainer = () => {
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${isLocal
-              ? "You end the call"
-              : " This meeting has been ended by host"
+            `${
+              isLocal
+                ? "You end the call"
+                : " This meeting has been ended by host"
             }`
           );
         }
@@ -632,20 +631,21 @@ const MeetingContainer = () => {
         meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
         enqueueSnackbar(
-          `${isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          `${
+            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
           } started presenting`
         );
       }
     }
   };
 
-  const _handleOnRecordingStarted = () => { };
+  const _handleOnRecordingStarted = () => {};
 
-  const _handleOnRecordingStopped = () => { };
+  const _handleOnRecordingStopped = () => {};
 
-  const _handleOnLiveStreamStarted = () => { };
+  const _handleOnLiveStreamStarted = () => {};
 
-  const _handleOnLiveStreamStopped = () => { };
+  const _handleOnLiveStreamStopped = () => {};
 
   const _handleOnRecordingStateChanged = ({ status }) => {
     if (
@@ -735,11 +735,11 @@ const MeetingContainer = () => {
     //set downstream url on basis of started or stopped
   };
 
-  const _handleOnHlsStarted = (data) => { };
+  const _handleOnHlsStarted = (data) => {};
 
-  const _handleOnHlsStopped = () => { };
+  const _handleOnHlsStopped = () => {};
 
-  const _handleOnEntryRequested = () => { };
+  const _handleOnEntryRequested = () => {};
 
   const _handleOnEntryResponded = (participantId, decision) => {
     if (mMeetingRef.current?.localParticipant?.id === participantId) {
@@ -851,7 +851,7 @@ const MeetingContainer = () => {
           document.documentElement.msRequestFullscreen();
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -928,8 +928,8 @@ const MeetingContainer = () => {
                 {meetingMode === meetingModes.SEND_AND_RECV ? (
                   <>
                     {mMeeting?.pinnedParticipants.size > 0 &&
-                      (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                        meetingLayout === meetingLayouts.SIDEBAR) ? (
+                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                      meetingLayout === meetingLayouts.SIDEBAR) ? (
                       <PinnedLayoutViewContainer
                         {...{
                           height: containerHeight - topBarHeight,

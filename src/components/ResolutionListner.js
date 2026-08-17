@@ -12,7 +12,7 @@ const ResolutionListner = () => {
       if (resolution) {
         setMeetingResolution(resolution);
         enqueueSnackbar(
-          `Video resolution of all participants changed to ${resolution}.`,
+          `Video resolution of all participants changed to ${resolution}.`
         );
       }
     },
@@ -31,7 +31,7 @@ const ResolutionListner = () => {
         const { resolution } = JSON.parse(latestMessage.message);
         setMeetingResolution(resolution);
         enqueueSnackbar(
-          `Video resolution of all participants changed to ${resolution}.`,
+          `Video resolution of all participants changed to ${resolution}.`
         );
       }
     },

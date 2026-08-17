@@ -96,14 +96,14 @@ export const CornerDisplayName = ({
   const show = useMemo(
     () =>
       alwaysShowOverlay || mouseOver || isActiveSpeaker || overlaidInfoVisible,
-    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible],
+    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible]
   );
 
   const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
 
   const showPin = useMemo(
     () => (alwaysShowOverlay ? isPinned : isPinned || mouseOver),
-    [alwaysShowOverlay, isPinned, mouseOver],
+    [alwaysShowOverlay, isPinned, mouseOver]
   );
 
   const statsIntervalIdRef = useRef();
@@ -175,14 +175,14 @@ export const CornerDisplayName = ({
       audio: audioStats
         ? audioStats[0]?.packetsLost
           ? `${parseFloat(
-              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets,
+              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
             ).toFixed(2)}%`
           : "-"
         : "-",
       video: videoStats
         ? videoStats[0]?.packetsLost
           ? `${parseFloat(
-              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets,
+              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
             ).toFixed(2)}%`
           : "-"
         : "-",
@@ -658,7 +658,7 @@ const ParticipantViewerContent = ({
 
   const participantAccentColor = useMemo(
     () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
-    [],
+    []
   );
 
   const theme = useTheme();
@@ -674,7 +674,7 @@ const ParticipantViewerContent = ({
   const flipStyle = useMemo(
     () =>
       isLocal ? { transform: "scaleX(1)", WebkitTransform: "scaleX(1)" } : {},
-    [isLocal],
+    [isLocal]
   );
 
   const defaultRippleOptions = {

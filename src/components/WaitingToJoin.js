@@ -73,8 +73,8 @@ const WaitingToJoin = () => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
       }}
     >
       {waitingScreenImageUrl?.length || waitingScreenText?.length ? (

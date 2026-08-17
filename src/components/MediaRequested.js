@@ -6,8 +6,8 @@ const MediaRequested = () => {
   const reqInfoDefaultState = {
     enabled: false,
     participantName: null,
-    accept: () => { },
-    reject: () => { },
+    accept: () => {},
+    reject: () => {},
   };
 
   const [reqMicInfo, setReqMicInfo] = useState(reqInfoDefaultState);
@@ -54,7 +54,7 @@ const MediaRequested = () => {
           accept: () => {
             mMeeting?.toggleScreenShare();
           },
-          reject: () => { },
+          reject: () => {},
         });
       } else {
         mMeeting?.toggleScreenShare();

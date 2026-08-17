@@ -120,7 +120,7 @@ const SubmitPollListItem = ({ poll }) => {
         (new Date(createdAt).getTime() +
           timeout * 1000 -
           new Date().getTime()) /
-        1000
+          1000
       );
       setIsTimerPollActive(true);
     }
@@ -212,206 +212,206 @@ const SubmitPollListItem = ({ poll }) => {
           <Box style={{ marginTop: 16 }}>
             {localSubmittedOption || !isPollActive
               ? poll.options.map((option) => {
-                const total = groupedSubmissionCount[option.optionId];
+                  const total = groupedSubmissionCount[option.optionId];
 
-                const isOptionSubmittedByLocal =
-                  localSubmittedOption?.optionId === option.optionId;
+                  const isOptionSubmittedByLocal =
+                    localSubmittedOption?.optionId === option.optionId;
 
-                const percentage =
-                  (total ? total / totalSubmissions : 0) * 100;
+                  const percentage =
+                    (total ? total / totalSubmissions : 0) * 100;
 
-                const isOptionSelectedByLocalIncorrect =
-                  localSubmittedOption?.optionId === option.optionId &&
-                  !option.isCorrect;
+                  const isOptionSelectedByLocalIncorrect =
+                    localSubmittedOption?.optionId === option.optionId &&
+                    !option.isCorrect;
 
-                const isCorrectOption = option.isCorrect;
+                  const isCorrectOption = option.isCorrect;
 
-                return (
-                  <Box
-                    style={{
-                      display: "flex",
-                      marginBottom: 12,
-                    }}
-                  >
+                  return (
                     <Box
                       style={{
-                        marginTop: 0,
-                        width: "100%",
+                        display: "flex",
+                        marginBottom: 12,
                       }}
                     >
-                      <Box style={{ display: "flex", alignItems: "center" }}>
-                        <Typography
-                          style={{
-                            fontSize: 15,
-                            color:
-                              appTheme === appThemes.LIGHT
-                                ? theme.palette.lightTheme.contrastText
-                                : "white",
-                            fontWeight: 400,
-                          }}
-                        >
-                          {option.option}
-                        </Typography>
-
-                        {isPollActive ? (
-                          isOptionSubmittedByLocal ? (
-                            <Box style={{ marginLeft: 8 }}>
-                              <AnswerSubmittedIcon />
-                            </Box>
-                          ) : null
-                        ) : hasCorrectAnswer ? (
-                          isCorrectOption ? (
-                            <Tooltip
-                              placement="right"
-                              title={"Correct Answer"}
-                            >
-                              <Box
-                                style={{
-                                  marginLeft: 8,
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <CorrectSelectedIcon />
-                              </Box>
-                            </Tooltip>
-                          ) : isOptionSelectedByLocalIncorrect ? (
-                            <Tooltip
-                              placement="right"
-                              title={"Your answer is wrong"}
-                            >
-                              <Box
-                                style={{
-                                  marginLeft: 8,
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <WrongOptionSelectedIcon />
-                              </Box>
-                            </Tooltip>
-                          ) : null
-                        ) : null}
-                      </Box>
                       <Box
                         style={{
                           marginTop: 0,
-                          display: "flex",
-                          alignItems: "center",
+                          width: "100%",
                         }}
                       >
-                        <Box
-                          style={{
-                            height: 6,
-                            backgroundColor:
-                              appTheme === appThemes.DARK
-                                ? theme.palette.darkTheme.seven
-                                : appTheme === appThemes.LIGHT
-                                  ? theme.palette.lightTheme.three
-                                  : theme.palette.common.sidePanel,
-                            borderRadius: 4,
-                            display: "flex",
-                            flex: 1,
-                          }}
-                        >
-                          <Box
-                            style={{
-                              backgroundColor:
-                                hasCorrectAnswer && isPollActive
-                                  ? "#9E9DA6"
-                                  : hasCorrectAnswer && !isPollActive
-                                    ? isCorrectOption
-                                      ? appTheme === appThemes.LIGHT ||
-                                        appTheme === appThemes.DARK
-                                        ? theme.palette.lightTheme.primaryMain
-                                        : theme.palette.primary.main
-                                      : "#9E9DA6"
-                                    : maxSubmittedOptions.includes(
-                                      option.optionId
-                                    )
-                                      ? appTheme === appThemes.LIGHT ||
-                                        appTheme === appThemes.DARK
-                                        ? theme.palette.lightTheme.primaryMain
-                                        : theme.palette.primary.main
-                                      : "#9E9DA6",
-                              width: `${percentage}%`,
-                              borderRadius: 4,
-                            }}
-                          ></Box>
-                        </Box>
-                        <Box
-                          style={{
-                            marginLeft: 24,
-                            width: 40,
-                            display: "flex",
-                            alignItems: "flex-end",
-                            justifyContent: "flex-end",
-                          }}
-                        >
+                        <Box style={{ display: "flex", alignItems: "center" }}>
                           <Typography
                             style={{
-                              margin: 0,
-                              padding: 0,
+                              fontSize: 15,
                               color:
                                 appTheme === appThemes.LIGHT
                                   ? theme.palette.lightTheme.contrastText
                                   : "white",
+                              fontWeight: 400,
                             }}
                           >
-                            {`${Math.floor(percentage)}%`}
+                            {option.option}
                           </Typography>
+
+                          {isPollActive ? (
+                            isOptionSubmittedByLocal ? (
+                              <Box style={{ marginLeft: 8 }}>
+                                <AnswerSubmittedIcon />
+                              </Box>
+                            ) : null
+                          ) : hasCorrectAnswer ? (
+                            isCorrectOption ? (
+                              <Tooltip
+                                placement="right"
+                                title={"Correct Answer"}
+                              >
+                                <Box
+                                  style={{
+                                    marginLeft: 8,
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <CorrectSelectedIcon />
+                                </Box>
+                              </Tooltip>
+                            ) : isOptionSelectedByLocalIncorrect ? (
+                              <Tooltip
+                                placement="right"
+                                title={"Your answer is wrong"}
+                              >
+                                <Box
+                                  style={{
+                                    marginLeft: 8,
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <WrongOptionSelectedIcon />
+                                </Box>
+                              </Tooltip>
+                            ) : null
+                          ) : null}
+                        </Box>
+                        <Box
+                          style={{
+                            marginTop: 0,
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box
+                            style={{
+                              height: 6,
+                              backgroundColor:
+                                appTheme === appThemes.DARK
+                                  ? theme.palette.darkTheme.seven
+                                  : appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.three
+                                    : theme.palette.common.sidePanel,
+                              borderRadius: 4,
+                              display: "flex",
+                              flex: 1,
+                            }}
+                          >
+                            <Box
+                              style={{
+                                backgroundColor:
+                                  hasCorrectAnswer && isPollActive
+                                    ? "#9E9DA6"
+                                    : hasCorrectAnswer && !isPollActive
+                                      ? isCorrectOption
+                                        ? appTheme === appThemes.LIGHT ||
+                                          appTheme === appThemes.DARK
+                                          ? theme.palette.lightTheme.primaryMain
+                                          : theme.palette.primary.main
+                                        : "#9E9DA6"
+                                      : maxSubmittedOptions.includes(
+                                            option.optionId
+                                          )
+                                        ? appTheme === appThemes.LIGHT ||
+                                          appTheme === appThemes.DARK
+                                          ? theme.palette.lightTheme.primaryMain
+                                          : theme.palette.primary.main
+                                        : "#9E9DA6",
+                                width: `${percentage}%`,
+                                borderRadius: 4,
+                              }}
+                            ></Box>
+                          </Box>
+                          <Box
+                            style={{
+                              marginLeft: 24,
+                              width: 40,
+                              display: "flex",
+                              alignItems: "flex-end",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <Typography
+                              style={{
+                                margin: 0,
+                                padding: 0,
+                                color:
+                                  appTheme === appThemes.LIGHT
+                                    ? theme.palette.lightTheme.contrastText
+                                    : "white",
+                              }}
+                            >
+                              {`${Math.floor(percentage)}%`}
+                            </Typography>
+                          </Box>
                         </Box>
                       </Box>
                     </Box>
-                  </Box>
-                );
-              })
+                  );
+                })
               : poll?.options.map((option) => {
-                return (
-                  <Box
-                    style={{
-                      display: "flex",
-                      marginBottom: 12,
-                    }}
-                  >
-                    <MarkCorrectCheckbox
-                      onClick={async () => {
-                        try {
-                          await publish(
-                            JSON.stringify({ optionId: option.optionId }),
-                            { persist: true }
-                          );
-                        } catch (error) {               
-                          console.log("Error in Pubsub ", error);
-                        }
-
-                      }}
-                    />
+                  return (
                     <Box
                       style={{
-                        marginLeft: 8,
-                        backgroundColor:
-                          appTheme === appThemes.DARK
-                            ? theme.palette.darkTheme.seven
-                            : appTheme === appThemes.LIGHT
-                              ? theme.palette.lightTheme.three
-                              : theme.palette.common.sidePanel,
-                        padding: "8px 8px 8px",
-                        width: "100%",
-                        borderRadius: "4px",
+                        display: "flex",
+                        marginBottom: 12,
                       }}
                     >
-                      <Typography
+                      <MarkCorrectCheckbox
+                        onClick={async () => {
+                          try {
+                            await publish(
+                              JSON.stringify({ optionId: option.optionId }),
+                              { persist: true }
+                            );
+                          } catch (error) {
+                            console.log("Error in Pubsub ", error);
+                          }
+                        }}
+                      />
+                      <Box
                         style={{
-                          color:
-                            appTheme === appThemes.LIGHT ?
-                              theme.palette.lightTheme.contrastText : "white",
+                          marginLeft: 8,
+                          backgroundColor:
+                            appTheme === appThemes.DARK
+                              ? theme.palette.darkTheme.seven
+                              : appTheme === appThemes.LIGHT
+                                ? theme.palette.lightTheme.three
+                                : theme.palette.common.sidePanel,
+                          padding: "8px 8px 8px",
+                          width: "100%",
+                          borderRadius: "4px",
                         }}
                       >
-                        {option.option}
-                      </Typography>
+                        <Typography
+                          style={{
+                            color:
+                              appTheme === appThemes.LIGHT
+                                ? theme.palette.lightTheme.contrastText
+                                : "white",
+                          }}
+                        >
+                          {option.option}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                );
-              })}
+                  );
+                })}
           </Box>
         </Box>
       </Box>

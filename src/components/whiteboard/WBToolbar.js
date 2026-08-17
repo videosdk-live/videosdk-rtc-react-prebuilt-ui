@@ -53,8 +53,8 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
             ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
               ? "#596BFF33"
               : appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
-              ? "#596BFF33"
-              : "#D5E8FF"
+                ? "#596BFF33"
+                : "#D5E8FF"
             : "",
           borderRadius: 6,
           padding: theme.spacing(1),
@@ -252,7 +252,6 @@ const WBToolbar = ({
   whiteboardSpacing,
   addImage,
 }) => {
-
   const [color, setColor] = useState(parentColor);
   const [canvasBackgroundColor, setCanvasBackgroundColor] = useState(
     parentCanvasBackgroundColor
@@ -485,7 +484,7 @@ const WBToolbar = ({
           {...{
             Icon: ZoomInIcon,
             onClick: () => {
-              setTool("pan")
+              setTool("pan");
               zoomIn();
             },
             title: "Zoom In",
@@ -497,7 +496,7 @@ const WBToolbar = ({
           {...{
             Icon: ZoomOutIcon,
             onClick: () => {
-             setTool("pan")
+              setTool("pan");
               zoomOut();
             },
             title: "Zoom Out",

@@ -130,7 +130,9 @@ const ClickAnywhereToContinue = ({ onClick, title, brandLogoURL }) => {
               JOIN THE MEETING
             </Button>
           ) : (
-            <Typography variant="h4" color="white" >{title}</Typography>
+            <Typography variant="h4" color="white">
+              {title}
+            </Typography>
           )}
         </Box>
       </div>

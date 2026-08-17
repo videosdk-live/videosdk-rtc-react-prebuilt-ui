@@ -123,9 +123,11 @@ const SingleLiveStreamItem = ({
       }
     });
     try {
-      await publish(JSON.stringify({ config: newPlatforms }), { persist: true });
+      await publish(JSON.stringify({ config: newPlatforms }), {
+        persist: true,
+      });
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
 
     setLiveStreamConfig(newPlatforms);
@@ -144,12 +146,13 @@ const SingleLiveStreamItem = ({
             index === 0
               ? ""
               : `3px solid 
-                  ${appTheme === appThemes.DARK
-                ? theme.palette.darkTheme.seven
-                : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.three
-                  : "#3A3F4B"
-              }`,
+                  ${
+                    appTheme === appThemes.DARK
+                      ? theme.palette.darkTheme.seven
+                      : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.three
+                        : "#3A3F4B"
+                  }`,
           paddingRight: "12px",
           paddingLeft: "12px",
           paddingTop: "12px",
@@ -426,11 +429,12 @@ const AddLiveStream = ({
         boxShadow: "0 -10px 20px -5px rgba(0,0,0,0.35)",
         borderTop:
           liveStreamConfig?.length > 0 &&
-          `3px solid ${appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.seven
-            : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.three
-              : "#3A3F4B"
+          `3px solid ${
+            appTheme === appThemes.DARK
+              ? theme.palette.darkTheme.seven
+              : appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.three
+                : "#3A3F4B"
           }`,
       }}
     >
@@ -581,18 +585,19 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
     try {
       await publish(JSON.stringify({ config: filtered }), { persist: true });
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
-
   };
 
   const _handleSave = async ({ streamKey, url }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
     liveStreamConfig.push({ id: getUniqueId(), streamKey, url });
     try {
-      await publish(JSON.stringify({ config: liveStreamConfig }), { persist: true });
+      await publish(JSON.stringify({ config: liveStreamConfig }), {
+        persist: true,
+      });
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
 
     setTimeout(() => {

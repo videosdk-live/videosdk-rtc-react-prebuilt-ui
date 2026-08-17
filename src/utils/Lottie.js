@@ -18,8 +18,9 @@ const Lottie = ({
     rendererSettings,
   } = options;
 
-  const onComplete = eventListeners?.find((l) => l.eventName === "done")
-    ?.callback;
+  const onComplete = eventListeners?.find(
+    (l) => l.eventName === "done"
+  )?.callback;
 
   return (
     <LottieReact

@@ -677,9 +677,9 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     () => ({
       isRequestProcessing:
         transcriptionState ===
-        Constants.transcriptionEvents.TRANSCRIPTION_STARTING ||
+          Constants.transcriptionEvents.TRANSCRIPTION_STARTING ||
         transcriptionState ===
-        Constants.transcriptionEvents.TRANSCRIPTION_STOPPING,
+          Constants.transcriptionEvents.TRANSCRIPTION_STOPPING,
     }),
     [transcriptionState]
   );
@@ -716,23 +716,23 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
         <MobileIconButton
           Icon={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? ClosedCaption
               : ClosedCaptionOutlined
           }
           onClick={_handleClick}
           tooltipTitle={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "Stop Transcription"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "Starting Transcription"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "Start Transcription"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "Stopping Transcription"
                     : "Start Transcription"
           }
@@ -743,21 +743,21 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
             (transcriptionState ===
               Constants.transcriptionEvents.TRANSCRIPTION_STARTED ||
               transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STOPPING) &&
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING) &&
             "#EEF0F2"
           }
           buttonText={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "Stop Transcription"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "Starting Transcription"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "Start Transcription"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "Stopping Transcription"
                     : "Start Transcription"
           }
@@ -769,38 +769,38 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
           onClick={_handleClick}
           buttonText={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "CC"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "CC"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "CC"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "CC"
                     : "CC"
           }
           tooltipTitle={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "Stop Transcription"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "Starting Transcription"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "Start Transcription"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "Stopping Transcription"
                     : "Start Transcription"
           }
           isFocused={isTranscriptionRunning}
           lottieOption={
             transcriptionState ==
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTING
               ? defaultOptions
               : null
           }
@@ -917,7 +917,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
                 ? "Starting Recording"
                 : recordingState === Constants.recordingEvents.RECORDING_STOPPED
                   ? "Start Recording"
-                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  : recordingState ===
+                      Constants.recordingEvents.RECORDING_STOPPING
                     ? "Stopping Recording"
                     : "Start Recording"
           }
@@ -928,7 +929,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
               recordingState ===
-              Constants.recordingEvents.RECORDING_STOPPING) &&
+                Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
           }
           buttonText={
@@ -938,7 +939,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
                 ? "Starting Recording"
                 : recordingState === Constants.recordingEvents.RECORDING_STOPPED
                   ? "Start Recording"
-                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  : recordingState ===
+                      Constants.recordingEvents.RECORDING_STOPPING
                     ? "Stopping Recording"
                     : "Start Recording"
           }
@@ -959,7 +961,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
                 ? "Starting Recording"
                 : recordingState === Constants.recordingEvents.RECORDING_STOPPED
                   ? "Start Recording"
-                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  : recordingState ===
+                      Constants.recordingEvents.RECORDING_STOPPING
                     ? "Stopping Recording"
                     : "Start Recording"
           }
@@ -971,13 +974,13 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
               recordingState ===
-              Constants.recordingEvents.RECORDING_STOPPING) &&
+                Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
           }
           disabled={!participantCanToggleRecording}
           lottieOption={
             isRecording &&
-              recordingState === Constants.recordingEvents.RECORDING_STARTED
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
               ? defaultOptions
               : null
           }
@@ -1117,13 +1120,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
               : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STARTING
+                  Constants.livestreamEvents.LIVESTREAM_STARTING
                 ? "Starting Livestream"
                 : livestreamState ===
-                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                    Constants.livestreamEvents.LIVESTREAM_STOPPED
                   ? "Go Live"
                   : livestreamState ===
-                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                      Constants.livestreamEvents.LIVESTREAM_STOPPING
                     ? "Stopping Livestream"
                     : "Go Live"
           }
@@ -1132,13 +1135,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
               : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STARTING
+                  Constants.livestreamEvents.LIVESTREAM_STARTING
                 ? "Starting Livestream"
                 : livestreamState ===
-                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                    Constants.livestreamEvents.LIVESTREAM_STOPPED
                   ? "Go Live"
                   : livestreamState ===
-                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                      Constants.livestreamEvents.LIVESTREAM_STOPPING
                     ? "Stopping Livestream"
                     : "Go Live"
           }
@@ -1155,13 +1158,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
               : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STARTING
+                  Constants.livestreamEvents.LIVESTREAM_STARTING
                 ? "Starting Livestream"
                 : livestreamState ===
-                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                    Constants.livestreamEvents.LIVESTREAM_STOPPED
                   ? "Go Live"
                   : livestreamState ===
-                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                      Constants.livestreamEvents.LIVESTREAM_STOPPING
                     ? "Stopping Livestream"
                     : "Go Live"
           }
@@ -1294,7 +1297,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       }
       tooltipTitle={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1307,7 +1310,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       Icon={LiveIcon}
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1333,7 +1336,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       onClick={_handleClick}
       tooltipTitle={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1345,7 +1348,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       }
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1599,14 +1602,14 @@ const MicMenu = ({
                           : "#6D6E71"
                       : "",
                   }}
-                // classes={{
-                //   root:
-                //     appTheme === appThemes.LIGHT
-                //       ? classes.popoverHover
-                //       : appTheme === appThemes.DARK
-                //       ? classes.popoverHoverDark
-                //       : classes.popoverHoverDefault,
-                // }}
+                  // classes={{
+                  //   root:
+                  //     appTheme === appThemes.LIGHT
+                  //       ? classes.popoverHover
+                  //       : appTheme === appThemes.DARK
+                  //       ? classes.popoverHoverDark
+                  //       : classes.popoverHoverDefault,
+                  // }}
                 >
                   {isNoiseRemovalChecked ? (
                     <SelectedIcon />
@@ -1639,17 +1642,17 @@ const MicMenu = ({
                       handleClose();
                       _handleNoiseClick({ e, selectMicDeviceId });
                     }}
-                  // classes={{
-                  //   root:
-                  //     appTheme === appThemes.LIGHT
-                  //       ? classes.menuItemHover
-                  //       : appTheme === appThemes.DARK
-                  //       ? classes.menuItemDark
-                  //       : classes.menuItemDefault,
-                  //   gutters: isNoiseRemovalChecked
-                  //     ? classes.singleMenuItemGuttersAfterSelect
-                  //     : classes.singleMenuItemGutters,
-                  // }}
+                    // classes={{
+                    //   root:
+                    //     appTheme === appThemes.LIGHT
+                    //       ? classes.menuItemHover
+                    //       : appTheme === appThemes.DARK
+                    //       ? classes.menuItemDark
+                    //       : classes.menuItemDefault,
+                    //   gutters: isNoiseRemovalChecked
+                    //     ? classes.singleMenuItemGuttersAfterSelect
+                    //     : classes.singleMenuItemGutters,
+                    // }}
                   >
                     AI Noise Removal
                   </MenuItem>
@@ -1723,14 +1726,14 @@ const MirrorView = ({
                       : "#6D6E71"
                   : "",
               }}
-            // classes={{
-            //   root:
-            //     appTheme === appThemes.LIGHT
-            //       ? classes.popoverHover
-            //       : appTheme === appThemes.DARK
-            //       ? classes.popoverHoverDark
-            //       : classes.popoverHoverDefault,
-            // }}
+              // classes={{
+              //   root:
+              //     appTheme === appThemes.LIGHT
+              //       ? classes.popoverHover
+              //       : appTheme === appThemes.DARK
+              //       ? classes.popoverHoverDark
+              //       : classes.popoverHoverDefault,
+              // }}
             >
               {isMirrorViewChecked ? (
                 <SelectedIcon />
@@ -1763,17 +1766,17 @@ const MirrorView = ({
                   handleClose();
                   _handleMirrorClick({ e });
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.menuItemHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.menuItemDark
-              //       : classes.menuItemDefault,
-              //   gutters: isMirrorViewChecked
-              //     ? classes.singleMenuItemGuttersAfterSelect
-              //     : classes.singleMenuItemGutters,
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.menuItemHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.menuItemDark
+                //       : classes.menuItemDefault,
+                //   gutters: isMirrorViewChecked
+                //     ? classes.singleMenuItemGuttersAfterSelect
+                //     : classes.singleMenuItemGutters,
+                // }}
               >
                 Mirror View
               </CustomMenuItem>
@@ -1889,10 +1892,7 @@ const WebcamBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnWebcam"}
-        disabled={
-          webcamEnabled == false ||
-          webcamEnabled == "false"
-        }
+        disabled={webcamEnabled == false || webcamEnabled == "false"}
         tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
@@ -1909,8 +1909,7 @@ const WebcamBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change webcam"}>
               <CustomIconButton
-                disabled={webcamEnabled == false ||
-                  webcamEnabled == "false"}
+                disabled={webcamEnabled == false || webcamEnabled == "false"}
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -1986,14 +1985,14 @@ const WebcamBTN = () => {
                   setSelectWebcamDeviceId(deviceId);
                   changeWebcam(deviceId);
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.popoverHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.popoverHoverDark
-              //       : "",
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 {label || `Webcam ${index + 1}`}
               </CustomWebcamMenuItem>
@@ -2106,9 +2105,8 @@ const MicBTN = () => {
       const processor = new VideoSDKNoiseSuppressor();
 
       const stream = await getAudioTrack({ micId: selectMicDeviceId });
-      const processedStream = await processor.getNoiseSuppressedAudioStream(
-        stream
-      );
+      const processedStream =
+        await processor.getNoiseSuppressedAudioStream(stream);
 
       changeMic(processedStream);
     } catch (error) {
@@ -2140,8 +2138,7 @@ const MicBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnMic"}
-        disabled={micEnabled == false ||
-          micEnabled == "false"}
+        disabled={micEnabled == false || micEnabled == "false"}
         tooltipTitle={
           isNoiseRemovalChecked
             ? "Noise Removal Activated"
@@ -2163,8 +2160,7 @@ const MicBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change microphone"}>
               <CustomIconButton
-                disabled={micEnabled == false ||
-                  micEnabled == "false"}
+                disabled={micEnabled == false || micEnabled == "false"}
                 p={0}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
@@ -2254,7 +2250,7 @@ const EndCallBTN = () => {
           !participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV
             ? "End Call"
             : participantCanEndMeeting &&
-              meetingMode === meetingModes.SEND_AND_RECV
+                meetingMode === meetingModes.SEND_AND_RECV
               ? "Open popup"
               : "Leave Call"
         }
@@ -2266,7 +2262,7 @@ const EndCallBTN = () => {
           !participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV
             ? setIsEndMeeting(true)
             : participantCanEndMeeting &&
-              meetingMode === meetingModes.SEND_AND_RECV
+                meetingMode === meetingModes.SEND_AND_RECV
               ? handleClick(e)
               : leave();
         }}
@@ -2286,9 +2282,9 @@ const EndCallBTN = () => {
             anchorEl={tollTipEl.current}
             open={Boolean(downArrow)}
             onClose={handleClose}
-          // classes={{
-          //   paper: classes.popoverBorder,
-          // }}
+            // classes={{
+            //   paper: classes.popoverBorder,
+            // }}
           >
             <MenuList
               style={{
@@ -2312,14 +2308,14 @@ const EndCallBTN = () => {
                   window.onbeforeunload = null;
                   leave();
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.popoverHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.popoverHoverDark
-              //       : "",
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
@@ -2389,14 +2385,14 @@ const EndCallBTN = () => {
                 onClick={() => {
                   setIsEndMeeting(true);
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.popoverHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.popoverHoverDark
-              //       : "",
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
@@ -2956,10 +2952,11 @@ const TopBar = ({ topBarHeight }) => {
             : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
-        borderBottom: `1px solid ${appTheme === appThemes.LIGHT
-          ? theme.palette.lightTheme.outlineColor
-          : "#ffffff33"
-          }`,
+        borderBottom: `1px solid ${
+          appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.outlineColor
+            : "#ffffff33"
+        }`,
         position: "relative",
         top: topBarVisible ? 0 : -topBarHeight,
         transition: `all ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -3077,7 +3074,7 @@ const TopBar = ({ topBarHeight }) => {
                 mr={i === topBarIcons.length - 1 ? 0 : 2}
                 display={"flex"}
                 alignItems={"center"}
-              // className={classes.row}
+                // className={classes.row}
               >
                 {row.map((buttonType, j) => {
                   return (

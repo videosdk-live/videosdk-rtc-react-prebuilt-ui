@@ -102,12 +102,12 @@ export const getGridRowsAndColumns = ({
       ? { grid: mobileLandscape, maxCount: 6 }
       : { grid: mobilePortrait, maxCount: 6 }
     : isTab
-    ? isLandscape
-      ? { grid: tabLandscape, maxCount: 12 }
-      : { grid: tabPortrait, maxCount: 12 }
-    : isSMDesktop
-    ? { grid: smallDesktop, maxCount: 16 }
-    : { grid: largeDesktop, maxCount: 25 };
+      ? isLandscape
+        ? { grid: tabLandscape, maxCount: 12 }
+        : { grid: tabPortrait, maxCount: 12 }
+      : isSMDesktop
+        ? { grid: smallDesktop, maxCount: 16 }
+        : { grid: largeDesktop, maxCount: 25 };
 
   const myGrid =
     grid[

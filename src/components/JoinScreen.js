@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Grid,
-  Tooltip,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, Grid, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { Videocam, Mic, MicOff, VideocamOff } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
@@ -120,12 +114,14 @@ export default function JoinMeeting({
   const [nameErr, setNameErr] = useState(false);
   const isMobile = useIsMobile();
   const isSmallScreen = useIsMobile(900);
-  const [webcamOn, setWebcamOn] = useState(webcamEnabled ? true : false)
-  const [micOn, setMicOn] = useState(micEnabled ? true : false)
-  const [isCameraPermissionAllowed, setIsCameraPermissionAllowed] = useState(false)
-  const [isMicrophonePermissionAllowed, setIsMicrophonePermissionAllowed] = useState(false)
+  const [webcamOn, setWebcamOn] = useState(webcamEnabled ? true : false);
+  const [micOn, setMicOn] = useState(micEnabled ? true : false);
+  const [isCameraPermissionAllowed, setIsCameraPermissionAllowed] =
+    useState(false);
+  const [isMicrophonePermissionAllowed, setIsMicrophonePermissionAllowed] =
+    useState(false);
   const [didDeviceChange, setDidDeviceChange] = useState(false);
-  const [testSpeaker, setTestSpeaker] = useState(false)
+  const [testSpeaker, setTestSpeaker] = useState(false);
   const [dlgMuted, setDlgMuted] = useState(false);
   const [dlgDevices, setDlgDevices] = useState(false);
   const [{ webcams, mics, speakers }, setDevices] = useState({
@@ -187,7 +183,6 @@ export default function JoinMeeting({
 
   useEffect(() => {
     if (webcamOn && webcamEnabled) {
-
       // Close the existing video track if there's a new one
       if (videoTrackRef.current && videoTrackRef.current !== videoTrack) {
         videoTrackRef.current.stop(); // Stop the existing video track
@@ -200,7 +195,7 @@ export default function JoinMeeting({
         !videoPlayerRef.current.paused &&
         !videoPlayerRef.current.ended &&
         videoPlayerRef.current.readyState >
-        videoPlayerRef.current.HAVE_CURRENT_DATA;
+          videoPlayerRef.current.HAVE_CURRENT_DATA;
 
       if (videoTrack) {
         const videoSrcObject = new MediaStream([videoTrack]);
@@ -223,7 +218,7 @@ export default function JoinMeeting({
 
   useEffect(() => {
     checkMediaPermission();
-    return () => { };
+    return () => {};
   }, []);
 
   const { width: windowWidth } = useWindowSize();
@@ -400,7 +395,6 @@ export default function JoinMeeting({
     }
   };
 
-
   function onDeviceChanged() {
     setDidDeviceChange(true);
     getCameraDevices();
@@ -417,8 +411,7 @@ export default function JoinMeeting({
         setCustomVideoStream(null);
         setWebcamOn(false);
       }
-    }
-    else {
+    } else {
       if (webcamEnabled) {
         getDefaultMediaTracks({ mic: false, webcam: true });
         setWebcamOn(true);
@@ -610,11 +603,9 @@ export default function JoinMeeting({
               >
                 <Box
                   style={{
-                    paddingLeft:
-                      spacingHorizontalTopics - (gtThenMD ? 32 : 16),
+                    paddingLeft: spacingHorizontalTopics - (gtThenMD ? 32 : 16),
                     paddingRight:
                       spacingHorizontalTopics - (gtThenMD ? 32 : 16),
-
                     position: "relative",
                     width: "100%",
                   }}
@@ -706,7 +697,11 @@ export default function JoinMeeting({
                               <Grid item>
                                 {isMicrophonePermissionAllowed ? (
                                   <Tooltip
-                                    title={micOn && micEnabled ? "Turn off mic" : "Turn on mic"}
+                                    title={
+                                      micOn && micEnabled
+                                        ? "Turn off mic"
+                                        : "Turn on mic"
+                                    }
                                     arrow
                                     placement="top"
                                   >
@@ -716,13 +711,13 @@ export default function JoinMeeting({
                                       style={
                                         micOn && micEnabled
                                           ? {
-                                            backgroundColor: "white",
-                                            color: "black",
-                                          }
+                                              backgroundColor: "white",
+                                              color: "black",
+                                            }
                                           : {
-                                            backgroundColor: red[500],
-                                            color: "white",
-                                          }
+                                              backgroundColor: red[500],
+                                              color: "white",
+                                            }
                                       }
                                       sx={{
                                         borderRadius: "100%",
@@ -731,7 +726,11 @@ export default function JoinMeeting({
                                         height: "44px",
                                       }}
                                     >
-                                      {micOn && micEnabled ? <Mic /> : <MicOff />}
+                                      {micOn && micEnabled ? (
+                                        <Mic />
+                                      ) : (
+                                        <MicOff />
+                                      )}
                                     </Button>
                                   </Tooltip>
                                 ) : (
@@ -764,20 +763,27 @@ export default function JoinMeeting({
                                       style={
                                         webcamOn && webcamEnabled
                                           ? {
-                                            backgroundColor: "white",
-                                            color: "black",
-                                          }
+                                              backgroundColor: "white",
+                                              color: "black",
+                                            }
                                           : {
-                                            backgroundColor: red[500],
-                                            color: "white",
-                                          }
+                                              backgroundColor: red[500],
+                                              color: "white",
+                                            }
                                       }
                                     >
-                                      {webcamOn && webcamEnabled ? <Videocam /> : <VideocamOff />}
+                                      {webcamOn && webcamEnabled ? (
+                                        <Videocam />
+                                      ) : (
+                                        <VideocamOff />
+                                      )}
                                     </Button>
                                   </Tooltip>
                                 ) : (
-                                  <CameraPermissionDenied width={48} height={48} />
+                                  <CameraPermissionDenied
+                                    width={48}
+                                    height={48}
+                                  />
                                 )}
                               </Grid>
                             ) : null}
@@ -799,42 +805,68 @@ export default function JoinMeeting({
                 }}
                 p={internalPadding}
               >
-                {micEnabled && <Box style={{ marginTop: (isMobile) ? "4px" : 0, flex: 1, width: (isMobile) ? "100%" : "32.333%" }}>
-                  <DropDown
-                    mics={mics}
-                    changeMic={changeMic}
-                    customAudioStream={customAudioStream}
-                    audioTrack={audioTrack}
-                    micOn={micOn}
-                    didDeviceChange={didDeviceChange}
-                    setDidDeviceChange={setDidDeviceChange}
-                    testSpeaker={testSpeaker}
-                    setTestSpeaker={setTestSpeaker}
-                    selectedMic={selectedMic}
-                    setSelectedMic={setSelectedMic}
-                    selectedSpeaker={selectedSpeaker}
-                    isMicrophonePermissionAllowed={isMicrophonePermissionAllowed}
-                  />
-                </Box>}
-                {!(isMobile) && (
-                  <Box style={{ marginTop: isMobile ? "4px" : 0, flex: 1, width: "32.333%" }}>
+                {micEnabled && (
+                  <Box
+                    style={{
+                      marginTop: isMobile ? "4px" : 0,
+                      flex: 1,
+                      width: isMobile ? "100%" : "32.333%",
+                    }}
+                  >
+                    <DropDown
+                      mics={mics}
+                      changeMic={changeMic}
+                      customAudioStream={customAudioStream}
+                      audioTrack={audioTrack}
+                      micOn={micOn}
+                      didDeviceChange={didDeviceChange}
+                      setDidDeviceChange={setDidDeviceChange}
+                      testSpeaker={testSpeaker}
+                      setTestSpeaker={setTestSpeaker}
+                      selectedMic={selectedMic}
+                      setSelectedMic={setSelectedMic}
+                      selectedSpeaker={selectedSpeaker}
+                      isMicrophonePermissionAllowed={
+                        isMicrophonePermissionAllowed
+                      }
+                    />
+                  </Box>
+                )}
+                {!isMobile && (
+                  <Box
+                    style={{
+                      marginTop: isMobile ? "4px" : 0,
+                      flex: 1,
+                      width: "32.333%",
+                    }}
+                  >
                     <DropDownSpeaker
                       speakers={speakers}
                       selectedSpeaker={selectedSpeaker}
                       setSelectedSpeaker={setSelectedSpeaker}
-                      isMicrophonePermissionAllowed={isMicrophonePermissionAllowed}
+                      isMicrophonePermissionAllowed={
+                        isMicrophonePermissionAllowed
+                      }
                     />
                   </Box>
                 )}
-                {webcamEnabled && <Box style={{ marginTop: (isMobile) ? "4px" : 0, flex: 1, width: (isMobile) ? "100%" : "32.333%" }}>
-                  <DropDownCam
-                    changeWebcam={changeWebcam}
-                    webcams={webcams}
-                    selectedWebcam={selectedWebcam}
-                    setSelectedWebcam={setSelectedWebcam}
-                    isCameraPermissionAllowed={isCameraPermissionAllowed}
-                  />
-                </Box>}
+                {webcamEnabled && (
+                  <Box
+                    style={{
+                      marginTop: isMobile ? "4px" : 0,
+                      flex: 1,
+                      width: isMobile ? "100%" : "32.333%",
+                    }}
+                  >
+                    <DropDownCam
+                      changeWebcam={changeWebcam}
+                      webcams={webcams}
+                      selectedWebcam={selectedWebcam}
+                      setSelectedWebcam={setSelectedWebcam}
+                      isCameraPermissionAllowed={isCameraPermissionAllowed}
+                    />
+                  </Box>
+                )}
               </Box>
             </Grid>
             <Grid
@@ -914,7 +946,7 @@ export default function JoinMeeting({
             subTitle="Please connect a mic and webcam to speak and share your video in the meeting. You can also join without them."
           />
         </Box>
-      </Box >
+      </Box>
     </>
   );
 }

@@ -235,28 +235,28 @@ const PinnedLayoutViewContainer = ({
     spotlightParticipantId && singleRow.length !== 0
       ? 0
       : typeof sideBarMode === "string"
-      ? 0
-      : sideBarPinnedParticipantIds?.length <= 9
-      ? isLGDesktop
-        ? singleRow.length === 2
-          ? 0
-          : 140
-        : isSMDesktop
-        ? singleRow.length === 2
-          ? 20
-          : 90
-        : isTab && !isPortrait
-        ? 60
-        : 0
-      : 0;
+        ? 0
+        : sideBarPinnedParticipantIds?.length <= 9
+          ? isLGDesktop
+            ? singleRow.length === 2
+              ? 0
+              : 140
+            : isSMDesktop
+              ? singleRow.length === 2
+                ? 20
+                : 90
+              : isTab && !isPortrait
+                ? 60
+                : 0
+          : 0;
 
   const mainContainerHorizontalPadding = useMemo(() => {
     return reduceEdgeSpacing
       ? 0
       : (whiteboardStarted || presenterId) &&
-        meetingLayout === meetingLayouts.SPOTLIGHT
-      ? 0
-      : _mainContainerHorizontalPadding;
+          meetingLayout === meetingLayouts.SPOTLIGHT
+        ? 0
+        : _mainContainerHorizontalPadding;
   }, [
     _mainContainerHorizontalPadding,
     whiteboardStarted,
@@ -282,8 +282,8 @@ const PinnedLayoutViewContainer = ({
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
         overflow: "hidden",
         transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
         transitionTimingFunction: "ease-in-out",
@@ -486,8 +486,8 @@ const PinnedLayoutViewContainer = ({
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.main
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.main
-                : theme.palette.background.default,
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
             overflowX: "hidden",
             overflowY: spotlightParticipantId ? "scroll" : "hidden",
             width: spotlightParticipantId ? presentingSideBarWidth : width,

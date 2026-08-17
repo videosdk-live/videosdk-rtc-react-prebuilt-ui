@@ -1,9 +1,4 @@
-import {
-  Box,
-  MenuItem,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, MenuItem, Typography, useTheme } from "@mui/material";
 import {
   useMeeting,
   useParticipant,
@@ -42,18 +37,18 @@ const ToggleModeContainer = ({
         onClick={async (e) => {
           e.stopPropagation();
           try {
-            console.log('Here -=- 1');
+            console.log("Here -=- 1");
             const message = JSON.stringify({
               mode:
                 participantMode === meetingModes.SEND_AND_RECV
                   ? meetingModes.SIGNALLING_ONLY
                   : meetingModes.SEND_AND_RECV,
-            })
-            console.log('message send', message);
+            });
+            console.log("message send", message);
 
             await publish(message);
           } catch (error) {
-            console.log('error: ', error);
+            console.log("error: ", error);
           }
 
           handleClose();
@@ -69,7 +64,8 @@ const ToggleModeContainer = ({
           >
             <ParticipantAddHostIcon
               fill={
-                isHoverOnCohost || participantMode === meetingModes.SEND_AND_RECV
+                isHoverOnCohost ||
+                participantMode === meetingModes.SEND_AND_RECV
                   ? appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.contrastText
                     : theme.palette.common.white
@@ -92,7 +88,8 @@ const ToggleModeContainer = ({
                 fontSize: 14,
 
                 color:
-                  isHoverOnCohost || participantMode === meetingModes.SEND_AND_RECV
+                  isHoverOnCohost ||
+                  participantMode === meetingModes.SEND_AND_RECV
                     ? appTheme === appThemes.LIGHT
                       ? theme.palette.lightTheme.contrastText
                       : "#fff"

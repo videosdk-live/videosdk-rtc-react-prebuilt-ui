@@ -200,7 +200,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
         (new Date(createdAt).getTime() +
           timeout * 1000 -
           new Date().getTime()) /
-        1000
+          1000
       );
       setIsTimerPollActive(true);
     }
@@ -389,8 +389,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                           margin: 0,
                           padding: 0,
                           color:
-                            appTheme === appThemes.LIGHT ?
-                              theme.palette.lightTheme.contrastText : "white",
+                            appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white",
                         }}
                       >
                         {`${Math.floor(percentage)}%`}
@@ -473,7 +474,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                       JSON.stringify({
                         pollId: poll.id,
                       }),
-                      { persist: true },
+                      { persist: true }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);
@@ -602,7 +603,7 @@ const PollList = ({ panelHeight }) => {
                   try {
                     await RemoveFromDraftPublish(
                       JSON.stringify({ pollId: poll.id }),
-                      { persist: true },
+                      { persist: true }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);
@@ -622,7 +623,7 @@ const PollList = ({ panelHeight }) => {
                         isActive: true,
                         index: polls.length + 1,
                       }),
-                      { persist: true },
+                      { persist: true }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);

@@ -484,7 +484,7 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                           await publish(
                             JSON.stringify({
                               setScreenShareOn: !isParticipantPresenting,
-                            }),
+                            })
                           );
                         } catch (error) {
                           console.log("Error in Pubsub ", error);
@@ -524,14 +524,16 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                                 appTheme === appThemes.LIGHT
                                   ? theme.palette.lightTheme.contrastText
                                   : !(
-                                    !isLocal &&
-                                    partcipantCanToogleOtherScreenShare &&
-                                    (presenterId
-                                      ? isParticipantPresenting
-                                      : true)
-                                  ) ||
-                                    meetingMode === meetingModes.SIGNALLING_ONLY ||
-                                    participantMode === meetingModes.SIGNALLING_ONLY
+                                        !isLocal &&
+                                        partcipantCanToogleOtherScreenShare &&
+                                        (presenterId
+                                          ? isParticipantPresenting
+                                          : true)
+                                      ) ||
+                                      meetingMode ===
+                                        meetingModes.SIGNALLING_ONLY ||
+                                      participantMode ===
+                                        meetingModes.SIGNALLING_ONLY
                                     ? appTheme === appThemes.LIGHT
                                       ? theme.palette.lightTheme.contrastText
                                       : "#ffffff80"
@@ -560,8 +562,8 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                                   partcipantCanToogleOtherScreenShare &&
                                   (presenterId ? isParticipantPresenting : true)
                                 ) ||
-                                  meetingMode === meetingModes.SIGNALLING_ONLY ||
-                                  participantMode === meetingModes.SIGNALLING_ONLY
+                                meetingMode === meetingModes.SIGNALLING_ONLY ||
+                                participantMode === meetingModes.SIGNALLING_ONLY
                                   ? theme.palette.text.secondary
                                   : appTheme === appThemes.LIGHT
                                     ? theme.palette.lightTheme.contrastText
@@ -643,8 +645,8 @@ function AgentParticipantListItem({ participantId }) {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.seven
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.three
-            : theme.palette.common.sidePanel,
+              ? theme.palette.lightTheme.three
+              : theme.palette.common.sidePanel,
         borderRadius: 6,
       }}
     >
@@ -665,8 +667,8 @@ function AgentParticipantListItem({ participantId }) {
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.five
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.five
-                : "",
+                  ? theme.palette.lightTheme.five
+                  : "",
           }}
         >
           {displayName?.charAt(0)}
@@ -801,8 +803,8 @@ function AgentParticipantListItem({ participantId }) {
                               ? theme.palette.lightTheme.contrastText
                               : "white"
                             : appTheme === appThemes.LIGHT
-                            ? theme.palette.lightTheme.four
-                            : "#ffffff80"
+                              ? theme.palette.lightTheme.four
+                              : "#ffffff80"
                         }
                       />
                     </IconButton>
@@ -857,14 +859,14 @@ function AgentParticipantListItem({ participantId }) {
                       appTheme === appThemes.DARK
                         ? theme.palette.darkTheme.slightLighter
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.two
-                        : "",
+                          ? theme.palette.lightTheme.two
+                          : "",
                     color:
                       appTheme === appThemes.DARK
                         ? theme.palette.common.white
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.contrastText
-                        : "",
+                          ? theme.palette.lightTheme.contrastText
+                          : "",
                   }}
                 >
                   <MenuItem
@@ -993,14 +995,14 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   ) =>
     filterQuery?.length > 2
       ? sortedRaisedHandsParticipants.filter(({ participantId }) => {
-        const { displayName } = participants.get(participantId);
+          const { displayName } = participants.get(participantId);
 
-        const hide = !displayName
-          ?.toLowerCase()
-          .includes(filterQuery.toLowerCase());
+          const hide = !displayName
+            ?.toLowerCase()
+            .includes(filterQuery.toLowerCase());
 
-        return !hide;
-      })
+          return !hide;
+        })
       : sortedRaisedHandsParticipants;
 
   const part = useMemo(

@@ -143,8 +143,8 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                   appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.seven
                     : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.three
-                    : theme.palette.common.sidePanel,
+                      ? theme.palette.lightTheme.three
+                      : theme.palette.common.sidePanel,
                 width: "100%",
                 marginBottom: 12,
                 borderRadius: 4,
@@ -158,11 +158,11 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                         ? appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.four
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.five
-                          : theme.palette.text.secondary
+                            ? theme.palette.lightTheme.five
+                            : theme.palette.text.secondary
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.contrastText
-                        : theme.palette.common.white
+                          ? theme.palette.lightTheme.contrastText
+                          : theme.palette.common.white
                     }
                   />
                 </ListItemAvatar>
@@ -175,11 +175,11 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                         ? appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.four
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.five
-                          : theme.palette.text.secondary
+                            ? theme.palette.lightTheme.five
+                            : theme.palette.text.secondary
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.contrastText
-                        : theme.palette.common.white,
+                          ? theme.palette.lightTheme.contrastText
+                          : theme.palette.common.white,
                       lineHeight: 1.5,
                       marginTop: 6,
                       marginBottom: 0,
@@ -194,8 +194,8 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
                         appTheme === appThemes.DARK
                           ? theme.palette.darkTheme.four
                           : appTheme === appThemes.LIGHT
-                          ? theme.palette.lightTheme.five
-                          : theme.palette.text.secondary,
+                            ? theme.palette.lightTheme.five
+                            : theme.palette.text.secondary,
                       fontWeight: 500,
                       lineHeight: 1.43,
                       marginTop: 0,

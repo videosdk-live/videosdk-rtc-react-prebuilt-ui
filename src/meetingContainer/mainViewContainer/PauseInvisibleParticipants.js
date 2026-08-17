@@ -95,18 +95,18 @@ const PauseInvisibleParticipants = () => {
     });
     eventEmitter.on(
       appEvents["participant-invisible"],
-      _handleParticipantInvisible,
+      _handleParticipantInvisible
     );
 
     return () => {
       eventEmitter.off(
         appEvents["participant-visible"],
-        _handleParticipantVisible,
+        _handleParticipantVisible
       );
 
       eventEmitter.off(
         appEvents["participant-invisible"],
-        _handleParticipantInvisible,
+        _handleParticipantInvisible
       );
     };
   }, []);

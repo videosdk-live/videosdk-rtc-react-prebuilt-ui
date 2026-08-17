@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated } from "react-spring";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import PlayerViewer from "./PlayerViewer";
 
@@ -21,7 +21,6 @@ const MotionPlayer = ({
     };
   }, []);
 
-
   const { animationsEnabled } = useMeetingAppContext();
 
   const animeConfig = { tension: 180, friction: 22 };
@@ -32,18 +31,15 @@ const MotionPlayer = ({
       left: relativeLeft,
       height: relativeHeight,
       width: relativeWidth,
-      scale: mounted ? 1 : (animationsEnabled ? 0 : 0.5),
+      scale: mounted ? 1 : animationsEnabled ? 0 : 0.5,
     },
     config: animeConfig,
   });
 
-
-
-
   return (
     <animated.div
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: animatedProps.top.to((val) => `${val}%`),
         left: animatedProps.left.to((val) => `${val}%`),
         height: animatedProps.height.to((val) => `${val}%`),
