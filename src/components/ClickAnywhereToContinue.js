@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import robot from "../animations/robot.json";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 import { Typography, Box, Button } from "@mui/material";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import useWindowSize from "../utils/useWindowSize";

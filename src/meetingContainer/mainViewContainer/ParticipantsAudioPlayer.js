@@ -25,7 +25,7 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
         stopConsumingMicStreams();
       };
     }
-  }, []);
+  }, [participantId]);
 
   useEffect(() => {
     if (!isLocal && audioPlayer.current && micOn && micStream) {

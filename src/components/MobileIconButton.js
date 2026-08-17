@@ -9,9 +9,9 @@ import {
 import React, { useState } from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 
-const MobileIconButton = ({
+const MobileIconButton = React.forwardRef(({
   badge,
   onClick,
   Icon,
@@ -29,7 +29,8 @@ const MobileIconButton = ({
   isActive,
   buttonText,
   lottieOption,
-}) => {
+  ...forwardedProps
+}, ref) => {
   const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
@@ -48,6 +49,8 @@ const MobileIconButton = ({
   return (
     <Tooltip placement="bottom" title={tooltipTitle || ""}>
       <Box
+        ref={ref}
+        {...forwardedProps}
         p={1}
         style={{
           borderRadius: theme.spacing(1),
@@ -162,6 +165,6 @@ const MobileIconButton = ({
       </Box>
     </Tooltip>
   );
-};
+});
 
 export default MobileIconButton;

@@ -2,7 +2,7 @@ import { useTheme } from "@mui/material";
 import * as React from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
-const WebCamOffIcon = (props) => {
+const WebCamOffIcon = ({ fillColor, ...props }) => {
   const { appTheme } = useMeetingAppContext();
   const theme = useTheme();
   return (

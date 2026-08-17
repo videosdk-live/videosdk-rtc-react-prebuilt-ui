@@ -270,7 +270,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
       container={endCallContainerRef?.current}
       closeAfterTransition
       fullScreen
-      open={sideBarMode}
+      open={isOpen}
       onClose={handleClose}
       TransitionComponent={Transition}
     >

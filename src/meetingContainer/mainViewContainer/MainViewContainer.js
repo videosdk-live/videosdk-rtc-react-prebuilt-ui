@@ -82,15 +82,15 @@ const MotionParticipant = ({
     <animated.div
       style={{
         position: "absolute",
-        top: animatedProps.top.interpolate((val) => `${val}%`),
-        left: animatedProps.left.interpolate((val) => `${val}%`),
-        height: animatedProps.height.interpolate((val) => `${val}%`),
-        width: animatedProps.width.interpolate((val) => `${val}%`),
+        top: animatedProps.top.to((val) => `${val}%`),
+        left: animatedProps.left.to((val) => `${val}%`),
+        height: animatedProps.height.to((val) => `${val}%`),
+        width: animatedProps.width.to((val) => `${val}%`),
         paddingTop: gutter,
         paddingBottom: gutter,
         paddingRight: gutter,
         paddingLeft: gutter,
-        transform: animatedProps.scale.interpolate((val) => `scale(${val})`),
+        transform: animatedProps.scale.to((val) => `scale(${val})`),
       }}
     >
       <div

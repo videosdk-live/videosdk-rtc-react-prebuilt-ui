@@ -111,6 +111,7 @@ export const MeetingAppProvider = ({
   canToggleParticipantTab,
   selectedMic,
   selectedWebcam,
+  selectedSpeaker,
   joinScreenWebCam,
   joinScreenMic,
   canToggleWhiteboard,
@@ -150,17 +151,23 @@ export const MeetingAppProvider = ({
   cameraId,
   cameraOptimizationMode,
   cameraMultiStream,
+  cameraBitrateMode,
+  cameraMaxLayer,
+  cameraCodec,
   screenShareResolution,
   screenShareOptimizationMode,
+  screenShareWithAudio,
+  screenShareMultiStream,
   micQuality,
+  micNoiseConfig,
   joinWithoutUserInteraction,
   webcamEnabled,
+  micEnabled,
   realtimeTranscriptionVisible,
 }) => {
   const containerRef = useRef();
   const endCallContainerRef = useRef();
   const theme = useTheme();
-
   const [sideBarMode, setSideBarMode] = useState(null);
   const [sideBarNestedMode, setSideBarNestedMode] = useState(null);
   const [selectWebcamDeviceId, setSelectWebcamDeviceId] = useState(
@@ -168,7 +175,7 @@ export const MeetingAppProvider = ({
   );
   const [selectMicDeviceId, setSelectMicDeviceId] = useState(selectedMic.id);
   const [selectedOutputDeviceId, setSelectedOutputDeviceId] = useState(
-    selectedMic.id
+    selectedSpeaker.id
   );
   const [activeSortedParticipants, setActiveSortedParticipants] = useState([]);
   const [mainViewParticipants, setMainViewParticipants] = useState([]);
@@ -239,15 +246,14 @@ export const MeetingAppProvider = ({
       ? appMeetingLayout.type === meetingLayouts.SPOTLIGHT
         ? meetingLayouts.SPOTLIGHT
         : appMeetingLayout.type === meetingLayouts.SIDEBAR
-        ? meetingLayouts.SIDEBAR
-        : meetingLayouts.GRID
+          ? meetingLayouts.SIDEBAR
+          : meetingLayouts.GRID
       : appMeetingLayout.type === meetingLayouts.SPOTLIGHT
-      ? meetingLayouts.UNPINNED_SPOTLIGHT
-      : appMeetingLayout.type === meetingLayouts.SIDEBAR
-      ? meetingLayouts.UNPINNED_SIDEBAR
-      : meetingLayouts.GRID;
+        ? meetingLayouts.UNPINNED_SPOTLIGHT
+        : appMeetingLayout.type === meetingLayouts.SIDEBAR
+          ? meetingLayouts.UNPINNED_SIDEBAR
+          : meetingLayouts.GRID;
   }, [appMeetingLayout, meetingLayouts]);
-
 
   const videoProcessor = useMemo(() => new VirtualBackgroundProcessor(), []);
 
@@ -257,6 +263,7 @@ export const MeetingAppProvider = ({
         // default options
         selectedMic,
         selectedWebcam,
+        selectedSpeaker,
         joinScreenWebCam,
         joinScreenMic,
         canChangeLayout,
@@ -344,11 +351,18 @@ export const MeetingAppProvider = ({
         cameraId,
         cameraOptimizationMode,
         cameraMultiStream,
+        cameraBitrateMode,
+        cameraMaxLayer,
+        cameraCodec,
         screenShareResolution,
         screenShareOptimizationMode,
+        screenShareWithAudio,
+        screenShareMultiStream,
         micQuality,
+        micNoiseConfig,
         joinWithoutUserInteraction,
         webcamEnabled,
+        micEnabled,
 
         // states
         sideBarMode,
@@ -417,8 +431,8 @@ export const MeetingAppProvider = ({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.seven
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.main
-              : theme.palette.background.paper,
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.paper,
           color:
             appTheme === appThemes.LIGHT &&
             theme.palette.lightTheme.contrastText,

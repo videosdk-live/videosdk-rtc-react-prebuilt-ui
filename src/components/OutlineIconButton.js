@@ -9,9 +9,9 @@ import {
 import React, { useEffect, useState, useRef } from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 
-const OutlineIconButton = ({
+const OutlineIconButton = React.forwardRef(({
   badge,
   onClick,
   Icon,
@@ -30,7 +30,8 @@ const OutlineIconButton = ({
   isRequestProcessing,
   focusBorderColor,
   color,
-}) => {
+  ...forwardedProps
+}, ref) => {
   const theme = useTheme();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseDown, setMouseDown] = useState(false);
@@ -81,6 +82,8 @@ const OutlineIconButton = ({
       open={mouseOver || mouseDown}
     >
       <Box
+        ref={ref}
+        {...forwardedProps}
         style={{
           display: "flex",
           justifyContent: "center",
@@ -224,6 +227,6 @@ const OutlineIconButton = ({
       </Box>
     </Tooltip>
   );
-};
+});
 
 export default OutlineIconButton;

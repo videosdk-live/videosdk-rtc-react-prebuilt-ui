@@ -275,14 +275,14 @@ const useSortActiveParticipants = () => {
           ? 4
           : 3
         : isLGDesktop
-        ? maxParticipantGridCount_large_desktop
-        : isSMDesktop
-        ? maxParticipantGridCount_desktop
-        : isTab
-        ? maxParticipantGridCount_tab
-        : isMobile
-        ? maxParticipantGridCount_mobile
-        : 0;
+          ? maxParticipantGridCount_large_desktop
+          : isSMDesktop
+            ? maxParticipantGridCount_desktop
+            : isTab
+              ? maxParticipantGridCount_tab
+              : isMobile
+                ? maxParticipantGridCount_mobile
+                : 0;
 
     if (typeof layoutGridSize === "number" && n > layoutGridSize) {
       n = layoutGridSize;
@@ -304,6 +304,13 @@ const useSortActiveParticipants = () => {
   }, [mPresenterId]);
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      _sortOnModify({ maxParticipantInMainView });
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [mMeeting.participants, maxParticipantInMainView]);
+
+  useEffect(() => {
     activeSortedParticipantsRef.current = [...activeSortedParticipants];
   }, [activeSortedParticipants]);
 
@@ -313,7 +320,6 @@ const useSortActiveParticipants = () => {
 
   useEffect(() => {
     maxParticipantInMainViewRef.current = maxParticipantInMainView;
-    _sortOnModify({ maxParticipantInMainView });
   }, [maxParticipantInMainView, mMeeting.participants]);
 
   useEffect(() => {

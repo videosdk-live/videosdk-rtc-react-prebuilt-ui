@@ -75,6 +75,7 @@ const MediaRequested = () => {
       ].map(({ accept, enabled, participantName, setter, reject, type }, i) => {
         return (
           <ConfirmBox
+            key={`media_req_${type}`}
             {...{
               successText: "Turn on",
               rejectText: "Cancel",

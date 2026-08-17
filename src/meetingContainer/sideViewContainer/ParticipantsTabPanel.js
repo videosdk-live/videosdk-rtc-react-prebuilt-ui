@@ -37,7 +37,6 @@ import ParticipantVideoOffIcon from "../../icons/ParticipantVideoOffIcon";
 import ParticipantPinIcon from "../../icons/ParticipantPinIcon";
 import ParticipantRemoveIcon from "../../icons/ParticipantRemoveIcon";
 import useIsHls from "../useIsHls";
-import useCustomTrack from "../../utils/useCustomTrack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
@@ -69,8 +68,6 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
     meetingMode,
     appTheme,
   } = useMeetingAppContext();
-
-  const { getCustomVideoTrack, getCustomAudioTrack } = useCustomTrack();
 
   const isParticipantPresenting = useMemo(() => {
     return presenterId === participantId;
@@ -235,12 +232,12 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                       participantMode === meetingModes.SIGNALLING_ONLY
                     }
                     style={{ padding: 0 }}
-                    onClick={async () => {
+                    onClick={() => {
                       if (micOn) {
                         disableMic();
                       } else {
-                        const track = await getCustomAudioTrack();
-                        enableMic(track);
+                        // SDK preserves config from initial MeetingProvider track.
+                        enableMic();
                       }
                     }}
                   >
@@ -278,12 +275,12 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                       participantMode === meetingModes.SIGNALLING_ONLY
                     }
                     style={{ padding: 0 }}
-                    onClick={async () => {
+                    onClick={() => {
                       if (webcamOn) {
                         disableWebcam();
                       } else {
-                        const track = await getCustomVideoTrack();
-                        enableWebcam(track);
+                        // SDK preserves config from initial MeetingProvider track.
+                        enableWebcam();
                       }
                     }}
                   >

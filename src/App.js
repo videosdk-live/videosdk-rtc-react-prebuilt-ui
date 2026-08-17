@@ -1,6 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import MeetingContainer from "./meetingContainer/MeetingContainer";
-import { MeetingProvider } from "@videosdk.live/react-sdk";
+import {
+  Constants,
+  MeetingProvider,
+  setLogLevel,
+} from "@videosdk.live/react-sdk";
 import {
   MeetingAppProvider,
   meetingLayoutPriorities,
@@ -32,6 +36,8 @@ import { initReactI18next } from "react-i18next";
 
 const App = () => {
   const prebuiltSDKVersion = packageInfo.version;
+  const [customAudioStream, setCustomAudioStream] = useState(null);
+  const [customVideoStream, setCustomVideoStream] = useState(null);
   const [meetingIdValidation, setMeetingIdValidation] = useState({
     isLoading: true,
     meetingId: null,
@@ -46,13 +52,21 @@ const App = () => {
   });
 
   const [meetingLeft, setMeetingLeft] = useState(false);
-
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
   const playNotificationErr = async () => {
-    const errAudio = new Audio(
-      `https://static.videosdk.live/prebuilt/notification_err.mp3`
-    );
-
-    await errAudio.play();
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification_err.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
   };
 
   const getParams = ({ maxGridSize }) => {
@@ -137,7 +151,8 @@ const App = () => {
       animationsEnabled: "animationsEnabled",
       topbarEnabled: "topbarEnabled",
       notificationAlertsEnabled: "notificationAlertsEnabled",
-      participantNotificationAlertsEnabled: "participantNotificationAlertsEnabled",
+      participantNotificationAlertsEnabled:
+        "participantNotificationAlertsEnabled",
       debug: "debug",
       participantId: "participantId",
       //
@@ -179,9 +194,18 @@ const App = () => {
       cameraResolution: "cameraResolution",
       cameraMultiStream: "cameraMultiStream",
       cameraOptimizationMode: "cameraOptimizationMode",
+      cameraBitrateMode: "cameraBitrateMode",
+      cameraMaxLayer: "cameraMaxLayer",
+      cameraCodec: "cameraCodec",
       screenShareResolution: "screenShareResolution",
       screenShareOptimizationMode: "screenShareOptimizationMode",
+      screenShareWithAudio: "screenShareWithAudio",
+      screenShareMultiStream: "screenShareMultiStream",
       micQuality: "micQuality",
+      micEchoCancellation: "micEchoCancellation",
+      micAutoGainControl: "micAutoGainControl",
+      micNoiseSuppression: "micNoiseSuppression",
+      verbose: "verbose",
     };
 
     Object.keys(paramKeys).forEach((key) => {
@@ -457,44 +481,45 @@ const App = () => {
         break;
     }
 
-    if (!paramKeys.cameraId || typeof paramKeys.cameraId !== "string") {
-      paramKeys.cameraId = null;
-    }
-    if (
-      !paramKeys.cameraResolution ||
-      typeof paramKeys.cameraResolution !== "string"
-    ) {
-      paramKeys.cameraResolution = "h360p_w640p";
-    }
-    if (
-      !paramKeys.cameraMultiStream ||
-      typeof paramKeys.cameraMultiStream !== "string"
-    ) {
-      paramKeys.cameraMultiStream = "true";
-    }
-    if (
-      !paramKeys.cameraOptimizationMode ||
-      typeof paramKeys.cameraOptimizationMode !== "string"
-    ) {
-      paramKeys.cameraOptimizationMode = "motion";
-    }
+    // Camera — SDK exposes enums only for BitrateMode + VideoCodec; the rest
+    // are TS literal types and default inside useMediaStream.js.
+    paramKeys.cameraId = paramKeys.cameraId || null;
+    paramKeys.cameraMultiStream = paramKeys.cameraMultiStream !== "false"; // default true
+    paramKeys.cameraBitrateMode = Object.values(Constants.BitrateMode).includes(
+      paramKeys.cameraBitrateMode
+    )
+      ? paramKeys.cameraBitrateMode
+      : Constants.BitrateMode.BALANCED;
+    paramKeys.cameraMaxLayer = [2, 3].includes(Number(paramKeys.cameraMaxLayer))
+      ? Number(paramKeys.cameraMaxLayer)
+      : 3;
+    paramKeys.cameraCodec = Object.values(Constants.VideoCodec).includes(
+      paramKeys.cameraCodec
+    )
+      ? paramKeys.cameraCodec
+      : Constants.VideoCodec.VP8;
 
-    if (
-      !paramKeys.screenShareResolution ||
-      typeof paramKeys.screenShareResolution !== "string"
-    ) {
-      paramKeys.screenShareResolution = "h720p_15fps";
-    }
-    if (
-      !paramKeys.screenShareOptimizationMode ||
-      typeof paramKeys.screenShareOptimizationMode !== "string"
-    ) {
-      paramKeys.screenShareOptimizationMode = "motion";
-    }
+    // Screen share — no SDK enums for these; withAudio is a string flag.
+    paramKeys.screenShareWithAudio =
+      paramKeys.screenShareWithAudio === "enable" ? "enable" : "disable";
+    paramKeys.screenShareMultiStream =
+      paramKeys.screenShareMultiStream === "true";
 
-    if (!paramKeys.micQuality || typeof paramKeys.micQuality !== "string") {
-      paramKeys.micQuality = "speech_standard";
-    }
+    // Mic noise-config flags default to true. Only explicit "false" opts out.
+    paramKeys.micEchoCancellation = paramKeys.micEchoCancellation !== "false";
+    paramKeys.micAutoGainControl = paramKeys.micAutoGainControl !== "false";
+    paramKeys.micNoiseSuppression = paramKeys.micNoiseSuppression !== "false";
+
+    // SDK log verbosity (?verbose=DEBUG|INFO|WARN|ERROR|ALL|NONE). Default NONE.
+    const normalizedVerbose =
+      typeof paramKeys.verbose === "string"
+        ? paramKeys.verbose.toUpperCase()
+        : null;
+    paramKeys.verbose = Object.values(Constants.LogLevel).includes(
+      normalizedVerbose
+    )
+      ? normalizedVerbose
+      : Constants.LogLevel.NONE;
 
     return paramKeys;
   };
@@ -515,6 +540,10 @@ const App = () => {
 
   const paramKeys = useMemo(() => getParams({ maxGridSize }), [maxGridSize]);
 
+  useEffect(() => {
+    setLogLevel(paramKeys.verbose);
+  }, [paramKeys.verbose]);
+
   const [userHasInteracted, setUserHasInteracted] = useState(
     paramKeys.joinWithoutUserInteraction === "true"
   );
@@ -523,18 +552,19 @@ const App = () => {
   const [joinScreenWebCam, setJoinScreenWebCam] = useState(
     paramKeys.joinScreenEnabled === "true"
       ? paramKeys.participantCanToggleSelfWebcam === "true" &&
-      paramKeys.webcamEnabled === "true"
+          paramKeys.webcamEnabled === "true"
       : paramKeys.webcamEnabled === "true"
   );
 
   const [joinScreenMic, setJoinScreenMic] = useState(
     paramKeys.joinScreenEnabled === "true"
       ? paramKeys.participantCanToggleSelfMic === "true" &&
-      paramKeys.micEnabled === "true"
+          paramKeys.micEnabled === "true"
       : paramKeys.micEnabled === "true"
   );
   const [selectedMic, setSelectedMic] = useState({ id: null });
   const [selectedWebcam, setSelectedWebcam] = useState({ id: null });
+  const [selectedSpeaker, setSelectedSpeaker] = useState({ id: null });
 
   const validateMeetingId = async ({ meetingId, token, debug, region }) => {
     const BASE_URL = "https://api.videosdk.live";
@@ -684,6 +714,14 @@ const App = () => {
           {...{
             redirectOnLeave: paramKeys.redirectOnLeave,
             chatEnabled: paramKeys.chatEnabled === "true",
+            micEnabled:
+              paramKeys.mode === meetingModes.SIGNALLING_ONLY
+                ? false
+                : paramKeys.micEnabled === "true",
+            webcamEnabled:
+              paramKeys.mode === meetingModes.SIGNALLING_ONLY
+                ? false
+                : paramKeys.webcamEnabled === "true",
             screenShareEnabled: paramKeys.screenShareEnabled === "true",
             pollEnabled: paramKeys.pollEnabled === "true",
             whiteboardEnabled: paramKeys.whiteboardEnabled === "true",
@@ -755,6 +793,7 @@ const App = () => {
             canPin: paramKeys.canPin === "true",
             selectedMic,
             selectedWebcam,
+            selectedSpeaker,
             joinScreenWebCam,
             joinScreenMic,
             canRemoveOtherParticipant:
@@ -774,7 +813,8 @@ const App = () => {
             topbarEnabled: paramKeys.topbarEnabled !== "false",
             notificationAlertsEnabled:
               paramKeys.notificationAlertsEnabled !== "false",
-            participantNotificationAlertsEnabled: paramKeys.participantNotificationAlertsEnabled !== "false",
+            participantNotificationAlertsEnabled:
+              paramKeys.participantNotificationAlertsEnabled !== "false",
             debug: paramKeys.debug === "true",
             layoutGridSize: paramKeys.layoutGridSize,
             hideLocalParticipant: paramKeys.hideLocalParticipant === "true",
@@ -802,9 +842,19 @@ const App = () => {
             cameraId: paramKeys.cameraId,
             cameraMultiStream: paramKeys.cameraMultiStream === "true",
             cameraOptimizationMode: paramKeys.cameraOptimizationMode,
+            cameraBitrateMode: paramKeys.cameraBitrateMode,
+            cameraMaxLayer: paramKeys.cameraMaxLayer,
+            cameraCodec: paramKeys.cameraCodec,
             screenShareResolution: paramKeys.screenShareResolution,
             screenShareOptimizationMode: paramKeys.screenShareOptimizationMode,
+            screenShareWithAudio: paramKeys.screenShareWithAudio,
+            screenShareMultiStream: paramKeys.screenShareMultiStream,
             micQuality: paramKeys.micQuality,
+            micNoiseConfig: {
+              echoCancellation: paramKeys.micEchoCancellation,
+              autoGainControl: paramKeys.micAutoGainControl,
+              noiseSuppression: paramKeys.micNoiseSuppression,
+            },
             joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
             webcamEnabled: paramKeys.webcamEnabled,
             realtimeTranscriptionVisible:
@@ -821,7 +871,7 @@ const App = () => {
                 paramKeys.isRecorder === "true"
                   ? "hd"
                   : paramKeys.maxResolution === "sd" ||
-                    paramKeys.maxResolution === "hd"
+                      paramKeys.maxResolution === "hd"
                     ? paramKeys.maxResolution
                     : "sd",
               participantId: paramKeys.participantId,
@@ -829,6 +879,8 @@ const App = () => {
               autoConsume: false,
               mode: paramKeys.mode,
               multiStream: paramKeys.multiStream === "true",
+              customCameraVideoTrack: customVideoStream,
+              customMicrophoneAudioTrack: customAudioStream,
             }}
             token={paramKeys.token}
             joinWithoutUserInteraction
@@ -864,8 +916,17 @@ const App = () => {
           }}
           name={name}
           setName={setName}
+          selectedMic={selectedMic}
+          selectedWebcam={selectedWebcam}
+          selectedSpeaker={selectedSpeaker}
+          customAudioStream={customAudioStream}
+          setCustomAudioStream={setCustomAudioStream}
+          customVideoStream={customVideoStream}
+          setCustomVideoStream={setCustomVideoStream}
+          token={paramKeys.token}
           setSelectedMic={setSelectedMic}
           setSelectedWebcam={setSelectedWebcam}
+          setSelectedSpeaker={setSelectedSpeaker}
           meetingUrl={paramKeys.joinScreenMeetingUrl}
           meetingTitle={paramKeys.joinScreenTitle}
           participantCanToggleSelfWebcam={
@@ -881,6 +942,18 @@ const App = () => {
           mode={paramKeys.mode}
           appTheme={paramKeys.theme}
           cameraId={paramKeys.cameraId}
+          cameraResolution={paramKeys.cameraResolution}
+          cameraOptimizationMode={paramKeys.cameraOptimizationMode}
+          cameraMultiStream={paramKeys.cameraMultiStream === "true"}
+          cameraBitrateMode={paramKeys.cameraBitrateMode}
+          cameraMaxLayer={paramKeys.cameraMaxLayer}
+          cameraCodec={paramKeys.cameraCodec}
+          micQuality={paramKeys.micQuality}
+          micNoiseConfig={{
+            echoCancellation: paramKeys.micEchoCancellation,
+            autoGainControl: paramKeys.micAutoGainControl,
+            noiseSuppression: paramKeys.micNoiseSuppression,
+          }}
         />
       ) : (
         <ClickAnywhereToContinue

@@ -1,6 +1,6 @@
 import { Box, useTheme } from "@mui/material";
 import { useEffect, useMemo } from "react";
-import Lottie from "react-lottie";
+import Lottie from "../../utils/Lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
 import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animation.json";

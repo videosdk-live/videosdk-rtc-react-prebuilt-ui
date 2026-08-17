@@ -19,9 +19,9 @@ import {
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
-import VisibilitySensor from "react-visibility-sensor";
+import { useInView } from "react-intersection-observer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
-import Lottie from "react-lottie";
+import Lottie from "../../utils/Lottie";
 import animationData from "../../animations/equaliser.json";
 import circleRipple from "../../animations/circleRipple.json";
 import { Pin } from "../../icons";
@@ -625,6 +625,21 @@ const ParticipantViewerContent = ({
   const [portrait, setPortrait] = useState(false);
   const statsIntervalIdRef = useRef();
 
+  const { ref: visibilityRef, inView } = useInView({});
+
+  useEffect(() => {
+    if (inView) {
+      eventEmitter.emit(appEvents["participant-visible"], { participantId });
+    } else {
+      eventEmitter.emit(appEvents["participant-invisible"], { participantId });
+    }
+  }, [inView, participantId]);
+
+  const setWrapperRef = (node) => {
+    setVideoDivWrapperRef(node);
+    visibilityRef(node);
+  };
+
   const mMeeting = useMeeting();
   const presenterId = mMeeting?.presenterId;
 
@@ -733,23 +748,9 @@ const ParticipantViewerContent = ({
   }, [webcamStream]);
 
   return (
-    <VisibilitySensor
-      active
-      // active={!!useVisibilitySensor}
-      onChange={(isVisible) => {
-        if (isVisible) {
-          eventEmitter.emit(appEvents["participant-visible"], {
-            participantId,
-          });
-        } else {
-          eventEmitter.emit(appEvents["participant-invisible"], {
-            participantId,
-          });
-        }
-      }}
-    >
+    <>
       <div
-        ref={setVideoDivWrapperRef}
+        ref={setWrapperRef}
         onMouseEnter={() => {
           setMouseOver(true);
         }}
@@ -884,7 +885,7 @@ const ParticipantViewerContent = ({
           }}
         />
       </div>
-    </VisibilitySensor>
+    </>
   );
 };
 

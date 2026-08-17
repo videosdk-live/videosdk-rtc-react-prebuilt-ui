@@ -71,7 +71,7 @@ import SpeakerMenuIcon from "../icons/SpeakerMenuIcon";
 import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-noise-suppressor-web";
-import useCustomTrack from "../utils/useCustomTrack";
+import useMediaStream from "../utils/useMediaStream";
 import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
 
 const CustomBox = styled(Box)`
@@ -514,16 +514,32 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const presenterId = mMeeting?.presenterId;
   const presenterIdRef = useRef(presenterId);
-
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
   useEffect(() => {
     presenterIdRef.current = presenterId;
   }, [presenterId]);
 
-  const { getCustomScreenShareTrack } = useCustomTrack();
+  const { getScreenShareTrack } = useMediaStream();
 
   const toggleScreenShare = async () => {
     let track;
-    if (!localScreenShareOn) track = await getCustomScreenShareTrack();
+    if (!localScreenShareOn) track = await getScreenShareTrack();
 
     if (presenterIdRef.current && !localScreenShareOn) {
       let participantName = null;
@@ -534,9 +550,10 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       });
 
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {
@@ -1781,26 +1798,37 @@ const WebcamBTN = () => {
     isMirrorViewChecked,
     setIsMirrorViewChecked,
     cameraId,
+    webcamEnabled,
   } = useMeetingAppContext();
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
   const { enqueueSnackbar } = useSnackbar();
-  const { getCustomVideoTrack } = useCustomTrack();
 
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = async () => {
-    let track;
-    if (!localWebcamOn)
-      track = await getCustomVideoTrack(
-        cameraId === selectWebcamDeviceId ? cameraId : selectWebcamDeviceId
-      );
-    mMeeting?.toggleWebcam(track);
+  const toggleWebcam = () => {
+    mMeeting?.toggleWebcam();
   };
-  const changeWebcam = async (deviceId) => {
-    console.log("deviceId", deviceId);
-    const track = await getCustomVideoTrack(deviceId);
-    mMeeting?.changeWebcam(track ? track : deviceId);
+  const changeWebcam = (deviceId) => {
+    // Passing a deviceId (string) swaps only the device; SDK keeps stored config.
+    mMeeting?.changeWebcam(deviceId);
   };
 
   const handleClick = (event) => {
@@ -1831,9 +1859,10 @@ const WebcamBTN = () => {
 
     if (_isMirrorViewChecked) {
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {
@@ -1860,6 +1889,10 @@ const WebcamBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnWebcam"}
+        disabled={
+          webcamEnabled == false ||
+          webcamEnabled == "false"
+        }
         tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
@@ -1876,6 +1909,8 @@ const WebcamBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change webcam"}>
               <CustomIconButton
+                disabled={webcamEnabled == false ||
+                  webcamEnabled == "false"}
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -1987,8 +2022,8 @@ const MicBTN = () => {
     setSelectMicDeviceId,
     selectedOutputDeviceId,
     setSelectedOutputDeviceId,
+    micEnabled,
   } = useMeetingAppContext();
-
   const [isNoiseRemovalChecked, setIsNoiseRemovalChecked] = useState(false);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
@@ -1997,13 +2032,31 @@ const MicBTN = () => {
   const theme = useTheme();
   // const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const { getCustomAudioTrack } = useCustomTrack();
+  const { getAudioTrack } = useMediaStream();
   const { getPlaybackDevices } = useMediaDevice({ onDeviceChanged });
+  const notificationAudioRef = useRef(null);
+  const isPlayingRef = useRef(false);
+  const playNotification = () => {
+    if (isPlayingRef.current) return;
+    if (!notificationAudioRef.current) {
+      // First time — fetch from CDN and store it
+      notificationAudioRef.current = new Audio(
+        `https://static.videosdk.live/prebuilt/notification.mp3`
+      );
+    }
+    isPlayingRef.current = true;
+    notificationAudioRef.current.currentTime = 0;
+    notificationAudioRef.current.play();
+    notificationAudioRef.current.onended = () => {
+      isPlayingRef.current = false;
+    };
+  };
 
   const getSpeakers = async () => {
     const devices = await getPlaybackDevices();
     const outputMics = devices.filter(
-      (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+      (d) => d.deviceId !== ""
+      // (d) => d.deviceId !== "default" && d.deviceId !== "communications"
     );
 
     outputMics && outputMics?.length && setOutputMics(outputMics);
@@ -2022,10 +2075,9 @@ const MicBTN = () => {
   };
 
   const localMicOn = mMeeting?.localMicOn;
-  const toggleMic = async () => {
-    let track;
-    if (!localMicOn) track = await getCustomAudioTrack(selectMicDeviceId);
-    mMeeting?.toggleMic(track);
+  const toggleMic = () => {
+    // SDK v1.0.0+ preserves track config from MeetingProvider.customMicrophoneAudioTrack.
+    mMeeting?.toggleMic();
   };
   const changeMic = mMeeting?.changeMic;
 
@@ -2053,7 +2105,7 @@ const MicBTN = () => {
     try {
       const processor = new VideoSDKNoiseSuppressor();
 
-      const stream = await getCustomAudioTrack(selectMicDeviceId);
+      const stream = await getAudioTrack({ micId: selectMicDeviceId });
       const processedStream = await processor.getNoiseSuppressedAudioStream(
         stream
       );
@@ -2065,9 +2117,10 @@ const MicBTN = () => {
 
     if (_isNoiseRemovalChecked) {
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {
@@ -2087,6 +2140,8 @@ const MicBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnMic"}
+        disabled={micEnabled == false ||
+          micEnabled == "false"}
         tooltipTitle={
           isNoiseRemovalChecked
             ? "Noise Removal Activated"
@@ -2108,6 +2163,8 @@ const MicBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change microphone"}>
               <CustomIconButton
+                disabled={micEnabled == false ||
+                  micEnabled == "false"}
                 p={0}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
@@ -2778,6 +2835,7 @@ const TopBar = ({ topBarHeight }) => {
           {excludeFirstFourElements.map((icon, i) => {
             return (
               <Grid
+                key={`fab_icon_${icon.buttonType}_${i}`}
                 item
                 xs={4}
                 sm={3}

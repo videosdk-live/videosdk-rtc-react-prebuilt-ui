@@ -2,7 +2,7 @@ import { Box, ButtonBase, Tooltip, Typography, useTheme } from "@mui/material";
 import React, { useState, useRef, useEffect } from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 
 const OutlineIconTextButton = ({
   onClick,
