@@ -469,12 +469,18 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
-            onClick={() => {
+            onClick={async () => {
               typeof onClick === "function" && onClick();
 
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
+              try {
+                if (whiteboardStarted) {
+                  await mMeeting.meeting.stopWhiteboard();
+                } else {
+                  await mMeeting.meeting.startWhiteboard();
+                }
+              } catch (e) {
+                console.log("Error toggling whiteboard", e);
+              }
             }}
           />
         ) : (
@@ -487,12 +493,18 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
-            onClick={() => {
+            onClick={async () => {
               typeof onClick === "function" && onClick();
 
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
+              try {
+                if (whiteboardStarted) {
+                  await mMeeting.meeting.stopWhiteboard();
+                } else {
+                  await mMeeting.meeting.startWhiteboard();
+                }
+              } catch (e) {
+                console.log("Error toggling whiteboard", e);
+              }
             }}
           />
         ))}
@@ -562,7 +574,11 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
         );
       }
     } else {
-      mMeeting?.toggleScreenShare(track);
+      try {
+        await mMeeting?.toggleScreenShare(track);
+      } catch (e) {
+        console.log("Error toggling screen share", e);
+      }
     }
   };
 
@@ -689,13 +705,17 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     isTranscriptionRunningRef.current = isTranscriptionRunning;
   }, [isTranscriptionRunning]);
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isTranscriptionRunning = isTranscriptionRunningRef.current;
 
-    if (isTranscriptionRunning) {
-      stopTranscription();
-    } else {
-      startTranscription();
+    try {
+      if (isTranscriptionRunning) {
+        await stopTranscription();
+      } else {
+        await startTranscription();
+      }
+    } catch (e) {
+      console.log("Error toggling transcription", e);
     }
   };
 
@@ -881,24 +901,32 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     width: 160,
   };
 
-  const _handleStartRecording = () => {
+  const _handleStartRecording = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-      layout,
-      theme: recordingTheme,
-    });
+    try {
+      await startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+        layout,
+        theme: recordingTheme,
+      });
+    } catch (e) {
+      console.log("Error starting recording", e);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isRecording = isRecordingRef.current;
 
     if (isRecording) {
-      stopRecording();
+      try {
+        await stopRecording();
+      } catch (e) {
+        console.log("Error stopping recording", e);
+      }
     } else {
       setShowConfirmationPopup(true);
     }
@@ -1086,21 +1114,32 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const _handleStartLivestream = () => {
+  const _handleStartLivestream = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startLivestream(liveStreamConfig, { layout, theme: liveStreamTheme });
+    try {
+      await startLivestream(liveStreamConfig, {
+        layout,
+        theme: liveStreamTheme,
+      });
+    } catch (e) {
+      console.log("Error starting livestream", e);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isLiveStreaming = isLiveStreamingRef.current;
 
     if (isLiveStreaming) {
-      stopLivestream();
+      try {
+        await stopLivestream();
+      } catch (e) {
+        console.log("Error stopping livestream", e);
+      }
     } else {
       if (liveStreamConfigRef.current.length > 0) {
         _handleStartLivestream();
@@ -1269,21 +1308,29 @@ const HlsBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const _handleStartHLS = () => {
+  const _handleStartHLS = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startHls({ layout, theme: hlsTheme });
+    try {
+      await startHls({ layout, theme: hlsTheme });
+    } catch (e) {
+      console.log("Error starting HLS", e);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isHls = isHlsRef.current;
 
     if (isHls) {
-      stopHls();
+      try {
+        await stopHls();
+      } catch (e) {
+        console.log("Error stopping HLS", e);
+      }
     } else {
       _handleStartHLS();
     }
@@ -1826,12 +1873,20 @@ const WebcamBTN = () => {
   const [webcams, setWebcams] = useState([]);
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-  const toggleWebcam = () => {
-    mMeeting?.toggleWebcam();
+  const toggleWebcam = async () => {
+    try {
+      await mMeeting?.toggleWebcam();
+    } catch (e) {
+      console.log("Error toggling webcam", e);
+    }
   };
-  const changeWebcam = (deviceId) => {
+  const changeWebcam = async (deviceId) => {
     // Passing a deviceId (string) swaps only the device; SDK keeps stored config.
-    mMeeting?.changeWebcam(deviceId);
+    try {
+      await mMeeting?.changeWebcam(deviceId);
+    } catch (e) {
+      console.log("Error changing webcam", e);
+    }
   };
 
   const handleClick = (event) => {
@@ -2074,11 +2129,21 @@ const MicBTN = () => {
   };
 
   const localMicOn = mMeeting?.localMicOn;
-  const toggleMic = () => {
+  const toggleMic = async () => {
     // SDK v1.0.0+ preserves track config from MeetingProvider.customMicrophoneAudioTrack.
-    mMeeting?.toggleMic();
+    try {
+      await mMeeting?.toggleMic();
+    } catch (e) {
+      console.log("Error toggling mic", e);
+    }
   };
-  const changeMic = mMeeting?.changeMic;
+  const changeMic = async (deviceIdOrStream) => {
+    try {
+      await mMeeting?.changeMic(deviceIdOrStream);
+    } catch (e) {
+      console.log("Error changing mic", e);
+    }
+  };
 
   const getMics = async (mGetMics) => {
     const mics = await mGetMics();
@@ -2257,14 +2322,25 @@ const EndCallBTN = () => {
         bgColor={theme.palette.error.main}
         color={theme.palette.common.white}
         Icon={EndCall}
-        onClick={(e) => {
+        onClick={async (e) => {
           window.onbeforeunload = null;
-          !participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV
-            ? setIsEndMeeting(true)
-            : participantCanEndMeeting &&
-                meetingMode === meetingModes.SEND_AND_RECV
-              ? handleClick(e)
-              : leave();
+          if (
+            !participantCanLeave &&
+            meetingMode === meetingModes.SEND_AND_RECV
+          ) {
+            setIsEndMeeting(true);
+          } else if (
+            participantCanEndMeeting &&
+            meetingMode === meetingModes.SEND_AND_RECV
+          ) {
+            handleClick(e);
+          } else {
+            try {
+              await leave();
+            } catch (err) {
+              console.log("Error leaving meeting", err);
+            }
+          }
         }}
       />
       {participantCanEndMeeting && (
@@ -2304,9 +2380,13 @@ const EndCallBTN = () => {
             >
               <MenuItem
                 key={`leave`}
-                onClick={() => {
+                onClick={async () => {
                   window.onbeforeunload = null;
-                  leave();
+                  try {
+                    await leave();
+                  } catch (e) {
+                    console.log("Error leaving meeting", e);
+                  }
                 }}
                 // classes={{
                 //   root:
@@ -2462,9 +2542,13 @@ const EndCallBTN = () => {
             title={"Are you sure to end this call for everyone?"}
             successText={"End Call"}
             onSuccess={() => {
-              setTimeout(() => {
+              setTimeout(async () => {
                 window.onbeforeunload = null;
-                end();
+                try {
+                  await end();
+                } catch (e) {
+                  console.log("Error ending meeting", e);
+                }
               }, 1000);
             }}
             rejectText="Cancel"

@@ -97,24 +97,16 @@ const ModeListner = () => {
           reject: () => {},
         });
       } else {
-        mMeeting.changeMode(mode);
+        try {
+          await mMeeting.changeMode(mode);
+        } catch (e) {
+          console.log("Error changing mode", e);
+        }
         try {
           await publishRef.current(mode, { persist: true });
         } catch (error) {
           console.log("Error in Pubsub ", error);
         }
-
-        const muteMic = mMeetingRef.current?.muteMic;
-        const disableWebcam = mMeetingRef.current?.disableWebcam;
-        const disableScreenShare = mMeetingRef.current?.disableScreenShare;
-
-        muteMic();
-        disableWebcam();
-        disableScreenShare();
-
-        (participantRef.current?.pinState?.share ||
-          participantRef.current?.pinState?.cam) &&
-          participantRef.current?.unpin();
 
         setSideBarMode(null);
       }
@@ -164,8 +156,12 @@ const ModeListner = () => {
   );
 
   useEffect(() => {
-    setTimeout(() => {
-      publishRef.current(meetingMode, { persist: true });
+    setTimeout(async () => {
+      try {
+        await publishRef.current(meetingMode, { persist: true });
+      } catch (e) {
+        console.log("Error in Pubsub ", e);
+      }
     }, 2000);
   }, []);
 
@@ -206,8 +202,16 @@ const ModeListner = () => {
           }
         }}
         onSuccess={async () => {
-          mMeeting.changeMode(reqModeInfo.mode);
-          publishRef.current(reqModeInfo.mode, { persist: true });
+          try {
+            await mMeeting.changeMode(reqModeInfo.mode);
+          } catch (e) {
+            console.log("Error changing mode", e);
+          }
+          try {
+            await publishRef.current(reqModeInfo.mode, { persist: true });
+          } catch (e) {
+            console.log("Error in Pubsub ", e);
+          }
           setReqModeInfo(reqInfoDefaultState);
           try {
             await invitatioAcceptedPublish("", {

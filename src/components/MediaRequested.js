@@ -45,19 +45,27 @@ const MediaRequested = () => {
   }, [mMeeting]);
 
   usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant?.id}`, {
-    onMessageReceived: (data) => {
+    onMessageReceived: async (data) => {
       const { setScreenShareOn } = JSON.parse(data.message);
       if (setScreenShareOn) {
         setReqScreenShareInfo({
           enabled: true,
           participantName: "Host",
-          accept: () => {
-            mMeeting?.toggleScreenShare();
+          accept: async () => {
+            try {
+              await mMeeting?.toggleScreenShare();
+            } catch (e) {
+              console.log("Error toggling screen share", e);
+            }
           },
           reject: () => {},
         });
       } else {
-        mMeeting?.toggleScreenShare();
+        try {
+          await mMeeting?.toggleScreenShare();
+        } catch (e) {
+          console.log("Error toggling screen share", e);
+        }
       }
     },
   });
@@ -80,13 +88,21 @@ const MediaRequested = () => {
               successText: "Turn on",
               rejectText: "Cancel",
               open: enabled,
-              onReject: () => {
+              onReject: async () => {
                 setter(reqInfoDefaultState);
-                reject();
+                try {
+                  await reject();
+                } catch (e) {
+                  console.log("Error rejecting media request", e);
+                }
               },
-              onSuccess: () => {
+              onSuccess: async () => {
                 setter(reqInfoDefaultState);
-                accept();
+                try {
+                  await accept();
+                } catch (e) {
+                  console.log("Error accepting media request", e);
+                }
               },
               title: `Turn on ${type}?`,
               subTitle:

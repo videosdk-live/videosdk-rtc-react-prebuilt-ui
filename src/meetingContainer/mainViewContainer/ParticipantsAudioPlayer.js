@@ -20,9 +20,21 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
 
   useEffect(() => {
     if (!isLocal) {
-      consumeMicStreams();
+      (async () => {
+        try {
+          await consumeMicStreams();
+        } catch (e) {
+          console.log("Error consuming mic streams", e);
+        }
+      })();
       return () => {
-        stopConsumingMicStreams();
+        (async () => {
+          try {
+            await stopConsumingMicStreams();
+          } catch (e) {
+            console.log("Error stopping mic stream consumption", e);
+          }
+        })();
       };
     }
   }, [participantId]);
@@ -62,9 +74,21 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
   const audioPlayer = useRef();
 
   useEffect(() => {
-    consumeMicStreams();
+    (async () => {
+      try {
+        await consumeMicStreams();
+      } catch (e) {
+        console.log("Error consuming agent mic streams", e);
+      }
+    })();
     return () => {
-      stopConsumingMicStreams();
+      (async () => {
+        try {
+          await stopConsumingMicStreams();
+        } catch (e) {
+          console.log("Error stopping agent mic stream consumption", e);
+        }
+      })();
     };
   }, []);
 

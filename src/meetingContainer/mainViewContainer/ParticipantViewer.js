@@ -910,12 +910,17 @@ const HumanParticipantViewer = ({
     getVideoStats,
     getAudioStats,
     getShareStats,
-  } = useParticipant(participantId);
+  } = useParticipant(participantId, {
+    onStreamEnabled: async (stream) => {
+      if (isLocal || stream?.kind !== "video") return;
+      try {
+        await setQuality(quality || "high");
+      } catch (e) {
+        console.log("Error in setQuality", e);
+      }
+    },
+  });
 
-  useEffect(() => {
-    if (!quality || !setQuality) return;
-    setQuality(quality);
-  }, [quality, setQuality]);
 
   return (
     <ParticipantViewerContent

@@ -232,12 +232,16 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                       participantMode === meetingModes.SIGNALLING_ONLY
                     }
                     style={{ padding: 0 }}
-                    onClick={() => {
-                      if (micOn) {
-                        disableMic();
-                      } else {
-                        // SDK preserves config from initial MeetingProvider track.
-                        enableMic();
+                    onClick={async () => {
+                      try {
+                        if (micOn) {
+                          await disableMic();
+                        } else {
+                          // SDK preserves config from initial MeetingProvider track.
+                          await enableMic();
+                        }
+                      } catch (e) {
+                        console.log("Error toggling participant mic", e);
                       }
                     }}
                   >
@@ -275,12 +279,16 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                       participantMode === meetingModes.SIGNALLING_ONLY
                     }
                     style={{ padding: 0 }}
-                    onClick={() => {
-                      if (webcamOn) {
-                        disableWebcam();
-                      } else {
-                        // SDK preserves config from initial MeetingProvider track.
-                        enableWebcam();
+                    onClick={async () => {
+                      try {
+                        if (webcamOn) {
+                          await disableWebcam();
+                        } else {
+                          // SDK preserves config from initial MeetingProvider track.
+                          await enableWebcam();
+                        }
+                      } catch (e) {
+                        console.log("Error toggling participant webcam", e);
                       }
                     }}
                   >
@@ -329,9 +337,17 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                         participantMode === meetingModes.SIGNALLING_ONLY
                       }
                       size="small"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        pinState?.share || pinState?.cam ? unpin() : pin();
+                        try {
+                          if (pinState?.share || pinState?.cam) {
+                            await unpin();
+                          } else {
+                            await pin();
+                          }
+                        } catch (err) {
+                          console.log("Error toggling pin", err);
+                        }
                       }}
                       style={{
                         display: "flex",
@@ -593,8 +609,12 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
         )} from the call?`}
         successText={"Remove"}
         rejectText={"Cancel"}
-        onSuccess={() => {
-          participant.remove();
+        onSuccess={async () => {
+          try {
+            await participant.remove();
+          } catch (e) {
+            console.log("Error removing participant", e);
+          }
           setIsParticipantKickoutVisible(false);
         }}
         onReject={() => {
@@ -786,9 +806,17 @@ function AgentParticipantListItem({ participantId }) {
                   <Tooltip title={isPinned ? "Unpin" : "Pin"}>
                     <IconButton
                       size="small"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        isPinned ? unpin() : pin();
+                        try {
+                          if (isPinned) {
+                            await unpin();
+                          } else {
+                            await pin();
+                          }
+                        } catch (err) {
+                          console.log("Error toggling pin", err);
+                        }
                       }}
                       style={{
                         display: "flex",
@@ -921,8 +949,12 @@ function AgentParticipantListItem({ participantId }) {
         subTitle={`Are you sure you want to remove ${nameTructed(displayName, 15)} from the call?`}
         successText={"Remove"}
         rejectText={"Cancel"}
-        onSuccess={() => {
-          agentParticipant?.remove();
+        onSuccess={async () => {
+          try {
+            await agentParticipant?.remove();
+          } catch (e) {
+            console.log("Error removing agent participant", e);
+          }
           setIsParticipantKickoutVisible(false);
         }}
         onReject={() => {

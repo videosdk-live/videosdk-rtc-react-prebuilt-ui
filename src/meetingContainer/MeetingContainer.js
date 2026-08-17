@@ -570,7 +570,7 @@ const MeetingContainer = () => {
     }
   };
 
-  const _handlePresenterChanged = (presenterId) => {
+  const _handlePresenterChanged = async (presenterId) => {
     // reduce grid size in recorder if presenter changes
     if (isRecorder) {
       if (presenterId) {
@@ -593,7 +593,11 @@ const MeetingContainer = () => {
     }
 
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
-      mMeetingRef.current?.localParticipant.unpin();
+      try {
+        await mMeetingRef.current?.localParticipant.unpin();
+      } catch (e) {
+        console.log("Error unpinning local participant", e);
+      }
       localParticipantAutoPinnedOnShare.current = false;
     }
 
@@ -612,7 +616,11 @@ const MeetingContainer = () => {
           if (!localIsPinned) {
             localParticipantAutoPinnedOnShare.current = true;
 
-            mMeetingRef.current?.localParticipant.pin();
+            try {
+              await mMeetingRef.current?.localParticipant.pin();
+            } catch (e) {
+              console.log("Error pinning local participant", e);
+            }
           }
         }
       }

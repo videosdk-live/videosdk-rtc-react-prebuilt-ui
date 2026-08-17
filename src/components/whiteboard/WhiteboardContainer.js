@@ -1160,8 +1160,12 @@ function WhiteboardContainer({
             style={{ position: "absolute", top: 16, right: 16, zIndex: 999 }}
           >
             <IconButton
-              onClick={() => {
-                mMeeting.meeting.stopWhiteboard();
+              onClick={async () => {
+                try {
+                  await mMeeting.meeting.stopWhiteboard();
+                } catch (e) {
+                  console.log("Error stopping whiteboard", e);
+                }
               }}
               style={{
                 cursor: "pointer",
