@@ -39,6 +39,7 @@ const MeetingLeftScreen = ({
   backgroundColor,
   color,
   animationData,
+  onRejoin,
 }) => {
   const defaultOptions = {
     loop: false,
@@ -112,7 +113,14 @@ const MeetingLeftScreen = ({
         >
           {leftScreenRejoinButtonEnabled && (
             <Button
-              onClick={() => {
+              onClick={async () => {
+                if (typeof onRejoin === "function") {
+                  try {
+                    await onRejoin();
+                  } catch (e) {
+                    console.log("Error preparing rejoin", e);
+                  }
+                }
                 setMeetingLeft(false);
               }}
               size={isSMDesktop || isLGDesktop ? "large" : "medium"}

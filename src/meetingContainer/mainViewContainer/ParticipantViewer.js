@@ -921,7 +921,6 @@ const HumanParticipantViewer = ({
     },
   });
 
-
   return (
     <ParticipantViewerContent
       participantId={participantId}

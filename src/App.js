@@ -681,6 +681,10 @@ const App = () => {
                 : animationData
             }
             setMeetingLeft={setMeetingLeft}
+            onRejoin={() => {
+              setCustomVideoStream(null);
+              setCustomAudioStream(null);
+            }}
           />
         )
       ) : meetingIdValidation.isLoading ? (

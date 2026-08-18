@@ -85,23 +85,28 @@ const useSortActiveParticipants = () => {
       }
 
       if (foundIndexMain === -1) {
-        // if not space in main then get inactive from active and replace with active into main
-        const mainParticipantsLastActive = activeSortedParticipants.filter(
-          ({ participantId }) =>
-            mainViewParticipants.findIndex((pID) => pID === participantId) !==
-            -1
-        );
+        const maxParticipantInMainView = maxParticipantInMainViewRef.current;
 
-        const notActive =
-          mainParticipantsLastActive[mainParticipantsLastActive.length - 1];
+        if (mainViewParticipants.length < maxParticipantInMainView) {
+          setMainViewParticipants([...mainViewParticipants, activeSpeakerId]);
+        } else {
+          const mainParticipantsLastActive = activeSortedParticipants.filter(
+            ({ participantId }) =>
+              mainViewParticipants.findIndex((pID) => pID === participantId) !==
+              -1
+          );
 
-        const notActiveMainIndex = mainViewParticipants.findIndex(
-          (participantId) => notActive.participantId === participantId
-        );
+          const notActive =
+            mainParticipantsLastActive[mainParticipantsLastActive.length - 1];
 
-        mainViewParticipants[notActiveMainIndex] = activeSpeakerId;
+          const notActiveMainIndex = mainViewParticipants.findIndex(
+            (participantId) => notActive.participantId === participantId
+          );
 
-        setMainViewParticipants(mainViewParticipants);
+          mainViewParticipants[notActiveMainIndex] = activeSpeakerId;
+
+          setMainViewParticipants(mainViewParticipants);
+        }
       }
 
       setActiveSortedParticipants(activeSortedParticipants);
