@@ -73,7 +73,7 @@ const ActivitiesTabPanel = ({ panelHeight }) => {
         } catch (e) {
           console.log("Error starting whiteboard", e);
         }
-        setSideBarMode((s) => s === sideBarModes.ACTIVITIES && null);
+        setSideBarMode((s) => (s === sideBarModes.ACTIVITIES ? null : s));
         setSideBarNestedMode(null);
       },
     },

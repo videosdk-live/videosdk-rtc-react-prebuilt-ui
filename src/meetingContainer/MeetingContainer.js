@@ -133,7 +133,9 @@ const MeetingContainer = () => {
     }
     isPlayingRef.current = true;
     notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
+    notificationAudioRef.current.play().catch(() => {
+      isPlayingRef.current = false;
+    });
     notificationAudioRef.current.onended = () => {
       isPlayingRef.current = false;
     };
@@ -148,7 +150,9 @@ const MeetingContainer = () => {
     }
     isPlayingErrorRef.current = true;
     notificationErrorAudioRef.current.currentTime = 0;
-    notificationErrorAudioRef.current.play();
+    notificationErrorAudioRef.current.play().catch(() => {
+      isPlayingErrorRef.current = false;
+    });
     notificationErrorAudioRef.current.onended = () => {
       isPlayingErrorRef.current = false;
     };
@@ -163,7 +167,9 @@ const MeetingContainer = () => {
     }
     isPlayingCriticalRef.current = true;
     notificationCriticalAudioRef.current.currentTime = 0;
-    notificationCriticalAudioRef.current.play();
+    notificationCriticalAudioRef.current.play().catch(() => {
+      isPlayingCriticalRef.current = false;
+    });
     notificationCriticalAudioRef.current.onended = () => {
       isPlayingCriticalRef.current = false;
     };
@@ -287,7 +293,7 @@ const MeetingContainer = () => {
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      const { layout } = JSON.parse(data.message);
+      const { layout } = data.payload;
       setAppMeetingLayout({
         ...layout,
         gridSize: isRecorder
@@ -313,7 +319,7 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        const { layout } = JSON.parse(latestMessage.message);
+        const { layout } = latestMessage.payload;
         setAppMeetingLayout({
           ...layout,
           gridSize: isRecorder
@@ -333,7 +339,7 @@ const MeetingContainer = () => {
 
   const { publish: liveStreamConfigPublish } = usePubSub("LIVE_STREAM_CONFIG", {
     onMessageReceived: (data) => {
-      const { config } = JSON.parse(data.message);
+      const { config } = data.payload;
       setLiveStreamConfig(config);
     },
 
@@ -349,7 +355,7 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        const { config } = JSON.parse(latestMessage.message);
+        const { config } = latestMessage.payload;
         setLiveStreamConfig(config);
       }
     },
@@ -388,18 +394,19 @@ const MeetingContainer = () => {
       //
 
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
-        startLivestream(outputs, { layout, theme: liveStreamTheme });
         try {
+          await startLivestream(outputs, { layout, theme: liveStreamTheme });
           await liveStreamConfigPublishRef.current(
-            JSON.stringify({
+            "livestream-config-update",
+            { persist: true },
+            {
               config: outputs.map((output) => {
                 return { ...output, id: getUniqueId() };
               }),
-            }),
-            { persist: true }
+            }
           );
         } catch (error) {
-          console.log("Error in Pubsub ", error);
+          console.log("Error in autoStartLivestream ", error);
         }
       }
 
@@ -407,17 +414,25 @@ const MeetingContainer = () => {
       //
 
       if (autoStartRecording && !isRecording) {
-        startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-          layout,
-          theme: recordingTheme,
-        });
+        try {
+          await startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+            layout,
+            theme: recordingTheme,
+          });
+        } catch (error) {
+          console.log("Error in autoStartRecording ", error);
+        }
       }
 
       //
       //
 
       if (autoStartHls && !isHls) {
-        startHls({ layout, theme: hlsTheme });
+        try {
+          await startHls({ layout, theme: hlsTheme });
+        } catch (error) {
+          console.log("Error in autoStartHls ", error);
+        }
       }
     }, 3000);
 

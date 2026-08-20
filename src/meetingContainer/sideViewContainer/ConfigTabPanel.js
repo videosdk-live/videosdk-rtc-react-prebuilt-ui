@@ -192,37 +192,47 @@ function ConfigTabPanel({ panelHeight }) {
 
     const layout = { type, gridSize, priority };
     try {
-      await livestreamPublishRef.current(JSON.stringify({ layout }), {
-        persist: true,
-      });
+      await livestreamPublishRef.current(
+        "livestream-layout-change",
+        { persist: true },
+        { layout }
+      );
     } catch (error) {
       console.log("Error in Pubsub ", error);
     }
     try {
-      await hlsPublishRef.current(JSON.stringify({ layout }), {
-        persist: true,
-      });
+      await hlsPublishRef.current(
+        "hls-layout-change",
+        { persist: true },
+        { layout }
+      );
     } catch (error) {
       console.log("Error in Pubsub ", error);
     }
     try {
-      await meetingPublishRef.current(JSON.stringify({ layout }), {
-        persist: true,
-      });
+      await meetingPublishRef.current(
+        "meeting-layout-change",
+        { persist: true },
+        { layout }
+      );
     } catch (error) {
       console.log("Error in Pubsub ", error);
     }
     try {
-      await recordingPublishRef.current(JSON.stringify({ layout }), {
-        persist: true,
-      });
+      await recordingPublishRef.current(
+        "recording-layout-change",
+        { persist: true },
+        { layout }
+      );
     } catch (error) {
       console.log("Error in Pubsub ", error);
     }
     try {
-      await resolutionPublishRef.current(JSON.stringify({ resolution }), {
-        persist: true,
-      });
+      await resolutionPublishRef.current(
+        "resolution-change",
+        { persist: true },
+        { resolution }
+      );
     } catch (error) {
       console.log("Error in Pubsub ", error);
     }
@@ -314,7 +324,10 @@ function ConfigTabPanel({ panelHeight }) {
             marginTop: 12,
             fontSize: "14px",
             fontWeight: "400",
-            color: "#95959E",
+            color:
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.four
+                : theme.palette.darkTheme.contrastText,
           }}
         >
           {title}

@@ -551,6 +551,7 @@ export default function JoinMeeting({
           flex: 1,
           flexDirection: "column",
           height: "100vh",
+          overflowY: "auto",
           backgroundColor:
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.main
@@ -575,7 +576,7 @@ export default function JoinMeeting({
             style={{
               display: "flex",
               flex: 1,
-              flexDirection: isXStoSM ? "column" : "row",
+              flexDirection: isMobile ? "column" : "row",
               alignItems: "center",
               justifyContent: "center",
               gap: "12px",
@@ -619,15 +620,15 @@ export default function JoinMeeting({
                       right: spacingHorizontalTopics,
                     }}
                   >
-                    <DotsBoxContainer type={"top-left"} />
-                    <DotsBoxContainer type={"bottom-right"} />
+                    {!isMobile && <DotsBoxContainer type={"top-left"} />}
+                    {!isMobile && <DotsBoxContainer type={"bottom-right"} />}
                   </Box>
 
                   <Box>
                     <Box
                       sx={{
                         width: "100%",
-                        height: "50vh",
+                        height: isMobile ? "35vh" : "50vh",
                         position: "relative",
                       }}
                     >
@@ -643,6 +644,7 @@ export default function JoinMeeting({
                           videoStream={customVideoStream}
                           audioStream={customAudioStream}
                           token={token}
+                          appTheme={appTheme}
                         />
                       </Box>
                       {isMobile && (
@@ -829,6 +831,7 @@ export default function JoinMeeting({
                       isMicrophonePermissionAllowed={
                         isMicrophonePermissionAllowed
                       }
+                      appTheme={appTheme}
                     />
                   </Box>
                 )}
@@ -847,6 +850,7 @@ export default function JoinMeeting({
                       isMicrophonePermissionAllowed={
                         isMicrophonePermissionAllowed
                       }
+                      appTheme={appTheme}
                     />
                   </Box>
                 )}
@@ -864,6 +868,7 @@ export default function JoinMeeting({
                       selectedWebcam={selectedWebcam}
                       setSelectedWebcam={setSelectedWebcam}
                       isCameraPermissionAllowed={isCameraPermissionAllowed}
+                      appTheme={appTheme}
                     />
                   </Box>
                 )}

@@ -37,16 +37,16 @@ const ToggleModeContainer = ({
         onClick={async (e) => {
           e.stopPropagation();
           try {
-            console.log("Here -=- 1");
-            const message = JSON.stringify({
-              mode:
-                participantMode === meetingModes.SEND_AND_RECV
-                  ? meetingModes.SIGNALLING_ONLY
-                  : meetingModes.SEND_AND_RECV,
-            });
-            console.log("message send", message);
-
-            await publish(message);
+            await publish(
+              "change-participant-mode",
+              {},
+              {
+                mode:
+                  participantMode === meetingModes.SEND_AND_RECV
+                    ? meetingModes.SIGNALLING_ONLY
+                    : meetingModes.SEND_AND_RECV,
+              }
+            );
           } catch (error) {
             console.log("error: ", error);
           }

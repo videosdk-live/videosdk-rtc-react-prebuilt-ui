@@ -12,51 +12,77 @@ import {
 import { styled } from "@mui/material/styles";
 import { SelectedIcon, ChevronDownIcon } from "../icons";
 import DropCAM from "../icons/DropDown/DropCAM";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 // Styled components
 const StyledPopoverButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isOpen" && prop !== "isHovered",
-})(({ theme, isOpen, isHovered, disabled }) => ({
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  width: "100%",
-  padding: "4px 8px",
-  borderRadius: "6px",
-  fontSize: "16px",
-  fontWeight: 400,
-  textTransform: "none",
-  color: isOpen ? "#FFF" : "#B4B4B4",
-  backgroundColor: isOpen ? "#000" : "transparent",
-  border: "1px solid transparent",
-  outline: isOpen ? "1px solid #6B7280" : "none",
-  opacity: disabled ? 0.5 : 1,
-  "&:hover": {
-    backgroundColor: disabled ? "transparent" : "#000",
-    borderColor: disabled ? "transparent" : "#E5E5E5",
-    outline: disabled ? "none" : "1px solid #6B7280",
-  },
-  "&:focus": {
-    outline: "none",
-  },
-  "&.Mui-disabled": {
-    color: "#B4B4B4",
-  },
-}));
+  shouldForwardProp: (prop) =>
+    prop !== "isOpen" && prop !== "isHovered" && prop !== "isLight",
+})(({ theme, isOpen, isHovered, disabled, isLight }) => {
+  const palette = isLight ? theme.palette.lightTheme : theme.palette.darkTheme;
+  return {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    width: "100%",
+    padding: "4px 8px",
+    borderRadius: "6px",
+    fontSize: "16px",
+    fontWeight: 400,
+    textTransform: "none",
+    color: isOpen
+      ? isLight
+        ? palette.contrastText
+        : palette.one
+      : isLight
+        ? palette.four
+        : palette.contrastText,
+    backgroundColor: isOpen
+      ? isLight
+        ? palette.two
+        : theme.palette.common.black
+      : "transparent",
+    border: "1px solid transparent",
+    outline: isOpen ? `1px solid ${palette.five}` : "none",
+    opacity: disabled ? 0.5 : 1,
+    "&:hover": {
+      backgroundColor: disabled
+        ? "transparent"
+        : isLight
+          ? palette.two
+          : theme.palette.common.black,
+      borderColor: disabled ? "transparent" : palette.three,
+      outline: disabled ? "none" : `1px solid ${palette.five}`,
+    },
+    "&:focus": {
+      outline: "none",
+    },
+    "&.Mui-disabled": {
+      color: palette.four,
+    },
+  };
+});
 
-const StyledPopover = styled(Popover)(({ theme }) => ({
+const StyledPopover = styled(Popover, {
+  shouldForwardProp: (prop) => prop !== "isLight",
+})(({ theme, isLight }) => ({
   "& .MuiPaper-root": {
-    backgroundColor: "#2D2D2D",
+    backgroundColor: isLight
+      ? theme.palette.lightTheme.main
+      : theme.palette.darkTheme.eight,
     borderRadius: "8px",
     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.5)",
     marginBottom: "8px",
   },
 }));
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItem, {
+  shouldForwardProp: (prop) => prop !== "isLight",
+})(({ theme, isLight }) => ({
   padding: "4px 16px 4px 8px",
-  color: "#FFF",
+  color: isLight
+    ? theme.palette.lightTheme.contrastText
+    : theme.palette.common.white,
 }));
 
 export default function DropDownCam({
@@ -65,12 +91,15 @@ export default function DropDownCam({
   selectedWebcam: selectedWebcamProp,
   setSelectedWebcam: setSelectedWebcamProp,
   isCameraPermissionAllowed,
+  appTheme: appThemeProp,
 }) {
   const ctx = useMeetingAppContext();
 
   const setSelectedWebcam =
     setSelectedWebcamProp ?? ctx?.setSelectedWebcam ?? (() => {});
   const selectedWebcam = selectedWebcamProp ?? ctx?.selectedWebcam ?? {};
+  const appTheme = appThemeProp ?? ctx?.appTheme;
+  const isLight = appTheme === appThemes.LIGHT;
 
   const [isHovered, setIsHovered] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -101,6 +130,7 @@ export default function DropDownCam({
         disabled={isCameraPermissionAllowed !== true}
         isOpen={open}
         isHovered={isHovered}
+        isLight={isLight}
         onClick={isCameraPermissionAllowed === true ? handleClick : undefined}
         sx={{
           pointerEvents: isCameraPermissionAllowed === true ? "auto" : "none",
@@ -146,6 +176,7 @@ export default function DropDownCam({
       </StyledPopoverButton>
 
       <StyledPopover
+        isLight={isLight}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -167,7 +198,11 @@ export default function DropDownCam({
           {webcams.map((item, index) => {
             return (
               item?.kind === "videoinput" && (
-                <StyledListItem key={`webcams_${index}`} disablePadding>
+                <StyledListItem
+                  key={`webcams_${index}`}
+                  isLight={isLight}
+                  disablePadding
+                >
                   <Box
                     sx={{
                       width: "24px",

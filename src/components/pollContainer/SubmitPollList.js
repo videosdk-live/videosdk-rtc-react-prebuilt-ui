@@ -162,7 +162,10 @@ const SubmitPollListItem = ({ poll }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: "#95959E",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -172,7 +175,10 @@ const SubmitPollListItem = ({ poll }) => {
             style={{
               marginLeft: 8,
               marginRight: 8,
-              color: "#95959E",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -183,7 +189,11 @@ const SubmitPollListItem = ({ poll }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: isPollActive ? "#FF5D5D" : "#95959E",
+              color: isPollActive
+                ? "#FF5D5D"
+                : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -376,8 +386,9 @@ const SubmitPollListItem = ({ poll }) => {
                         onClick={async () => {
                           try {
                             await publish(
-                              JSON.stringify({ optionId: option.optionId }),
-                              { persist: true }
+                              "poll-option-submitted",
+                              { persist: true },
+                              { optionId: option.optionId }
                             );
                           } catch (error) {
                             console.log("Error in Pubsub ", error);

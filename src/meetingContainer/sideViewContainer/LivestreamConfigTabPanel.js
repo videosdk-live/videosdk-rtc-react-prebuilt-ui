@@ -123,9 +123,11 @@ const SingleLiveStreamItem = ({
       }
     });
     try {
-      await publish(JSON.stringify({ config: newPlatforms }), {
-        persist: true,
-      });
+      await publish(
+        "livestream-config-update",
+        { persist: true },
+        { config: newPlatforms }
+      );
     } catch (error) {
       console.log("error: ", error);
     }
@@ -583,7 +585,11 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
       return id !== _id;
     });
     try {
-      await publish(JSON.stringify({ config: filtered }), { persist: true });
+      await publish(
+        "livestream-config-remove",
+        { persist: true },
+        { config: filtered }
+      );
     } catch (error) {
       console.log("error: ", error);
     }
@@ -593,9 +599,11 @@ const LiveStreamConfigTabPanel = ({ panelWidth, panelHeight }) => {
     const liveStreamConfig = liveStreamConfigRef.current;
     liveStreamConfig.push({ id: getUniqueId(), streamKey, url });
     try {
-      await publish(JSON.stringify({ config: liveStreamConfig }), {
-        persist: true,
-      });
+      await publish(
+        "livestream-config-add",
+        { persist: true },
+        { config: liveStreamConfig }
+      );
     } catch (error) {
       console.log("error: ", error);
     }

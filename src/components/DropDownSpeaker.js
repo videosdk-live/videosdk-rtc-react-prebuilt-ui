@@ -11,59 +11,81 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { useTheme } from "@mui/system";
 import { SelectedIcon, ChevronDownIcon } from "../icons";
 import DropSpeaker from "../icons/DropDown/DropSpeaker";
 import TestSpeaker from "../icons/DropDown/TestSpeaker";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 // Styled components
 const StyledPopoverButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isOpen" && prop !== "isHovered",
-})(({ theme, isOpen, isHovered, disabled }) => ({
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  width: "100%",
-  padding: "4px 8px",
-  borderRadius: "6px",
-  fontSize: "16px",
-  fontWeight: 400,
-  textTransform: "none",
-  color: isOpen ? "#FFF" : "#B4B4B4",
-  backgroundColor: isOpen ? "#000" : "transparent",
-  border: "1px solid transparent",
-  outline: isOpen ? "1px solid #6B7280" : "none",
-  "&:hover": {
-    backgroundColor: disabled ? "transparent" : "#000",
-    borderColor: disabled ? "transparent" : "#E5E5E5",
-    outline: disabled ? "none" : "1px solid #6B7280",
-  },
-  // "&:hover": {
-  //     backgroundColor: disabled ? "transparent" : "#000",
-  //     border: disabled ? "none" : "1px solid #E5E5E5",
-  //     color: disabled ? "#B4B4B4" : "#FFF",
-  // },
-  opacity: disabled ? 0.5 : 1,
-  "&:focus": {
-    outline: "none",
-  },
-  "&.Mui-disabled": {
-    color: "#B4B4B4",
-  },
-}));
+  shouldForwardProp: (prop) =>
+    prop !== "isOpen" && prop !== "isHovered" && prop !== "isLight",
+})(({ theme, isOpen, isHovered, disabled, isLight }) => {
+  const palette = isLight ? theme.palette.lightTheme : theme.palette.darkTheme;
+  return {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    width: "100%",
+    padding: "4px 8px",
+    borderRadius: "6px",
+    fontSize: "16px",
+    fontWeight: 400,
+    textTransform: "none",
+    color: isOpen
+      ? isLight
+        ? palette.contrastText
+        : palette.one
+      : isLight
+        ? palette.four
+        : palette.contrastText,
+    backgroundColor: isOpen
+      ? isLight
+        ? palette.two
+        : theme.palette.common.black
+      : "transparent",
+    border: "1px solid transparent",
+    outline: isOpen ? `1px solid ${palette.five}` : "none",
+    "&:hover": {
+      backgroundColor: disabled
+        ? "transparent"
+        : isLight
+          ? palette.two
+          : theme.palette.common.black,
+      borderColor: disabled ? "transparent" : palette.three,
+      outline: disabled ? "none" : `1px solid ${palette.five}`,
+    },
+    opacity: disabled ? 0.5 : 1,
+    "&:focus": {
+      outline: "none",
+    },
+    "&.Mui-disabled": {
+      color: palette.four,
+    },
+  };
+});
 
-const StyledPopover = styled(Popover)(({ theme }) => ({
+const StyledPopover = styled(Popover, {
+  shouldForwardProp: (prop) => prop !== "isLight",
+})(({ theme, isLight }) => ({
   "& .MuiPaper-root": {
-    backgroundColor: "#2D2D2D",
+    backgroundColor: isLight
+      ? theme.palette.lightTheme.main
+      : theme.palette.darkTheme.eight,
     borderRadius: "8px",
     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.5)",
     marginBottom: "8px",
   },
 }));
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItem, {
+  shouldForwardProp: (prop) => prop !== "isLight",
+})(({ theme, isLight }) => ({
   padding: "4px 16px 4px 8px",
-  color: "#FFF",
+  color: isLight
+    ? theme.palette.lightTheme.contrastText
+    : theme.palette.common.white,
 }));
 
 export default function DropDownSpeaker({
@@ -71,12 +93,16 @@ export default function DropDownSpeaker({
   selectedSpeaker: selectedSpeakerProp,
   setSelectedSpeaker: setSelectedSpeakerProp,
   isMicrophonePermissionAllowed,
+  appTheme: appThemeProp,
 }) {
   const ctx = useMeetingAppContext();
 
   const setSelectedSpeaker =
     setSelectedSpeakerProp ?? ctx?.setSelectedSpeaker ?? (() => {});
   const selectedSpeaker = selectedSpeakerProp ?? ctx?.selectedSpeaker ?? {};
+  const appTheme = appThemeProp ?? ctx?.appTheme;
+  const isLight = appTheme === appThemes.LIGHT;
+  const theme = useTheme();
 
   const [audioProgress, setAudioProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -203,6 +229,7 @@ export default function DropDownSpeaker({
         disabled={isMicrophonePermissionAllowed !== true}
         isOpen={open}
         isHovered={isHovered}
+        isLight={isLight}
         onClick={
           isMicrophonePermissionAllowed === true ? handleClick : undefined
         }
@@ -251,6 +278,7 @@ export default function DropDownSpeaker({
       </StyledPopoverButton>
 
       <StyledPopover
+        isLight={isLight}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -272,7 +300,11 @@ export default function DropDownSpeaker({
           {speakers.map((item, index) => {
             return (
               item?.kind === "audiooutput" && (
-                <StyledListItem key={`speaker_${index}`} disablePadding>
+                <StyledListItem
+                  key={`speaker_${index}`}
+                  isLight={isLight}
+                  disablePadding
+                >
                   <Box
                     sx={{
                       width: "24px",
@@ -309,8 +341,25 @@ export default function DropDownSpeaker({
 
           {speakers.length > 0 && (
             <>
-              <Divider sx={{ borderColor: "#F5F5F5", my: 1, mx: 2 }} />
-              <Box sx={{ my: 1, pl: 2, pr: 1, color: "#FFF" }}>
+              <Divider
+                sx={{
+                  borderColor: isLight
+                    ? theme.palette.lightTheme.three
+                    : theme.palette.darkTheme.seven,
+                  my: 1,
+                  mx: 2,
+                }}
+              />
+              <Box
+                sx={{
+                  my: 1,
+                  pl: 2,
+                  pr: 1,
+                  color: isLight
+                    ? theme.palette.lightTheme.contrastText
+                    : theme.palette.common.white,
+                }}
+              >
                 <Button
                   onClick={testSpeakers}
                   sx={{
@@ -319,7 +368,9 @@ export default function DropDownSpeaker({
                     width: "100%",
                     justifyContent: "flex-start",
                     textTransform: "none",
-                    color: "#FFF",
+                    color: isLight
+                      ? theme.palette.lightTheme.contrastText
+                      : theme.palette.common.white,
                     p: 0.5,
                     pl: 0.5,
                     mb: 0.5,

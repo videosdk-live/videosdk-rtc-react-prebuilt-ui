@@ -686,6 +686,16 @@ const App = () => {
                 ? theme.palette.lightTheme.contrastText
                 : theme.palette.common.white
             }
+            primaryColor={
+              paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.lightTheme.primaryMain
+                : theme.palette.primary.main
+            }
+            primaryContrastText={
+              paramKeys.theme === appThemes.LIGHT
+                ? theme.palette.common.white
+                : theme.palette.common.white
+            }
             animationData={
               paramKeys.theme === appThemes.LIGHT
                 ? lightThemeAnimationData
@@ -855,7 +865,7 @@ const App = () => {
             networkBarEnabled: paramKeys.networkBarEnabled === "true",
             cameraResolution: paramKeys.cameraResolution,
             cameraId: paramKeys.cameraId,
-            cameraMultiStream: paramKeys.cameraMultiStream === "true",
+            cameraMultiStream: paramKeys.cameraMultiStream,
             cameraOptimizationMode: paramKeys.cameraOptimizationMode,
             cameraBitrateMode: paramKeys.cameraBitrateMode,
             cameraMaxLayer: paramKeys.cameraMaxLayer,
@@ -958,7 +968,7 @@ const App = () => {
           cameraId={paramKeys.cameraId}
           cameraResolution={paramKeys.cameraResolution}
           cameraOptimizationMode={paramKeys.cameraOptimizationMode}
-          cameraMultiStream={paramKeys.cameraMultiStream === "true"}
+          cameraMultiStream={paramKeys.cameraMultiStream}
           cameraBitrateMode={paramKeys.cameraBitrateMode}
           cameraMaxLayer={paramKeys.cameraMaxLayer}
           cameraCodec={paramKeys.cameraCodec}

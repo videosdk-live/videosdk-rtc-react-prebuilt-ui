@@ -216,7 +216,7 @@ export default function SettingDialogueBox({
       MuiSelect: {
         styleOverrides: {
           root: {
-            color: "#fff",
+            color: appTheme === appThemes.LIGHT ? "#404B53" : "#fff",
           },
         },
       },

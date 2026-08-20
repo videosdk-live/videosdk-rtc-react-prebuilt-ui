@@ -498,9 +498,11 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                         e.stopPropagation();
                         try {
                           await publish(
-                            JSON.stringify({
+                            "screen-share-request",
+                            {},
+                            {
                               setScreenShareOn: !isParticipantPresenting,
-                            })
+                            }
                           );
                         } catch (error) {
                           console.log("Error in Pubsub ", error);

@@ -11,7 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useMeetingAppContext } from "../MeetingAppContextDef";
+import { useTheme } from "@mui/system";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useIsMobile from "../utils/useIsMobile";
 import {
   ChevronDownIcon,
@@ -24,52 +25,73 @@ import {
 
 // Styled components
 const StyledPopoverButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isOpen" && prop !== "isHovered",
-})(({ theme, isOpen, isHovered, disabled }) => ({
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  width: "100%",
-  padding: "4px 8px",
-  borderRadius: "6px",
-  fontSize: "16px",
-  fontWeight: 400,
-  textTransform: "none",
-  color: isOpen ? "#FFF" : "#B4B4B4",
-  backgroundColor: isOpen ? "#000" : "transparent",
-  border: "1px solid transparent",
-  outline: isOpen ? "1px solid #6B7280" : "none",
-  opacity: disabled ? 0.5 : 1,
-  "&:hover": {
-    backgroundColor: disabled ? "transparent" : "#000",
-    borderColor: disabled ? "transparent" : "#E5E5E5",
-    outline: disabled ? "none" : "1px solid #6B7280",
-  },
-  // "&:hover": {
-  //     backgroundColor: disabled ? "transparent" : "#000",
-  //     border: disabled ? "none" : "1px solid #E5E5E5",
-  //     color: disabled ? "#B4B4B4" : "#FFF",
-  // },
-  "&:focus": {
-    outline: "none",
-  },
-  "&.Mui-disabled": {
-    color: "#B4B4B4",
-  },
-}));
+  shouldForwardProp: (prop) =>
+    prop !== "isOpen" && prop !== "isHovered" && prop !== "isLight",
+})(({ theme, isOpen, isHovered, disabled, isLight }) => {
+  const palette = isLight ? theme.palette.lightTheme : theme.palette.darkTheme;
+  return {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    width: "100%",
+    padding: "4px 8px",
+    borderRadius: "6px",
+    fontSize: "16px",
+    fontWeight: 400,
+    textTransform: "none",
+    color: isOpen
+      ? isLight
+        ? palette.contrastText
+        : palette.one
+      : isLight
+        ? palette.four
+        : palette.contrastText,
+    backgroundColor: isOpen
+      ? isLight
+        ? palette.two
+        : theme.palette.common.black
+      : "transparent",
+    border: "1px solid transparent",
+    outline: isOpen ? `1px solid ${palette.five}` : "none",
+    opacity: disabled ? 0.5 : 1,
+    "&:hover": {
+      backgroundColor: disabled
+        ? "transparent"
+        : isLight
+          ? palette.two
+          : theme.palette.common.black,
+      borderColor: disabled ? "transparent" : palette.three,
+      outline: disabled ? "none" : `1px solid ${palette.five}`,
+    },
+    "&:focus": {
+      outline: "none",
+    },
+    "&.Mui-disabled": {
+      color: palette.four,
+    },
+  };
+});
 
-const StyledPopover = styled(Popover)(({ theme }) => ({
+const StyledPopover = styled(Popover, {
+  shouldForwardProp: (prop) => prop !== "isLight",
+})(({ theme, isLight }) => ({
   "& .MuiPaper-root": {
-    backgroundColor: "#2D2D2D",
+    backgroundColor: isLight
+      ? theme.palette.lightTheme.main
+      : theme.palette.darkTheme.eight,
     borderRadius: "8px",
     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.5)",
     marginBottom: "8px",
   },
 }));
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+const StyledListItem = styled(ListItem, {
+  shouldForwardProp: (prop) => prop !== "isLight",
+})(({ theme, isLight }) => ({
   padding: "4px 16px 4px 8px",
-  color: "#FFF",
+  color: isLight
+    ? theme.palette.lightTheme.contrastText
+    : theme.palette.common.white,
 }));
 
 const RecordButton = styled(Button)(({ theme }) => ({
@@ -112,6 +134,7 @@ export default function DropDown({
   setSelectedMic: setSelectedMicProp,
   selectedSpeaker: selectedSpeakerProp,
   isMicrophonePermissionAllowed,
+  appTheme: appThemeProp,
 }) {
   const ctx = useMeetingAppContext();
 
@@ -119,6 +142,9 @@ export default function DropDown({
     setSelectedMicProp ?? ctx?.setSelectedMic ?? (() => {});
   const selectedMic = selectedMicProp ?? ctx?.selectedMic ?? {};
   const selectedSpeaker = selectedSpeakerProp ?? ctx?.selectedSpeaker ?? {};
+  const appTheme = appThemeProp ?? ctx?.appTheme;
+  const isLight = appTheme === appThemes.LIGHT;
+  const theme = useTheme();
 
   const [audioProgress, setAudioProgress] = useState(0);
   const [recordingProgress, setRecordingProgress] = useState(0);
@@ -427,6 +453,7 @@ export default function DropDown({
         disabled={isMicrophonePermissionAllowed !== true}
         isOpen={open}
         isHovered={isHovered}
+        isLight={isLight}
         onClick={
           isMicrophonePermissionAllowed === true ? handleClick : undefined
         }
@@ -444,7 +471,15 @@ export default function DropDown({
           }}
         >
           <DropMIC
-            fillColor={isHovered || open ? "#FFF" : "#B4B4B4"}
+            fillColor={
+              isHovered || open
+                ? isLight
+                  ? theme.palette.lightTheme.contrastText
+                  : "#FFF"
+                : isLight
+                  ? theme.palette.lightTheme.four
+                  : "#B4B4B4"
+            }
             style={{
               marginBottom: "2px",
             }}
@@ -468,13 +503,20 @@ export default function DropDown({
               height: "20px",
               width: "20px",
               // marginTop: "4px",
-              color: open ? "#FFF" : "#B4B4B4",
+              color: open
+                ? isLight
+                  ? theme.palette.lightTheme.contrastText
+                  : "#FFF"
+                : isLight
+                  ? theme.palette.lightTheme.four
+                  : "#B4B4B4",
             }}
           />
         </Box>
       </StyledPopoverButton>
 
       <StyledPopover
+        isLight={isLight}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -497,7 +539,11 @@ export default function DropDown({
             mics.map((item, index) => {
               return (
                 item?.kind === "audioinput" && (
-                  <StyledListItem key={`mics_${index}`} disablePadding>
+                  <StyledListItem
+                    key={`mics_${index}`}
+                    isLight={isLight}
+                    disablePadding
+                  >
                     <Box
                       sx={{
                         width: "24px",
@@ -544,13 +590,23 @@ export default function DropDown({
             <Box sx={{ p: 2 }}>No Mic Found</Box>
           )}
 
-          <Divider sx={{ borderColor: "#F5F5F5", my: 1, mx: 2 }} />
+          <Divider
+            sx={{
+              borderColor: isLight
+                ? theme.palette.lightTheme.three
+                : theme.palette.darkTheme.seven,
+              my: 1,
+              mx: 2,
+            }}
+          />
 
           {micOn ? (
             <Box
               sx={{
                 my: 1,
-                color: "#FFF",
+                color: isLight
+                  ? theme.palette.lightTheme.contrastText
+                  : theme.palette.common.white,
                 display: "flex",
                 flexDirection: isMobile
                   ? "column"
@@ -801,7 +857,9 @@ export default function DropDown({
           ) : (
             <Box
               sx={{
-                color: "#747B84",
+                color: isLight
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
                 display: "flex",
                 alignItems: "center",
                 mb: 2,

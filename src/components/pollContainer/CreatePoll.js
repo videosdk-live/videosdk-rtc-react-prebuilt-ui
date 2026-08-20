@@ -288,7 +288,7 @@ const CreatePollPart = ({
       MuiSelect: {
         styleOverrides: {
           root: {
-            color: "#fff",
+            color: appTheme === appThemes.LIGHT ? "#404B53" : "#fff",
             padding: "0px",
           },
         },
@@ -827,7 +827,9 @@ const PollButtonPart = ({
           if (isValid) {
             try {
               await publishDraftPoll(
-                JSON.stringify({
+                "poll-draft-save",
+                { persist: true },
+                {
                   id: uuid(),
                   question: question.trim(),
                   options: options.map((option) => ({
@@ -838,9 +840,6 @@ const PollButtonPart = ({
                   hasCorrectAnswer: isMarkAsCorrectChecked ? true : false,
                   hasTimer: isSetTimerChecked ? true : false,
                   isActive: false,
-                }),
-                {
-                  persist: true,
                 }
               );
             } catch (error) {
@@ -878,7 +877,9 @@ const PollButtonPart = ({
           if (isValid) {
             try {
               await publishCreatePoll(
-                JSON.stringify({
+                "poll-created",
+                { persist: true },
+                {
                   id: uuid(),
                   question: question.trim(),
                   options: options.map((option) => ({
@@ -890,8 +891,7 @@ const PollButtonPart = ({
                   hasTimer: isSetTimerChecked ? true : false,
                   isActive: true,
                   index: polls.length + 1,
-                }),
-                { persist: true }
+                }
               );
             } catch (error) {
               console.log("Error in Pubsub ", error);

@@ -254,7 +254,10 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: "#95959E",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -264,7 +267,10 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
             style={{
               marginLeft: 8,
               marginRight: 8,
-              color: "#95959E",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -275,7 +281,12 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: isPollActive || isDraft ? "#FF5D5D" : "#95959E",
+              color:
+                isPollActive || isDraft
+                  ? "#FF5D5D"
+                  : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.four
+                    : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -471,10 +482,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 onClick={async () => {
                   try {
                     await EndPublish(
-                      JSON.stringify({
-                        pollId: poll.id,
-                      }),
-                      { persist: true }
+                      "poll-ended",
+                      { persist: true },
+                      { pollId: poll.id }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);
@@ -602,8 +612,9 @@ const PollList = ({ panelHeight }) => {
                   //
                   try {
                     await RemoveFromDraftPublish(
-                      JSON.stringify({ pollId: poll.id }),
-                      { persist: true }
+                      "poll-draft-removed",
+                      { persist: true },
+                      { pollId: poll.id }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);
@@ -612,7 +623,9 @@ const PollList = ({ panelHeight }) => {
                   //
                   try {
                     await publishCreatePoll(
-                      JSON.stringify({
+                      "poll-created",
+                      { persist: true },
+                      {
                         id: uuid(),
                         question: poll.question,
                         options: poll.options,
@@ -622,8 +635,7 @@ const PollList = ({ panelHeight }) => {
                         hasCorrectAnswer: poll.hasCorrectAnswer,
                         isActive: true,
                         index: polls.length + 1,
-                      }),
-                      { persist: true }
+                      }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);

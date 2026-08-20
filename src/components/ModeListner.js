@@ -42,7 +42,9 @@ const ModeListner = () => {
     }
     isPlayingRef.current = true;
     notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
+    notificationAudioRef.current.play().catch(() => {
+      isPlayingRef.current = false;
+    });
     notificationAudioRef.current.onended = () => {
       isPlayingRef.current = false;
     };
@@ -87,7 +89,7 @@ const ModeListner = () => {
 
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: async (data) => {
-      const { mode } = JSON.parse(data.message);
+      const { mode } = data.payload;
       if (mode === meetingModes.SEND_AND_RECV) {
         setReqModeInfo({
           enabled: true,
@@ -135,7 +137,7 @@ const ModeListner = () => {
     `INVITATION_REJECT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
-        const { senderId } = JSON.parse(data.message);
+        const { senderId } = data.payload;
         if (senderId === participantRef.current.participant.id) {
           if (notificationSoundEnabledRef.current) {
             // new Audio(
@@ -156,13 +158,14 @@ const ModeListner = () => {
   );
 
   useEffect(() => {
-    setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
         await publishRef.current(meetingMode, { persist: true });
       } catch (e) {
         console.log("Error in Pubsub ", e);
       }
     }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   useMeeting({
@@ -194,8 +197,9 @@ const ModeListner = () => {
           setReqModeInfo(reqInfoDefaultState);
           try {
             await invitatioRejectedPublish(
-              JSON.stringify({ senderId: reqModeInfo.senderId }),
-              { persist: true }
+              "cohost-invitation-rejected",
+              { persist: true },
+              { senderId: reqModeInfo.senderId }
             );
           } catch (error) {
             console.log("Error in Pubsub ", error);

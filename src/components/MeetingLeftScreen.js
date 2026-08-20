@@ -38,6 +38,8 @@ const MeetingLeftScreen = ({
   leftScreenRejoinButtonEnabled,
   backgroundColor,
   color,
+  primaryColor,
+  primaryContrastText,
   animationData,
   onRejoin,
 }) => {
@@ -125,11 +127,11 @@ const MeetingLeftScreen = ({
               }}
               size={isSMDesktop || isLGDesktop ? "large" : "medium"}
               variant="contained"
-              color={"primary"}
               style={{
                 textTransform: "capitalize",
                 fontWeight: "bold",
-                color: color,
+                backgroundColor: primaryColor,
+                color: primaryContrastText,
               }}
             >
               Rejoin Meeting

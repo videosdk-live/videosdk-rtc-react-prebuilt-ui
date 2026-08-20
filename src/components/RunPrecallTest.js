@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Box, IconButton, Popover, Typography, keyframes } from "@mui/material";
+import { useTheme } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMediaQuery } from "react-responsive";
 import { runPreCallTest } from "@videosdk.live/react-sdk";
@@ -8,6 +9,7 @@ import RefreshIcon from "../icons/PrecallTest/RefreshIcon";
 import RefreshCheck from "../icons/PrecallTest/RefreshCheck";
 import useIsMobile from "../utils/useIsMobile";
 import useIsTab from "../utils/useIsTab";
+import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
 const NETWORK_QUALITY_PANEL_WIDTH = 440;
 const METRIC_LABEL_COL_WIDTH = 120;
@@ -49,22 +51,23 @@ const spin = keyframes`
   to { transform: rotate(360deg); }
 `;
 
-const CELL_BORDER = "1px solid #ffffff33";
+const cellBorder = (isLight) =>
+  `1px solid ${isLight ? "#00000022" : "#ffffff33"}`;
 
-const HeaderCell = ({ children, width }) => (
+const HeaderCell = ({ children, width, isLight, textColor }) => (
   <Box
     sx={{
       width,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      borderLeft: CELL_BORDER,
+      borderLeft: cellBorder(isLight),
     }}
   >
     <Typography
       sx={{
         fontSize: 12,
-        color: "#fff",
+        color: textColor,
         my: "6px",
         textAlign: "center",
         fontWeight: 500,
@@ -75,29 +78,50 @@ const HeaderCell = ({ children, width }) => (
   </Box>
 );
 
-const DataCell = ({ children, width }) => (
+const DataCell = ({ children, width, isLight, textColor }) => (
   <Box
     sx={{
       width,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      borderLeft: CELL_BORDER,
+      borderLeft: cellBorder(isLight),
     }}
   >
     <Typography
-      sx={{ fontSize: 12, color: "#fff", my: "6px", textAlign: "center" }}
+      sx={{ fontSize: 12, color: textColor, my: "6px", textAlign: "center" }}
     >
       {children}
     </Typography>
   </Box>
 );
 
-const RunPrecallTest = ({ videoStream, audioStream, token }) => {
+const RunPrecallTest = ({
+  videoStream,
+  audioStream,
+  token,
+  appTheme: appThemeProp,
+}) => {
   const isMobile = useIsMobile();
   const isTab = useIsTab();
   const isLGDesktop = useMediaQuery({ minWidth: 1024, maxWidth: 1439 });
   const isXLDesktop = useMediaQuery({ minWidth: 1440 });
+
+  const theme = useTheme();
+  const ctx = useMeetingAppContext();
+  const appTheme = appThemeProp ?? ctx?.appTheme;
+  const isLight = appTheme === appThemes.LIGHT;
+  const panelBg = isLight
+    ? theme.palette.lightTheme.main
+    : theme.palette.darkTheme.eight;
+  const textColor = isLight
+    ? theme.palette.lightTheme.contrastText
+    : theme.palette.common.white;
+  const mutedTextColor = isLight
+    ? theme.palette.lightTheme.four
+    : theme.palette.darkTheme.four;
+  const errorTextColor = "#FCA5A5";
+  const iconHoverBg = isLight ? "#00000011" : "#ffffff33";
 
   const analyzerSize = isXLDesktop
     ? 32
@@ -288,7 +312,7 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
           sx: {
-            backgroundColor: "#1F2937",
+            backgroundColor: panelBg,
             borderRadius: "8px",
             width: panelWidth,
             overflow: "hidden",
@@ -305,7 +329,7 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
           }}
         >
           <Typography
-            sx={{ fontSize: 14, color: "#fff", fontWeight: 600 }}
+            sx={{ fontSize: 14, color: theme.palette.common.white, fontWeight: 600 }}
           >{`Quality Score : ${overallLabel}`}</Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <IconButton
@@ -317,10 +341,10 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
               size="small"
               title="Re-run test"
               sx={{
-                color: "#fff",
+                color: theme.palette.common.white,
                 opacity: status === "running" ? 0.5 : 1,
                 "&:hover": { backgroundColor: "#ffffff33" },
-                "&.Mui-disabled": { color: "#fff" },
+                "&.Mui-disabled": { color: theme.palette.common.white },
                 animation:
                   status === "running" ? `${spin} 1s linear infinite` : "none",
               }}
@@ -334,7 +358,7 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
                 handleClose();
               }}
               sx={{
-                color: "#fff",
+                color: theme.palette.common.white,
                 "&:hover": { backgroundColor: "#ffffff33" },
               }}
             >
@@ -345,7 +369,7 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
 
         {status === "running" && !networkQuality && (
           <Box sx={{ px: "12px", py: "12px" }}>
-            <Typography sx={{ fontSize: 12, color: "#9CA3AF" }}>
+            <Typography sx={{ fontSize: 12, color: mutedTextColor }}>
               Running pre-call test…
             </Typography>
           </Box>
@@ -353,7 +377,7 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
 
         {status === "error" && (
           <Box sx={{ px: "12px", py: "12px" }}>
-            <Typography sx={{ fontSize: 12, color: "#FCA5A5" }}>
+            <Typography sx={{ fontSize: 12, color: errorTextColor }}>
               {errorMsg || "Test failed."} Tap refresh to retry.
             </Typography>
           </Box>
@@ -361,18 +385,33 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
 
         {networkQuality && status !== "error" && (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Box sx={{ display: "flex", borderBottom: CELL_BORDER }}>
+            <Box sx={{ display: "flex", borderBottom: cellBorder(isLight) }}>
               <Box sx={{ width: METRIC_LABEL_COL_WIDTH }} />
-              <HeaderCell width={METRIC_DATA_COL_WIDTH * 2}>Uplink</HeaderCell>
-              <HeaderCell width={METRIC_DATA_COL_WIDTH * 2}>
+              <HeaderCell
+                width={METRIC_DATA_COL_WIDTH * 2}
+                isLight={isLight}
+                textColor={textColor}
+              >
+                Uplink
+              </HeaderCell>
+              <HeaderCell
+                width={METRIC_DATA_COL_WIDTH * 2}
+                isLight={isLight}
+                textColor={textColor}
+              >
                 Downlink
               </HeaderCell>
             </Box>
 
-            <Box sx={{ display: "flex", borderBottom: CELL_BORDER }}>
+            <Box sx={{ display: "flex", borderBottom: cellBorder(isLight) }}>
               <Box sx={{ width: METRIC_LABEL_COL_WIDTH }} />
               {["Video", "Audio", "Video", "Audio"].map((h, i) => (
-                <DataCell key={i} width={METRIC_DATA_COL_WIDTH}>
+                <DataCell
+                  key={i}
+                  width={METRIC_DATA_COL_WIDTH}
+                  isLight={isLight}
+                  textColor={textColor}
+                >
                   {h}
                 </DataCell>
               ))}
@@ -384,7 +423,9 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
                 sx={{
                   display: "flex",
                   borderBottom:
-                    index === metricRows.length - 1 ? "none" : CELL_BORDER,
+                    index === metricRows.length - 1
+                      ? "none"
+                      : cellBorder(isLight),
                 }}
               >
                 <Box
@@ -395,13 +436,18 @@ const RunPrecallTest = ({ videoStream, audioStream, token }) => {
                   }}
                 >
                   <Typography
-                    sx={{ fontSize: 12, color: "#fff", my: "6px", ml: 2 }}
+                    sx={{ fontSize: 12, color: textColor, my: "6px", ml: 2 }}
                   >
                     {item.label}
                   </Typography>
                 </Box>
                 {item.cells.map((cellVal, cIdx) => (
-                  <DataCell key={cIdx} width={METRIC_DATA_COL_WIDTH}>
+                  <DataCell
+                    key={cIdx}
+                    width={METRIC_DATA_COL_WIDTH}
+                    isLight={isLight}
+                    textColor={textColor}
+                  >
                     {cellVal}
                   </DataCell>
                 ))}

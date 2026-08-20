@@ -46,7 +46,7 @@ const MediaRequested = () => {
 
   usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: async (data) => {
-      const { setScreenShareOn } = JSON.parse(data.message);
+      const { setScreenShareOn } = data.payload || {};
       if (setScreenShareOn) {
         setReqScreenShareInfo({
           enabled: true,

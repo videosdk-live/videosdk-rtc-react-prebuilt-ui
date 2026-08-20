@@ -538,7 +538,9 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
     }
     isPlayingRef.current = true;
     notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
+    notificationAudioRef.current.play().catch(() => {
+      isPlayingRef.current = false;
+    });
     notificationAudioRef.current.onended = () => {
       isPlayingRef.current = false;
     };
@@ -550,14 +552,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const { getScreenShareTrack } = useMediaStream();
 
   const toggleScreenShare = async () => {
-    let track;
-    if (!localScreenShareOn) {
-      track = await getScreenShareTrack();
-
-      if (!track) return;
-    }
-
-    if (presenterIdRef.current && !localScreenShareOn) {
+    if (!localScreenShareOn && presenterIdRef.current) {
       let participantName = null;
       mMeeting.participants.forEach((participant) => {
         if (participant.id === presenterIdRef.current) {
@@ -566,9 +561,6 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       });
 
       if (notificationSoundEnabled) {
-        // new Audio(
-        //   `https://static.videosdk.live/prebuilt/notification.mp3`
-        // ).play();
         playNotification();
       }
 
@@ -577,12 +569,20 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
           `Screen sharing unavailable: ${participantName} is currently presenting.`
         );
       }
-    } else {
-      try {
-        await mMeeting?.toggleScreenShare(track);
-      } catch (e) {
-        console.log("Error toggling screen share", e);
-      }
+      return;
+    }
+
+    let track;
+    if (!localScreenShareOn) {
+      track = await getScreenShareTrack();
+      if (!track) return;
+    }
+
+    try {
+      await mMeeting?.toggleScreenShare(track);
+    } catch (e) {
+      console.log("Error toggling screen share", e);
+      track?.getTracks?.().forEach((t) => t.stop());
     }
   };
 
@@ -1866,7 +1866,9 @@ const WebcamBTN = () => {
     }
     isPlayingRef.current = true;
     notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
+    notificationAudioRef.current.play().catch(() => {
+      isPlayingRef.current = false;
+    });
     notificationAudioRef.current.onended = () => {
       isPlayingRef.current = false;
     };
@@ -2104,7 +2106,9 @@ const MicBTN = () => {
     }
     isPlayingRef.current = true;
     notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
+    notificationAudioRef.current.play().catch(() => {
+      isPlayingRef.current = false;
+    });
     notificationAudioRef.current.onended = () => {
       isPlayingRef.current = false;
     };
@@ -2113,8 +2117,10 @@ const MicBTN = () => {
   const getSpeakers = async () => {
     const devices = await getPlaybackDevices();
     const outputMics = devices.filter(
-      (d) => d.deviceId !== ""
-      // (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+      (d) =>
+        d.deviceId !== "" &&
+        d.deviceId !== "default" &&
+        d.deviceId !== "communications"
     );
 
     outputMics && outputMics?.length && setOutputMics(outputMics);
@@ -2286,10 +2292,19 @@ const EndCallBTN = () => {
     meetingMode,
     appTheme,
     setMeetingLeft,
+    redirectOnLeave,
   } = useMeetingAppContext();
 
   const leave = mMeeting?.leave;
   const end = mMeeting?.end;
+
+  const handleAfterLeave = () => {
+    if (redirectOnLeave && redirectOnLeave !== "undefined") {
+      window.location = redirectOnLeave;
+    } else {
+      setMeetingLeft(true);
+    }
+  };
 
   const tollTipEl = useRef();
 
@@ -2345,7 +2360,7 @@ const EndCallBTN = () => {
             } catch (err) {
               console.log("Error leaving meeting", err);
             }
-            setMeetingLeft(true);
+            handleAfterLeave();
           }
         }}
       />
@@ -2393,7 +2408,7 @@ const EndCallBTN = () => {
                   } catch (e) {
                     console.log("Error leaving meeting", e);
                   }
-                  setMeetingLeft(true);
+                  handleAfterLeave();
                 }}
                 // classes={{
                 //   root:
@@ -2556,7 +2571,7 @@ const EndCallBTN = () => {
                 } catch (e) {
                   console.log("Error ending meeting", e);
                 }
-                setMeetingLeft(true);
+                handleAfterLeave();
               }, 1000);
             }}
             rejectText="Cancel"

@@ -59,7 +59,9 @@ function WhiteboardContainer({
     }
     isPlayingRef.current = true;
     notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
+    notificationAudioRef.current.play().catch(() => {
+      isPlayingRef.current = false;
+    });
     notificationAudioRef.current.onended = () => {
       isPlayingRef.current = false;
     };
@@ -334,9 +336,9 @@ function WhiteboardContainer({
   }, []);
 
   usePubSub(`WB`, {
-    onMessageReceived: ({ message }) => {
+    onMessageReceived: ({ payload }) => {
       try {
-        const { event, data } = JSON.parse(message);
+        const { event, data } = payload || {};
         onChatMessage({ event: event, data: data });
       } catch (e) {}
     },
@@ -344,7 +346,7 @@ function WhiteboardContainer({
       for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
         try {
-          const { event, data } = JSON.parse(msg.message);
+          const { event, data } = msg.payload || {};
           if (event === "CLEAR") {
             fabricRef.current.clear();
             return;
@@ -487,8 +489,7 @@ function WhiteboardContainer({
 
   async function sendData({ event, data }) {
     try {
-      const payload = JSON.stringify({ event, data });
-      await publish(payload, { persist: true });
+      await publish("whiteboard-event", { persist: true }, { event, data });
     } catch (error) {
       console.log("error: ", error);
     }
