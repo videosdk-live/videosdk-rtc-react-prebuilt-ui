@@ -630,6 +630,17 @@ const App = () => {
   }, [isXStoSM]);
 
   useEffect(() => {
+    const bg =
+      paramKeys.theme === appThemes.DARK
+        ? theme.palette.darkTheme.main
+        : paramKeys.theme === appThemes.LIGHT
+          ? theme.palette.lightTheme.main
+          : theme.palette.background.default;
+    document.body.style.backgroundColor = bg;
+    document.documentElement.style.backgroundColor = bg;
+  }, [paramKeys.theme, theme]);
+
+  useEffect(() => {
     i18n.use(initReactI18next).init({
       resources: {
         es: {
@@ -880,7 +891,6 @@ const App = () => {
                     : "sd",
               participantId: paramKeys.participantId,
               preferredProtocol: paramKeys.preferredProtocol,
-              autoConsume: false,
               mode: paramKeys.mode,
               multiStream: paramKeys.multiStream === "true",
               customCameraVideoTrack: customVideoStream,

@@ -19,7 +19,6 @@ import {
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
-import { useInView } from "react-intersection-observer";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import Lottie from "../../utils/Lottie";
 import animationData from "../../animations/equaliser.json";
@@ -625,21 +624,6 @@ const ParticipantViewerContent = ({
   const [portrait, setPortrait] = useState(false);
   const statsIntervalIdRef = useRef();
 
-  const { ref: visibilityRef, inView } = useInView({});
-
-  useEffect(() => {
-    if (inView) {
-      eventEmitter.emit(appEvents["participant-visible"], { participantId });
-    } else {
-      eventEmitter.emit(appEvents["participant-invisible"], { participantId });
-    }
-  }, [inView, participantId]);
-
-  const setWrapperRef = (node) => {
-    setVideoDivWrapperRef(node);
-    visibilityRef(node);
-  };
-
   const mMeeting = useMeeting();
   const presenterId = mMeeting?.presenterId;
 
@@ -701,18 +685,6 @@ const ParticipantViewerContent = ({
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
 
-  useEffect(() => {
-    eventEmitter.emit(appEvents["participant-visible"], {
-      participantId,
-    });
-
-    return () => {
-      eventEmitter.emit(appEvents["participant-invisible"], {
-        participantId,
-      });
-    };
-  }, []);
-
   const checkAndUpdatePortrait = () => {
     if (webcamStream && maintainVideoAspectRatio) {
       const { height, width } = webcamStream.track.getSettings();
@@ -750,7 +722,7 @@ const ParticipantViewerContent = ({
   return (
     <>
       <div
-        ref={setWrapperRef}
+        ref={setVideoDivWrapperRef}
         onMouseEnter={() => {
           setMouseOver(true);
         }}

@@ -7,37 +7,10 @@ import React, { useEffect, useRef } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 
 const HumanParticipantAudioPlayer = ({ participantId }) => {
-  const {
-    micOn,
-    micStream,
-    isLocal,
-    consumeMicStreams,
-    stopConsumingMicStreams,
-  } = useParticipant(participantId);
+  const { micOn, micStream, isLocal } = useParticipant(participantId);
 
   const { selectedOutputDeviceId } = useMeetingAppContext();
   const audioPlayer = useRef();
-
-  useEffect(() => {
-    if (!isLocal) {
-      (async () => {
-        try {
-          await consumeMicStreams();
-        } catch (e) {
-          console.log("Error consuming mic streams", e);
-        }
-      })();
-      return () => {
-        (async () => {
-          try {
-            await stopConsumingMicStreams();
-          } catch (e) {
-            console.log("Error stopping mic stream consumption", e);
-          }
-        })();
-      };
-    }
-  }, [participantId]);
 
   useEffect(() => {
     if (!isLocal && audioPlayer.current && micOn && micStream) {
@@ -58,7 +31,7 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
           console.error("audio" + err.message);
         }
       });
-    } else {
+    } else if (audioPlayer.current) {
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
@@ -67,30 +40,10 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
 };
 
 const AgentParticipantAudioPlayer = ({ participantId }) => {
-  const { micOn, micStream, consumeMicStreams, stopConsumingMicStreams } =
-    useAgentParticipant(participantId);
+  const { micOn, micStream } = useAgentParticipant(participantId);
 
   const { selectedOutputDeviceId } = useMeetingAppContext();
   const audioPlayer = useRef();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        await consumeMicStreams();
-      } catch (e) {
-        console.log("Error consuming agent mic streams", e);
-      }
-    })();
-    return () => {
-      (async () => {
-        try {
-          await stopConsumingMicStreams();
-        } catch (e) {
-          console.log("Error stopping agent mic stream consumption", e);
-        }
-      })();
-    };
-  }, []);
 
   useEffect(() => {
     if (audioPlayer.current && micOn && micStream) {
@@ -111,7 +64,7 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
           console.error("audio" + err.message);
         }
       });
-    } else {
+    } else if (audioPlayer.current) {
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, participantId, selectedOutputDeviceId]);

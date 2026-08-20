@@ -36,7 +36,6 @@ import ModeListner from "../components/ModeListner";
 import useIsRecording from "./useIsRecording";
 import useIsLivestreaming from "./useIsLivestreaming";
 import useIsHls from "./useIsHls";
-import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
 import {
   meetingModes,
   RECORDER_MAX_GRID_SIZE,
@@ -915,7 +914,6 @@ const MeetingContainer = () => {
           <>
             <ModeListner />
             <PollsListner />
-            <PauseInvisibleParticipants />
             {/* <ResolutionListner /> */}
             {realtimeTranscriptionVisible ? <RealTimeCaptionProvider /> : null}
             <div
