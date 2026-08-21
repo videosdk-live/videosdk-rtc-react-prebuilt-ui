@@ -148,7 +148,15 @@ export default function DropDownCam({
             style={{
               marginBottom: "2px",
             }}
-            fillColor={isHovered || open ? "#FFF" : "#B4B4B4"}
+            fillColor={
+              isLight
+                ? isHovered || open
+                  ? "#404B53"
+                  : "#6F767E"
+                : isHovered || open
+                  ? "#FFF"
+                  : "#B4B4B4"
+            }
           />
           <Typography
             sx={{
@@ -169,7 +177,13 @@ export default function DropDownCam({
               height: "20px",
               width: "20px",
               // marginTop: "4px",
-              color: open ? "#FFF" : "#B4B4B4",
+              color: isLight
+                ? open
+                  ? "#404B53"
+                  : "#6F767E"
+                : open
+                  ? "#FFF"
+                  : "#B4B4B4",
             }}
           />
         </Box>

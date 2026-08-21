@@ -115,7 +115,7 @@ const ModeListner = () => {
     },
   });
 
-  const { publish: invitatioAcceptedPublish } = usePubSub(
+  const { publish: invitationAcceptedPublish } = usePubSub(
     `INVITATION_ACCEPT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
@@ -133,7 +133,7 @@ const ModeListner = () => {
     }
   );
 
-  const { publish: invitatioRejectedPublish } = usePubSub(
+  const { publish: invitationRejectedPublish } = usePubSub(
     `INVITATION_REJECT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
@@ -196,7 +196,7 @@ const ModeListner = () => {
         onReject={async () => {
           setReqModeInfo(reqInfoDefaultState);
           try {
-            await invitatioRejectedPublish(
+            await invitationRejectedPublish(
               "cohost-invitation-rejected",
               { persist: true },
               { senderId: reqModeInfo.senderId }
@@ -218,7 +218,7 @@ const ModeListner = () => {
           }
           setReqModeInfo(reqInfoDefaultState);
           try {
-            await invitatioAcceptedPublish("", {
+            await invitationAcceptedPublish("", {
               persist: true,
             });
           } catch (error) {

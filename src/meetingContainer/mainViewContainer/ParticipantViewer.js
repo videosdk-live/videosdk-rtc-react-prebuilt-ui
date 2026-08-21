@@ -861,11 +861,12 @@ const ParticipantViewerContent = ({
   );
 };
 
-const HumanParticipantViewer = ({
-  participantId,
-  quality,
-  useVisibilitySensor,
-}) => {
+const HumanParticipantViewer = ({ participantId, quality }) => {
+  const qualityRef = useRef(quality);
+  useEffect(() => {
+    qualityRef.current = quality;
+  }, [quality]);
+
   const {
     displayName,
     setQuality,
@@ -886,7 +887,7 @@ const HumanParticipantViewer = ({
     onStreamEnabled: async (stream) => {
       if (isLocal || stream?.kind !== "video") return;
       try {
-        await setQuality(quality || "high");
+        await setQuality(qualityRef.current || "high");
       } catch (e) {
         console.log("Error in setQuality", e);
       }
@@ -914,11 +915,7 @@ const HumanParticipantViewer = ({
   );
 };
 
-const AgentParticipantViewerInner = ({
-  participantId,
-  quality,
-  useVisibilitySensor,
-}) => {
+const AgentParticipantViewerInner = ({ participantId }) => {
   const {
     displayName,
     webcamStream,
@@ -954,27 +951,17 @@ const AgentParticipantViewerInner = ({
   );
 };
 
-const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
+const ParticipantViewer = ({ participantId, quality }) => {
   const mMeeting = useMeeting();
 
   const isAgent = mMeeting?.participants?.get(participantId)?.isAgent === true;
 
   if (isAgent) {
-    return (
-      <AgentParticipantViewerInner
-        participantId={participantId}
-        quality={quality}
-        useVisibilitySensor={useVisibilitySensor}
-      />
-    );
+    return <AgentParticipantViewerInner participantId={participantId} />;
   }
 
   return (
-    <HumanParticipantViewer
-      participantId={participantId}
-      quality={quality}
-      useVisibilitySensor={useVisibilitySensor}
-    />
+    <HumanParticipantViewer participantId={participantId} quality={quality} />
   );
 };
 

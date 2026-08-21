@@ -534,7 +534,6 @@ const PinnedLayoutViewContainer = ({
                 }
                 key={`pinned_${c.participantId}`}
                 gutter={gutter}
-                useVisibilitySensor={presenterId ? true : false}
               />
             ))}
           </div>

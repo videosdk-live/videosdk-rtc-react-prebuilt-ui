@@ -112,7 +112,7 @@ const SideBarTabView = ({ width, height }) => {
               : theme.palette.background.default,
       }}
     >
-      <Fade in={sideBarMode}>
+      <Fade in={Boolean(sideBarMode)}>
         <div
           style={{
             backgroundColor:

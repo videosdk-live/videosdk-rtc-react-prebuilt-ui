@@ -29,16 +29,9 @@ import WhiteboardContainer, {
 const MemoizedParticipant = React.memo(
   ParticipantViewer,
   (
-    { participantId, quality, useVisibilitySensor },
-    {
-      participantId: oldParticipantId,
-      quality: oldQuality,
-      useVisibilitySensor: oldUseVisibilitySensor,
-    }
-  ) =>
-    participantId === oldParticipantId &&
-    quality === oldQuality &&
-    useVisibilitySensor === oldUseVisibilitySensor
+    { participantId, quality },
+    { participantId: oldParticipantId, quality: oldQuality }
+  ) => participantId === oldParticipantId && quality === oldQuality
 );
 
 const MotionParticipant = ({
@@ -49,7 +42,6 @@ const MotionParticipant = ({
   relativeWidth,
   relativeTop,
   relativeLeft,
-  useVisibilitySensor,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -99,11 +91,7 @@ const MotionParticipant = ({
           width: `calc(100% - ${2 * gutter}px)`,
         }}
       >
-        <MemoizedParticipant
-          participantId={participantId}
-          quality={quality}
-          useVisibilitySensor={useVisibilitySensor}
-        />
+        <MemoizedParticipant participantId={participantId} quality={quality} />
       </div>
     </animated.div>
   );
@@ -117,7 +105,6 @@ const MotionParticipantContainer = ({
   relativeWidth: width,
   relativeTop: top,
   relativeLeft: left,
-  useVisibilitySensor,
 }) => {
   const { animationsEnabled } = useMeetingAppContext();
 
@@ -131,7 +118,6 @@ const MotionParticipantContainer = ({
         relativeWidth: width,
         relativeTop: top,
         relativeLeft: left,
-        useVisibilitySensor,
       }}
     />
   ) : (
@@ -154,9 +140,7 @@ const MotionParticipantContainer = ({
           width: `calc(100% - ${2 * gutter}px)`,
         }}
       >
-        <MemoizedParticipant
-          {...{ participantId, quality, useVisibilitySensor }}
-        />
+        <MemoizedParticipant {...{ participantId, quality }} />
       </div>
     </div>
   );
@@ -171,8 +155,7 @@ export const MemoizedMotionParticipant = React.memo(
     prevProps.relativeHeight === nextProps.relativeHeight &&
     prevProps.relativeWidth === nextProps.relativeWidth &&
     prevProps.relativeTop === nextProps.relativeTop &&
-    prevProps.relativeLeft === nextProps.relativeLeft &&
-    prevProps.useVisibilitySensor === nextProps.useVisibilitySensor
+    prevProps.relativeLeft === nextProps.relativeLeft
 );
 
 const MainViewContainer = ({
@@ -744,7 +727,6 @@ const MainViewContainer = ({
                   key={`main_participant_${c.participantId}`}
                   {...c}
                   gutter={gutter}
-                  useVisibilitySensor={mainScreenViewActive ? true : false}
                 />
               ))}
             </div>

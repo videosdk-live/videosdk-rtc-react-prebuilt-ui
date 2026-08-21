@@ -52,9 +52,7 @@ const ToolBarIcon = ({ Icon, onClick, title, isSelected }) => {
           backgroundColor: isSelected
             ? appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
               ? "#596BFF33"
-              : appTheme === appThemes.LIGHT || appTheme === appThemes.DARK
-                ? "#596BFF33"
-                : "#D5E8FF"
+              : "#D5E8FF"
             : "",
           borderRadius: 6,
           padding: theme.spacing(1),

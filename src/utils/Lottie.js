@@ -2,6 +2,19 @@ import LottieReact from "lottie-react";
 
 // Compat shim: preserves the `react-lottie` API (options, height, width,
 // eventListeners) while delegating to `lottie-react` under the hood.
+const REACT_LOTTIE_EVENT_MAP = {
+  complete: "onComplete",
+  done: "onComplete",
+  loopComplete: "onLoopComplete",
+  enterFrame: "onEnterFrame",
+  segmentStart: "onSegmentStart",
+  DOMLoaded: "onDOMLoaded",
+  dataReady: "onDataReady",
+  dataFailed: "onDataFailed",
+  loadedImages: "onLoadedImages",
+  destroy: "onDestroy",
+};
+
 const Lottie = ({
   options = {},
   height,
@@ -18,9 +31,15 @@ const Lottie = ({
     rendererSettings,
   } = options;
 
-  const onComplete = eventListeners?.find(
-    (l) => l.eventName === "done"
-  )?.callback;
+  const eventProps = {};
+  if (Array.isArray(eventListeners)) {
+    for (const { eventName, callback } of eventListeners) {
+      const prop = REACT_LOTTIE_EVENT_MAP[eventName];
+      if (prop && callback) {
+        eventProps[prop] = callback;
+      }
+    }
+  }
 
   return (
     <LottieReact
@@ -28,8 +47,8 @@ const Lottie = ({
       loop={loop}
       autoplay={autoplay}
       rendererSettings={rendererSettings}
-      onComplete={onComplete}
       style={{ height, width, ...style }}
+      {...eventProps}
       {...rest}
     />
   );

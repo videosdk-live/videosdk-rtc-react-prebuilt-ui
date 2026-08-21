@@ -269,9 +269,10 @@ export default function JoinMeeting({
       maxLayer: cameraMaxLayer,
       codec: cameraCodec,
     });
-    const videoTracks = stream.getVideoTracks();
+    if (!stream) return;
+    const videoTracks = stream.getVideoTracks?.() || [];
     setCustomVideoStream(stream);
-    const videoTrack = videoTracks?.length ? videoTracks[0] : null;
+    const videoTrack = videoTracks.length ? videoTracks[0] : null;
 
     setVideoTrack(videoTrack);
   };
@@ -284,9 +285,10 @@ export default function JoinMeeting({
       encoderConfig: micQuality,
       noiseConfig: micNoiseConfig,
     });
-    const audioTracks = stream.getAudioTracks();
+    if (!stream) return;
+    const audioTracks = stream.getAudioTracks?.() || [];
     setCustomAudioStream(stream);
-    const audioTrack = audioTracks?.length ? audioTracks[0] : null;
+    const audioTrack = audioTracks.length ? audioTracks[0] : null;
     setAudioTrack(audioTrack);
   };
   const getDefaultMediaTracks = async ({ mic, webcam }) => {
@@ -297,10 +299,12 @@ export default function JoinMeeting({
           encoderConfig: micQuality,
           noiseConfig: micNoiseConfig,
         });
-        setCustomAudioStream(stream);
-        const audioTracks = stream?.getAudioTracks();
-        const audioTrack = audioTracks?.length ? audioTracks[0] : null;
-        setAudioTrack(audioTrack);
+        if (stream) {
+          setCustomAudioStream(stream);
+          const audioTracks = stream.getAudioTracks?.() || [];
+          const audioTrack = audioTracks.length ? audioTracks[0] : null;
+          setAudioTrack(audioTrack);
+        }
       } catch (e) {
         console.log("Error in getAudioTrack (getDefaultMediaTracks)", e);
       }
@@ -317,10 +321,12 @@ export default function JoinMeeting({
           maxLayer: cameraMaxLayer,
           codec: cameraCodec,
         });
-        setCustomVideoStream(stream);
-        const videoTracks = stream?.getVideoTracks();
-        const videoTrack = videoTracks?.length ? videoTracks[0] : null;
-        setVideoTrack(videoTrack);
+        if (stream) {
+          setCustomVideoStream(stream);
+          const videoTracks = stream.getVideoTracks?.() || [];
+          const videoTrack = videoTracks.length ? videoTracks[0] : null;
+          setVideoTrack(videoTrack);
+        }
       } catch (e) {
         console.log("Error in getVideoTrack (getDefaultMediaTracks)", e);
       }

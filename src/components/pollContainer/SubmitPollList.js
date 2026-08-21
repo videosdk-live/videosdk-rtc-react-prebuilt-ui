@@ -238,6 +238,7 @@ const SubmitPollListItem = ({ poll }) => {
 
                   return (
                     <Box
+                      key={`submit_result_${option.optionId}`}
                       style={{
                         display: "flex",
                         marginBottom: 12,
@@ -377,6 +378,7 @@ const SubmitPollListItem = ({ poll }) => {
               : poll?.options.map((option) => {
                   return (
                     <Box
+                      key={`submit_option_${option.optionId}`}
                       style={{
                         display: "flex",
                         marginBottom: 12,

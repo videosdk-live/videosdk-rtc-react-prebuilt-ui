@@ -93,7 +93,7 @@ const PlayerViewer = () => {
       } else {
         if (typeof playerRef.current?.play === "function") {
           playerRef.current.src = hlsUrls?.downstreamUrl;
-          playerRef.current.play();
+          playerRef.current.play().catch(() => {});
         }
         // console.error("HLS is not supported");
       }

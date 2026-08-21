@@ -361,17 +361,33 @@ const MeetingContainer = () => {
     },
   });
 
-  const liveStreamConfigPublishRef = useRef();
+  const liveStreamConfigPublishRef = useRef(liveStreamConfigPublish);
 
   useEffect(() => {
     liveStreamConfigPublishRef.current = liveStreamConfigPublish;
   }, [liveStreamConfigPublish]);
 
-  const _handleOnMeetingJoined = async () => {
-    const { changeWebcam, changeMic, muteMic, disableWebcam } =
-      mMeetingRef.current;
+  const autoStartTimeoutRef = useRef(null);
+  const isUnmountedRef = useRef(false);
 
-    setTimeout(async () => {
+  useEffect(() => {
+    return () => {
+      isUnmountedRef.current = true;
+      if (autoStartTimeoutRef.current) {
+        clearTimeout(autoStartTimeoutRef.current);
+        autoStartTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const _handleOnMeetingJoined = async () => {
+    if (autoStartTimeoutRef.current) {
+      clearTimeout(autoStartTimeoutRef.current);
+    }
+    autoStartTimeoutRef.current = setTimeout(async () => {
+      autoStartTimeoutRef.current = null;
+      if (isUnmountedRef.current) return;
+
       const { startLivestream, startRecording, startHls } = mMeetingRef.current;
 
       const isLiveStreaming = isLiveStreamingRef.current;
@@ -390,28 +406,24 @@ const MeetingContainer = () => {
 
       const layout = { type, priority, gridSize };
 
-      //
-      //
-
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
         try {
           await startLivestream(outputs, { layout, theme: liveStreamTheme });
-          await liveStreamConfigPublishRef.current(
-            "livestream-config-update",
-            { persist: true },
-            {
-              config: outputs.map((output) => {
-                return { ...output, id: getUniqueId() };
-              }),
-            }
-          );
+          if (typeof liveStreamConfigPublishRef.current === "function") {
+            await liveStreamConfigPublishRef.current(
+              "livestream-config-update",
+              { persist: true },
+              {
+                config: outputs.map((output) => {
+                  return { ...output, id: getUniqueId() };
+                }),
+              }
+            );
+          }
         } catch (error) {
           console.log("Error in autoStartLivestream ", error);
         }
       }
-
-      //
-      //
 
       if (autoStartRecording && !isRecording) {
         try {
@@ -424,9 +436,6 @@ const MeetingContainer = () => {
         }
       }
 
-      //
-      //
-
       if (autoStartHls && !isHls) {
         try {
           await startHls({ layout, theme: hlsTheme });
@@ -435,40 +444,6 @@ const MeetingContainer = () => {
         }
       }
     }, 3000);
-
-    if (
-      joinWithoutUserInteractionValue
-        ? webcamEnabledValue
-        : joinScreenWebCam && (cameraId || selectedWebcam.id)
-    ) {
-      // await new Promise((resolve) => {
-      //   // disableWebcam();
-      //   setTimeout(async () => {
-      //     console.log('cameraId', cameraId);
-      //     console.log('selectedWebcam.id', selectedWebcam.id);
-      //     const track = await getCustomVideoTrack(
-      //       cameraId ? cameraId : selectedWebcam.id
-      //     );
-      //     console.log('track meeting container: ', track);
-      //     changeWebcam(track);
-      //     resolve();
-      //   }, 500);
-      // });
-    }
-
-    if (joinScreenMic && selectedMic.id) {
-      // await new Promise((resolve) => {
-      //   // muteMic();
-      //   setTimeout(async () => {
-      //     console.log('selectedMic.id', selectedMic.id);
-      //     const audioTrack = await getCustomAudioTrack(selectedMic.id);
-      //     console.log('audioTrack meeting container: ', audioTrack);
-      //     changeMic(audioTrack);
-      //     // changeMic(selectedMic.id);
-      //     resolve();
-      //   }, 500);
-      // });
-    }
   };
 
   const _handleMeetingLeft = () => {
@@ -489,9 +464,6 @@ const MeetingContainer = () => {
 
       if (!isLocal) {
         if (notificationSoundEnabled) {
-          // new Audio(
-          //   `https://static.videosdk.live/prebuilt/notification.mp3`
-          // ).play();
           playNotification();
         }
         if (notificationAlertsEnabled) {
@@ -511,9 +483,6 @@ const MeetingContainer = () => {
 
       const isLocal = senderId === localParticipantId;
       if (notificationSoundEnabled) {
-        // new Audio(
-        //   `https://static.videosdk.live/prebuilt/notification.mp3`
-        // ).play();
         playNotification();
       }
       if (notificationAlertsEnabled) {
@@ -537,9 +506,6 @@ const MeetingContainer = () => {
 
       if (type === "END_CALL") {
         if (notificationSoundEnabled) {
-          // new Audio(
-          //   `https://static.videosdk.live/prebuilt/notification.mp3`
-          // ).play();
           playNotification();
         }
 
@@ -561,9 +527,6 @@ const MeetingContainer = () => {
       const { displayName } = data;
       if (participantNotificationAlertsEnabled) {
         if (notificationSoundEnabled) {
-          // new Audio(
-          //   `https://static.videosdk.live/prebuilt/notification.mp3`
-          // ).play();
           playNotification();
         }
         enqueueSnackbar(`${displayName} joined the meeting`, {});
@@ -575,9 +538,6 @@ const MeetingContainer = () => {
     const { displayName } = data;
     if (participantNotificationAlertsEnabled) {
       if (notificationSoundEnabled) {
-        // new Audio(
-        //   `https://static.videosdk.live/prebuilt/notification.mp3`
-        // ).play();
         playNotification();
       }
       enqueueSnackbar(`${displayName} left the meeting`, {});
@@ -642,9 +602,6 @@ const MeetingContainer = () => {
         notificationSoundEnabled &&
         meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
-        // new Audio(
-        //   `https://static.videosdk.live/prebuilt/notification.mp3`
-        // ).play();
         playNotification();
       }
 
@@ -815,11 +772,6 @@ const MeetingContainer = () => {
     const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== -1;
     const isCriticalError = `${code}`.startsWith("500");
 
-    // new Audio(
-    //   isCriticalError
-    //     ? `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
-    //     : `https://static.videosdk.live/prebuilt/notification_err.mp3`
-    // ).play();
     isCriticalError ? playNotificationCritical() : playNotificationError();
 
     setMeetingError({

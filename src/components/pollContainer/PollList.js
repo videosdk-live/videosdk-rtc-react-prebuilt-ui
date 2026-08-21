@@ -21,7 +21,6 @@ import {
 } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { v4 as uuid } from "uuid";
-import { minWidth } from "@mui/system";
 
 export const secondsToMinutes = (time) => {
   var minutes = Math.floor((time % 3600) / 60)
@@ -325,6 +324,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 
             return (
               <Box
+                key={`poll_option_${poll?.pollId || ""}_${item?.optionId || j}`}
                 style={{
                   marginTop: j === 0 ? equalSpacing : equalSpacing / 2,
                 }}

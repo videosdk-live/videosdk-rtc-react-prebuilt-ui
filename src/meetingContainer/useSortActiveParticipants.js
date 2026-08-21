@@ -103,9 +103,10 @@ const useSortActiveParticipants = () => {
             (participantId) => notActive.participantId === participantId
           );
 
-          mainViewParticipants[notActiveMainIndex] = activeSpeakerId;
+          const nextMainViewParticipants = [...mainViewParticipants];
+          nextMainViewParticipants[notActiveMainIndex] = activeSpeakerId;
 
-          setMainViewParticipants(mainViewParticipants);
+          setMainViewParticipants(nextMainViewParticipants);
         }
       }
 

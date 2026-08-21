@@ -2180,6 +2180,7 @@ const MicBTN = () => {
       const processor = new VideoSDKNoiseSuppressor();
 
       const stream = await getAudioTrack({ micId: selectMicDeviceId });
+      if (!stream) return;
       const processedStream =
         await processor.getNoiseSuppressedAudioStream(stream);
 
