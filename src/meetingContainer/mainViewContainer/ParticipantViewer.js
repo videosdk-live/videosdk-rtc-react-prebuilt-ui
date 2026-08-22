@@ -894,6 +894,15 @@ const HumanParticipantViewer = ({ participantId, quality }) => {
     },
   });
 
+  useEffect(() => {
+    if (isLocal || !webcamOn || !webcamStream) return;
+    try {
+      setQuality(quality || "high");
+    } catch (e) {
+      console.log("Error in setQuality", e);
+    }
+  }, [quality, isLocal, webcamOn, webcamStream, setQuality]);
+
   return (
     <ParticipantViewerContent
       participantId={participantId}

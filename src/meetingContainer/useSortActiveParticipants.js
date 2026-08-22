@@ -310,10 +310,7 @@ const useSortActiveParticipants = () => {
   }, [mPresenterId]);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      _sortOnModify({ maxParticipantInMainView });
-    }, 1000);
-    return () => clearTimeout(timeoutId);
+    _sortOnModify({ maxParticipantInMainView });
   }, [mMeeting.participants, maxParticipantInMainView]);
 
   useEffect(() => {

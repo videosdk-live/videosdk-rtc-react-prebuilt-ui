@@ -22,6 +22,7 @@ import {
 } from "../utils/common";
 import { useSnackbar } from "notistack";
 import useResponsiveSize from "../utils/useResponsiveSize";
+import { useNotificationSound } from "../utils/useNotificationSound";
 import useRaisedHandParticipants from "./useRaisedHandParticipants";
 import MediaRequested from "../components/MediaRequested";
 import RequestedEntries from "../components/RequestedEntries";
@@ -90,12 +91,6 @@ const getPinMsg = ({
 const MeetingContainer = () => {
   const showJoinNotificationRef = useRef(false);
   const localParticipantAutoPinnedOnShare = useRef(false);
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const notificationCriticalAudioRef = useRef(null);
-  const isPlayingCriticalRef = useRef(false);
-  const notificationErrorAudioRef = useRef(null);
-  const isPlayingErrorRef = useRef(false);
   const mMeetingRef = useRef();
 
   const [containerHeight, setContainerHeight] = useState(0);
@@ -123,57 +118,15 @@ const MeetingContainer = () => {
     sm: 280,
     xs: 240,
   });
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
-  const playNotificationError = () => {
-    if (isPlayingErrorRef.current) return;
-    if (!notificationErrorAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationErrorAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification_err.mp3`
-      );
-    }
-    isPlayingErrorRef.current = true;
-    notificationErrorAudioRef.current.currentTime = 0;
-    notificationErrorAudioRef.current.play().catch(() => {
-      isPlayingErrorRef.current = false;
-    });
-    notificationErrorAudioRef.current.onended = () => {
-      isPlayingErrorRef.current = false;
-    };
-  };
-  const playNotificationCritical = () => {
-    if (isPlayingCriticalRef.current) return;
-    if (!notificationCriticalAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationCriticalAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
-      );
-    }
-    isPlayingCriticalRef.current = true;
-    notificationCriticalAudioRef.current.currentTime = 0;
-    notificationCriticalAudioRef.current.play().catch(() => {
-      isPlayingCriticalRef.current = false;
-    });
-    notificationCriticalAudioRef.current.onended = () => {
-      isPlayingCriticalRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
+  const playNotificationError = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification_err.mp3`
+  );
+  const playNotificationCritical = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
+  );
 
   useEffect(() => {
     containerRef.current?.offsetHeight &&
@@ -293,7 +246,8 @@ const MeetingContainer = () => {
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      const { layout } = data.payload;
+      const { layout } = data.payload || {};
+      if (!layout) return;
       setAppMeetingLayout({
         ...layout,
         gridSize: isRecorder
@@ -319,7 +273,8 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        const { layout } = latestMessage.payload;
+        const { layout } = latestMessage.payload || {};
+        if (!layout) return;
         setAppMeetingLayout({
           ...layout,
           gridSize: isRecorder
@@ -339,7 +294,8 @@ const MeetingContainer = () => {
 
   const { publish: liveStreamConfigPublish } = usePubSub("LIVE_STREAM_CONFIG", {
     onMessageReceived: (data) => {
-      const { config } = data.payload;
+      const { config } = data.payload || {};
+      if (!config) return;
       setLiveStreamConfig(config);
     },
 
@@ -355,7 +311,8 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        const { config } = latestMessage.payload;
+        const { config } = latestMessage.payload || {};
+        if (!config) return;
         setLiveStreamConfig(config);
       }
     },

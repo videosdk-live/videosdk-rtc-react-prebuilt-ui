@@ -8,7 +8,7 @@ const ResolutionListner = () => {
 
   usePubSub(`CHANGE_RESOLUTION`, {
     onMessageReceived: (data) => {
-      const { resolution } = data.payload;
+      const { resolution } = data.payload || {};
       if (resolution) {
         setMeetingResolution(resolution);
         enqueueSnackbar(
@@ -28,7 +28,8 @@ const ResolutionListner = () => {
       })[0];
 
       if (latestMessage) {
-        const { resolution } = latestMessage.payload;
+        const { resolution } = latestMessage.payload || {};
+        if (!resolution) return;
         setMeetingResolution(resolution);
         enqueueSnackbar(
           `Video resolution of all participants changed to ${resolution}.`

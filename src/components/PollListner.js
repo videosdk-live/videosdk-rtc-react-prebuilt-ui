@@ -5,7 +5,7 @@ import {
   sideBarNestedModes,
   useMeetingAppContext,
 } from "../MeetingAppContextDef";
-import { useRef } from "react";
+import { useNotificationSound } from "../utils/useNotificationSound";
 
 const PollListner = ({ pollId }) => {
   const { setCreatedPolls } = useMeetingAppContext();
@@ -16,7 +16,8 @@ const PollListner = ({ pollId }) => {
       senderName: participantName,
       timestamp,
     }) => {
-      const { optionId } = payload;
+      const { optionId } = payload || {};
+      if (!optionId) return;
       setCreatedPolls((s) =>
         s.map((_poll) =>
           pollId === _poll.id
@@ -37,23 +38,25 @@ const PollListner = ({ pollId }) => {
       );
     },
     onOldMessagesReceived: (messages) => {
-      const sortedMappedMessages = messages.map(
-        ({
-          senderId: participantId,
-          timestamp,
-          payload,
-          senderName: participantName,
-        }) => {
-          const { optionId } = payload;
-
-          return {
-            participantName,
-            optionId,
-            participantId,
+      const sortedMappedMessages = messages
+        .map(
+          ({
+            senderId: participantId,
             timestamp,
-          };
-        }
-      );
+            payload,
+            senderName: participantName,
+          }) => {
+            const { optionId } = payload || {};
+            if (!optionId) return null;
+            return {
+              participantName,
+              optionId,
+              participantId,
+              timestamp,
+            };
+          }
+        )
+        .filter(Boolean);
 
       setCreatedPolls((s) => {
         return s.map((_poll) => {
@@ -86,27 +89,12 @@ const PollsListner = () => {
   } = useMeetingAppContext();
 
   const { enqueueSnackbar } = useSnackbar();
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   usePubSub(`CREATE_POLL`, {
     onMessageReceived: ({ payload, timestamp }) => {
+      if (!payload) return;
       setCreatedPolls((s) => [
         { ...payload, createdAt: timestamp, submissions: [] },
         ...s,
@@ -147,6 +135,7 @@ const PollsListner = () => {
           .sort((a, b) =>
             a.timestamp > b.timestamp ? -1 : a.timestamp < b.timestamp ? 1 : 0
           )
+          .filter(({ payload }) => Boolean(payload))
           .map(({ payload, timestamp }) => ({
             ...payload,
             createdAt: timestamp,
@@ -158,7 +147,8 @@ const PollsListner = () => {
 
   usePubSub(`END_POLL`, {
     onMessageReceived: ({ payload }) => {
-      const { pollId } = payload;
+      const { pollId } = payload || {};
+      if (!pollId) return;
       setEndedPolls((s) => [...s, { pollId }]);
       // console.log("END_POLL message onMessageReceived", message);
       // setPolls((s) => {
@@ -175,10 +165,12 @@ const PollsListner = () => {
     onOldMessagesReceived: (messages) => {
       setEndedPolls((s) => [
         ...s,
-        ...messages.map(({ payload }) => {
-          const { pollId } = payload;
-          return { pollId };
-        }),
+        ...messages
+          .map(({ payload }) => {
+            const { pollId } = payload || {};
+            return pollId ? { pollId } : null;
+          })
+          .filter(Boolean),
       ]);
 
       // console.log("message onOldMessagesReceived", messages);
@@ -201,6 +193,7 @@ const PollsListner = () => {
 
   usePubSub(`DRAFT_A_POLL`, {
     onMessageReceived: ({ payload }) => {
+      if (!payload) return;
       setDraftPolls((s) => [...s, payload]);
     },
     onOldMessagesReceived: (messages) => {
@@ -213,16 +206,19 @@ const PollsListner = () => {
         }
         return 0;
       });
-      const newPolls = sortedMessage.map(({ payload }) => {
-        return { ...payload };
-      });
+      const newPolls = sortedMessage
+        .filter(({ payload }) => Boolean(payload))
+        .map(({ payload }) => {
+          return { ...payload };
+        });
       setDraftPolls(newPolls);
     },
   });
 
   usePubSub(`REMOVE_POLL_FROM_DRAFT`, {
     onMessageReceived: ({ payload }) => {
-      const { pollId } = payload;
+      const { pollId } = payload || {};
+      if (!pollId) return;
       setDraftPolls((s) => {
         return s.filter((_poll) => {
           if (pollId === _poll.id) {
@@ -238,7 +234,7 @@ const PollsListner = () => {
         s.filter(
           (_poll) =>
             messages.findIndex(({ payload }) => {
-              const { pollId } = payload;
+              const { pollId } = payload || {};
               return pollId === _poll.id;
             }) === -1
         )

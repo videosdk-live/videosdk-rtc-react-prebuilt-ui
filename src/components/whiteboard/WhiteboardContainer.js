@@ -10,6 +10,7 @@ import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
 import useResponsiveSize from "../../utils/useResponsiveSize";
+import { useNotificationSound } from "../../utils/useNotificationSound";
 import Compressor from "compressorjs";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -47,25 +48,9 @@ function WhiteboardContainer({
 
   const previousHeight = usePrevious(height);
   const previousWidth = usePrevious(width);
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   // const initialHeight = useRef(height);
   const initialWidth = useRef(width);
 

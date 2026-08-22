@@ -9,6 +9,7 @@ import { useMeetingAppContext } from "../MeetingAppContextDef";
 import ConfirmBox from "./ConfirmBox";
 import { meetingModes } from "../CONSTS";
 import { useSnackbar } from "notistack";
+import { useNotificationSound } from "../utils/useNotificationSound";
 
 const reqInfoDefaultState = {
   enabled: false,
@@ -31,24 +32,9 @@ const ModeListner = () => {
     setMainViewParticipants,
   } = useMeetingAppContext();
 
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
   const mMeeting = useMeeting();
@@ -89,7 +75,8 @@ const ModeListner = () => {
 
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: async (data) => {
-      const { mode } = data.payload;
+      const { mode } = data.payload || {};
+      if (!mode) return;
       if (mode === meetingModes.SEND_AND_RECV) {
         setReqModeInfo({
           enabled: true,
@@ -137,7 +124,7 @@ const ModeListner = () => {
     `INVITATION_REJECT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
-        const { senderId } = data.payload;
+        const { senderId } = data.payload || {};
         if (senderId === participantRef.current.participant.id) {
           if (notificationSoundEnabledRef.current) {
             // new Audio(

@@ -311,36 +311,33 @@ export default function DropDown({
     setRecordingStatus("playing");
     setAudioProgress(0);
 
-    const audioTags = document.getElementsByTagName("audio");
-    for (let i = 0; i < audioTags.length; i++) {
-      const tag = audioTags.item(i);
+    const tag = audioRef.current;
+    if (!tag) return;
+    cleanupAudioListeners();
+
+    const onTimeUpdate = () => {
+      const progress = (tag.currentTime / recordingDuration) * 100;
+      setAudioProgress(progress);
+    };
+
+    const onEnded = () => {
+      setAudioProgress(0);
+      setRecordingStatus("stopped recording");
       cleanupAudioListeners();
-      audioRef.current = tag;
+    };
 
-      const onTimeUpdate = () => {
-        const progress = (tag.currentTime / recordingDuration) * 100;
-        setAudioProgress(progress);
-      };
+    timeupdateHandlerRef.current = onTimeUpdate;
+    endedHandlerRef.current = onEnded;
 
-      const onEnded = () => {
-        setAudioProgress(0);
-        setRecordingStatus("stopped recording");
-        cleanupAudioListeners();
-      };
-
-      timeupdateHandlerRef.current = onTimeUpdate;
-      endedHandlerRef.current = onEnded;
-
-      const playSrc = () => {
-        tag.play();
-        tag.addEventListener("timeupdate", onTimeUpdate);
-        tag.addEventListener("ended", onEnded);
-      };
-      if (tag.setSinkId && selectedSpeaker?.id) {
-        tag.setSinkId(selectedSpeaker.id).then(playSrc).catch(playSrc);
-      } else {
-        playSrc();
-      }
+    const playSrc = () => {
+      tag.play().catch(() => {});
+      tag.addEventListener("timeupdate", onTimeUpdate);
+      tag.addEventListener("ended", onEnded);
+    };
+    if (tag.setSinkId && selectedSpeaker?.id) {
+      tag.setSinkId(selectedSpeaker.id).then(playSrc).catch(playSrc);
+    } else {
+      playSrc();
     }
   };
 
@@ -873,7 +870,8 @@ export default function DropDown({
         </List>
       </StyledPopover>
 
-      <audio src={audio}></audio>
+
+      <audio ref={audioRef} src={audio}></audio>
     </Box>
   );
 }

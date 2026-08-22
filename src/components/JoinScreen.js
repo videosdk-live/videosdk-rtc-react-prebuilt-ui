@@ -121,7 +121,6 @@ export default function JoinMeeting({
   const [isMicrophonePermissionAllowed, setIsMicrophonePermissionAllowed] =
     useState(false);
   const [didDeviceChange, setDidDeviceChange] = useState(false);
-  const [testSpeaker, setTestSpeaker] = useState(false);
   const [dlgMuted, setDlgMuted] = useState(false);
   const [dlgDevices, setDlgDevices] = useState(false);
   const [{ webcams, mics, speakers }, setDevices] = useState({
@@ -401,10 +400,13 @@ export default function JoinMeeting({
     }
   };
 
-  function onDeviceChanged() {
+  async function onDeviceChanged() {
     setDidDeviceChange(true);
-    getCameraDevices();
-    getAudioDevices();
+    try {
+      await Promise.all([getCameraDevices(), getAudioDevices()]);
+    } catch (err) {
+      console.log("Error refreshing devices", err);
+    }
     getDefaultMediaTracks({ mic: micRef.current, webcam: webcamRef.current });
   }
 
@@ -657,7 +659,7 @@ export default function JoinMeeting({
                         <audio
                           autoPlay
                           playsInline
-                          muted={!testSpeaker}
+                          muted
                           ref={audioPlayerRef}
                           controls={false}
                         />
@@ -829,8 +831,6 @@ export default function JoinMeeting({
                       micOn={micOn}
                       didDeviceChange={didDeviceChange}
                       setDidDeviceChange={setDidDeviceChange}
-                      testSpeaker={testSpeaker}
-                      setTestSpeaker={setTestSpeaker}
                       selectedMic={selectedMic}
                       setSelectedMic={setSelectedMic}
                       selectedSpeaker={selectedSpeaker}

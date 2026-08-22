@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNotificationSound } from "./utils/useNotificationSound";
 import MeetingContainer from "./meetingContainer/MeetingContainer";
 import {
   Constants,
@@ -52,22 +53,9 @@ const App = () => {
   });
 
   const [meetingLeft, setMeetingLeft] = useState(false);
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotificationErr = async () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification_err.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play();
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotificationErr = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification_err.mp3`
+  );
 
   const getParams = ({ maxGridSize }) => {
     const location = window.location;
@@ -484,7 +472,8 @@ const App = () => {
     // Camera — SDK exposes enums only for BitrateMode + VideoCodec; the rest
     // are TS literal types and default inside useMediaStream.js.
     paramKeys.cameraId = paramKeys.cameraId || null;
-    paramKeys.cameraMultiStream = paramKeys.cameraMultiStream !== "false"; // default true
+    paramKeys.cameraResolution = paramKeys.cameraResolution || "h360p_w640p";
+    paramKeys.cameraMultiStream = paramKeys.cameraMultiStream === "true";
     paramKeys.cameraBitrateMode = Object.values(Constants.BitrateMode).includes(
       paramKeys.cameraBitrateMode
     )
@@ -500,6 +489,10 @@ const App = () => {
       : Constants.VideoCodec.VP8;
 
     // Screen share — no SDK enums for these; withAudio is a string flag.
+    paramKeys.screenShareResolution =
+      paramKeys.screenShareResolution || "h720p_15fps";
+    paramKeys.screenShareOptimizationMode =
+      paramKeys.screenShareOptimizationMode || "motion";
     paramKeys.screenShareWithAudio =
       paramKeys.screenShareWithAudio === "enable" ? "enable" : "disable";
     paramKeys.screenShareMultiStream =
@@ -881,7 +874,6 @@ const App = () => {
               noiseSuppression: paramKeys.micNoiseSuppression,
             },
             joinWithoutUserInteraction: paramKeys.joinWithoutUserInteraction,
-            webcamEnabled: paramKeys.webcamEnabled,
             realtimeTranscriptionVisible:
               paramKeys.realtimeTranscriptionVisible === "true",
           }}

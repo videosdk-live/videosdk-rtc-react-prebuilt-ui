@@ -72,6 +72,7 @@ import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-noise-suppressor-web";
 import useMediaStream from "../utils/useMediaStream";
+import { useNotificationSound } from "../utils/useNotificationSound";
 import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
 
 const CustomBox = styled(Box)`
@@ -526,25 +527,9 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const presenterId = mMeeting?.presenterId;
   const presenterIdRef = useRef(presenterId);
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   useEffect(() => {
     presenterIdRef.current = presenterId;
   }, [presenterId]);
@@ -1854,25 +1839,9 @@ const WebcamBTN = () => {
     cameraId,
     webcamEnabled,
   } = useMeetingAppContext();
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   const { enqueueSnackbar } = useSnackbar();
 
   const [downArrow, setDownArrow] = useState(null);
@@ -2094,25 +2063,9 @@ const MicBTN = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { getAudioTrack } = useMediaStream();
   const { getPlaybackDevices } = useMediaDevice({ onDeviceChanged });
-  const notificationAudioRef = useRef(null);
-  const isPlayingRef = useRef(false);
-  const playNotification = () => {
-    if (isPlayingRef.current) return;
-    if (!notificationAudioRef.current) {
-      // First time — fetch from CDN and store it
-      notificationAudioRef.current = new Audio(
-        `https://static.videosdk.live/prebuilt/notification.mp3`
-      );
-    }
-    isPlayingRef.current = true;
-    notificationAudioRef.current.currentTime = 0;
-    notificationAudioRef.current.play().catch(() => {
-      isPlayingRef.current = false;
-    });
-    notificationAudioRef.current.onended = () => {
-      isPlayingRef.current = false;
-    };
-  };
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
 
   const getSpeakers = async () => {
     const devices = await getPlaybackDevices();

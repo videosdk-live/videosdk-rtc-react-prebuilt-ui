@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Popover,
   Button,
@@ -200,6 +200,18 @@ export default function DropDownSpeaker({
     anchorWidthRef.current = event.currentTarget.offsetWidth;
     setAnchorEl(event.currentTarget);
   };
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      cleanupAudioListeners();
+      audioRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleClose = () => {
     setAnchorEl(null);
