@@ -196,6 +196,7 @@ const useSortActiveParticipants = () => {
 
   const _sortOnModify = ({ maxParticipantInMainView: maxCount } = {}) => {
     const activeSortedParticipants = activeSortedParticipantsRef.current;
+    if (!activeSortedParticipants) return;
 
     const maxParticipantInMainView =
       maxCount || maxParticipantInMainViewRef.current;
