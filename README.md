@@ -115,6 +115,45 @@ Example Url with parameters: http://localhost:3000?token=replaceWithYourMeetingT
 | rawUserAgent                              | -                | -                                                                                           |
 | canChangeLayout                           | `false`          | can change meeting layout                                                                   |
 | preferredProtocol                         | `UDP_ONLY`       | `UDP_ONLY` or `UDP_ONLY`                                                                    |
+| theme                                     | `DEFAULT`        | meeting UI theme — `DEFAULT`, `DARK`, or `LIGHT`                                            |
+| language                                  | `en`             | UI language code (i18n locale)                                                              |
+| mode                                      | `SEND_AND_RECV`  | participant mode — `SEND_AND_RECV`, `SIGNALLING_ONLY`, or `RECV_ONLY`                       |
+| participantTabPanelEnabled                | `true`           | show the participant tab panel                                                              |
+| moreOptionsEnabled                        | `true`           | show the More Options button                                                                |
+| participantCanToggleOtherMode             | `false`          | can toggle another participant's mode                                                       |
+| partcipantCanToogleOtherScreenShare       | `false`          | can toggle another participant's screen share (kept spelling for backward compat)           |
+| participantCanToggleHls                   | `false`          | can start/stop HLS                                                                          |
+| participantNotificationAlertsEnabled      | `true`           | show participant join/leave notification alerts                                             |
+| canToggleVirtualBackground                | `false`          | show the virtual background toggle                                                          |
+| canCreatePoll                             | `false`          | can create polls                                                                            |
+| canToggleParticipantTab                   | `true`           | can toggle the participant tab                                                              |
+| hlsEnabled                                | `false`          | expose HLS controls in the UI                                                               |
+| autoStartHls                              | `false`          | automatically start HLS on meeting join                                                     |
+| hlsPlayerControlsVisible                  | `false`          | show player controls on the HLS viewer                                                      |
+| hlsTheme                                  | `DEFAULT`        | HLS layout theme — `DEFAULT`, `DARK`, or `LIGHT`                                            |
+| recordingTheme                            | `DEFAULT`        | recording layout theme — `DEFAULT`, `DARK`, or `LIGHT`                                      |
+| liveStreamTheme                           | `DEFAULT`        | live stream layout theme — `DEFAULT`, `DARK`, or `LIGHT`                                    |
+| waitingScreenImageUrl                     | -                | image / Lottie URL shown on the waiting screen                                              |
+| waitingScreenText                         | -                | text shown on the waiting screen                                                            |
+| maintainVideoAspectRatio                  | `false`          | keep aspect ratio of portrait webcam streams                                                |
+| maintainLandscapeVideoAspectRatio         | `false`          | keep aspect ratio of landscape webcam streams                                               |
+| networkBarEnabled                         | `true`           | show the network-quality bar on participant tiles                                           |
+| cameraId                                  | -                | device id of the camera to use when joining                                                 |
+| cameraResolution                          | `h360p_w640p`    | camera capture resolution                                                                   |
+| cameraMultiStream                         | `true`           | publish multiple simulcast layers for the camera stream                                     |
+| cameraOptimizationMode                    | `motion`         | camera stream optimization — `motion`, `text`, or `detail`                                  |
+| screenShareResolution                     | `h720p_15fps`    | screen share capture resolution                                                             |
+| screenShareOptimizationMode               | `motion`         | screen share optimization — `motion`, `text`, or `detail`                                   |
+| micQuality                                | `speech_standard`| mic audio quality — `speech_low_quality`, `speech_standard`, or `high_quality`              |
+| cameraBitrateMode                         | `balanced`       | camera bitrate strategy — `balanced`, `high_quality`, or `bandwidth_optimized`              |
+| cameraMaxLayer                            | `3`              | max simulcast layers for the camera stream — `2` or `3`                                     |
+| cameraCodec                               | `VP8`            | video codec for the camera stream — `VP8`, `VP9`, `AV1`, or `H264`                          |
+| screenShareWithAudio                      | `disable`        | capture system/tab audio during screen share — `enable` or `disable`                        |
+| screenShareMultiStream                    | `false`          | publish multi-layer screen share stream                                                     |
+| micEchoCancellation                       | `true`           | enable browser echo cancellation on the mic                                                 |
+| micAutoGainControl                        | `true`           | enable browser auto gain control on the mic                                                 |
+| micNoiseSuppression                       | `true`           | enable browser noise suppression on the mic                                                 |
+| verbose                                   | `NONE`           | SDK log level — `DEBUG`, `INFO`, `WARN`, `ERROR`, `ALL`, or `NONE`                          |
 
 ---
 
