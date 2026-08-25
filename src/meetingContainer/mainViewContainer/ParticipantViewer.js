@@ -901,7 +901,7 @@ const HumanParticipantViewer = ({ participantId, quality }) => {
     } catch (e) {
       console.log("Error in setQuality", e);
     }
-  }, [quality, isLocal, webcamOn, webcamStream, setQuality]);
+  }, [quality]);
 
   return (
     <ParticipantViewerContent

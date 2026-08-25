@@ -924,7 +924,11 @@ export default function JoinMeeting({
                     setNameErr={setNameErr}
                     isXStoSM={isXStoSM}
                     startMeeting={() => {
-                      onClick({ name, webcamOn, micOn });
+                      onClick({
+                        name,
+                        webcamOn: webcamOn && isCameraPermissionAllowed,
+                        micOn: micOn && isMicrophonePermissionAllowed,
+                      });
                     }}
                     isXLOnly={isXLOnly}
                     appTheme={appTheme}
