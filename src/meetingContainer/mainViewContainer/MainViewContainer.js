@@ -29,16 +29,9 @@ import WhiteboardContainer, {
 const MemoizedParticipant = React.memo(
   ParticipantViewer,
   (
-    { participantId, quality, useVisibilitySensor },
-    {
-      participantId: oldParticipantId,
-      quality: oldQuality,
-      useVisibilitySensor: oldUseVisibilitySensor,
-    }
-  ) =>
-    participantId === oldParticipantId &&
-    quality === oldQuality &&
-    useVisibilitySensor === oldUseVisibilitySensor
+    { participantId, quality },
+    { participantId: oldParticipantId, quality: oldQuality }
+  ) => participantId === oldParticipantId && quality === oldQuality
 );
 
 const MotionParticipant = ({
@@ -49,7 +42,6 @@ const MotionParticipant = ({
   relativeWidth,
   relativeTop,
   relativeLeft,
-  useVisibilitySensor,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -82,15 +74,15 @@ const MotionParticipant = ({
     <animated.div
       style={{
         position: "absolute",
-        top: animatedProps.top.interpolate((val) => `${val}%`),
-        left: animatedProps.left.interpolate((val) => `${val}%`),
-        height: animatedProps.height.interpolate((val) => `${val}%`),
-        width: animatedProps.width.interpolate((val) => `${val}%`),
+        top: animatedProps.top.to((val) => `${val}%`),
+        left: animatedProps.left.to((val) => `${val}%`),
+        height: animatedProps.height.to((val) => `${val}%`),
+        width: animatedProps.width.to((val) => `${val}%`),
         paddingTop: gutter,
         paddingBottom: gutter,
         paddingRight: gutter,
         paddingLeft: gutter,
-        transform: animatedProps.scale.interpolate((val) => `scale(${val})`),
+        transform: animatedProps.scale.to((val) => `scale(${val})`),
       }}
     >
       <div
@@ -99,11 +91,7 @@ const MotionParticipant = ({
           width: `calc(100% - ${2 * gutter}px)`,
         }}
       >
-        <MemoizedParticipant
-          participantId={participantId}
-          quality={quality}
-          useVisibilitySensor={useVisibilitySensor}
-        />
+        <MemoizedParticipant participantId={participantId} quality={quality} />
       </div>
     </animated.div>
   );
@@ -117,7 +105,6 @@ const MotionParticipantContainer = ({
   relativeWidth: width,
   relativeTop: top,
   relativeLeft: left,
-  useVisibilitySensor,
 }) => {
   const { animationsEnabled } = useMeetingAppContext();
 
@@ -131,7 +118,6 @@ const MotionParticipantContainer = ({
         relativeWidth: width,
         relativeTop: top,
         relativeLeft: left,
-        useVisibilitySensor,
       }}
     />
   ) : (
@@ -154,9 +140,7 @@ const MotionParticipantContainer = ({
           width: `calc(100% - ${2 * gutter}px)`,
         }}
       >
-        <MemoizedParticipant
-          {...{ participantId, quality, useVisibilitySensor }}
-        />
+        <MemoizedParticipant {...{ participantId, quality }} />
       </div>
     </div>
   );
@@ -171,8 +155,7 @@ export const MemoizedMotionParticipant = React.memo(
     prevProps.relativeHeight === nextProps.relativeHeight &&
     prevProps.relativeWidth === nextProps.relativeWidth &&
     prevProps.relativeTop === nextProps.relativeTop &&
-    prevProps.relativeLeft === nextProps.relativeLeft &&
-    prevProps.useVisibilitySensor === nextProps.useVisibilitySensor
+    prevProps.relativeLeft === nextProps.relativeLeft
 );
 
 const MainViewContainer = ({
@@ -466,24 +449,24 @@ const MainViewContainer = ({
       reduceEdgeSpacing
         ? 0
         : presenterId ||
-          whiteboardStarted ||
-          (mainLayoutParticipantId && singleRow.length !== 0)
-        ? 0
-        : typeof sideBarMode === "string"
-        ? 0
-        : mainViewParticipants?.length <= 9
-        ? isLGDesktop
-          ? !mainScreenViewActive && singleRow.length === 2
+            whiteboardStarted ||
+            (mainLayoutParticipantId && singleRow.length !== 0)
+          ? 0
+          : typeof sideBarMode === "string"
             ? 0
-            : 140
-          : isSMDesktop
-          ? !mainScreenViewActive && singleRow.length === 2
-            ? 20
-            : 90
-          : isTab && !isPortrait
-          ? 60
-          : 0
-        : 0,
+            : mainViewParticipants?.length <= 9
+              ? isLGDesktop
+                ? !mainScreenViewActive && singleRow.length === 2
+                  ? 0
+                  : 140
+                : isSMDesktop
+                  ? !mainScreenViewActive && singleRow.length === 2
+                    ? 20
+                    : 90
+                  : isTab && !isPortrait
+                    ? 60
+                    : 0
+              : 0,
     [
       mainScreenViewActive,
       sideBarMode,
@@ -525,8 +508,8 @@ const MainViewContainer = ({
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.main
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.main
-              : theme.palette.background.default,
+                ? theme.palette.lightTheme.main
+                : theme.palette.background.default,
           overflow: "hidden",
           transition: `width ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "ease-in-out",
@@ -559,8 +542,8 @@ const MainViewContainer = ({
                   ? appTheme === appThemes.DARK
                     ? theme.palette.darkTheme.slightLighter
                     : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.two
-                    : theme.palette.background.paper
+                      ? theme.palette.lightTheme.two
+                      : theme.palette.background.paper
                   : undefined,
               transition: `width ${800 * (animationsEnabled ? 1 : 0.5)}ms`,
               transitionTimingFunction: "ease-in-out",
@@ -679,8 +662,8 @@ const MainViewContainer = ({
                 appTheme === appThemes.DARK
                   ? theme.palette.darkTheme.main
                   : appTheme === appThemes.LIGHT
-                  ? theme.palette.lightTheme.main
-                  : theme.palette.background.default,
+                    ? theme.palette.lightTheme.main
+                    : theme.palette.background.default,
               overflowX: "hidden",
               overflowY: mainScreenViewActive ? "scroll" : "hidden",
               width: mainScreenViewActive
@@ -744,7 +727,6 @@ const MainViewContainer = ({
                   key={`main_participant_${c.participantId}`}
                   {...c}
                   gutter={gutter}
-                  useVisibilitySensor={mainScreenViewActive ? true : false}
                 />
               ))}
             </div>

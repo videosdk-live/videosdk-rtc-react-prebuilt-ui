@@ -85,23 +85,29 @@ const useSortActiveParticipants = () => {
       }
 
       if (foundIndexMain === -1) {
-        // if not space in main then get inactive from active and replace with active into main
-        const mainParticipantsLastActive = activeSortedParticipants.filter(
-          ({ participantId }) =>
-            mainViewParticipants.findIndex((pID) => pID === participantId) !==
-            -1
-        );
+        const maxParticipantInMainView = maxParticipantInMainViewRef.current;
 
-        const notActive =
-          mainParticipantsLastActive[mainParticipantsLastActive.length - 1];
+        if (mainViewParticipants.length < maxParticipantInMainView) {
+          setMainViewParticipants([...mainViewParticipants, activeSpeakerId]);
+        } else {
+          const mainParticipantsLastActive = activeSortedParticipants.filter(
+            ({ participantId }) =>
+              mainViewParticipants.findIndex((pID) => pID === participantId) !==
+              -1
+          );
 
-        const notActiveMainIndex = mainViewParticipants.findIndex(
-          (participantId) => notActive.participantId === participantId
-        );
+          const notActive =
+            mainParticipantsLastActive[mainParticipantsLastActive.length - 1];
 
-        mainViewParticipants[notActiveMainIndex] = activeSpeakerId;
+          const notActiveMainIndex = mainViewParticipants.findIndex(
+            (participantId) => notActive.participantId === participantId
+          );
 
-        setMainViewParticipants(mainViewParticipants);
+          const nextMainViewParticipants = [...mainViewParticipants];
+          nextMainViewParticipants[notActiveMainIndex] = activeSpeakerId;
+
+          setMainViewParticipants(nextMainViewParticipants);
+        }
       }
 
       setActiveSortedParticipants(activeSortedParticipants);
@@ -190,6 +196,7 @@ const useSortActiveParticipants = () => {
 
   const _sortOnModify = ({ maxParticipantInMainView: maxCount } = {}) => {
     const activeSortedParticipants = activeSortedParticipantsRef.current;
+    if (!activeSortedParticipants) return;
 
     const maxParticipantInMainView =
       maxCount || maxParticipantInMainViewRef.current;
@@ -275,14 +282,14 @@ const useSortActiveParticipants = () => {
           ? 4
           : 3
         : isLGDesktop
-        ? maxParticipantGridCount_large_desktop
-        : isSMDesktop
-        ? maxParticipantGridCount_desktop
-        : isTab
-        ? maxParticipantGridCount_tab
-        : isMobile
-        ? maxParticipantGridCount_mobile
-        : 0;
+          ? maxParticipantGridCount_large_desktop
+          : isSMDesktop
+            ? maxParticipantGridCount_desktop
+            : isTab
+              ? maxParticipantGridCount_tab
+              : isMobile
+                ? maxParticipantGridCount_mobile
+                : 0;
 
     if (typeof layoutGridSize === "number" && n > layoutGridSize) {
       n = layoutGridSize;
@@ -304,6 +311,10 @@ const useSortActiveParticipants = () => {
   }, [mPresenterId]);
 
   useEffect(() => {
+    _sortOnModify({ maxParticipantInMainView });
+  }, [mMeeting.participants, maxParticipantInMainView]);
+
+  useEffect(() => {
     activeSortedParticipantsRef.current = [...activeSortedParticipants];
   }, [activeSortedParticipants]);
 
@@ -313,7 +324,6 @@ const useSortActiveParticipants = () => {
 
   useEffect(() => {
     maxParticipantInMainViewRef.current = maxParticipantInMainView;
-    _sortOnModify({ maxParticipantInMainView });
   }, [maxParticipantInMainView, mMeeting.participants]);
 
   useEffect(() => {

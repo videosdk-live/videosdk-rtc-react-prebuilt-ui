@@ -6,8 +6,8 @@ const MediaRequested = () => {
   const reqInfoDefaultState = {
     enabled: false,
     participantName: null,
-    accept: () => { },
-    reject: () => { },
+    accept: () => {},
+    reject: () => {},
   };
 
   const [reqMicInfo, setReqMicInfo] = useState(reqInfoDefaultState);
@@ -45,19 +45,27 @@ const MediaRequested = () => {
   }, [mMeeting]);
 
   usePubSub(`SCR_SHR_REQ_${mMeeting?.localParticipant?.id}`, {
-    onMessageReceived: (data) => {
-      const { setScreenShareOn } = JSON.parse(data.message);
+    onMessageReceived: async (data) => {
+      const { setScreenShareOn } = data.payload || {};
       if (setScreenShareOn) {
         setReqScreenShareInfo({
           enabled: true,
           participantName: "Host",
-          accept: () => {
-            mMeeting?.toggleScreenShare();
+          accept: async () => {
+            try {
+              await mMeeting?.toggleScreenShare();
+            } catch (e) {
+              console.log("Error toggling screen share", e);
+            }
           },
-          reject: () => { },
+          reject: () => {},
         });
       } else {
-        mMeeting?.toggleScreenShare();
+        try {
+          await mMeeting?.toggleScreenShare();
+        } catch (e) {
+          console.log("Error toggling screen share", e);
+        }
       }
     },
   });
@@ -75,17 +83,26 @@ const MediaRequested = () => {
       ].map(({ accept, enabled, participantName, setter, reject, type }, i) => {
         return (
           <ConfirmBox
+            key={`media_req_${type}`}
             {...{
               successText: "Turn on",
               rejectText: "Cancel",
               open: enabled,
-              onReject: () => {
+              onReject: async () => {
                 setter(reqInfoDefaultState);
-                reject();
+                try {
+                  await reject();
+                } catch (e) {
+                  console.log("Error rejecting media request", e);
+                }
               },
-              onSuccess: () => {
+              onSuccess: async () => {
                 setter(reqInfoDefaultState);
-                accept();
+                try {
+                  await accept();
+                } catch (e) {
+                  console.log("Error accepting media request", e);
+                }
               },
               title: `Turn on ${type}?`,
               subTitle:

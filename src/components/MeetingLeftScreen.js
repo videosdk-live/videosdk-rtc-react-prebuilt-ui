@@ -1,6 +1,6 @@
 import { Box, Button, Link, Typography } from "@mui/material";
 import React from "react";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 import useIsLGDesktop from "../utils/useIsLGDesktop";
 import useIsSMDesktop from "../utils/useIsSMDesktop";
 import useResponsiveSize from "../utils/useResponsiveSize";
@@ -38,7 +38,10 @@ const MeetingLeftScreen = ({
   leftScreenRejoinButtonEnabled,
   backgroundColor,
   color,
+  primaryColor,
+  primaryContrastText,
   animationData,
+  onRejoin,
 }) => {
   const defaultOptions = {
     loop: false,
@@ -112,16 +115,23 @@ const MeetingLeftScreen = ({
         >
           {leftScreenRejoinButtonEnabled && (
             <Button
-              onClick={() => {
+              onClick={async () => {
+                if (typeof onRejoin === "function") {
+                  try {
+                    await onRejoin();
+                  } catch (e) {
+                    console.log("Error preparing rejoin", e);
+                  }
+                }
                 setMeetingLeft(false);
               }}
               size={isSMDesktop || isLGDesktop ? "large" : "medium"}
               variant="contained"
-              color={"primary"}
               style={{
                 textTransform: "capitalize",
                 fontWeight: "bold",
-                color: color,
+                backgroundColor: primaryColor,
+                color: primaryContrastText,
               }}
             >
               Rejoin Meeting

@@ -22,6 +22,7 @@ import {
 } from "../utils/common";
 import { useSnackbar } from "notistack";
 import useResponsiveSize from "../utils/useResponsiveSize";
+import { useNotificationSound } from "../utils/useNotificationSound";
 import useRaisedHandParticipants from "./useRaisedHandParticipants";
 import MediaRequested from "../components/MediaRequested";
 import RequestedEntries from "../components/RequestedEntries";
@@ -36,7 +37,6 @@ import ModeListner from "../components/ModeListner";
 import useIsRecording from "./useIsRecording";
 import useIsLivestreaming from "./useIsLivestreaming";
 import useIsHls from "./useIsHls";
-import PauseInvisibleParticipants from "./mainViewContainer/PauseInvisibleParticipants";
 import {
   meetingModes,
   RECORDER_MAX_GRID_SIZE,
@@ -46,7 +46,6 @@ import { Box } from "@mui/material";
 import { useTheme } from "@mui/system";
 import PollsListner from "../components/PollListner";
 import RecordingLoader from "../components/RecordingLoader";
-import useCustomTrack from "../utils/useCustomTrack";
 import ResolutionListner from "../components/ResolutionListner";
 import RealTimeCaptionProvider from "../components/RealTimeCaptionProvider";
 
@@ -92,7 +91,6 @@ const getPinMsg = ({
 const MeetingContainer = () => {
   const showJoinNotificationRef = useRef(false);
   const localParticipantAutoPinnedOnShare = useRef(false);
-
   const mMeetingRef = useRef();
 
   const [containerHeight, setContainerHeight] = useState(0);
@@ -120,6 +118,15 @@ const MeetingContainer = () => {
     sm: 280,
     xs: 240,
   });
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
+  const playNotificationError = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification_err.mp3`
+  );
+  const playNotificationCritical = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
+  );
 
   useEffect(() => {
     containerRef.current?.offsetHeight &&
@@ -197,8 +204,6 @@ const MeetingContainer = () => {
 
   const webcamEnabledValue = webcamEnabled === "true" ? true : false;
 
-  const { getCustomAudioTrack, getCustomVideoTrack } = useCustomTrack();
-
   const topBarHeight = topbarEnabled ? 60 : 0;
 
   const isTab = useIsTab();
@@ -241,7 +246,8 @@ const MeetingContainer = () => {
 
   usePubSub(meetingLayoutTopic, {
     onMessageReceived: (data) => {
-      const { layout } = JSON.parse(data.message);
+      const { layout } = data.payload || {};
+      if (!layout) return;
       setAppMeetingLayout({
         ...layout,
         gridSize: isRecorder
@@ -267,7 +273,8 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        const { layout } = JSON.parse(latestMessage.message);
+        const { layout } = latestMessage.payload || {};
+        if (!layout) return;
         setAppMeetingLayout({
           ...layout,
           gridSize: isRecorder
@@ -287,7 +294,8 @@ const MeetingContainer = () => {
 
   const { publish: liveStreamConfigPublish } = usePubSub("LIVE_STREAM_CONFIG", {
     onMessageReceived: (data) => {
-      const { config } = JSON.parse(data.message);
+      const { config } = data.payload || {};
+      if (!config) return;
       setLiveStreamConfig(config);
     },
 
@@ -303,23 +311,40 @@ const MeetingContainer = () => {
       })[0];
 
       if (latestMessage) {
-        const { config } = JSON.parse(latestMessage.message);
+        const { config } = latestMessage.payload || {};
+        if (!config) return;
         setLiveStreamConfig(config);
       }
     },
   });
 
-  const liveStreamConfigPublishRef = useRef();
+  const liveStreamConfigPublishRef = useRef(liveStreamConfigPublish);
 
   useEffect(() => {
     liveStreamConfigPublishRef.current = liveStreamConfigPublish;
   }, [liveStreamConfigPublish]);
 
-  const _handleOnMeetingJoined = async () => {
-    const { changeWebcam, changeMic, muteMic, disableWebcam } =
-      mMeetingRef.current;
+  const autoStartTimeoutRef = useRef(null);
+  const isUnmountedRef = useRef(false);
 
-    setTimeout(async () => {
+  useEffect(() => {
+    return () => {
+      isUnmountedRef.current = true;
+      if (autoStartTimeoutRef.current) {
+        clearTimeout(autoStartTimeoutRef.current);
+        autoStartTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const _handleOnMeetingJoined = async () => {
+    if (autoStartTimeoutRef.current) {
+      clearTimeout(autoStartTimeoutRef.current);
+    }
+    autoStartTimeoutRef.current = setTimeout(async () => {
+      autoStartTimeoutRef.current = null;
+      if (isUnmountedRef.current) return;
+
       const { startLivestream, startRecording, startHls } = mMeetingRef.current;
 
       const isLiveStreaming = isLiveStreamingRef.current;
@@ -338,70 +363,44 @@ const MeetingContainer = () => {
 
       const layout = { type, priority, gridSize };
 
-      //
-      //
-
       if (autoStartLiveStream && !isLiveStreaming && outputs?.length) {
-        startLivestream(outputs, { layout, theme: liveStreamTheme });
         try {
-          await liveStreamConfigPublishRef.current(
-            JSON.stringify({
-              config: outputs.map((output) => {
-                return { ...output, id: getUniqueId() };
-              }),
-            }),
-            { persist: true },
-          );
+          await startLivestream(outputs, { layout, theme: liveStreamTheme });
+          if (typeof liveStreamConfigPublishRef.current === "function") {
+            await liveStreamConfigPublishRef.current(
+              "livestream-config-update",
+              { persist: true },
+              {
+                config: outputs.map((output) => {
+                  return { ...output, id: getUniqueId() };
+                }),
+              }
+            );
+          }
         } catch (error) {
-          console.log("Error in Pubsub ", error);
+          console.log("Error in autoStartLivestream ", error);
         }
       }
 
-      //
-      //
-
       if (autoStartRecording && !isRecording) {
-        startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-          layout,
-          theme: recordingTheme,
-        });
+        try {
+          await startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+            layout,
+            theme: recordingTheme,
+          });
+        } catch (error) {
+          console.log("Error in autoStartRecording ", error);
+        }
       }
-
-      //
-      //
 
       if (autoStartHls && !isHls) {
-        startHls({ layout, theme: hlsTheme });
+        try {
+          await startHls({ layout, theme: hlsTheme });
+        } catch (error) {
+          console.log("Error in autoStartHls ", error);
+        }
       }
     }, 3000);
-
-    if (
-      joinWithoutUserInteractionValue
-        ? webcamEnabledValue
-        : joinScreenWebCam && (cameraId || selectedWebcam.id)
-    ) {
-      await new Promise((resolve) => {
-        disableWebcam();
-        setTimeout(async () => {
-          const track = await getCustomVideoTrack(
-            cameraId ? cameraId : selectedWebcam.id
-          );
-          changeWebcam(track);
-          resolve();
-        }, 500);
-      });
-    }
-
-    if (joinScreenMic && selectedMic.id) {
-      await new Promise((resolve) => {
-        // muteMic();
-        setTimeout(async () => {
-          const audioTrack = await getCustomAudioTrack(selectedMic.id);
-          changeMic(audioTrack);
-          resolve();
-        }, 500);
-      });
-    }
   };
 
   const _handleMeetingLeft = () => {
@@ -422,9 +421,7 @@ const MeetingContainer = () => {
 
       if (!isLocal) {
         if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          playNotification();
         }
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
@@ -443,9 +440,7 @@ const MeetingContainer = () => {
 
       const isLocal = senderId === localParticipantId;
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        playNotification();
       }
       if (notificationAlertsEnabled) {
         enqueueSnackbar(
@@ -468,16 +463,15 @@ const MeetingContainer = () => {
 
       if (type === "END_CALL") {
         if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          playNotification();
         }
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${isLocal
-              ? "You end the call"
-              : " This meeting has been ended by host"
+            `${
+              isLocal
+                ? "You end the call"
+                : " This meeting has been ended by host"
             }`
           );
         }
@@ -490,9 +484,7 @@ const MeetingContainer = () => {
       const { displayName } = data;
       if (participantNotificationAlertsEnabled) {
         if (notificationSoundEnabled) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          playNotification();
         }
         enqueueSnackbar(`${displayName} joined the meeting`, {});
       }
@@ -503,15 +495,13 @@ const MeetingContainer = () => {
     const { displayName } = data;
     if (participantNotificationAlertsEnabled) {
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        playNotification();
       }
       enqueueSnackbar(`${displayName} left the meeting`, {});
     }
   };
 
-  const _handlePresenterChanged = (presenterId) => {
+  const _handlePresenterChanged = async (presenterId) => {
     // reduce grid size in recorder if presenter changes
     if (isRecorder) {
       if (presenterId) {
@@ -534,7 +524,11 @@ const MeetingContainer = () => {
     }
 
     if (!presenterId && localParticipantAutoPinnedOnShare.current === true) {
-      mMeetingRef.current?.localParticipant.unpin();
+      try {
+        await mMeetingRef.current?.localParticipant.unpin();
+      } catch (e) {
+        console.log("Error unpinning local participant", e);
+      }
       localParticipantAutoPinnedOnShare.current = false;
     }
 
@@ -553,7 +547,11 @@ const MeetingContainer = () => {
           if (!localIsPinned) {
             localParticipantAutoPinnedOnShare.current = true;
 
-            mMeetingRef.current?.localParticipant.pin();
+            try {
+              await mMeetingRef.current?.localParticipant.pin();
+            } catch (e) {
+              console.log("Error pinning local participant", e);
+            }
           }
         }
       }
@@ -561,9 +559,7 @@ const MeetingContainer = () => {
         notificationSoundEnabled &&
         meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        playNotification();
       }
 
       if (
@@ -571,20 +567,21 @@ const MeetingContainer = () => {
         meetingModeRef.current === meetingModes.SEND_AND_RECV
       ) {
         enqueueSnackbar(
-          `${isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
+          `${
+            isLocal ? "You" : nameTructed(mPresenter.displayName, 15)
           } started presenting`
         );
       }
     }
   };
 
-  const _handleOnRecordingStarted = () => { };
+  const _handleOnRecordingStarted = () => {};
 
-  const _handleOnRecordingStopped = () => { };
+  const _handleOnRecordingStopped = () => {};
 
-  const _handleOnLiveStreamStarted = () => { };
+  const _handleOnLiveStreamStarted = () => {};
 
-  const _handleOnLiveStreamStopped = () => { };
+  const _handleOnLiveStreamStopped = () => {};
 
   const _handleOnRecordingStateChanged = ({ status }) => {
     if (
@@ -674,11 +671,11 @@ const MeetingContainer = () => {
     //set downstream url on basis of started or stopped
   };
 
-  const _handleOnHlsStarted = (data) => { };
+  const _handleOnHlsStarted = (data) => {};
 
-  const _handleOnHlsStopped = () => { };
+  const _handleOnHlsStopped = () => {};
 
-  const _handleOnEntryRequested = () => { };
+  const _handleOnEntryRequested = () => {};
 
   const _handleOnEntryResponded = (participantId, decision) => {
     if (mMeetingRef.current?.localParticipant?.id === participantId) {
@@ -732,11 +729,7 @@ const MeetingContainer = () => {
     const isJoiningError = joiningErrCodes.findIndex((c) => c === code) !== -1;
     const isCriticalError = `${code}`.startsWith("500");
 
-    new Audio(
-      isCriticalError
-        ? `https://static.videosdk.live/prebuilt/notification_critical_err.mp3`
-        : `https://static.videosdk.live/prebuilt/notification_err.mp3`
-    ).play();
+    isCriticalError ? playNotificationCritical() : playNotificationError();
 
     setMeetingError({
       code,
@@ -789,7 +782,7 @@ const MeetingContainer = () => {
           document.documentElement.msRequestFullscreen();
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -845,7 +838,6 @@ const MeetingContainer = () => {
           <>
             <ModeListner />
             <PollsListner />
-            <PauseInvisibleParticipants />
             {/* <ResolutionListner /> */}
             {realtimeTranscriptionVisible ? <RealTimeCaptionProvider /> : null}
             <div
@@ -866,8 +858,8 @@ const MeetingContainer = () => {
                 {meetingMode === meetingModes.SEND_AND_RECV ? (
                   <>
                     {mMeeting?.pinnedParticipants.size > 0 &&
-                      (meetingLayout === meetingLayouts.SPOTLIGHT ||
-                        meetingLayout === meetingLayouts.SIDEBAR) ? (
+                    (meetingLayout === meetingLayouts.SPOTLIGHT ||
+                      meetingLayout === meetingLayouts.SIDEBAR) ? (
                       <PinnedLayoutViewContainer
                         {...{
                           height: containerHeight - topBarHeight,

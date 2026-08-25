@@ -37,7 +37,6 @@ import ParticipantVideoOffIcon from "../../icons/ParticipantVideoOffIcon";
 import ParticipantPinIcon from "../../icons/ParticipantPinIcon";
 import ParticipantRemoveIcon from "../../icons/ParticipantRemoveIcon";
 import useIsHls from "../useIsHls";
-import useCustomTrack from "../../utils/useCustomTrack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
@@ -69,8 +68,6 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
     meetingMode,
     appTheme,
   } = useMeetingAppContext();
-
-  const { getCustomVideoTrack, getCustomAudioTrack } = useCustomTrack();
 
   const isParticipantPresenting = useMemo(() => {
     return presenterId === participantId;
@@ -236,11 +233,15 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                     }
                     style={{ padding: 0 }}
                     onClick={async () => {
-                      if (micOn) {
-                        disableMic();
-                      } else {
-                        const track = await getCustomAudioTrack();
-                        enableMic(track);
+                      try {
+                        if (micOn) {
+                          await disableMic();
+                        } else {
+                          // SDK preserves config from initial MeetingProvider track.
+                          await enableMic();
+                        }
+                      } catch (e) {
+                        console.log("Error toggling participant mic", e);
                       }
                     }}
                   >
@@ -279,11 +280,15 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                     }
                     style={{ padding: 0 }}
                     onClick={async () => {
-                      if (webcamOn) {
-                        disableWebcam();
-                      } else {
-                        const track = await getCustomVideoTrack();
-                        enableWebcam(track);
+                      try {
+                        if (webcamOn) {
+                          await disableWebcam();
+                        } else {
+                          // SDK preserves config from initial MeetingProvider track.
+                          await enableWebcam();
+                        }
+                      } catch (e) {
+                        console.log("Error toggling participant webcam", e);
                       }
                     }}
                   >
@@ -332,9 +337,17 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                         participantMode === meetingModes.SIGNALLING_ONLY
                       }
                       size="small"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        pinState?.share || pinState?.cam ? unpin() : pin();
+                        try {
+                          if (pinState?.share || pinState?.cam) {
+                            await unpin();
+                          } else {
+                            await pin();
+                          }
+                        } catch (err) {
+                          console.log("Error toggling pin", err);
+                        }
                       }}
                       style={{
                         display: "flex",
@@ -485,9 +498,11 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                         e.stopPropagation();
                         try {
                           await publish(
-                            JSON.stringify({
+                            "screen-share-request",
+                            {},
+                            {
                               setScreenShareOn: !isParticipantPresenting,
-                            }),
+                            }
                           );
                         } catch (error) {
                           console.log("Error in Pubsub ", error);
@@ -527,14 +542,16 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                                 appTheme === appThemes.LIGHT
                                   ? theme.palette.lightTheme.contrastText
                                   : !(
-                                    !isLocal &&
-                                    partcipantCanToogleOtherScreenShare &&
-                                    (presenterId
-                                      ? isParticipantPresenting
-                                      : true)
-                                  ) ||
-                                    meetingMode === meetingModes.SIGNALLING_ONLY ||
-                                    participantMode === meetingModes.SIGNALLING_ONLY
+                                        !isLocal &&
+                                        partcipantCanToogleOtherScreenShare &&
+                                        (presenterId
+                                          ? isParticipantPresenting
+                                          : true)
+                                      ) ||
+                                      meetingMode ===
+                                        meetingModes.SIGNALLING_ONLY ||
+                                      participantMode ===
+                                        meetingModes.SIGNALLING_ONLY
                                     ? appTheme === appThemes.LIGHT
                                       ? theme.palette.lightTheme.contrastText
                                       : "#ffffff80"
@@ -563,8 +580,8 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
                                   partcipantCanToogleOtherScreenShare &&
                                   (presenterId ? isParticipantPresenting : true)
                                 ) ||
-                                  meetingMode === meetingModes.SIGNALLING_ONLY ||
-                                  participantMode === meetingModes.SIGNALLING_ONLY
+                                meetingMode === meetingModes.SIGNALLING_ONLY ||
+                                participantMode === meetingModes.SIGNALLING_ONLY
                                   ? theme.palette.text.secondary
                                   : appTheme === appThemes.LIGHT
                                     ? theme.palette.lightTheme.contrastText
@@ -594,8 +611,12 @@ function HumanParticipantListItem({ raisedHand, participantId }) {
         )} from the call?`}
         successText={"Remove"}
         rejectText={"Cancel"}
-        onSuccess={() => {
-          participant.remove();
+        onSuccess={async () => {
+          try {
+            await participant.remove();
+          } catch (e) {
+            console.log("Error removing participant", e);
+          }
           setIsParticipantKickoutVisible(false);
         }}
         onReject={() => {
@@ -646,8 +667,8 @@ function AgentParticipantListItem({ participantId }) {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.seven
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.three
-            : theme.palette.common.sidePanel,
+              ? theme.palette.lightTheme.three
+              : theme.palette.common.sidePanel,
         borderRadius: 6,
       }}
     >
@@ -668,8 +689,8 @@ function AgentParticipantListItem({ participantId }) {
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.five
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.five
-                : "",
+                  ? theme.palette.lightTheme.five
+                  : "",
           }}
         >
           {displayName?.charAt(0)}
@@ -787,9 +808,17 @@ function AgentParticipantListItem({ participantId }) {
                   <Tooltip title={isPinned ? "Unpin" : "Pin"}>
                     <IconButton
                       size="small"
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
-                        isPinned ? unpin() : pin();
+                        try {
+                          if (isPinned) {
+                            await unpin();
+                          } else {
+                            await pin();
+                          }
+                        } catch (err) {
+                          console.log("Error toggling pin", err);
+                        }
                       }}
                       style={{
                         display: "flex",
@@ -804,8 +833,8 @@ function AgentParticipantListItem({ participantId }) {
                               ? theme.palette.lightTheme.contrastText
                               : "white"
                             : appTheme === appThemes.LIGHT
-                            ? theme.palette.lightTheme.four
-                            : "#ffffff80"
+                              ? theme.palette.lightTheme.four
+                              : "#ffffff80"
                         }
                       />
                     </IconButton>
@@ -860,14 +889,14 @@ function AgentParticipantListItem({ participantId }) {
                       appTheme === appThemes.DARK
                         ? theme.palette.darkTheme.slightLighter
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.two
-                        : "",
+                          ? theme.palette.lightTheme.two
+                          : "",
                     color:
                       appTheme === appThemes.DARK
                         ? theme.palette.common.white
                         : appTheme === appThemes.LIGHT
-                        ? theme.palette.lightTheme.contrastText
-                        : "",
+                          ? theme.palette.lightTheme.contrastText
+                          : "",
                   }}
                 >
                   <MenuItem
@@ -922,8 +951,12 @@ function AgentParticipantListItem({ participantId }) {
         subTitle={`Are you sure you want to remove ${nameTructed(displayName, 15)} from the call?`}
         successText={"Remove"}
         rejectText={"Cancel"}
-        onSuccess={() => {
-          agentParticipant?.remove();
+        onSuccess={async () => {
+          try {
+            await agentParticipant?.remove();
+          } catch (e) {
+            console.log("Error removing agent participant", e);
+          }
           setIsParticipantKickoutVisible(false);
         }}
         onReject={() => {
@@ -996,14 +1029,14 @@ export default function ParticipantsTabPanel({ panelWidth, panelHeight }) {
   ) =>
     filterQuery?.length > 2
       ? sortedRaisedHandsParticipants.filter(({ participantId }) => {
-        const { displayName } = participants.get(participantId);
+          const { displayName } = participants.get(participantId);
 
-        const hide = !displayName
-          ?.toLowerCase()
-          .includes(filterQuery.toLowerCase());
+          const hide = !displayName
+            ?.toLowerCase()
+            .includes(filterQuery.toLowerCase());
 
-        return !hide;
-      })
+          return !hide;
+        })
       : sortedRaisedHandsParticipants;
 
   const part = useMemo(

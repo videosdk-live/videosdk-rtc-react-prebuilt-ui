@@ -23,14 +23,14 @@ const useResponsiveSize = ({ xs, sm, md, lg, xl }) => {
   return gtThenXL
     ? xl
     : gtThenLG
-    ? lg
-    : gtThenMD
-    ? md
-    : gtThenSM
-    ? sm
-    : gtThenXS
-    ? xs
-    : lg;
+      ? lg
+      : gtThenMD
+        ? md
+        : gtThenSM
+          ? sm
+          : gtThenXS
+            ? xs
+            : lg;
 };
 
 export default useResponsiveSize;

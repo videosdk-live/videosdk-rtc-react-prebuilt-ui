@@ -1,10 +1,4 @@
-import {
-  Box,
-  Grid,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import {
   createCameraVideoTrack,
   useMeeting,
@@ -23,7 +17,7 @@ const SingleImage = ({
   backgroudImageUrl,
   i,
   type,
-  isLocal
+  isLocal,
 }) => {
   const { selectWebcamDeviceId } = useMeetingAppContext();
   const Width = useResponsiveSize({
@@ -37,7 +31,6 @@ const SingleImage = ({
   const changeWebcam = mMeeting?.changeWebcam;
 
   const localWebcamOn = mMeeting?.localWebcamOn;
-
 
   const flipStyle = useMemo(
     () =>

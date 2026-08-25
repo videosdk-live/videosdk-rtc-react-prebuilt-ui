@@ -6,7 +6,7 @@ import {
   Slide,
   Typography,
   useTheme,
-  Fade
+  Fade,
 } from "@mui/material";
 import React, { useMemo } from "react";
 import {
@@ -59,14 +59,14 @@ const SideBarTabView = ({ width, height }) => {
     sideBarMode === sideBarModes.PARTICIPANTS
       ? 0
       : sideBarMode === sideBarModes.CHAT
-      ? 1
-      : sideBarMode === sideBarModes.ACTIVITIES
-      ? 2
-      : sideBarNestedMode === sideBarNestedModes.ADD_LIVE_STREAM //sideBarMode === sideBarModes.ADD_LIVE_STREAM
-      ? 3
-      : sideBarMode === sideBarModes.CONFIGURATION
-      ? 4
-      : null;
+        ? 1
+        : sideBarMode === sideBarModes.ACTIVITIES
+          ? 2
+          : sideBarNestedMode === sideBarNestedModes.ADD_LIVE_STREAM //sideBarMode === sideBarModes.ADD_LIVE_STREAM
+            ? 3
+            : sideBarMode === sideBarModes.CONFIGURATION
+              ? 4
+              : null;
 
   const panelPadding = 8;
 
@@ -108,19 +108,19 @@ const SideBarTabView = ({ width, height }) => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
       }}
     >
-      <Fade in={sideBarMode}>
+      <Fade in={Boolean(sideBarMode)}>
         <div
           style={{
             backgroundColor:
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.two
-                : theme.palette.background.paper,
+                  ? theme.palette.lightTheme.two
+                  : theme.palette.background.paper,
             height: paddedHeight,
             borderRadius: 10,
             overflow: "hidden",
@@ -164,9 +164,7 @@ const SideBarTabView = ({ width, height }) => {
                           marginLeft: -4,
                         }}
                       >
-                        <NavigateBeforeOutlined
-                          fontSize="medium"
-                        />
+                        <NavigateBeforeOutlined fontSize="medium" />
                       </CustomIconButton>
                     )}
                   <Typography
@@ -184,29 +182,31 @@ const SideBarTabView = ({ width, height }) => {
                           String(sideBarMode || "").toLowerCase()
                         )} (${new Map(participants)?.size})`
                       : sideBarMode === "ADD_LIVE_STREAM" ||
-                        sideBarNestedMode === "ADD_LIVE_STREAM"
-                      ? "Add Live Streams"
-                      : sideBarMode === "ACTIVITIES" &&
-                        sideBarNestedMode === "POLLS"
-                      ? polls.length >= 1 || draftPolls.length >= 1
-                        ? `Polls (${polls.length || draftPolls.length})`
-                        : sideBarNestedMode === "CREATE_POLL" &&
-                          sideBarMode === "ACTIVITIES"
-                        ? "Create a poll"
-                        : canCreatePoll &&
-                          sideBarMode === "ACTIVITIES" &&
-                          meetingMode !== meetingModes.SIGNALLING_ONLY
-                        ? "Create a poll"
-                        : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
-                      : sideBarNestedMode === "CREATE_POLL" &&
-                        sideBarMode === "ACTIVITIES"
-                      ? "Create a poll"
-                      : sideBarMode === "ACTIVITIES"
-                      ? sideBarNestedMode ===
-                        sideBarNestedModes.VIRTUAL_BACKGROUND
-                        ? "Virtual Background (BETA)"
-                        : "More Options"
-                      : capitalize(String(sideBarMode || "").toLowerCase())}
+                          sideBarNestedMode === "ADD_LIVE_STREAM"
+                        ? "Add Live Streams"
+                        : sideBarMode === "ACTIVITIES" &&
+                            sideBarNestedMode === "POLLS"
+                          ? polls.length >= 1 || draftPolls.length >= 1
+                            ? `Polls (${polls.length || draftPolls.length})`
+                            : sideBarNestedMode === "CREATE_POLL" &&
+                                sideBarMode === "ACTIVITIES"
+                              ? "Create a poll"
+                              : canCreatePoll &&
+                                  sideBarMode === "ACTIVITIES" &&
+                                  meetingMode !== meetingModes.SIGNALLING_ONLY
+                                ? "Create a poll"
+                                : `Polls ${polls.length > 0 ? `(${polls.length})` : ""}`
+                          : sideBarNestedMode === "CREATE_POLL" &&
+                              sideBarMode === "ACTIVITIES"
+                            ? "Create a poll"
+                            : sideBarMode === "ACTIVITIES"
+                              ? sideBarNestedMode ===
+                                sideBarNestedModes.VIRTUAL_BACKGROUND
+                                ? "Virtual Background (BETA)"
+                                : "More Options"
+                              : capitalize(
+                                  String(sideBarMode || "").toLowerCase()
+                                )}
                   </Typography>
                 </Box>
                 <Box>
@@ -217,9 +217,7 @@ const SideBarTabView = ({ width, height }) => {
                     disableTouchRipple
                     style={{ padding: 0, margin: 0 }}
                   >
-                    <CloseIcon
-                      fontSize={"small"}
-                    />
+                    <CloseIcon fontSize={"small"} />
                   </CustomIconButton>
                 </Box>
               </Box>
@@ -270,7 +268,7 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
       container={endCallContainerRef?.current}
       closeAfterTransition
       fullScreen
-      open={sideBarMode}
+      open={isOpen}
       onClose={handleClose}
       TransitionComponent={Transition}
     >
@@ -297,8 +295,8 @@ const SideViewContainer = ({ topBarHeight, width, height }) => {
             appTheme === appThemes.DARK
               ? theme.palette.darkTheme.slightLighter
               : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.two
-              : theme.palette.background.paper,
+                ? theme.palette.lightTheme.two
+                : theme.palette.background.paper,
           flex: 1,
           flexDirection: "column",
           display: "flex",

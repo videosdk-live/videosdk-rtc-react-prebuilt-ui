@@ -97,7 +97,7 @@ const ChatMessage = ({ senderId, senderName, text, timestamp }) => {
                       style: {
                         color:
                           appTheme === appThemes.LIGHT ||
-                            appTheme === appThemes.DARK
+                          appTheme === appThemes.DARK
                             ? theme.palette.lightTheme.primaryMain
                             : theme.palette.primary.main,
                       },

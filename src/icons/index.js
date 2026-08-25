@@ -37,6 +37,14 @@ import Participants from "./Participants";
 import SquareIcon from "./SquareIcon";
 import ColorPallet from "./ColorPallet";
 import PaintBucket from "./PaintBucket";
+import DropMIC from "./DropDown/DropMIC";
+import TestMic from "./DropDown/TestMic";
+import TestMicOff from "./DropDown/TestMicOff";
+import PauseButton from "./DropDown/PauseButton";
+import SelectedIcon from "./SelectedIcon";
+import ChevronDownIcon from "./ChevronDownIcon";
+import CameraPermissionDenied from "./CameraPermissionDenied";
+import MicPermissionDenied from "./MicPermissionDenied";
 
 export {
   Activities,
@@ -78,4 +86,12 @@ export {
   SquareIcon,
   ColorPallet,
   PaintBucket,
+  DropMIC,
+  TestMic,
+  TestMicOff,
+  PauseButton,
+  SelectedIcon,
+  ChevronDownIcon,
+  CameraPermissionDenied,
+  MicPermissionDenied,
 };

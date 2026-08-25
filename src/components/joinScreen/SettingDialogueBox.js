@@ -43,7 +43,7 @@ const CustomLightMenuItem = styled(MenuItem)`
     background: #d3d7da;
   }
   &.MuiMenuItem-root {
-    color: #404B53;
+    color: #404b53;
   }
 `;
 
@@ -208,15 +208,15 @@ export default function SettingDialogueBox({
     appTheme === appThemes.LIGHT
       ? CustomLightMenuItem
       : appTheme === appThemes.DARK
-      ? CustomMenuItem
-      : CustomDeafultMenuItem;
+        ? CustomMenuItem
+        : CustomDeafultMenuItem;
 
   const selectTheme = createTheme({
     components: {
       MuiSelect: {
         styleOverrides: {
           root: {
-            color: "#fff",
+            color: appTheme === appThemes.LIGHT ? "#404B53" : "#fff",
           },
         },
       },
@@ -227,8 +227,8 @@ export default function SettingDialogueBox({
               appTheme === appThemes.LIGHT
                 ? "#EFF0F2"
                 : appTheme === appThemes.DARK
-                ? "#202124"
-                : "#333244",
+                  ? "#202124"
+                  : "#333244",
             color: appTheme === appThemes.LIGHT ? "#404B53" : "#fff",
           },
         },
@@ -296,8 +296,8 @@ export default function SettingDialogueBox({
                   appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
                     : appTheme === appThemes.DARK
-                    ? theme.palette.darkTheme.slightLighter
-                    : "",
+                      ? theme.palette.darkTheme.slightLighter
+                      : "",
               }}
             >
               <Box

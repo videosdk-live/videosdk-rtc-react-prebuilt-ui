@@ -13,8 +13,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
           appTheme === appThemes.LIGHT
             ? theme.palette.lightTheme.main
             : appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.darkTheme.main
+              : theme.palette.background.default,
         width: "calc(100vw)",
         height: "calc(100vh)",
         overflow: "hidden",
@@ -34,8 +34,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
               appTheme === appThemes.LIGHT
                 ? "loading-skeleton-anime-light"
                 : appTheme === appThemes.DARK
-                ? "loading-skeleton-anime-dark"
-                : "loading-skeleton-anime-default"
+                  ? "loading-skeleton-anime-dark"
+                  : "loading-skeleton-anime-default"
             }`}
             style={{
               height: `calc(100% - ${spacing * 4}px)`,
@@ -46,8 +46,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                 appTheme === appThemes.LIGHT
                   ? theme.palette.lightTheme.two
                   : appTheme === appThemes.DARK
-                  ? theme.palette.darkTheme.slightLighter
-                  : theme.palette.background.paper,
+                    ? theme.palette.darkTheme.slightLighter
+                    : theme.palette.background.paper,
             }}
           ></div>
         ) : meetingLayout === meetingLayouts.GRID ? (
@@ -67,8 +67,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                     appTheme === appThemes.LIGHT
                       ? "loading-skeleton-anime-light"
                       : appTheme === appThemes.DARK
-                      ? "loading-skeleton-anime-dark"
-                      : "loading-skeleton-anime-default"
+                        ? "loading-skeleton-anime-dark"
+                        : "loading-skeleton-anime-default"
                   }`}
                   style={{
                     margin: spacing,
@@ -77,8 +77,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                       appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.two
                         : appTheme === appThemes.DARK
-                        ? theme.palette.darkTheme.slightLighter
-                        : theme.palette.background.paper,
+                          ? theme.palette.darkTheme.slightLighter
+                          : theme.palette.background.paper,
                   }}
                 ></div>
               ))}
@@ -91,8 +91,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                     appTheme === appThemes.LIGHT
                       ? "loading-skeleton-anime-light"
                       : appTheme === appThemes.DARK
-                      ? "loading-skeleton-anime-dark"
-                      : "loading-skeleton-anime-default"
+                        ? "loading-skeleton-anime-dark"
+                        : "loading-skeleton-anime-default"
                   }`}
                   style={{
                     margin: spacing,
@@ -101,8 +101,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                       appTheme === appThemes.LIGHT
                         ? theme.palette.lightTheme.two
                         : appTheme === appThemes.DARK
-                        ? theme.palette.darkTheme.slightLighter
-                        : theme.palette.background.paper,
+                          ? theme.palette.darkTheme.slightLighter
+                          : theme.palette.background.paper,
                   }}
                 ></div>
               ))}
@@ -115,8 +115,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                 appTheme === appThemes.LIGHT
                   ? "loading-skeleton-anime-light"
                   : appTheme === appThemes.DARK
-                  ? "loading-skeleton-anime-dark"
-                  : "loading-skeleton-anime-default"
+                    ? "loading-skeleton-anime-dark"
+                    : "loading-skeleton-anime-default"
               }`}
               style={{
                 display: "flex",
@@ -127,8 +127,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                   appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
                     : appTheme === appThemes.DARK
-                    ? theme.palette.darkTheme.slightLighter
-                    : theme.palette.background.paper,
+                      ? theme.palette.darkTheme.slightLighter
+                      : theme.palette.background.paper,
               }}
             ></div>
             <div
@@ -136,8 +136,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                 appTheme === appThemes.LIGHT
                   ? "loading-skeleton-anime-light"
                   : appTheme === appThemes.DARK
-                  ? "loading-skeleton-anime-dark"
-                  : "loading-skeleton-anime-default"
+                    ? "loading-skeleton-anime-dark"
+                    : "loading-skeleton-anime-default"
               }`}
               style={{
                 borderRadius: 8,
@@ -149,8 +149,8 @@ export default function RecordingLoader({ meetingLayout, appTheme }) {
                   appTheme === appThemes.LIGHT
                     ? theme.palette.lightTheme.two
                     : appTheme === appThemes.DARK
-                    ? theme.palette.darkTheme.slightLighter
-                    : theme.palette.background.paper,
+                      ? theme.palette.darkTheme.slightLighter
+                      : theme.palette.background.paper,
               }}
             ></div>
           </div>

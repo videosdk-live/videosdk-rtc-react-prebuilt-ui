@@ -71,7 +71,8 @@ import SpeakerMenuIcon from "../icons/SpeakerMenuIcon";
 import SelectedIcon from "../icons/SelectedIcon";
 import { useSnackbar } from "notistack";
 import { VideoSDKNoiseSuppressor } from "@videosdk.live/videosdk-noise-suppressor-web";
-import useCustomTrack from "../utils/useCustomTrack";
+import useMediaStream from "../utils/useMediaStream";
+import { useNotificationSound } from "../utils/useNotificationSound";
 import useIsTranscriptionRunning from "./useIsTranscriptionRunning";
 
 const CustomBox = styled(Box)`
@@ -469,12 +470,18 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
-            onClick={() => {
+            onClick={async () => {
               typeof onClick === "function" && onClick();
 
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
+              try {
+                if (whiteboardStarted) {
+                  await mMeeting.meeting.stopWhiteboard();
+                } else {
+                  await mMeeting.meeting.startWhiteboard();
+                }
+              } catch (e) {
+                console.log("Error toggling whiteboard", e);
+              }
             }}
           />
         ) : (
@@ -487,12 +494,18 @@ const WhiteBoardBTN = ({ onClick, isMobile, isTab }) => {
               appTheme === appThemes.LIGHT &&
               theme.palette.lightTheme.contrastText
             }
-            onClick={() => {
+            onClick={async () => {
               typeof onClick === "function" && onClick();
 
-              whiteboardStarted
-                ? mMeeting.meeting.stopWhiteboard()
-                : mMeeting.meeting.startWhiteboard();
+              try {
+                if (whiteboardStarted) {
+                  await mMeeting.meeting.stopWhiteboard();
+                } else {
+                  await mMeeting.meeting.startWhiteboard();
+                }
+              } catch (e) {
+                console.log("Error toggling whiteboard", e);
+              }
             }}
           />
         ))}
@@ -514,18 +527,17 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
   const localScreenShareOn = mMeeting?.localScreenShareOn;
   const presenterId = mMeeting?.presenterId;
   const presenterIdRef = useRef(presenterId);
-
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   useEffect(() => {
     presenterIdRef.current = presenterId;
   }, [presenterId]);
 
-  const { getCustomScreenShareTrack } = useCustomTrack();
+  const { getScreenShareTrack } = useMediaStream();
 
   const toggleScreenShare = async () => {
-    let track;
-    if (!localScreenShareOn) track = await getCustomScreenShareTrack();
-
-    if (presenterIdRef.current && !localScreenShareOn) {
+    if (!localScreenShareOn && presenterIdRef.current) {
       let participantName = null;
       mMeeting.participants.forEach((participant) => {
         if (participant.id === presenterIdRef.current) {
@@ -534,9 +546,7 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
       });
 
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {
@@ -544,8 +554,20 @@ const ScreenShareBTN = ({ onClick, isMobile, isTab }) => {
           `Screen sharing unavailable: ${participantName} is currently presenting.`
         );
       }
-    } else {
-      mMeeting?.toggleScreenShare(track);
+      return;
+    }
+
+    let track;
+    if (!localScreenShareOn) {
+      track = await getScreenShareTrack();
+      if (!track) return;
+    }
+
+    try {
+      await mMeeting?.toggleScreenShare(track);
+    } catch (e) {
+      console.log("Error toggling screen share", e);
+      track?.getTracks?.().forEach((t) => t.stop());
     }
   };
 
@@ -660,9 +682,9 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     () => ({
       isRequestProcessing:
         transcriptionState ===
-        Constants.transcriptionEvents.TRANSCRIPTION_STARTING ||
+          Constants.transcriptionEvents.TRANSCRIPTION_STARTING ||
         transcriptionState ===
-        Constants.transcriptionEvents.TRANSCRIPTION_STOPPING,
+          Constants.transcriptionEvents.TRANSCRIPTION_STOPPING,
     }),
     [transcriptionState]
   );
@@ -672,13 +694,17 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
     isTranscriptionRunningRef.current = isTranscriptionRunning;
   }, [isTranscriptionRunning]);
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isTranscriptionRunning = isTranscriptionRunningRef.current;
 
-    if (isTranscriptionRunning) {
-      stopTranscription();
-    } else {
-      startTranscription();
+    try {
+      if (isTranscriptionRunning) {
+        await stopTranscription();
+      } else {
+        await startTranscription();
+      }
+    } catch (e) {
+      console.log("Error toggling transcription", e);
     }
   };
 
@@ -699,23 +725,23 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
         <MobileIconButton
           Icon={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? ClosedCaption
               : ClosedCaptionOutlined
           }
           onClick={_handleClick}
           tooltipTitle={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "Stop Transcription"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "Starting Transcription"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "Start Transcription"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "Stopping Transcription"
                     : "Start Transcription"
           }
@@ -726,21 +752,21 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
             (transcriptionState ===
               Constants.transcriptionEvents.TRANSCRIPTION_STARTED ||
               transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STOPPING) &&
+                Constants.transcriptionEvents.TRANSCRIPTION_STOPPING) &&
             "#EEF0F2"
           }
           buttonText={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "Stop Transcription"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "Starting Transcription"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "Start Transcription"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "Stopping Transcription"
                     : "Start Transcription"
           }
@@ -752,38 +778,38 @@ const TranscriptionBTN = ({ isMobile, isTab }) => {
           onClick={_handleClick}
           buttonText={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "CC"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "CC"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "CC"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "CC"
                     : "CC"
           }
           tooltipTitle={
             transcriptionState ===
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTED
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTED
               ? "Stop Transcription"
               : transcriptionState ===
-                Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+                  Constants.transcriptionEvents.TRANSCRIPTION_STARTING
                 ? "Starting Transcription"
                 : transcriptionState ===
-                  Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
+                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPED
                   ? "Start Transcription"
                   : transcriptionState ===
-                    Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
+                      Constants.transcriptionEvents.TRANSCRIPTION_STOPPING
                     ? "Stopping Transcription"
                     : "Start Transcription"
           }
           isFocused={isTranscriptionRunning}
           lottieOption={
             transcriptionState ==
-              Constants.transcriptionEvents.TRANSCRIPTION_STARTING
+            Constants.transcriptionEvents.TRANSCRIPTION_STARTING
               ? defaultOptions
               : null
           }
@@ -864,24 +890,32 @@ const RecordingBTN = ({ isMobile, isTab }) => {
     width: 160,
   };
 
-  const _handleStartRecording = () => {
+  const _handleStartRecording = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startRecording(recordingWebhookUrl, recordingAWSDirPath, {
-      layout,
-      theme: recordingTheme,
-    });
+    try {
+      await startRecording(recordingWebhookUrl, recordingAWSDirPath, {
+        layout,
+        theme: recordingTheme,
+      });
+    } catch (e) {
+      console.log("Error starting recording", e);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isRecording = isRecordingRef.current;
 
     if (isRecording) {
-      stopRecording();
+      try {
+        await stopRecording();
+      } catch (e) {
+        console.log("Error stopping recording", e);
+      }
     } else {
       setShowConfirmationPopup(true);
     }
@@ -900,7 +934,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
                 ? "Starting Recording"
                 : recordingState === Constants.recordingEvents.RECORDING_STOPPED
                   ? "Start Recording"
-                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  : recordingState ===
+                      Constants.recordingEvents.RECORDING_STOPPING
                     ? "Stopping Recording"
                     : "Start Recording"
           }
@@ -911,7 +946,7 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
               recordingState ===
-              Constants.recordingEvents.RECORDING_STOPPING) &&
+                Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
           }
           buttonText={
@@ -921,7 +956,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
                 ? "Starting Recording"
                 : recordingState === Constants.recordingEvents.RECORDING_STOPPED
                   ? "Start Recording"
-                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  : recordingState ===
+                      Constants.recordingEvents.RECORDING_STOPPING
                     ? "Stopping Recording"
                     : "Start Recording"
           }
@@ -942,7 +978,8 @@ const RecordingBTN = ({ isMobile, isTab }) => {
                 ? "Starting Recording"
                 : recordingState === Constants.recordingEvents.RECORDING_STOPPED
                   ? "Start Recording"
-                  : recordingState === Constants.recordingEvents.RECORDING_STOPPING
+                  : recordingState ===
+                      Constants.recordingEvents.RECORDING_STOPPING
                     ? "Stopping Recording"
                     : "Start Recording"
           }
@@ -954,13 +991,13 @@ const RecordingBTN = ({ isMobile, isTab }) => {
             appTheme === appThemes.LIGHT &&
             (recordingState === Constants.recordingEvents.RECORDING_STARTED ||
               recordingState ===
-              Constants.recordingEvents.RECORDING_STOPPING) &&
+                Constants.recordingEvents.RECORDING_STOPPING) &&
             "#EEF0F2"
           }
           disabled={!participantCanToggleRecording}
           lottieOption={
             isRecording &&
-              recordingState === Constants.recordingEvents.RECORDING_STARTED
+            recordingState === Constants.recordingEvents.RECORDING_STARTED
               ? defaultOptions
               : null
           }
@@ -1066,21 +1103,32 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const _handleStartLivestream = () => {
+  const _handleStartLivestream = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startLivestream(liveStreamConfig, { layout, theme: liveStreamTheme });
+    try {
+      await startLivestream(liveStreamConfig, {
+        layout,
+        theme: liveStreamTheme,
+      });
+    } catch (e) {
+      console.log("Error starting livestream", e);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isLiveStreaming = isLiveStreamingRef.current;
 
     if (isLiveStreaming) {
-      stopLivestream();
+      try {
+        await stopLivestream();
+      } catch (e) {
+        console.log("Error stopping livestream", e);
+      }
     } else {
       if (liveStreamConfigRef.current.length > 0) {
         _handleStartLivestream();
@@ -1100,13 +1148,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
               : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STARTING
+                  Constants.livestreamEvents.LIVESTREAM_STARTING
                 ? "Starting Livestream"
                 : livestreamState ===
-                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                    Constants.livestreamEvents.LIVESTREAM_STOPPED
                   ? "Go Live"
                   : livestreamState ===
-                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                      Constants.livestreamEvents.LIVESTREAM_STOPPING
                     ? "Stopping Livestream"
                     : "Go Live"
           }
@@ -1115,13 +1163,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
               : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STARTING
+                  Constants.livestreamEvents.LIVESTREAM_STARTING
                 ? "Starting Livestream"
                 : livestreamState ===
-                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                    Constants.livestreamEvents.LIVESTREAM_STOPPED
                   ? "Go Live"
                   : livestreamState ===
-                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                      Constants.livestreamEvents.LIVESTREAM_STOPPING
                     ? "Stopping Livestream"
                     : "Go Live"
           }
@@ -1138,13 +1186,13 @@ const GoLiveBTN = ({ isMobile, isTab }) => {
             livestreamState === Constants.livestreamEvents.LIVESTREAM_STARTED
               ? "Stop Live"
               : livestreamState ===
-                Constants.livestreamEvents.LIVESTREAM_STARTING
+                  Constants.livestreamEvents.LIVESTREAM_STARTING
                 ? "Starting Livestream"
                 : livestreamState ===
-                  Constants.livestreamEvents.LIVESTREAM_STOPPED
+                    Constants.livestreamEvents.LIVESTREAM_STOPPED
                   ? "Go Live"
                   : livestreamState ===
-                    Constants.livestreamEvents.LIVESTREAM_STOPPING
+                      Constants.livestreamEvents.LIVESTREAM_STOPPING
                     ? "Stopping Livestream"
                     : "Go Live"
           }
@@ -1249,21 +1297,29 @@ const HlsBTN = ({ isMobile, isTab }) => {
     width: 170,
   };
 
-  const _handleStartHLS = () => {
+  const _handleStartHLS = async () => {
     const type = typeRef.current;
     const priority = priorityRef.current;
     const gridSize = gridSizeRef.current;
 
     const layout = { type, priority, gridSize };
 
-    startHls({ layout, theme: hlsTheme });
+    try {
+      await startHls({ layout, theme: hlsTheme });
+    } catch (e) {
+      console.log("Error starting HLS", e);
+    }
   };
 
-  const _handleClick = () => {
+  const _handleClick = async () => {
     const isHls = isHlsRef.current;
 
     if (isHls) {
-      stopHls();
+      try {
+        await stopHls();
+      } catch (e) {
+        console.log("Error stopping HLS", e);
+      }
     } else {
       _handleStartHLS();
     }
@@ -1277,7 +1333,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       }
       tooltipTitle={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1290,7 +1346,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       Icon={LiveIcon}
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1316,7 +1372,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       onClick={_handleClick}
       tooltipTitle={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1328,7 +1384,7 @@ const HlsBTN = ({ isMobile, isTab }) => {
       }
       buttonText={
         hlsState === Constants.hlsEvents.HLS_STARTED ||
-          hlsState === Constants.hlsEvents.HLS_PLAYABLE
+        hlsState === Constants.hlsEvents.HLS_PLAYABLE
           ? "Stop HLS"
           : hlsState === Constants.hlsEvents.HLS_STARTING
             ? "Starting HLS"
@@ -1582,14 +1638,14 @@ const MicMenu = ({
                           : "#6D6E71"
                       : "",
                   }}
-                // classes={{
-                //   root:
-                //     appTheme === appThemes.LIGHT
-                //       ? classes.popoverHover
-                //       : appTheme === appThemes.DARK
-                //       ? classes.popoverHoverDark
-                //       : classes.popoverHoverDefault,
-                // }}
+                  // classes={{
+                  //   root:
+                  //     appTheme === appThemes.LIGHT
+                  //       ? classes.popoverHover
+                  //       : appTheme === appThemes.DARK
+                  //       ? classes.popoverHoverDark
+                  //       : classes.popoverHoverDefault,
+                  // }}
                 >
                   {isNoiseRemovalChecked ? (
                     <SelectedIcon />
@@ -1622,17 +1678,17 @@ const MicMenu = ({
                       handleClose();
                       _handleNoiseClick({ e, selectMicDeviceId });
                     }}
-                  // classes={{
-                  //   root:
-                  //     appTheme === appThemes.LIGHT
-                  //       ? classes.menuItemHover
-                  //       : appTheme === appThemes.DARK
-                  //       ? classes.menuItemDark
-                  //       : classes.menuItemDefault,
-                  //   gutters: isNoiseRemovalChecked
-                  //     ? classes.singleMenuItemGuttersAfterSelect
-                  //     : classes.singleMenuItemGutters,
-                  // }}
+                    // classes={{
+                    //   root:
+                    //     appTheme === appThemes.LIGHT
+                    //       ? classes.menuItemHover
+                    //       : appTheme === appThemes.DARK
+                    //       ? classes.menuItemDark
+                    //       : classes.menuItemDefault,
+                    //   gutters: isNoiseRemovalChecked
+                    //     ? classes.singleMenuItemGuttersAfterSelect
+                    //     : classes.singleMenuItemGutters,
+                    // }}
                   >
                     AI Noise Removal
                   </MenuItem>
@@ -1706,14 +1762,14 @@ const MirrorView = ({
                       : "#6D6E71"
                   : "",
               }}
-            // classes={{
-            //   root:
-            //     appTheme === appThemes.LIGHT
-            //       ? classes.popoverHover
-            //       : appTheme === appThemes.DARK
-            //       ? classes.popoverHoverDark
-            //       : classes.popoverHoverDefault,
-            // }}
+              // classes={{
+              //   root:
+              //     appTheme === appThemes.LIGHT
+              //       ? classes.popoverHover
+              //       : appTheme === appThemes.DARK
+              //       ? classes.popoverHoverDark
+              //       : classes.popoverHoverDefault,
+              // }}
             >
               {isMirrorViewChecked ? (
                 <SelectedIcon />
@@ -1746,17 +1802,17 @@ const MirrorView = ({
                   handleClose();
                   _handleMirrorClick({ e });
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.menuItemHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.menuItemDark
-              //       : classes.menuItemDefault,
-              //   gutters: isMirrorViewChecked
-              //     ? classes.singleMenuItemGuttersAfterSelect
-              //     : classes.singleMenuItemGutters,
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.menuItemHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.menuItemDark
+                //       : classes.menuItemDefault,
+                //   gutters: isMirrorViewChecked
+                //     ? classes.singleMenuItemGuttersAfterSelect
+                //     : classes.singleMenuItemGutters,
+                // }}
               >
                 Mirror View
               </CustomMenuItem>
@@ -1781,26 +1837,31 @@ const WebcamBTN = () => {
     isMirrorViewChecked,
     setIsMirrorViewChecked,
     cameraId,
+    webcamEnabled,
   } = useMeetingAppContext();
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   const { enqueueSnackbar } = useSnackbar();
-  const { getCustomVideoTrack } = useCustomTrack();
 
   const [downArrow, setDownArrow] = useState(null);
   const [webcams, setWebcams] = useState([]);
 
   const localWebcamOn = mMeeting?.localWebcamOn;
   const toggleWebcam = async () => {
-    let track;
-    if (!localWebcamOn)
-      track = await getCustomVideoTrack(
-        cameraId === selectWebcamDeviceId ? cameraId : selectWebcamDeviceId
-      );
-    mMeeting?.toggleWebcam(track);
+    try {
+      await mMeeting?.toggleWebcam();
+    } catch (e) {
+      console.log("Error toggling webcam", e);
+    }
   };
   const changeWebcam = async (deviceId) => {
-    console.log("deviceId", deviceId);
-    const track = await getCustomVideoTrack(deviceId);
-    mMeeting?.changeWebcam(track ? track : deviceId);
+    // Passing a deviceId (string) swaps only the device; SDK keeps stored config.
+    try {
+      await mMeeting?.changeWebcam(deviceId);
+    } catch (e) {
+      console.log("Error changing webcam", e);
+    }
   };
 
   const handleClick = (event) => {
@@ -1831,9 +1892,10 @@ const WebcamBTN = () => {
 
     if (_isMirrorViewChecked) {
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {
@@ -1860,6 +1922,7 @@ const WebcamBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnWebcam"}
+        disabled={webcamEnabled == false || webcamEnabled == "false"}
         tooltipTitle={localWebcamOn ? "Turn off webcam" : "Turn on webcam"}
         isFocused={localWebcamOn}
         Icon={localWebcamOn ? WebCamOnIcon : WebCamOffIcon}
@@ -1876,6 +1939,7 @@ const WebcamBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change webcam"}>
               <CustomIconButton
+                disabled={webcamEnabled == false || webcamEnabled == "false"}
                 onClick={(e) => {
                   getWebcams(mMeeting?.getWebcams);
                   handleClick(e);
@@ -1951,14 +2015,14 @@ const WebcamBTN = () => {
                   setSelectWebcamDeviceId(deviceId);
                   changeWebcam(deviceId);
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.popoverHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.popoverHoverDark
-              //       : "",
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 {label || `Webcam ${index + 1}`}
               </CustomWebcamMenuItem>
@@ -1987,8 +2051,8 @@ const MicBTN = () => {
     setSelectMicDeviceId,
     selectedOutputDeviceId,
     setSelectedOutputDeviceId,
+    micEnabled,
   } = useMeetingAppContext();
-
   const [isNoiseRemovalChecked, setIsNoiseRemovalChecked] = useState(false);
   const [downArrow, setDownArrow] = useState(null);
   const [mics, setMics] = useState([]);
@@ -1997,13 +2061,19 @@ const MicBTN = () => {
   const theme = useTheme();
   // const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const { getCustomAudioTrack } = useCustomTrack();
+  const { getAudioTrack } = useMediaStream();
   const { getPlaybackDevices } = useMediaDevice({ onDeviceChanged });
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
 
   const getSpeakers = async () => {
     const devices = await getPlaybackDevices();
     const outputMics = devices.filter(
-      (d) => d.deviceId !== "default" && d.deviceId !== "communications"
+      (d) =>
+        d.deviceId !== "" &&
+        d.deviceId !== "default" &&
+        d.deviceId !== "communications"
     );
 
     outputMics && outputMics?.length && setOutputMics(outputMics);
@@ -2023,11 +2093,20 @@ const MicBTN = () => {
 
   const localMicOn = mMeeting?.localMicOn;
   const toggleMic = async () => {
-    let track;
-    if (!localMicOn) track = await getCustomAudioTrack(selectMicDeviceId);
-    mMeeting?.toggleMic(track);
+    // SDK v1.0.0+ preserves track config from MeetingProvider.customMicrophoneAudioTrack.
+    try {
+      await mMeeting?.toggleMic();
+    } catch (e) {
+      console.log("Error toggling mic", e);
+    }
   };
-  const changeMic = mMeeting?.changeMic;
+  const changeMic = async (deviceIdOrStream) => {
+    try {
+      await mMeeting?.changeMic(deviceIdOrStream);
+    } catch (e) {
+      console.log("Error changing mic", e);
+    }
+  };
 
   const getMics = async (mGetMics) => {
     const mics = await mGetMics();
@@ -2053,10 +2132,10 @@ const MicBTN = () => {
     try {
       const processor = new VideoSDKNoiseSuppressor();
 
-      const stream = await getCustomAudioTrack(selectMicDeviceId);
-      const processedStream = await processor.getNoiseSuppressedAudioStream(
-        stream
-      );
+      const stream = await getAudioTrack({ micId: selectMicDeviceId });
+      if (!stream) return;
+      const processedStream =
+        await processor.getNoiseSuppressedAudioStream(stream);
 
       changeMic(processedStream);
     } catch (error) {
@@ -2065,9 +2144,10 @@ const MicBTN = () => {
 
     if (_isNoiseRemovalChecked) {
       if (notificationSoundEnabled) {
-        new Audio(
-          `https://static.videosdk.live/prebuilt/notification.mp3`
-        ).play();
+        // new Audio(
+        //   `https://static.videosdk.live/prebuilt/notification.mp3`
+        // ).play();
+        playNotification();
       }
 
       if (notificationAlertsEnabled) {
@@ -2087,6 +2167,7 @@ const MicBTN = () => {
     >
       <OutlineIconButton
         btnID={"btnMic"}
+        disabled={micEnabled == false || micEnabled == "false"}
         tooltipTitle={
           isNoiseRemovalChecked
             ? "Noise Removal Activated"
@@ -2108,6 +2189,7 @@ const MicBTN = () => {
           return (
             <Tooltip placement="bottom" title={"Change microphone"}>
               <CustomIconButton
+                disabled={micEnabled == false || micEnabled == "false"}
                 p={0}
                 onClick={(e) => {
                   getMics(mMeeting.getMics);
@@ -2163,10 +2245,20 @@ const EndCallBTN = () => {
     participantCanLeave,
     meetingMode,
     appTheme,
+    setMeetingLeft,
+    redirectOnLeave,
   } = useMeetingAppContext();
 
   const leave = mMeeting?.leave;
   const end = mMeeting?.end;
+
+  const handleAfterLeave = () => {
+    if (redirectOnLeave && redirectOnLeave !== "undefined") {
+      window.location = redirectOnLeave;
+    } else {
+      setMeetingLeft(true);
+    }
+  };
 
   const tollTipEl = useRef();
 
@@ -2197,21 +2289,33 @@ const EndCallBTN = () => {
           !participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV
             ? "End Call"
             : participantCanEndMeeting &&
-              meetingMode === meetingModes.SEND_AND_RECV
+                meetingMode === meetingModes.SEND_AND_RECV
               ? "Open popup"
               : "Leave Call"
         }
         bgColor={theme.palette.error.main}
         color={theme.palette.common.white}
         Icon={EndCall}
-        onClick={(e) => {
+        onClick={async (e) => {
           window.onbeforeunload = null;
-          !participantCanLeave && meetingMode === meetingModes.SEND_AND_RECV
-            ? setIsEndMeeting(true)
-            : participantCanEndMeeting &&
-              meetingMode === meetingModes.SEND_AND_RECV
-              ? handleClick(e)
-              : leave();
+          if (
+            !participantCanLeave &&
+            meetingMode === meetingModes.SEND_AND_RECV
+          ) {
+            setIsEndMeeting(true);
+          } else if (
+            participantCanEndMeeting &&
+            meetingMode === meetingModes.SEND_AND_RECV
+          ) {
+            handleClick(e);
+          } else {
+            try {
+              await leave();
+            } catch (err) {
+              console.log("Error leaving meeting", err);
+            }
+            handleAfterLeave();
+          }
         }}
       />
       {participantCanEndMeeting && (
@@ -2229,9 +2333,9 @@ const EndCallBTN = () => {
             anchorEl={tollTipEl.current}
             open={Boolean(downArrow)}
             onClose={handleClose}
-          // classes={{
-          //   paper: classes.popoverBorder,
-          // }}
+            // classes={{
+            //   paper: classes.popoverBorder,
+            // }}
           >
             <MenuList
               style={{
@@ -2251,18 +2355,23 @@ const EndCallBTN = () => {
             >
               <MenuItem
                 key={`leave`}
-                onClick={() => {
+                onClick={async () => {
                   window.onbeforeunload = null;
-                  leave();
+                  try {
+                    await leave();
+                  } catch (e) {
+                    console.log("Error leaving meeting", e);
+                  }
+                  handleAfterLeave();
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.popoverHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.popoverHoverDark
-              //       : "",
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
@@ -2332,14 +2441,14 @@ const EndCallBTN = () => {
                 onClick={() => {
                   setIsEndMeeting(true);
                 }}
-              // classes={{
-              //   root:
-              //     appTheme === appThemes.LIGHT
-              //       ? classes.popoverHover
-              //       : appTheme === appThemes.DARK
-              //       ? classes.popoverHoverDark
-              //       : "",
-              // }}
+                // classes={{
+                //   root:
+                //     appTheme === appThemes.LIGHT
+                //       ? classes.popoverHover
+                //       : appTheme === appThemes.DARK
+                //       ? classes.popoverHoverDark
+                //       : "",
+                // }}
               >
                 <Box style={{ display: "flex", flexDirection: "row" }}>
                   <Box
@@ -2409,9 +2518,14 @@ const EndCallBTN = () => {
             title={"Are you sure to end this call for everyone?"}
             successText={"End Call"}
             onSuccess={() => {
-              setTimeout(() => {
+              setTimeout(async () => {
                 window.onbeforeunload = null;
-                end();
+                try {
+                  await end();
+                } catch (e) {
+                  console.log("Error ending meeting", e);
+                }
+                handleAfterLeave();
               }, 1000);
             }}
             rejectText="Cancel"
@@ -2778,6 +2892,7 @@ const TopBar = ({ topBarHeight }) => {
           {excludeFirstFourElements.map((icon, i) => {
             return (
               <Grid
+                key={`fab_icon_${icon.buttonType}_${i}`}
                 item
                 xs={4}
                 sm={3}
@@ -2898,10 +3013,11 @@ const TopBar = ({ topBarHeight }) => {
             : appTheme === appThemes.LIGHT
               ? theme.palette.lightTheme.main
               : theme.palette.background.default,
-        borderBottom: `1px solid ${appTheme === appThemes.LIGHT
-          ? theme.palette.lightTheme.outlineColor
-          : "#ffffff33"
-          }`,
+        borderBottom: `1px solid ${
+          appTheme === appThemes.LIGHT
+            ? theme.palette.lightTheme.outlineColor
+            : "#ffffff33"
+        }`,
         position: "relative",
         top: topBarVisible ? 0 : -topBarHeight,
         transition: `all ${400 * (animationsEnabled ? 1 : 0.5)}ms`,
@@ -3019,7 +3135,7 @@ const TopBar = ({ topBarHeight }) => {
                 mr={i === topBarIcons.length - 1 ? 0 : 2}
                 display={"flex"}
                 alignItems={"center"}
-              // className={classes.row}
+                // className={classes.row}
               >
                 {row.map((buttonType, j) => {
                   return (

@@ -19,9 +19,8 @@ import {
 } from "../../utils/common";
 import useIsMobile from "../../utils/useIsMobile";
 import useIsTab from "../../utils/useIsTab";
-import VisibilitySensor from "react-visibility-sensor";
 import useResponsiveSize from "../../utils/useResponsiveSize";
-import Lottie from "react-lottie";
+import Lottie from "../../utils/Lottie";
 import animationData from "../../animations/equaliser.json";
 import circleRipple from "../../animations/circleRipple.json";
 import { Pin } from "../../icons";
@@ -96,14 +95,14 @@ export const CornerDisplayName = ({
   const show = useMemo(
     () =>
       alwaysShowOverlay || mouseOver || isActiveSpeaker || overlaidInfoVisible,
-    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible],
+    [alwaysShowOverlay, mouseOver, isActiveSpeaker, overlaidInfoVisible]
   );
 
   const isPinned = useMemo(() => pinState?.share || pinState?.cam, [pinState]);
 
   const showPin = useMemo(
     () => (alwaysShowOverlay ? isPinned : isPinned || mouseOver),
-    [alwaysShowOverlay, isPinned, mouseOver],
+    [alwaysShowOverlay, isPinned, mouseOver]
   );
 
   const statsIntervalIdRef = useRef();
@@ -175,14 +174,14 @@ export const CornerDisplayName = ({
       audio: audioStats
         ? audioStats[0]?.packetsLost
           ? `${parseFloat(
-              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets,
+              (audioStats[0]?.packetsLost * 100) / audioStats[0]?.totalPackets
             ).toFixed(2)}%`
           : "-"
         : "-",
       video: videoStats
         ? videoStats[0]?.packetsLost
           ? `${parseFloat(
-              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets,
+              (videoStats[0]?.packetsLost * 100) / videoStats[0]?.totalPackets
             ).toFixed(2)}%`
           : "-"
         : "-",
@@ -643,7 +642,7 @@ const ParticipantViewerContent = ({
 
   const participantAccentColor = useMemo(
     () => getRandomColor(appTheme === appThemes.LIGHT ? "dark" : "light"),
-    [],
+    []
   );
 
   const theme = useTheme();
@@ -659,7 +658,7 @@ const ParticipantViewerContent = ({
   const flipStyle = useMemo(
     () =>
       isLocal ? { transform: "scaleX(1)", WebkitTransform: "scaleX(1)" } : {},
-    [isLocal],
+    [isLocal]
   );
 
   const defaultRippleOptions = {
@@ -685,18 +684,6 @@ const ParticipantViewerContent = ({
       // );
     }
   }, [isRecorder, isLocal, videoDivWrapperRef, webcamStream]);
-
-  useEffect(() => {
-    eventEmitter.emit(appEvents["participant-visible"], {
-      participantId,
-    });
-
-    return () => {
-      eventEmitter.emit(appEvents["participant-invisible"], {
-        participantId,
-      });
-    };
-  }, []);
 
   const checkAndUpdatePortrait = () => {
     if (webcamStream && maintainVideoAspectRatio) {
@@ -733,21 +720,7 @@ const ParticipantViewerContent = ({
   }, [webcamStream]);
 
   return (
-    <VisibilitySensor
-      active
-      // active={!!useVisibilitySensor}
-      onChange={(isVisible) => {
-        if (isVisible) {
-          eventEmitter.emit(appEvents["participant-visible"], {
-            participantId,
-          });
-        } else {
-          eventEmitter.emit(appEvents["participant-invisible"], {
-            participantId,
-          });
-        }
-      }}
-    >
+    <>
       <div
         ref={setVideoDivWrapperRef}
         onMouseEnter={() => {
@@ -884,15 +857,16 @@ const ParticipantViewerContent = ({
           }}
         />
       </div>
-    </VisibilitySensor>
+    </>
   );
 };
 
-const HumanParticipantViewer = ({
-  participantId,
-  quality,
-  useVisibilitySensor,
-}) => {
+const HumanParticipantViewer = ({ participantId, quality }) => {
+  const qualityRef = useRef(quality);
+  useEffect(() => {
+    qualityRef.current = quality;
+  }, [quality]);
+
   const {
     displayName,
     setQuality,
@@ -909,12 +883,25 @@ const HumanParticipantViewer = ({
     getVideoStats,
     getAudioStats,
     getShareStats,
-  } = useParticipant(participantId);
+  } = useParticipant(participantId, {
+    onStreamEnabled: async (stream) => {
+      if (isLocal || stream?.kind !== "video") return;
+      try {
+        await setQuality(qualityRef.current || "high");
+      } catch (e) {
+        console.log("Error in setQuality", e);
+      }
+    },
+  });
 
   useEffect(() => {
-    if (!quality || !setQuality) return;
-    setQuality(quality);
-  }, [quality, setQuality]);
+    if (isLocal || !webcamOn || !webcamStream) return;
+    try {
+      setQuality(quality || "high");
+    } catch (e) {
+      console.log("Error in setQuality", e);
+    }
+  }, [quality]);
 
   return (
     <ParticipantViewerContent
@@ -937,11 +924,7 @@ const HumanParticipantViewer = ({
   );
 };
 
-const AgentParticipantViewerInner = ({
-  participantId,
-  quality,
-  useVisibilitySensor,
-}) => {
+const AgentParticipantViewerInner = ({ participantId }) => {
   const {
     displayName,
     webcamStream,
@@ -977,27 +960,17 @@ const AgentParticipantViewerInner = ({
   );
 };
 
-const ParticipantViewer = ({ participantId, quality, useVisibilitySensor }) => {
+const ParticipantViewer = ({ participantId, quality }) => {
   const mMeeting = useMeeting();
 
   const isAgent = mMeeting?.participants?.get(participantId)?.isAgent === true;
 
   if (isAgent) {
-    return (
-      <AgentParticipantViewerInner
-        participantId={participantId}
-        quality={quality}
-        useVisibilitySensor={useVisibilitySensor}
-      />
-    );
+    return <AgentParticipantViewerInner participantId={participantId} />;
   }
 
   return (
-    <HumanParticipantViewer
-      participantId={participantId}
-      quality={quality}
-      useVisibilitySensor={useVisibilitySensor}
-    />
+    <HumanParticipantViewer participantId={participantId} quality={quality} />
   );
 };
 

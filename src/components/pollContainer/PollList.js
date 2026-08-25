@@ -21,7 +21,6 @@ import {
 } from "../../MeetingAppContextDef";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import { v4 as uuid } from "uuid";
-import { minWidth } from "@mui/system";
 
 export const secondsToMinutes = (time) => {
   var minutes = Math.floor((time % 3600) / 60)
@@ -200,7 +199,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
         (new Date(createdAt).getTime() +
           timeout * 1000 -
           new Date().getTime()) /
-        1000
+          1000
       );
       setIsTimerPollActive(true);
     }
@@ -254,7 +253,10 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: "#95959E",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -264,7 +266,10 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
             style={{
               marginLeft: 8,
               marginRight: 8,
-              color: "#95959E",
+              color:
+                appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.four
+                  : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -275,7 +280,12 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
           <Typography
             style={{
               fontSize: 14,
-              color: isPollActive || isDraft ? "#FF5D5D" : "#95959E",
+              color:
+                isPollActive || isDraft
+                  ? "#FF5D5D"
+                  : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.four
+                    : theme.palette.darkTheme.contrastText,
               fontWeight: 500,
               marginTop: 0,
               marginBottom: 0,
@@ -314,6 +324,7 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
 
             return (
               <Box
+                key={`poll_option_${poll?.pollId || ""}_${item?.optionId || j}`}
                 style={{
                   marginTop: j === 0 ? equalSpacing : equalSpacing / 2,
                 }}
@@ -389,8 +400,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                           margin: 0,
                           padding: 0,
                           color:
-                            appTheme === appThemes.LIGHT ?
-                              theme.palette.lightTheme.contrastText : "white",
+                            appTheme === appThemes.LIGHT
+                              ? theme.palette.lightTheme.contrastText
+                              : "white",
                         }}
                       >
                         {`${Math.floor(percentage)}%`}
@@ -470,10 +482,9 @@ const Poll = ({ poll, isDraft, publishDraftPoll }) => {
                 onClick={async () => {
                   try {
                     await EndPublish(
-                      JSON.stringify({
-                        pollId: poll.id,
-                      }),
+                      "poll-ended",
                       { persist: true },
+                      { pollId: poll.id }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);
@@ -601,8 +612,9 @@ const PollList = ({ panelHeight }) => {
                   //
                   try {
                     await RemoveFromDraftPublish(
-                      JSON.stringify({ pollId: poll.id }),
+                      "poll-draft-removed",
                       { persist: true },
+                      { pollId: poll.id }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);
@@ -611,7 +623,9 @@ const PollList = ({ panelHeight }) => {
                   //
                   try {
                     await publishCreatePoll(
-                      JSON.stringify({
+                      "poll-created",
+                      { persist: true },
+                      {
                         id: uuid(),
                         question: poll.question,
                         options: poll.options,
@@ -621,8 +635,7 @@ const PollList = ({ panelHeight }) => {
                         hasCorrectAnswer: poll.hasCorrectAnswer,
                         isActive: true,
                         index: polls.length + 1,
-                      }),
-                      { persist: true },
+                      }
                     );
                   } catch (error) {
                     console.log("Error in Pubsub ", error);

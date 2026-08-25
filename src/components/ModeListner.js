@@ -9,13 +9,14 @@ import { useMeetingAppContext } from "../MeetingAppContextDef";
 import ConfirmBox from "./ConfirmBox";
 import { meetingModes } from "../CONSTS";
 import { useSnackbar } from "notistack";
+import { useNotificationSound } from "../utils/useNotificationSound";
 
 const reqInfoDefaultState = {
   enabled: false,
   mode: null,
   senderId: null,
-  accept: () => { },
-  reject: () => { },
+  accept: () => {},
+  reject: () => {},
 };
 
 const ModeListner = () => {
@@ -31,6 +32,9 @@ const ModeListner = () => {
     setMainViewParticipants,
   } = useMeetingAppContext();
 
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   const [reqModeInfo, setReqModeInfo] = useState(reqInfoDefaultState);
 
   const mMeeting = useMeeting();
@@ -71,85 +75,84 @@ const ModeListner = () => {
 
   usePubSub(`CHANGE_MODE_${mMeeting?.localParticipant?.id}`, {
     onMessageReceived: async (data) => {
-
-      const { mode } = JSON.parse(data.message);
+      const { mode } = data.payload || {};
+      if (!mode) return;
       if (mode === meetingModes.SEND_AND_RECV) {
         setReqModeInfo({
           enabled: true,
           senderId: data.senderId,
           mode: mode,
-          accept: () => { },
-          reject: () => { },
+          accept: () => {},
+          reject: () => {},
         });
       } else {
-        mMeeting.changeMode(mode);
+        try {
+          await mMeeting.changeMode(mode);
+        } catch (e) {
+          console.log("Error changing mode", e);
+        }
         try {
           await publishRef.current(mode, { persist: true });
         } catch (error) {
           console.log("Error in Pubsub ", error);
         }
 
-        const muteMic = mMeetingRef.current?.muteMic;
-        const disableWebcam = mMeetingRef.current?.disableWebcam;
-        const disableScreenShare = mMeetingRef.current?.disableScreenShare;
-
-        muteMic();
-        disableWebcam();
-        disableScreenShare();
-
-        (participantRef.current?.pinState?.share ||
-          participantRef.current?.pinState?.cam) &&
-          participantRef.current?.unpin();
-
         setSideBarMode(null);
       }
     },
   });
 
-  const { publish: invitatioAcceptedPublish } = usePubSub(
+  const { publish: invitationAcceptedPublish } = usePubSub(
     `INVITATION_ACCEPT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
         if (notificationSoundEnabledRef.current) {
-          new Audio(
-            `https://static.videosdk.live/prebuilt/notification.mp3`
-          ).play();
+          // new Audio(
+          //   `https://static.videosdk.live/prebuilt/notification.mp3`
+          // ).play();
+          playNotification();
         }
         if (notificationAlertsEnabledRef.current) {
           enqueueSnackbar(`${data.senderName} has been added as a Co-host`);
         }
       },
-      onOldMessagesReceived: (messages) => { },
+      onOldMessagesReceived: (messages) => {},
     }
   );
 
-  const { publish: invitatioRejectedPublish } = usePubSub(
+  const { publish: invitationRejectedPublish } = usePubSub(
     `INVITATION_REJECT_BY_COHOST`,
     {
       onMessageReceived: (data) => {
-        const { senderId } = JSON.parse(data.message);
+        const { senderId } = data.payload || {};
         if (senderId === participantRef.current.participant.id) {
           if (notificationSoundEnabledRef.current) {
-            new Audio(
-              `https://static.videosdk.live/prebuilt/notification.mp3`,
-            ).play();
+            // new Audio(
+            //   `https://static.videosdk.live/prebuilt/notification.mp3`,
+            // ).play();
+            playNotification();
           }
 
           if (notificationAlertsEnabledRef.current) {
             enqueueSnackbar(
-              `${data.senderName} has rejected the request to become Co-host`,
+              `${data.senderName} has rejected the request to become Co-host`
             );
           }
         }
       },
       onOldMessagesReceived: (messages) => {},
-    },
+    }
   );
 
   useEffect(() => {
-    setTimeout(() => {
-      publishRef.current(meetingMode, { persist: true });
+    const timer = setTimeout(async () => {
+      try {
+        await publishRef.current(meetingMode, { persist: true });
+      } catch (e) {
+        console.log("Error in Pubsub ", e);
+      }
     }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   useMeeting({
@@ -180,20 +183,29 @@ const ModeListner = () => {
         onReject={async () => {
           setReqModeInfo(reqInfoDefaultState);
           try {
-            await invitatioRejectedPublish(
-              JSON.stringify({ senderId: reqModeInfo.senderId }),
+            await invitationRejectedPublish(
+              "cohost-invitation-rejected",
               { persist: true },
+              { senderId: reqModeInfo.senderId }
             );
           } catch (error) {
             console.log("Error in Pubsub ", error);
           }
         }}
         onSuccess={async () => {
-          mMeeting.changeMode(reqModeInfo.mode);
-          publishRef.current(reqModeInfo.mode, { persist: true });
+          try {
+            await mMeeting.changeMode(reqModeInfo.mode);
+          } catch (e) {
+            console.log("Error changing mode", e);
+          }
+          try {
+            await publishRef.current(reqModeInfo.mode, { persist: true });
+          } catch (e) {
+            console.log("Error in Pubsub ", e);
+          }
           setReqModeInfo(reqInfoDefaultState);
           try {
-            await invitatioAcceptedPublish("", {
+            await invitationAcceptedPublish("", {
               persist: true,
             });
           } catch (error) {

@@ -2,7 +2,7 @@ import { Box, ButtonBase, Tooltip, Typography, useTheme } from "@mui/material";
 import React, { useState, useRef, useEffect } from "react";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 import useResponsiveSize from "../utils/useResponsiveSize";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 
 const OutlineIconTextButton = ({
   onClick,
@@ -91,24 +91,24 @@ const OutlineIconTextButton = ({
           backgroundColor: bgColor
             ? bgColor
             : isFocused
-            ? focusBGColor || appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.contrastText
-              : "#fff"
-            : appTheme === appThemes.DARK
-            ? theme.palette.darkTheme.main
-            : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
+              ? focusBGColor || appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : "#fff"
+              : appTheme === appThemes.DARK
+                ? theme.palette.darkTheme.main
+                : appTheme === appThemes.LIGHT
+                  ? theme.palette.lightTheme.main
+                  : theme.palette.background.default,
           border: `${2}px solid ${
             mouseOver || mouseDown
               ? "transparent"
               : bgColor
-              ? bgColor
-              : focusBGColor
-              ? focusBGColor
-              : appTheme === appThemes.LIGHT
-              ? theme.palette.lightTheme.outlineColor
-              : "#ffffff33"
+                ? bgColor
+                : focusBGColor
+                  ? focusBGColor
+                  : appTheme === appThemes.LIGHT
+                    ? theme.palette.lightTheme.outlineColor
+                    : "#ffffff33"
           }`,
           transition: `all ${200 * (animationsEnabled ? 1 : 0.5)}ms`,
           transitionTimingFunction: "linear",
@@ -176,10 +176,10 @@ const OutlineIconTextButton = ({
                       ? theme.palette.common.white
                       : "#1C1F2E"
                     : textColor
-                    ? textColor
-                    : appTheme === appThemes.LIGHT
-                    ? theme.palette.lightTheme.contrastText
-                    : "#fff",
+                      ? textColor
+                      : appTheme === appThemes.LIGHT
+                        ? theme.palette.lightTheme.contrastText
+                        : "#fff",
                 }}
               >
                 {buttonText}

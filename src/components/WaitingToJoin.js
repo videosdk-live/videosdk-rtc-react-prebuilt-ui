@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";
 import animationData from "../../src/animations/join_meeting.json";
-import Lottie from "react-lottie";
+import Lottie from "../utils/Lottie";
 import { Box, useTheme } from "@mui/material";
 import { appThemes, useMeetingAppContext } from "../MeetingAppContextDef";
 
@@ -73,8 +73,8 @@ const WaitingToJoin = () => {
           appTheme === appThemes.DARK
             ? theme.palette.darkTheme.main
             : appTheme === appThemes.LIGHT
-            ? theme.palette.lightTheme.main
-            : theme.palette.background.default,
+              ? theme.palette.lightTheme.main
+              : theme.palette.background.default,
       }}
     >
       {waitingScreenImageUrl?.length || waitingScreenText?.length ? (

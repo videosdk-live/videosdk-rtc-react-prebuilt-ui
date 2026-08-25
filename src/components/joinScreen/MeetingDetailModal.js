@@ -15,9 +15,8 @@ import { CopyIcon } from "../../icons";
 import useWindowSize from "../../utils/useWindowSize";
 import { appThemes } from "../../MeetingAppContextDef";
 import { useTranslation } from "react-i18next";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { outlinedInputClasses } from '@mui/material/OutlinedInput';
-
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 
 export default function MeetingDetailModal({
   internalPadding,
@@ -30,50 +29,52 @@ export default function MeetingDetailModal({
   meetingUrl,
   appTheme,
 }) {
-
   const customTheme = (outerTheme) =>
-  createTheme({
-    palette: {
-      mode: outerTheme.palette.mode,
-    },
-    components: {
-      MuiTextField: {
-        styleOverrides: {
-          root: {
-            '--TextField-brandBorderColor': '#3F4346',
-            '--TextField-brandBorderHoverColor': '#70707033',
-            '--TextField-brandBorderFocusedColor': '#70707033',
-            '& label.Mui-focused': {
-              color: 'var(--TextField-brandBorderFocusedColor)',
+    createTheme({
+      palette: {
+        mode: outerTheme.palette.mode,
+      },
+      components: {
+        MuiTextField: {
+          styleOverrides: {
+            root: {
+              "--TextField-brandBorderColor": "#3F4346",
+              "--TextField-brandBorderHoverColor": "#70707033",
+              "--TextField-brandBorderFocusedColor": "#70707033",
+              "& label.Mui-focused": {
+                color: "var(--TextField-brandBorderFocusedColor)",
+              },
+            },
+          },
+        },
+        MuiOutlinedInput: {
+          styleOverrides: {
+            notchedOutline: {
+              borderColor: "var(--TextField-brandBorderColor)",
+            },
+            root: {
+              [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? "var(--TextField-brandBorderHoverColor)"
+                    : "white",
+              },
+              [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
+                borderColor:
+                  appTheme === appThemes.LIGHT
+                    ? "var(--TextField-brandBorderFocusedColor)"
+                    : "white",
+                borderWidth: "1px",
+              },
+              color: appTheme === appThemes.LIGHT ? "black" : "white",
+            },
+            input: {
+              textAlign: "center",
             },
           },
         },
       },
-      MuiOutlinedInput: {
-        styleOverrides: {
-          notchedOutline: {
-            borderColor: 'var(--TextField-brandBorderColor)',
-          },
-          root: {
-            [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: appTheme === appThemes.LIGHT ? 'var(--TextField-brandBorderHoverColor)' : "white"  ,
-            },
-            [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: appTheme === appThemes.LIGHT ? 'var(--TextField-brandBorderFocusedColor)' :"white",
-              borderWidth:"1px"
-            },
-           color: appTheme  === appThemes.LIGHT ?  "black":"white"
-          },
-          input:{
-            textAlign:"center",
-           
-          }
-        },
-      },
-     
-   
-    },
-  });
+    });
   const { t } = useTranslation();
   const outerTheme = useTheme();
   const theme = useTheme();
@@ -134,8 +135,8 @@ export default function MeetingDetailModal({
               appTheme === appThemes.DARK
                 ? theme.palette.darkTheme.slightLighter
                 : appTheme === appThemes.LIGHT
-                ? theme.palette.lightTheme.two
-                : "",
+                  ? theme.palette.lightTheme.two
+                  : "",
             boxShadow: appTheme === appThemes.LIGHT && "none",
           }}
         >
@@ -180,8 +181,8 @@ export default function MeetingDetailModal({
                     appTheme === appThemes.DARK
                       ? theme.palette.darkTheme.seven
                       : appTheme === appThemes.LIGHT
-                      ? theme.palette.lightTheme.three
-                      : "#1C1F2E80",
+                        ? theme.palette.lightTheme.three
+                        : "#1C1F2E80",
                   borderRadius: 4,
                   overflow: "hidden",
                   alignItems: "center",
@@ -268,58 +269,58 @@ export default function MeetingDetailModal({
       ) : null}
 
       <Box mt={meetingTitle || meetingUrl ? 2 : 0} style={{ width: "100%" }}>
-      <ThemeProvider theme={customTheme(outerTheme)}>
-        <TextField
-          id={"inputJoin"}
-          placeholder={t("Enter your name")}
-          variant="outlined"
-          fullWidth
-          value={name}
-          error={nameErr}
-          onChange={(ev) => {
-            setName(ev.target.value);
-          }}
-          // InputProps={{
-          //   startAdornment: (
-          //     <InputAdornment position="start">
-          //       <IconButton>
-          //         <Keyboard
-          //           style={{
-          //             color:
-          //               appTheme === appThemes.LIGHT
-          //                 ? theme.palette.lightTheme.contrastText
-          //                 : theme.palette.primary.contrastText,
-          //           }}
-          //         />
-          //       </IconButton>
-          //     </InputAdornment>
-          //   ),
-          //   endAdornment: (
-          //     <InputAdornment position="end">
-          //       <Button
-          //         color="primary"
-          //         style={{
-          //           backgroundColor:
-          //             appTheme === appThemes.LIGHT ||
-          //             appTheme === appThemes.DARK
-          //               ? theme.palette.lightTheme.primaryMain
-          //               : theme.palette.primary.main,
-          //         }}
-          //         variant="contained"
-          //         onClick={(e) => {
-          //           const isValid = handleValidation();
-          //           if (isValid) {
-          //             startMeeting(e);
-          //           }
-          //         }}
-          //         id={"btnJoin"}
-          //       >
-          //         {t("Join")}
-          //       </Button>
-          //     </InputAdornment>
-          //   ),
-          // }}
-        />
+        <ThemeProvider theme={customTheme(outerTheme)}>
+          <TextField
+            id={"inputJoin"}
+            placeholder={t("Enter your name")}
+            variant="outlined"
+            fullWidth
+            value={name}
+            error={nameErr}
+            onChange={(ev) => {
+              setName(ev.target.value);
+            }}
+            // InputProps={{
+            //   startAdornment: (
+            //     <InputAdornment position="start">
+            //       <IconButton>
+            //         <Keyboard
+            //           style={{
+            //             color:
+            //               appTheme === appThemes.LIGHT
+            //                 ? theme.palette.lightTheme.contrastText
+            //                 : theme.palette.primary.contrastText,
+            //           }}
+            //         />
+            //       </IconButton>
+            //     </InputAdornment>
+            //   ),
+            //   endAdornment: (
+            //     <InputAdornment position="end">
+            //       <Button
+            //         color="primary"
+            //         style={{
+            //           backgroundColor:
+            //             appTheme === appThemes.LIGHT ||
+            //             appTheme === appThemes.DARK
+            //               ? theme.palette.lightTheme.primaryMain
+            //               : theme.palette.primary.main,
+            //         }}
+            //         variant="contained"
+            //         onClick={(e) => {
+            //           const isValid = handleValidation();
+            //           if (isValid) {
+            //             startMeeting(e);
+            //           }
+            //         }}
+            //         id={"btnJoin"}
+            //       >
+            //         {t("Join")}
+            //       </Button>
+            //     </InputAdornment>
+            //   ),
+            // }}
+          />
         </ThemeProvider>
         <p
           style={{

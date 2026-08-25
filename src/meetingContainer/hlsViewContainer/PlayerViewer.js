@@ -1,6 +1,6 @@
 import { Box, useTheme } from "@mui/material";
 import { useEffect, useMemo } from "react";
-import Lottie from "react-lottie";
+import Lottie from "../../utils/Lottie";
 import useResponsiveSize from "../../utils/useResponsiveSize";
 import animationData from "../../../src/animations/wait_for_HLS_animation.json";
 import stoppedHLSSnimationData from "../../../src/animations/stopped_HLS_animation.json";
@@ -73,7 +73,7 @@ const PlayerViewer = () => {
           highBufferWatchdogPeriod: 0, // if media element is expected to play and if currentTime has not moved for more than highBufferWatchdogPeriod and if there are more than maxBufferHole seconds buffered upfront, hls.js will jump buffer gaps, or try to nudge playhead to recover playback.
           nudgeOffset: 0.05, // In case playback continues to stall after first playhead nudging, currentTime will be nudged evenmore following nudgeOffset to try to restore playback. media.currentTime += (nb nudge retry -1)*nudgeOffset
           nudgeMaxRetry: 1, // Max nb of nudge retries before hls.js raise a fatal BUFFER_STALLED_ERROR
-          maxFragLookUpTolerance: .1, // This tolerance factor is used during fragment lookup. 
+          maxFragLookUpTolerance: 0.1, // This tolerance factor is used during fragment lookup.
           liveSyncDurationCount: 1, // if set to 3, playback will start from fragment N-3, N being the last fragment of the live playlist
           abrEwmaFastLive: 1, // Fast bitrate Exponential moving average half-life, used to compute average bitrate for Live streams.
           abrEwmaSlowLive: 3, // Slow bitrate Exponential moving average half-life, used to compute average bitrate for Live streams.
@@ -86,14 +86,14 @@ const PlayerViewer = () => {
 
         hls.loadSource(hlsUrls?.downstreamUrl);
         hls.attachMedia(player);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () { });
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {});
         hls.on(Hls.Events.ERROR, function (err) {
           console.log(err);
         });
       } else {
         if (typeof playerRef.current?.play === "function") {
           playerRef.current.src = hlsUrls?.downstreamUrl;
-          playerRef.current.play();
+          playerRef.current.play().catch(() => {});
         }
         // console.error("HLS is not supported");
       }

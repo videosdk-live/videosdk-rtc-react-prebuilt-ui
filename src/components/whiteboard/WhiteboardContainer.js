@@ -10,6 +10,7 @@ import usePrevious from "../../utils/usePrevious";
 import WBToolbar from "./WBToolbar";
 import { invertColor, nameTructed } from "../../utils/common";
 import useResponsiveSize from "../../utils/useResponsiveSize";
+import { useNotificationSound } from "../../utils/useNotificationSound";
 import Compressor from "compressorjs";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -47,7 +48,9 @@ function WhiteboardContainer({
 
   const previousHeight = usePrevious(height);
   const previousWidth = usePrevious(width);
-
+  const playNotification = useNotificationSound(
+    `https://static.videosdk.live/prebuilt/notification.mp3`
+  );
   // const initialHeight = useRef(height);
   const initialWidth = useRef(width);
 
@@ -318,17 +321,17 @@ function WhiteboardContainer({
   }, []);
 
   usePubSub(`WB`, {
-    onMessageReceived: ({ message }) => {
+    onMessageReceived: ({ payload }) => {
       try {
-        const { event, data } = JSON.parse(message);
+        const { event, data } = payload || {};
         onChatMessage({ event: event, data: data });
-      } catch (e) { }
+      } catch (e) {}
     },
     onOldMessagesReceived: async (messages) => {
       for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
         try {
-          const { event, data } = JSON.parse(msg.message);
+          const { event, data } = msg.payload || {};
           if (event === "CLEAR") {
             fabricRef.current.clear();
             return;
@@ -337,8 +340,7 @@ function WhiteboardContainer({
             await onChatMessage({ event: event, data: data });
             setIsLoadingCanvasData(false);
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       }
     },
   });
@@ -355,7 +357,13 @@ function WhiteboardContainer({
       case "ZOOM": {
         const zoomLevel = data;
         if (zoomLevel >= 1) {
-          fabricRef.current.zoomToPoint(new fabric.Point(fabricRef.current.getWidth() / 2, fabricRef.current.getHeight() / 2), zoomLevel)
+          fabricRef.current.zoomToPoint(
+            new fabric.Point(
+              fabricRef.current.getWidth() / 2,
+              fabricRef.current.getHeight() / 2
+            ),
+            zoomLevel
+          );
         }
         break;
       }
@@ -368,12 +376,14 @@ function WhiteboardContainer({
         const p = mMeeting.participants.get(data);
 
         if (notificationSoundEnabled) {
-          new Audio("/notification.mp3").play();
+          // new Audio("/notification.mp3").play();
+          playNotification();
         }
 
         if (notificationAlertsEnabled) {
           enqueueSnackbar(
-            `${p ? nameTructed(p.displayName, 15) : "You"
+            `${
+              p ? nameTructed(p.displayName, 15) : "You"
             } cleared the whiteboard 🗑️`,
             { autoHideDuration: 4000 }
           );
@@ -464,10 +474,9 @@ function WhiteboardContainer({
 
   async function sendData({ event, data }) {
     try {
-      const payload = JSON.stringify({ event, data });
-      await publish(payload, { persist: true });
+      await publish("whiteboard-event", { persist: true }, { event, data });
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
   }
 
@@ -1137,8 +1146,12 @@ function WhiteboardContainer({
             style={{ position: "absolute", top: 16, right: 16, zIndex: 999 }}
           >
             <IconButton
-              onClick={() => {
-                mMeeting.meeting.stopWhiteboard();
+              onClick={async () => {
+                try {
+                  await mMeeting.meeting.stopWhiteboard();
+                } catch (e) {
+                  console.log("Error stopping whiteboard", e);
+                }
               }}
               style={{
                 cursor: "pointer",

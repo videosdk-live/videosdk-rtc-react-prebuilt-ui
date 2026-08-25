@@ -84,7 +84,10 @@ const RealTimeCaptionProvider = ({}) => {
           alignItems: "center",
           justifyContent: "center",
           textAlign: "left",
-          color: "white",
+          color:
+            appTheme === appThemes.LIGHT
+              ? theme.palette.lightTheme.contrastText
+              : theme.palette.common.white,
         }}
       >
         <Typography
@@ -93,12 +96,10 @@ const RealTimeCaptionProvider = ({}) => {
             width: "70%",
 
             fontSize: 20,
-            // display: "flex",
-            // alignItems: "center",
-            // lineHeight: 1,
             color:
-              appTheme === appThemes.LIGHT &&
-              theme.palette.lightTheme.contrastText,
+              appTheme === appThemes.LIGHT
+                ? theme.palette.lightTheme.contrastText
+                : theme.palette.common.white,
           }}
         >
           <div
