@@ -124,6 +124,9 @@ const SideBarTabView = ({ width, height }) => {
             height: paddedHeight,
             borderRadius: 10,
             overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
           }}
         >
           <>
