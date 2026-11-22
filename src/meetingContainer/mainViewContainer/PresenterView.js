@@ -21,6 +21,10 @@ import {
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { useMediaQuery } from "react-responsive";
+import {
+  connectTrackToRelay,
+  shouldUseAudioRelay,
+} from "../../utils/audioOutputRelay";
 
 const PresenterView = ({ presenterId }) => {
   const mMeeting = useMeeting();
@@ -118,6 +122,7 @@ const PresenterView = ({ presenterId }) => {
           console.error("audio" + err.message);
         }
       });
+      return connectTrackToRelay(screenShareAudioStream.track);
     } else {
       audioPlayer.current.srcObject = null;
     }
@@ -161,7 +166,13 @@ const PresenterView = ({ presenterId }) => {
             : "flex",
       }}
     >
-      <audio autoPlay playsInline controls={false} ref={audioPlayer} />
+      <audio
+        autoPlay
+        playsInline
+        controls={false}
+        muted={shouldUseAudioRelay()}
+        ref={audioPlayer}
+      />
 
       <div
         style={{

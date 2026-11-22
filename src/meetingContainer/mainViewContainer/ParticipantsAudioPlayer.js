@@ -5,6 +5,13 @@ import {
 } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  connectTrackToRelay,
+  resumeRelay,
+  setRelaySinkId,
+  shouldUseAudioRelay,
+  teardownRelay,
+} from "../../utils/audioOutputRelay";
 
 const HumanParticipantAudioPlayer = ({ participantId }) => {
   const { micOn, micStream, isLocal } = useParticipant(participantId);
@@ -31,12 +38,21 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
           console.error("audio" + err.message);
         }
       });
+      return connectTrackToRelay(micStream.track);
     } else if (audioPlayer.current) {
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
 
-  return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
+  return (
+    <audio
+      autoPlay
+      playsInline
+      controls={false}
+      muted={shouldUseAudioRelay()}
+      ref={audioPlayer}
+    />
+  );
 };
 
 const AgentParticipantAudioPlayer = ({ participantId }) => {
@@ -64,12 +80,21 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
           console.error("audio" + err.message);
         }
       });
+      return connectTrackToRelay(micStream.track);
     } else if (audioPlayer.current) {
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, participantId, selectedOutputDeviceId]);
 
-  return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
+  return (
+    <audio
+      autoPlay
+      playsInline
+      controls={false}
+      muted={shouldUseAudioRelay()}
+      ref={audioPlayer}
+    />
+  );
 };
 
 const ParticipantAudioPlayer = ({ participantId }) => {
@@ -86,8 +111,21 @@ const ParticipantAudioPlayer = ({ participantId }) => {
 
 const ParticipantsAudioPlayer = () => {
   const mMeeting = useMeeting();
+  const { selectedOutputDeviceId } = useMeetingAppContext();
 
   const participants = mMeeting?.participants;
+  const localMicOn = mMeeting?.localMicOn;
+  const localWebcamOn = mMeeting?.localWebcamOn;
+
+  useEffect(() => teardownRelay, []);
+
+  useEffect(() => {
+    setRelaySinkId(selectedOutputDeviceId);
+  }, [selectedOutputDeviceId]);
+
+  useEffect(() => {
+    if (localMicOn || localWebcamOn) resumeRelay();
+  }, [localMicOn, localWebcamOn]);
 
   return participants ? (
     [...participants.keys()].map((participantId) => (
