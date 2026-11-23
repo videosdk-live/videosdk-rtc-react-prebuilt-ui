@@ -23,6 +23,8 @@ import {
 import { useMediaQuery } from "react-responsive";
 import {
   connectTrackToRelay,
+  forgetAudioElement,
+  playAudioElement,
   shouldUseAudioRelay,
 } from "../../utils/audioOutputRelay";
 
@@ -114,16 +116,15 @@ const PresenterView = ({ presenterId }) => {
       } catch (error) {
         console.log("error", error);
       }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
-      return connectTrackToRelay(screenShareAudioStream.track);
+      const el = audioPlayer.current;
+      playAudioElement(el);
+      const disconnectRelay = connectTrackToRelay(screenShareAudioStream.track);
+      return () => {
+        forgetAudioElement(el);
+        disconnectRelay();
+      };
     } else {
+      forgetAudioElement(audioPlayer.current);
       audioPlayer.current.srcObject = null;
     }
   }, [screenShareAudioStream, screenShareOn, isLocal, selectedOutputDeviceId]);

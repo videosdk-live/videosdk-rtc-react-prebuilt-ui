@@ -32,6 +32,7 @@ import packageInfo from "../package.json";
 import { meetingModes } from "./CONSTS";
 import animationData from "./animations/meeting-left.json";
 import lightThemeAnimationData from "./animations/meeting_left_white.json";
+import { startAudio } from "./utils/audioOutputRelay";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
@@ -696,6 +697,8 @@ const App = () => {
             }
             setMeetingLeft={setMeetingLeft}
             onRejoin={() => {
+              // Inside the tap: unlocks remote audio playback for the meeting.
+              startAudio();
               setCustomVideoStream(null);
               setCustomAudioStream(null);
             }}
@@ -915,6 +918,8 @@ const App = () => {
       ) : paramKeys.joinScreenEnabled === "true" ? (
         <JoinMeeting
           onClick={({ name, webcamOn, micOn }) => {
+            // Inside the tap: unlocks remote audio playback for the meeting.
+            startAudio();
             setName(name);
             setJoinScreenMic(micOn);
             setJoinScreenWebCam(webcamOn);
@@ -974,6 +979,8 @@ const App = () => {
       ) : (
         <ClickAnywhereToContinue
           onClick={() => {
+            // Inside the tap: unlocks remote audio playback for the meeting.
+            startAudio();
             setUserHasInteracted(true);
           }}
           title="Click anywhere to continue"

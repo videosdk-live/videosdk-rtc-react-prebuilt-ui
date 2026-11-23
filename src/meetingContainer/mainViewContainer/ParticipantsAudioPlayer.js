@@ -7,10 +7,12 @@ import React, { useEffect, useRef } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
 import {
   connectTrackToRelay,
-  resumeRelay,
+  forgetAudioElement,
+  playAudioElement,
   setRelaySinkId,
   shouldUseAudioRelay,
-  teardownRelay,
+  startAudio,
+  teardownAudio,
 } from "../../utils/audioOutputRelay";
 
 const HumanParticipantAudioPlayer = ({ participantId }) => {
@@ -30,16 +32,15 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
       } catch (error) {
         console.log("error", error);
       }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
-      return connectTrackToRelay(micStream.track);
+      const el = audioPlayer.current;
+      playAudioElement(el);
+      const disconnectRelay = connectTrackToRelay(micStream.track);
+      return () => {
+        forgetAudioElement(el);
+        disconnectRelay();
+      };
     } else if (audioPlayer.current) {
+      forgetAudioElement(audioPlayer.current);
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
@@ -72,16 +73,15 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
       } catch (error) {
         console.log("error", error);
       }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
-      return connectTrackToRelay(micStream.track);
+      const el = audioPlayer.current;
+      playAudioElement(el);
+      const disconnectRelay = connectTrackToRelay(micStream.track);
+      return () => {
+        forgetAudioElement(el);
+        disconnectRelay();
+      };
     } else if (audioPlayer.current) {
+      forgetAudioElement(audioPlayer.current);
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, participantId, selectedOutputDeviceId]);
@@ -117,14 +117,15 @@ const ParticipantsAudioPlayer = () => {
   const localMicOn = mMeeting?.localMicOn;
   const localWebcamOn = mMeeting?.localWebcamOn;
 
-  useEffect(() => teardownRelay, []);
+  useEffect(() => teardownAudio, []);
 
   useEffect(() => {
     setRelaySinkId(selectedOutputDeviceId);
   }, [selectedOutputDeviceId]);
 
   useEffect(() => {
-    if (localMicOn || localWebcamOn) resumeRelay();
+    // While capturing, iOS lets the relay start without a tap.
+    if (localMicOn || localWebcamOn) startAudio();
   }, [localMicOn, localWebcamOn]);
 
   return participants ? (

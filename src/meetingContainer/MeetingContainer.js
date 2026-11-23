@@ -29,6 +29,7 @@ import RequestedEntries from "../components/RequestedEntries";
 import ClickAnywhereToContinue from "../components/ClickAnywhereToContinue";
 import PinnedLayoutViewContainer from "./pinnedLayoutViewContainer/PinnedLayoutViewContainer";
 import ParticipantsAudioPlayer from "./mainViewContainer/ParticipantsAudioPlayer";
+import AudioPlaybackPrompt from "../components/AudioPlaybackPrompt";
 import useWhiteBoard from "./useWhiteBoard";
 import ConfirmBox from "../components/ConfirmBox";
 import WaitingToJoin from "../components/WaitingToJoin";
@@ -891,6 +892,7 @@ const MeetingContainer = () => {
                       />
                     )}
                     <ParticipantsAudioPlayer />
+                    <AudioPlaybackPrompt top={topBarHeight + 16} />
                     <MediaRequested />
                     <RequestedEntries />
                   </>
