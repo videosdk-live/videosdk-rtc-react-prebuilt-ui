@@ -30,11 +30,13 @@ const connectedTracks = new Map();
 
 // Elements whose play() the browser refused for lack of a user gesture.
 const blockedElements = new Set();
+// The relay's context left "running" (e.g. an iOS interruption) after starting.
+let contextBlocked = false;
 const statusListeners = new Set();
 let canPlaybackAudio = true;
 
 function refreshPlaybackStatus() {
-  const next = blockedElements.size === 0;
+  const next = blockedElements.size === 0 && !contextBlocked;
   if (next === canPlaybackAudio) return;
   canPlaybackAudio = next;
   statusListeners.forEach((listener) => listener());
@@ -97,6 +99,15 @@ function ensureRelay() {
   relayElement.style.display = "none";
   relayElement.srcObject = destinationNode.stream;
   document.body.appendChild(relayElement);
+
+  // Only state changes count: every context starts "suspended" briefly, even
+  // inside a tap, and teardownAudio() closes it on purpose.
+  const ctx = audioContext;
+  ctx.onstatechange = () => {
+    if (ctx !== audioContext) return;
+    contextBlocked = ctx.state !== "running";
+    refreshPlaybackStatus();
+  };
 
   // Always-running silent input: keeps the relay "playing audio" between remote
   // tracks, and without it iOS plays stale audio after the last remote leaves.
@@ -161,7 +172,9 @@ export function setRelaySinkId(deviceId) {
 
 export function teardownAudio() {
   if (!audioContext) return;
-  forgetAudioElement(relayElement);
+  blockedElements.delete(relayElement);
+  contextBlocked = false;
+  refreshPlaybackStatus();
   document.removeEventListener("touchend", resumeAudio, { capture: true });
   document.removeEventListener("click", resumeAudio, { capture: true });
   document.removeEventListener("visibilitychange", handleVisibilityChange);
