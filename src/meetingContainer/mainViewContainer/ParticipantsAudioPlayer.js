@@ -40,7 +40,6 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
         disconnectRelay();
       };
     } else if (audioPlayer.current) {
-      forgetAudioElement(audioPlayer.current);
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
@@ -81,7 +80,6 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
         disconnectRelay();
       };
     } else if (audioPlayer.current) {
-      forgetAudioElement(audioPlayer.current);
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, participantId, selectedOutputDeviceId]);

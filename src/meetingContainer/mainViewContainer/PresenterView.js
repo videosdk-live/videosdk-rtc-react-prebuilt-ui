@@ -124,7 +124,6 @@ const PresenterView = ({ presenterId }) => {
         disconnectRelay();
       };
     } else {
-      forgetAudioElement(audioPlayer.current);
       audioPlayer.current.srcObject = null;
     }
   }, [screenShareAudioStream, screenShareOn, isLocal, selectedOutputDeviceId]);
