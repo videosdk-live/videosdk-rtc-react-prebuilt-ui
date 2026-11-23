@@ -24,7 +24,15 @@ import HDLightIcon from "../../icons/HDLightIcon";
 import HDDarkIcon from "../../icons/HDDarkIcon";
 import { useSnackbar } from "notistack";
 
-const Card = ({ isActive, title, Icon, onClick, appTheme, theme, isMobile }) => {
+const Card = ({
+  isActive,
+  title,
+  Icon,
+  onClick,
+  appTheme,
+  theme,
+  isMobile,
+}) => {
   const isLight = appTheme === appThemes.LIGHT;
   return (
     <Box
@@ -36,11 +44,7 @@ const Card = ({ isActive, title, Icon, onClick, appTheme, theme, isMobile }) => 
         maxWidth: "fit-content",
       }}
     >
-      <ButtonBase
-        value={title}
-        onClick={onClick}
-        style={{ cursor: "pointer" }}
-      >
+      <ButtonBase value={title} onClick={onClick} style={{ cursor: "pointer" }}>
         {isActive ? (
           <Icon
             fillColor={
@@ -270,8 +274,7 @@ function ConfigTabPanel({ panelHeight }) {
     () => [
       {
         type: "Spotlight",
-        Icon:
-          appTheme === appThemes.LIGHT ? SpotlightLightIcon : SpotlightIcon,
+        Icon: appTheme === appThemes.LIGHT ? SpotlightLightIcon : SpotlightIcon,
       },
       {
         type: "Sidebar",
