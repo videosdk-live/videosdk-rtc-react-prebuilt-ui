@@ -10,6 +10,7 @@ import ConfirmBox from "./ConfirmBox";
 import { meetingModes } from "../CONSTS";
 import { useSnackbar } from "notistack";
 import { useNotificationSound } from "../utils/useNotificationSound";
+import { startAudio } from "../utils/audioOutputRelay";
 
 const reqInfoDefaultState = {
   enabled: false,
@@ -193,6 +194,7 @@ const ModeListner = () => {
           }
         }}
         onSuccess={async () => {
+          startAudio();
           try {
             await mMeeting.changeMode(reqModeInfo.mode);
           } catch (e) {

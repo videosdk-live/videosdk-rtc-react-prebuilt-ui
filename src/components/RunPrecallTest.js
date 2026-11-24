@@ -329,7 +329,11 @@ const RunPrecallTest = ({
           }}
         >
           <Typography
-            sx={{ fontSize: 14, color: theme.palette.common.white, fontWeight: 600 }}
+            sx={{
+              fontSize: 14,
+              color: theme.palette.common.white,
+              fontWeight: 600,
+            }}
           >{`Quality Score : ${overallLabel}`}</Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <IconButton

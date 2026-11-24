@@ -5,6 +5,15 @@ import {
 } from "@videosdk.live/react-sdk";
 import React, { useEffect, useRef } from "react";
 import { useMeetingAppContext } from "../../MeetingAppContextDef";
+import {
+  connectTrackToRelay,
+  forgetAudioElement,
+  playAudioElement,
+  setRelaySinkId,
+  shouldUseAudioRelay,
+  startAudio,
+  teardownAudio,
+} from "../../utils/audioOutputRelay";
 
 const HumanParticipantAudioPlayer = ({ participantId }) => {
   const { micOn, micStream, isLocal } = useParticipant(participantId);
@@ -23,20 +32,27 @@ const HumanParticipantAudioPlayer = ({ participantId }) => {
       } catch (error) {
         console.log("error", error);
       }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
+      const el = audioPlayer.current;
+      playAudioElement(el);
+      const disconnectRelay = connectTrackToRelay(micStream.track);
+      return () => {
+        forgetAudioElement(el);
+        disconnectRelay();
+      };
     } else if (audioPlayer.current) {
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, isLocal, participantId, selectedOutputDeviceId]);
 
-  return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
+  return (
+    <audio
+      autoPlay
+      playsInline
+      controls={false}
+      muted={shouldUseAudioRelay()}
+      ref={audioPlayer}
+    />
+  );
 };
 
 const AgentParticipantAudioPlayer = ({ participantId }) => {
@@ -56,20 +72,27 @@ const AgentParticipantAudioPlayer = ({ participantId }) => {
       } catch (error) {
         console.log("error", error);
       }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
+      const el = audioPlayer.current;
+      playAudioElement(el);
+      const disconnectRelay = connectTrackToRelay(micStream.track);
+      return () => {
+        forgetAudioElement(el);
+        disconnectRelay();
+      };
     } else if (audioPlayer.current) {
       audioPlayer.current.srcObject = null;
     }
   }, [micStream, micOn, participantId, selectedOutputDeviceId]);
 
-  return <audio autoPlay playsInline controls={false} ref={audioPlayer} />;
+  return (
+    <audio
+      autoPlay
+      playsInline
+      controls={false}
+      muted={shouldUseAudioRelay()}
+      ref={audioPlayer}
+    />
+  );
 };
 
 const ParticipantAudioPlayer = ({ participantId }) => {
@@ -86,8 +109,22 @@ const ParticipantAudioPlayer = ({ participantId }) => {
 
 const ParticipantsAudioPlayer = () => {
   const mMeeting = useMeeting();
+  const { selectedOutputDeviceId } = useMeetingAppContext();
 
   const participants = mMeeting?.participants;
+  const localMicOn = mMeeting?.localMicOn;
+  const localWebcamOn = mMeeting?.localWebcamOn;
+
+  useEffect(() => teardownAudio, []);
+
+  useEffect(() => {
+    setRelaySinkId(selectedOutputDeviceId);
+  }, [selectedOutputDeviceId]);
+
+  useEffect(() => {
+    // While capturing, iOS lets the relay start without a tap.
+    if (localMicOn || localWebcamOn) startAudio();
+  }, [localMicOn, localWebcamOn]);
 
   return participants ? (
     [...participants.keys()].map((participantId) => (

@@ -21,6 +21,12 @@ import {
   useMeetingAppContext,
 } from "../../MeetingAppContextDef";
 import { useMediaQuery } from "react-responsive";
+import {
+  connectTrackToRelay,
+  forgetAudioElement,
+  playAudioElement,
+  shouldUseAudioRelay,
+} from "../../utils/audioOutputRelay";
 
 const PresenterView = ({ presenterId }) => {
   const mMeeting = useMeeting();
@@ -110,14 +116,13 @@ const PresenterView = ({ presenterId }) => {
       } catch (error) {
         console.log("error", error);
       }
-      audioPlayer.current.play().catch((err) => {
-        if (
-          err.message ===
-          "play() failed because the user didn't interact with the document first. https://goo.gl/xX8pDD"
-        ) {
-          console.error("audio" + err.message);
-        }
-      });
+      const el = audioPlayer.current;
+      playAudioElement(el);
+      const disconnectRelay = connectTrackToRelay(screenShareAudioStream.track);
+      return () => {
+        forgetAudioElement(el);
+        disconnectRelay();
+      };
     } else {
       audioPlayer.current.srcObject = null;
     }
@@ -161,7 +166,13 @@ const PresenterView = ({ presenterId }) => {
             : "flex",
       }}
     >
-      <audio autoPlay playsInline controls={false} ref={audioPlayer} />
+      <audio
+        autoPlay
+        playsInline
+        controls={false}
+        muted={shouldUseAudioRelay()}
+        ref={audioPlayer}
+      />
 
       <div
         style={{
